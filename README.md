@@ -11,10 +11,12 @@ This repository provides an example of WinUI 3 with Python. The sample program h
 
 ## Requirement
 
-* [Python](https://www.python.org/downloads/)
+* [Python from python.org](https://www.python.org/downloads/)
 * [Windows App Runtime v1.4.3](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads)
 
 ## Run the sample program
+
+Loading the module for the first time takes time.
 
 ```
 py winui-xaml.py
