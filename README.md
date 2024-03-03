@@ -7,7 +7,7 @@ This repository provides an example of WinUI 3 with Python. The sample program h
 * Apply Mica.
 * Adapt to a high DPI monitor.
 
-[py-win32more](https://github.com/sotanakamura/py-win32more) is used to generate "win32more" for WinUI 3.
+[py-win32more](https://github.com/ynkdir/py-win32more) is used to generate "win32more" for WinUI 3.
 
 ## Requirement
 
@@ -20,4 +20,14 @@ Loading the module for the first time takes time.
 
 ```
 py winui-xaml.py
+```
+
+## Creating UI without XAML files (and handling events)
+
+You can build your own GUI without writing XAML files.  
+Also, you can handle events using your own functions just as example shown below.  
+\*This example uses the sample program of RepeatButton.
+
+```
+py winui-click.py
 ```
