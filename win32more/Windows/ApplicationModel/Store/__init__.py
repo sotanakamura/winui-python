@@ -1,24 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Store
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class _CurrentApp_Meta_(ComPtr.__class__):
     pass
 class CurrentApp(ComPtr, metaclass=_CurrentApp_Meta_):
@@ -60,9 +48,9 @@ class CurrentApp(ComPtr, metaclass=_CurrentApp_Meta_):
     def GetAppReceiptAsync(cls: win32more.Windows.ApplicationModel.Store.ICurrentApp) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
     @winrt_classmethod
     def GetProductReceiptAsync(cls: win32more.Windows.ApplicationModel.Store.ICurrentApp, productId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
+    _CurrentApp_Meta_.AppId = property(get_AppId.__wrapped__, None)
     _CurrentApp_Meta_.LicenseInformation = property(get_LicenseInformation.__wrapped__, None)
     _CurrentApp_Meta_.LinkUri = property(get_LinkUri.__wrapped__, None)
-    _CurrentApp_Meta_.AppId = property(get_AppId.__wrapped__, None)
 class _CurrentAppSimulator_Meta_(ComPtr.__class__):
     pass
 class CurrentAppSimulator(ComPtr, metaclass=_CurrentAppSimulator_Meta_):
@@ -100,15 +88,15 @@ class CurrentAppSimulator(ComPtr, metaclass=_CurrentAppSimulator_Meta_):
     def GetProductReceiptAsync(cls: win32more.Windows.ApplicationModel.Store.ICurrentAppSimulator, productId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
     @winrt_classmethod
     def ReloadSimulatorAsync(cls: win32more.Windows.ApplicationModel.Store.ICurrentAppSimulator, simulatorSettingsFile: win32more.Windows.Storage.StorageFile) -> win32more.Windows.Foundation.IAsyncAction: ...
+    _CurrentAppSimulator_Meta_.AppId = property(get_AppId.__wrapped__, None)
     _CurrentAppSimulator_Meta_.LicenseInformation = property(get_LicenseInformation.__wrapped__, None)
     _CurrentAppSimulator_Meta_.LinkUri = property(get_LinkUri.__wrapped__, None)
-    _CurrentAppSimulator_Meta_.AppId = property(get_AppId.__wrapped__, None)
-FulfillmentResult = Int32
-FulfillmentResult_Succeeded: FulfillmentResult = 0
-FulfillmentResult_NothingToFulfill: FulfillmentResult = 1
-FulfillmentResult_PurchasePending: FulfillmentResult = 2
-FulfillmentResult_PurchaseReverted: FulfillmentResult = 3
-FulfillmentResult_ServerError: FulfillmentResult = 4
+class FulfillmentResult(Int32):  # enum
+    Succeeded = 0
+    NothingToFulfill = 1
+    PurchasePending = 2
+    PurchaseReverted = 3
+    ServerError = 4
 class ICurrentApp(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.ICurrentApp'
@@ -129,9 +117,9 @@ class ICurrentApp(ComPtr):
     def GetAppReceiptAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
     @winrt_commethod(13)
     def GetProductReceiptAsync(self, productId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
+    AppId = property(get_AppId, None)
     LicenseInformation = property(get_LicenseInformation, None)
     LinkUri = property(get_LinkUri, None)
-    AppId = property(get_AppId, None)
 class ICurrentApp2Statics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.ICurrentApp2Statics'
@@ -162,9 +150,9 @@ class ICurrentAppSimulator(ComPtr):
     def GetProductReceiptAsync(self, productId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[WinRT_String]: ...
     @winrt_commethod(14)
     def ReloadSimulatorAsync(self, simulatorSettingsFile: win32more.Windows.Storage.StorageFile) -> win32more.Windows.Foundation.IAsyncAction: ...
+    AppId = property(get_AppId, None)
     LicenseInformation = property(get_LicenseInformation, None)
     LinkUri = property(get_LinkUri, None)
-    AppId = property(get_AppId, None)
 class ICurrentAppSimulatorStaticsWithFiltering(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.ICurrentAppSimulatorStaticsWithFiltering'
@@ -235,10 +223,10 @@ class ILicenseInformation(ComPtr):
     def add_LicenseChanged(self, handler: win32more.Windows.ApplicationModel.Store.LicenseChangedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_LicenseChanged(self, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ProductLicenses = property(get_ProductLicenses, None)
+    ExpirationDate = property(get_ExpirationDate, None)
     IsActive = property(get_IsActive, None)
     IsTrial = property(get_IsTrial, None)
-    ExpirationDate = property(get_ExpirationDate, None)
+    ProductLicenses = property(get_ProductLicenses, None)
 class IListingInformation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IListingInformation'
@@ -255,12 +243,12 @@ class IListingInformation(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_AgeRating(self) -> UInt32: ...
+    AgeRating = property(get_AgeRating, None)
     CurrentMarket = property(get_CurrentMarket, None)
     Description = property(get_Description, None)
-    ProductListings = property(get_ProductListings, None)
     FormattedPrice = property(get_FormattedPrice, None)
     Name = property(get_Name, None)
-    AgeRating = property(get_AgeRating, None)
+    ProductListings = property(get_ProductListings, None)
 class IListingInformation2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IListingInformation2'
@@ -273,10 +261,10 @@ class IListingInformation2(ComPtr):
     def get_IsOnSale(self) -> Boolean: ...
     @winrt_commethod(9)
     def get_CurrencyCode(self) -> WinRT_String: ...
-    FormattedBasePrice = property(get_FormattedBasePrice, None)
-    SaleEndDate = property(get_SaleEndDate, None)
-    IsOnSale = property(get_IsOnSale, None)
     CurrencyCode = property(get_CurrencyCode, None)
+    FormattedBasePrice = property(get_FormattedBasePrice, None)
+    IsOnSale = property(get_IsOnSale, None)
+    SaleEndDate = property(get_SaleEndDate, None)
 class IProductLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductLicense'
@@ -287,9 +275,9 @@ class IProductLicense(ComPtr):
     def get_IsActive(self) -> Boolean: ...
     @winrt_commethod(8)
     def get_ExpirationDate(self) -> win32more.Windows.Foundation.DateTime: ...
-    ProductId = property(get_ProductId, None)
-    IsActive = property(get_IsActive, None)
     ExpirationDate = property(get_ExpirationDate, None)
+    IsActive = property(get_IsActive, None)
+    ProductId = property(get_ProductId, None)
 class IProductLicenseWithFulfillment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductLicenseWithFulfillment'
@@ -307,9 +295,9 @@ class IProductListing(ComPtr):
     def get_FormattedPrice(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_Name(self) -> WinRT_String: ...
-    ProductId = property(get_ProductId, None)
     FormattedPrice = property(get_FormattedPrice, None)
     Name = property(get_Name, None)
+    ProductId = property(get_ProductId, None)
 class IProductListing2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductListing2'
@@ -322,10 +310,10 @@ class IProductListing2(ComPtr):
     def get_IsOnSale(self) -> Boolean: ...
     @winrt_commethod(9)
     def get_CurrencyCode(self) -> WinRT_String: ...
-    FormattedBasePrice = property(get_FormattedBasePrice, None)
-    SaleEndDate = property(get_SaleEndDate, None)
-    IsOnSale = property(get_IsOnSale, None)
     CurrencyCode = property(get_CurrencyCode, None)
+    FormattedBasePrice = property(get_FormattedBasePrice, None)
+    IsOnSale = property(get_IsOnSale, None)
+    SaleEndDate = property(get_SaleEndDate, None)
 class IProductListingWithConsumables(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductListingWithConsumables'
@@ -348,10 +336,10 @@ class IProductListingWithMetadata(ComPtr):
     @winrt_commethod(10)
     def get_ImageUri(self) -> win32more.Windows.Foundation.Uri: ...
     Description = property(get_Description, None)
+    ImageUri = property(get_ImageUri, None)
     Keywords = property(get_Keywords, None)
     ProductType = property(get_ProductType, None)
     Tag = property(get_Tag, None)
-    ImageUri = property(get_ImageUri, None)
 class IProductPurchaseDisplayProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductPurchaseDisplayProperties'
@@ -368,9 +356,9 @@ class IProductPurchaseDisplayProperties(ComPtr):
     def get_Image(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(11)
     def put_Image(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Name = property(get_Name, put_Name)
     Description = property(get_Description, put_Description)
     Image = property(get_Image, put_Image)
+    Name = property(get_Name, put_Name)
 class IProductPurchaseDisplayPropertiesFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IProductPurchaseDisplayPropertiesFactory'
@@ -389,10 +377,10 @@ class IPurchaseResults(ComPtr):
     def get_ReceiptXml(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def get_OfferId(self) -> WinRT_String: ...
+    OfferId = property(get_OfferId, None)
+    ReceiptXml = property(get_ReceiptXml, None)
     Status = property(get_Status, None)
     TransactionId = property(get_TransactionId, None)
-    ReceiptXml = property(get_ReceiptXml, None)
-    OfferId = property(get_OfferId, None)
 class IUnfulfilledConsumable(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.IUnfulfilledConsumable'
@@ -403,9 +391,9 @@ class IUnfulfilledConsumable(ComPtr):
     def get_TransactionId(self) -> Guid: ...
     @winrt_commethod(8)
     def get_OfferId(self) -> WinRT_String: ...
+    OfferId = property(get_OfferId, None)
     ProductId = property(get_ProductId, None)
     TransactionId = property(get_TransactionId, None)
-    OfferId = property(get_OfferId, None)
 class LicenseChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{d4a50255-1369-4c36-832f-6f2d88e3659b}')
@@ -426,10 +414,10 @@ class LicenseInformation(ComPtr):
     def add_LicenseChanged(self: win32more.Windows.ApplicationModel.Store.ILicenseInformation, handler: win32more.Windows.ApplicationModel.Store.LicenseChangedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_LicenseChanged(self: win32more.Windows.ApplicationModel.Store.ILicenseInformation, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ProductLicenses = property(get_ProductLicenses, None)
+    ExpirationDate = property(get_ExpirationDate, None)
     IsActive = property(get_IsActive, None)
     IsTrial = property(get_IsTrial, None)
-    ExpirationDate = property(get_ExpirationDate, None)
+    ProductLicenses = property(get_ProductLicenses, None)
 class ListingInformation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IListingInformation
@@ -454,16 +442,16 @@ class ListingInformation(ComPtr):
     def get_IsOnSale(self: win32more.Windows.ApplicationModel.Store.IListingInformation2) -> Boolean: ...
     @winrt_mixinmethod
     def get_CurrencyCode(self: win32more.Windows.ApplicationModel.Store.IListingInformation2) -> WinRT_String: ...
+    AgeRating = property(get_AgeRating, None)
+    CurrencyCode = property(get_CurrencyCode, None)
     CurrentMarket = property(get_CurrentMarket, None)
     Description = property(get_Description, None)
-    ProductListings = property(get_ProductListings, None)
-    FormattedPrice = property(get_FormattedPrice, None)
-    Name = property(get_Name, None)
-    AgeRating = property(get_AgeRating, None)
     FormattedBasePrice = property(get_FormattedBasePrice, None)
-    SaleEndDate = property(get_SaleEndDate, None)
+    FormattedPrice = property(get_FormattedPrice, None)
     IsOnSale = property(get_IsOnSale, None)
-    CurrencyCode = property(get_CurrencyCode, None)
+    Name = property(get_Name, None)
+    ProductListings = property(get_ProductListings, None)
+    SaleEndDate = property(get_SaleEndDate, None)
 class ProductLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IProductLicense
@@ -476,10 +464,10 @@ class ProductLicense(ComPtr):
     def get_ExpirationDate(self: win32more.Windows.ApplicationModel.Store.IProductLicense) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_IsConsumable(self: win32more.Windows.ApplicationModel.Store.IProductLicenseWithFulfillment) -> Boolean: ...
-    ProductId = property(get_ProductId, None)
-    IsActive = property(get_IsActive, None)
     ExpirationDate = property(get_ExpirationDate, None)
+    IsActive = property(get_IsActive, None)
     IsConsumable = property(get_IsConsumable, None)
+    ProductId = property(get_ProductId, None)
 class ProductListing(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IProductListing
@@ -508,22 +496,31 @@ class ProductListing(ComPtr):
     def get_IsOnSale(self: win32more.Windows.ApplicationModel.Store.IProductListing2) -> Boolean: ...
     @winrt_mixinmethod
     def get_CurrencyCode(self: win32more.Windows.ApplicationModel.Store.IProductListing2) -> WinRT_String: ...
-    ProductId = property(get_ProductId, None)
-    FormattedPrice = property(get_FormattedPrice, None)
-    Name = property(get_Name, None)
-    Description = property(get_Description, None)
-    Keywords = property(get_Keywords, None)
-    ProductType = property(get_ProductType, None)
-    Tag = property(get_Tag, None)
-    ImageUri = property(get_ImageUri, None)
-    FormattedBasePrice = property(get_FormattedBasePrice, None)
-    SaleEndDate = property(get_SaleEndDate, None)
-    IsOnSale = property(get_IsOnSale, None)
     CurrencyCode = property(get_CurrencyCode, None)
+    Description = property(get_Description, None)
+    FormattedBasePrice = property(get_FormattedBasePrice, None)
+    FormattedPrice = property(get_FormattedPrice, None)
+    ImageUri = property(get_ImageUri, None)
+    IsOnSale = property(get_IsOnSale, None)
+    Keywords = property(get_Keywords, None)
+    Name = property(get_Name, None)
+    ProductId = property(get_ProductId, None)
+    ProductType = property(get_ProductType, None)
+    SaleEndDate = property(get_SaleEndDate, None)
+    Tag = property(get_Tag, None)
 class ProductPurchaseDisplayProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IProductPurchaseDisplayProperties
     _classid_ = 'Windows.ApplicationModel.Store.ProductPurchaseDisplayProperties'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Store.ProductPurchaseDisplayProperties.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Store.ProductPurchaseDisplayProperties.CreateProductPurchaseDisplayProperties(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Store.ProductPurchaseDisplayProperties: ...
     @winrt_factorymethod
@@ -540,18 +537,18 @@ class ProductPurchaseDisplayProperties(ComPtr):
     def get_Image(self: win32more.Windows.ApplicationModel.Store.IProductPurchaseDisplayProperties) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def put_Image(self: win32more.Windows.ApplicationModel.Store.IProductPurchaseDisplayProperties, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Name = property(get_Name, put_Name)
     Description = property(get_Description, put_Description)
     Image = property(get_Image, put_Image)
-ProductPurchaseStatus = Int32
-ProductPurchaseStatus_Succeeded: ProductPurchaseStatus = 0
-ProductPurchaseStatus_AlreadyPurchased: ProductPurchaseStatus = 1
-ProductPurchaseStatus_NotFulfilled: ProductPurchaseStatus = 2
-ProductPurchaseStatus_NotPurchased: ProductPurchaseStatus = 3
-ProductType = Int32
-ProductType_Unknown: ProductType = 0
-ProductType_Durable: ProductType = 1
-ProductType_Consumable: ProductType = 2
+    Name = property(get_Name, put_Name)
+class ProductPurchaseStatus(Int32):  # enum
+    Succeeded = 0
+    AlreadyPurchased = 1
+    NotFulfilled = 2
+    NotPurchased = 3
+class ProductType(Int32):  # enum
+    Unknown = 0
+    Durable = 1
+    Consumable = 2
 class PurchaseResults(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IPurchaseResults
@@ -564,10 +561,10 @@ class PurchaseResults(ComPtr):
     def get_ReceiptXml(self: win32more.Windows.ApplicationModel.Store.IPurchaseResults) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_OfferId(self: win32more.Windows.ApplicationModel.Store.IPurchaseResults) -> WinRT_String: ...
+    OfferId = property(get_OfferId, None)
+    ReceiptXml = property(get_ReceiptXml, None)
     Status = property(get_Status, None)
     TransactionId = property(get_TransactionId, None)
-    ReceiptXml = property(get_ReceiptXml, None)
-    OfferId = property(get_OfferId, None)
 class UnfulfilledConsumable(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.IUnfulfilledConsumable
@@ -578,7 +575,9 @@ class UnfulfilledConsumable(ComPtr):
     def get_TransactionId(self: win32more.Windows.ApplicationModel.Store.IUnfulfilledConsumable) -> Guid: ...
     @winrt_mixinmethod
     def get_OfferId(self: win32more.Windows.ApplicationModel.Store.IUnfulfilledConsumable) -> WinRT_String: ...
+    OfferId = property(get_OfferId, None)
     ProductId = property(get_ProductId, None)
     TransactionId = property(get_TransactionId, None)
-    OfferId = property(get_OfferId, None)
+
+
 make_ready(__name__)

@@ -1,29 +1,24 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.UI.Xaml
 import win32more.Windows.UI.Xaml.Data
 import win32more.Windows.UI.Xaml.Interop
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class Binding(ComPtr):
     extends: win32more.Windows.UI.Xaml.Data.BindingBase
     default_interface: win32more.Windows.UI.Xaml.Data.IBinding
     _classid_ = 'Windows.UI.Xaml.Data.Binding'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Data.Binding.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.IBindingFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.Binding: ...
     @winrt_mixinmethod
@@ -70,21 +65,28 @@ class Binding(ComPtr):
     def get_UpdateSourceTrigger(self: win32more.Windows.UI.Xaml.Data.IBinding2) -> win32more.Windows.UI.Xaml.Data.UpdateSourceTrigger: ...
     @winrt_mixinmethod
     def put_UpdateSourceTrigger(self: win32more.Windows.UI.Xaml.Data.IBinding2, value: win32more.Windows.UI.Xaml.Data.UpdateSourceTrigger) -> Void: ...
-    Path = property(get_Path, put_Path)
-    Mode = property(get_Mode, put_Mode)
-    Source = property(get_Source, put_Source)
-    RelativeSource = property(get_RelativeSource, put_RelativeSource)
-    ElementName = property(get_ElementName, put_ElementName)
     Converter = property(get_Converter, put_Converter)
-    ConverterParameter = property(get_ConverterParameter, put_ConverterParameter)
     ConverterLanguage = property(get_ConverterLanguage, put_ConverterLanguage)
+    ConverterParameter = property(get_ConverterParameter, put_ConverterParameter)
+    ElementName = property(get_ElementName, put_ElementName)
     FallbackValue = property(get_FallbackValue, put_FallbackValue)
+    Mode = property(get_Mode, put_Mode)
+    Path = property(get_Path, put_Path)
+    RelativeSource = property(get_RelativeSource, put_RelativeSource)
+    Source = property(get_Source, put_Source)
     TargetNullValue = property(get_TargetNullValue, put_TargetNullValue)
     UpdateSourceTrigger = property(get_UpdateSourceTrigger, put_UpdateSourceTrigger)
 class BindingBase(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Data.IBindingBase
     _classid_ = 'Windows.UI.Xaml.Data.BindingBase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Data.BindingBase.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.IBindingBaseFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.BindingBase: ...
 class BindingExpression(ComPtr):
@@ -103,10 +105,10 @@ class BindingExpressionBase(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Data.IBindingExpressionBase
     _classid_ = 'Windows.UI.Xaml.Data.BindingExpressionBase'
-BindingMode = Int32
-BindingMode_OneWay: BindingMode = 1
-BindingMode_OneTime: BindingMode = 2
-BindingMode_TwoWay: BindingMode = 3
+class BindingMode(Int32):  # enum
+    OneWay = 1
+    OneTime = 2
+    TwoWay = 3
 class BindingOperations(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Data.IBindingOperations
@@ -119,6 +121,13 @@ class CollectionViewSource(ComPtr, metaclass=_CollectionViewSource_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Data.ICollectionViewSource
     _classid_ = 'Windows.UI.Xaml.Data.CollectionViewSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Data.CollectionViewSource.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Data.CollectionViewSource: ...
     @winrt_mixinmethod
@@ -143,18 +152,27 @@ class CollectionViewSource(ComPtr, metaclass=_CollectionViewSource_Meta_):
     def get_IsSourceGroupedProperty(cls: win32more.Windows.UI.Xaml.Data.ICollectionViewSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ItemsPathProperty(cls: win32more.Windows.UI.Xaml.Data.ICollectionViewSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Source = property(get_Source, put_Source)
-    View = property(get_View, None)
     IsSourceGrouped = property(get_IsSourceGrouped, put_IsSourceGrouped)
     ItemsPath = property(get_ItemsPath, put_ItemsPath)
-    _CollectionViewSource_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
-    _CollectionViewSource_Meta_.ViewProperty = property(get_ViewProperty.__wrapped__, None)
+    Source = property(get_Source, put_Source)
+    View = property(get_View, None)
     _CollectionViewSource_Meta_.IsSourceGroupedProperty = property(get_IsSourceGroupedProperty.__wrapped__, None)
     _CollectionViewSource_Meta_.ItemsPathProperty = property(get_ItemsPathProperty.__wrapped__, None)
+    _CollectionViewSource_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    _CollectionViewSource_Meta_.ViewProperty = property(get_ViewProperty.__wrapped__, None)
 class CurrentChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Data.ICurrentChangingEventArgs
     _classid_ = 'Windows.UI.Xaml.Data.CurrentChangingEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Data.CurrentChangingEventArgs.CreateInstance(*args, None, None)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Data.CurrentChangingEventArgs.CreateWithCancelableParameter(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.ICurrentChangingEventArgsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.CurrentChangingEventArgs: ...
     @winrt_factorymethod
@@ -207,14 +225,14 @@ class IBinding(ComPtr):
     def get_ConverterLanguage(self) -> WinRT_String: ...
     @winrt_commethod(21)
     def put_ConverterLanguage(self, value: WinRT_String) -> Void: ...
-    Path = property(get_Path, put_Path)
-    Mode = property(get_Mode, put_Mode)
-    Source = property(get_Source, put_Source)
-    RelativeSource = property(get_RelativeSource, put_RelativeSource)
-    ElementName = property(get_ElementName, put_ElementName)
     Converter = property(get_Converter, put_Converter)
-    ConverterParameter = property(get_ConverterParameter, put_ConverterParameter)
     ConverterLanguage = property(get_ConverterLanguage, put_ConverterLanguage)
+    ConverterParameter = property(get_ConverterParameter, put_ConverterParameter)
+    ElementName = property(get_ElementName, put_ElementName)
+    Mode = property(get_Mode, put_Mode)
+    Path = property(get_Path, put_Path)
+    RelativeSource = property(get_RelativeSource, put_RelativeSource)
+    Source = property(get_Source, put_Source)
 class IBinding2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.IBinding2'
@@ -322,12 +340,12 @@ class ICollectionView(ComPtr):
     def MoveCurrentToPrevious(self) -> Boolean: ...
     @winrt_commethod(22)
     def LoadMoreItemsAsync(self, count: UInt32) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.UI.Xaml.Data.LoadMoreItemsResult]: ...
+    CollectionGroups = property(get_CollectionGroups, None)
     CurrentItem = property(get_CurrentItem, None)
     CurrentPosition = property(get_CurrentPosition, None)
+    HasMoreItems = property(get_HasMoreItems, None)
     IsCurrentAfterLast = property(get_IsCurrentAfterLast, None)
     IsCurrentBeforeFirst = property(get_IsCurrentBeforeFirst, None)
-    CollectionGroups = property(get_CollectionGroups, None)
-    HasMoreItems = property(get_HasMoreItems, None)
 class ICollectionViewFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.ICollectionViewFactory'
@@ -362,10 +380,10 @@ class ICollectionViewSource(ComPtr):
     def get_ItemsPath(self) -> win32more.Windows.UI.Xaml.PropertyPath: ...
     @winrt_commethod(12)
     def put_ItemsPath(self, value: win32more.Windows.UI.Xaml.PropertyPath) -> Void: ...
-    Source = property(get_Source, put_Source)
-    View = property(get_View, None)
     IsSourceGrouped = property(get_IsSourceGrouped, put_IsSourceGrouped)
     ItemsPath = property(get_ItemsPath, put_ItemsPath)
+    Source = property(get_Source, put_Source)
+    View = property(get_View, None)
 class ICollectionViewSourceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.ICollectionViewSourceStatics'
@@ -378,10 +396,10 @@ class ICollectionViewSourceStatics(ComPtr):
     def get_IsSourceGroupedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_ItemsPathProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SourceProperty = property(get_SourceProperty, None)
-    ViewProperty = property(get_ViewProperty, None)
     IsSourceGroupedProperty = property(get_IsSourceGroupedProperty, None)
     ItemsPathProperty = property(get_ItemsPathProperty, None)
+    SourceProperty = property(get_SourceProperty, None)
+    ViewProperty = property(get_ViewProperty, None)
 class ICurrentChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.ICurrentChangingEventArgs'
@@ -422,10 +440,10 @@ class ICustomProperty(ComPtr):
     def get_CanWrite(self) -> Boolean: ...
     @winrt_commethod(13)
     def get_CanRead(self) -> Boolean: ...
-    Type = property(get_Type, None)
-    Name = property(get_Name, None)
-    CanWrite = property(get_CanWrite, None)
     CanRead = property(get_CanRead, None)
+    CanWrite = property(get_CanWrite, None)
+    Name = property(get_Name, None)
+    Type = property(get_Type, None)
 class ICustomPropertyProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.ICustomPropertyProvider'
@@ -450,8 +468,8 @@ class IItemIndexRange(ComPtr):
     @winrt_commethod(8)
     def get_LastIndex(self) -> Int32: ...
     FirstIndex = property(get_FirstIndex, None)
-    Length = property(get_Length, None)
     LastIndex = property(get_LastIndex, None)
+    Length = property(get_Length, None)
 class IItemIndexRangeFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Data.IItemIndexRangeFactory'
@@ -533,6 +551,13 @@ class ItemIndexRange(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Data.IItemIndexRange
     _classid_ = 'Windows.UI.Xaml.Data.ItemIndexRange'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Xaml.Data.ItemIndexRange.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.IItemIndexRangeFactory, firstIndex: Int32, length: UInt32, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.ItemIndexRange: ...
     @winrt_mixinmethod
@@ -542,14 +567,21 @@ class ItemIndexRange(ComPtr):
     @winrt_mixinmethod
     def get_LastIndex(self: win32more.Windows.UI.Xaml.Data.IItemIndexRange) -> Int32: ...
     FirstIndex = property(get_FirstIndex, None)
-    Length = property(get_Length, None)
     LastIndex = property(get_LastIndex, None)
+    Length = property(get_Length, None)
 class LoadMoreItemsResult(EasyCastStructure):
     Count: UInt32
 class PropertyChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Data.IPropertyChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Data.PropertyChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Data.PropertyChangedEventArgs.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.IPropertyChangedEventArgsFactory, name: WinRT_String, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.PropertyChangedEventArgs: ...
     @winrt_mixinmethod
@@ -563,6 +595,13 @@ class RelativeSource(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Data.IRelativeSource
     _classid_ = 'Windows.UI.Xaml.Data.RelativeSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Data.RelativeSource.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Data.IRelativeSourceFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Data.RelativeSource: ...
     @winrt_mixinmethod
@@ -570,13 +609,15 @@ class RelativeSource(ComPtr):
     @winrt_mixinmethod
     def put_Mode(self: win32more.Windows.UI.Xaml.Data.IRelativeSource, value: win32more.Windows.UI.Xaml.Data.RelativeSourceMode) -> Void: ...
     Mode = property(get_Mode, put_Mode)
-RelativeSourceMode = Int32
-RelativeSourceMode_None: RelativeSourceMode = 0
-RelativeSourceMode_TemplatedParent: RelativeSourceMode = 1
-RelativeSourceMode_Self: RelativeSourceMode = 2
-UpdateSourceTrigger = Int32
-UpdateSourceTrigger_Default: UpdateSourceTrigger = 0
-UpdateSourceTrigger_PropertyChanged: UpdateSourceTrigger = 1
-UpdateSourceTrigger_Explicit: UpdateSourceTrigger = 2
-UpdateSourceTrigger_LostFocus: UpdateSourceTrigger = 3
+class RelativeSourceMode(Int32):  # enum
+    None_ = 0
+    TemplatedParent = 1
+    Self = 2
+class UpdateSourceTrigger(Int32):  # enum
+    Default = 0
+    PropertyChanged = 1
+    Explicit = 2
+    LostFocus = 3
+
+
 make_ready(__name__)

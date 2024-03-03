@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Globalization.PhoneNumberFormatting
+import win32more.Windows.Win32.System.WinRT
 class IPhoneNumberFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.PhoneNumberFormatting.IPhoneNumberFormatter'
@@ -79,15 +66,22 @@ class IPhoneNumberInfoStatics(ComPtr):
     def TryParse(self, input: WinRT_String, phoneNumber: POINTER(win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo)) -> win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberParseResult: ...
     @winrt_commethod(7)
     def TryParseWithRegion(self, input: WinRT_String, regionCode: WinRT_String, phoneNumber: POINTER(win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo)) -> win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberParseResult: ...
-PhoneNumberFormat = Int32
-PhoneNumberFormat_E164: PhoneNumberFormat = 0
-PhoneNumberFormat_International: PhoneNumberFormat = 1
-PhoneNumberFormat_National: PhoneNumberFormat = 2
-PhoneNumberFormat_Rfc3966: PhoneNumberFormat = 3
+class PhoneNumberFormat(Int32):  # enum
+    E164 = 0
+    International = 1
+    National = 2
+    Rfc3966 = 3
 class PhoneNumberFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.PhoneNumberFormatting.IPhoneNumberFormatter
     _classid_ = 'Windows.Globalization.PhoneNumberFormatting.PhoneNumberFormatter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberFormatter.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberFormatter: ...
     @winrt_mixinmethod
@@ -112,6 +106,13 @@ class PhoneNumberInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.PhoneNumberFormatting.IPhoneNumberInfo
     _classid_ = 'Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Globalization.PhoneNumberFormatting.IPhoneNumberInfoFactory, number: WinRT_String) -> win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo: ...
     @winrt_mixinmethod
@@ -138,28 +139,30 @@ class PhoneNumberInfo(ComPtr):
     def TryParseWithRegion(cls: win32more.Windows.Globalization.PhoneNumberFormatting.IPhoneNumberInfoStatics, input: WinRT_String, regionCode: WinRT_String, phoneNumber: POINTER(win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberInfo)) -> win32more.Windows.Globalization.PhoneNumberFormatting.PhoneNumberParseResult: ...
     CountryCode = property(get_CountryCode, None)
     PhoneNumber = property(get_PhoneNumber, None)
-PhoneNumberMatchResult = Int32
-PhoneNumberMatchResult_NoMatch: PhoneNumberMatchResult = 0
-PhoneNumberMatchResult_ShortNationalSignificantNumberMatch: PhoneNumberMatchResult = 1
-PhoneNumberMatchResult_NationalSignificantNumberMatch: PhoneNumberMatchResult = 2
-PhoneNumberMatchResult_ExactMatch: PhoneNumberMatchResult = 3
-PhoneNumberParseResult = Int32
-PhoneNumberParseResult_Valid: PhoneNumberParseResult = 0
-PhoneNumberParseResult_NotANumber: PhoneNumberParseResult = 1
-PhoneNumberParseResult_InvalidCountryCode: PhoneNumberParseResult = 2
-PhoneNumberParseResult_TooShort: PhoneNumberParseResult = 3
-PhoneNumberParseResult_TooLong: PhoneNumberParseResult = 4
-PredictedPhoneNumberKind = Int32
-PredictedPhoneNumberKind_FixedLine: PredictedPhoneNumberKind = 0
-PredictedPhoneNumberKind_Mobile: PredictedPhoneNumberKind = 1
-PredictedPhoneNumberKind_FixedLineOrMobile: PredictedPhoneNumberKind = 2
-PredictedPhoneNumberKind_TollFree: PredictedPhoneNumberKind = 3
-PredictedPhoneNumberKind_PremiumRate: PredictedPhoneNumberKind = 4
-PredictedPhoneNumberKind_SharedCost: PredictedPhoneNumberKind = 5
-PredictedPhoneNumberKind_Voip: PredictedPhoneNumberKind = 6
-PredictedPhoneNumberKind_PersonalNumber: PredictedPhoneNumberKind = 7
-PredictedPhoneNumberKind_Pager: PredictedPhoneNumberKind = 8
-PredictedPhoneNumberKind_UniversalAccountNumber: PredictedPhoneNumberKind = 9
-PredictedPhoneNumberKind_Voicemail: PredictedPhoneNumberKind = 10
-PredictedPhoneNumberKind_Unknown: PredictedPhoneNumberKind = 11
+class PhoneNumberMatchResult(Int32):  # enum
+    NoMatch = 0
+    ShortNationalSignificantNumberMatch = 1
+    NationalSignificantNumberMatch = 2
+    ExactMatch = 3
+class PhoneNumberParseResult(Int32):  # enum
+    Valid = 0
+    NotANumber = 1
+    InvalidCountryCode = 2
+    TooShort = 3
+    TooLong = 4
+class PredictedPhoneNumberKind(Int32):  # enum
+    FixedLine = 0
+    Mobile = 1
+    FixedLineOrMobile = 2
+    TollFree = 3
+    PremiumRate = 4
+    SharedCost = 5
+    Voip = 6
+    PersonalNumber = 7
+    Pager = 8
+    UniversalAccountNumber = 9
+    Voicemail = 10
+    Unknown = 11
+
+
 make_ready(__name__)

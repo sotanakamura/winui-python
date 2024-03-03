@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Data.Xml.MsXml
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.DirectComposition
@@ -79,7 +79,7 @@ if ARCH in 'X64,ARM64':
         uEdge: UInt32
         rc: win32more.Windows.Win32.Foundation.RECT
         lParam: win32more.Windows.Win32.Foundation.LPARAM
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class APPBARDATA(EasyCastStructure):
         cbSize: UInt32
         hWnd: win32more.Windows.Win32.Foundation.HWND
@@ -208,7 +208,7 @@ if ARCH in 'X64,ARM64':
         ac: win32more.Windows.Win32.UI.Shell.ASSOCCLASS
         hkClass: win32more.Windows.Win32.System.Registry.HKEY
         pszClass: win32more.Windows.Win32.Foundation.PWSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class ASSOCIATIONELEMENT(EasyCastStructure):
         ac: win32more.Windows.Win32.UI.Shell.ASSOCCLASS
         hkClass: win32more.Windows.Win32.System.Registry.HKEY
@@ -494,7 +494,6 @@ VID_ThumbStrip: Guid = Guid('{8eefa624-d1e9-445b-94b7-74fbce2ea11a}')
 SID_SInPlaceBrowser: Guid = Guid('{1d2ae02b-3655-46cc-b63a-285988153bca}')
 SID_SSearchBoxInfo: Guid = Guid('{142daa61-516b-4713-b49c-fb985ef82998}')
 SID_CommandsPropertyBag: Guid = Guid('{6e043250-4416-485c-b143-e62a760d9fe5}')
-CLSID_CUrlHistory: Guid = Guid('{3c374a40-bae4-11cf-bf7d-00aa006946ee}')
 CLSID_CURLSearchHook: Guid = Guid('{cfbfae00-17a6-11d0-99cb-00c04fd64497}')
 CLSID_AutoComplete: Guid = Guid('{00bb2763-6a77-11d0-a535-00c04fd7d062}')
 CLSID_ACLHistory: Guid = Guid('{00bb2764-6a77-11d0-a535-00c04fd7d062}')
@@ -1761,6 +1760,7 @@ COPYENGINE_S_KEEP_BOTH: win32more.Windows.Win32.Foundation.HRESULT = 2555916
 COPYENGINE_S_CLOSE_PROGRAM: win32more.Windows.Win32.Foundation.HRESULT = 2555917
 COPYENGINE_S_COLLISIONRESOLVED: win32more.Windows.Win32.Foundation.HRESULT = 2555918
 COPYENGINE_S_PROGRESS_PAUSE: win32more.Windows.Win32.Foundation.HRESULT = 2555919
+COPYENGINE_S_PENDING_DELETE: win32more.Windows.Win32.Foundation.HRESULT = 2555920
 COPYENGINE_E_USER_CANCELLED: win32more.Windows.Win32.Foundation.HRESULT = -2144927744
 COPYENGINE_E_CANCELLED: win32more.Windows.Win32.Foundation.HRESULT = -2144927743
 COPYENGINE_E_REQUIRES_ELEVATION: win32more.Windows.Win32.Foundation.HRESULT = -2144927742
@@ -1867,6 +1867,8 @@ SHC_E_SHELL_COMPONENT_STARTUP_FAILURE: win32more.Windows.Win32.Foundation.HRESUL
 E_TILE_NOTIFICATIONS_PLATFORM_FAILURE: win32more.Windows.Win32.Foundation.HRESULT = -2144927159
 E_SHELL_EXTENSION_BLOCKED: win32more.Windows.Win32.Foundation.HRESULT = -2144926975
 E_IMAGEFEED_CHANGEDISABLED: win32more.Windows.Win32.Foundation.HRESULT = -2144926960
+CLSID_CUrlHistory: Guid = Guid('{3c374a40-bae4-11cf-bf7d-00aa006946ee}')
+CLSID_CUrlHistoryBoth: Guid = Guid('{6659983c-8476-4eb4-b78c-e5968f326ba0}')
 ISHCUTCMDID_DOWNLOADICON: Int32 = 0
 ISHCUTCMDID_INTSHORTCUTCREATE: Int32 = 1
 ISHCUTCMDID_COMMITHISTORY: Int32 = 2
@@ -3400,38 +3402,38 @@ class BROWSEINFOW(EasyCastStructure):
     lParam: win32more.Windows.Win32.Foundation.LPARAM
     iImage: Int32
 BrowserNavConstants = Int32
-BrowserNavConstants_navOpenInNewWindow: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1
-BrowserNavConstants_navNoHistory: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2
-BrowserNavConstants_navNoReadFromCache: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4
-BrowserNavConstants_navNoWriteToCache: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8
-BrowserNavConstants_navAllowAutosearch: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16
-BrowserNavConstants_navBrowserBar: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 32
-BrowserNavConstants_navHyperlink: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 64
-BrowserNavConstants_navEnforceRestricted: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 128
-BrowserNavConstants_navNewWindowsManaged: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 256
-BrowserNavConstants_navUntrustedForDownload: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 512
-BrowserNavConstants_navTrustedForActiveX: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1024
-BrowserNavConstants_navOpenInNewTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2048
-BrowserNavConstants_navOpenInBackgroundTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4096
-BrowserNavConstants_navKeepWordWheelText: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8192
-BrowserNavConstants_navVirtualTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16384
-BrowserNavConstants_navBlockRedirectsXDomain: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 32768
-BrowserNavConstants_navOpenNewForegroundTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 65536
-BrowserNavConstants_navTravelLogScreenshot: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 131072
-BrowserNavConstants_navDeferUnload: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 262144
-BrowserNavConstants_navSpeculative: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 524288
-BrowserNavConstants_navSuggestNewWindow: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1048576
-BrowserNavConstants_navSuggestNewTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2097152
-BrowserNavConstants_navReserved1: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4194304
-BrowserNavConstants_navHomepageNavigate: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8388608
-BrowserNavConstants_navRefresh: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16777216
-BrowserNavConstants_navHostNavigation: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 33554432
-BrowserNavConstants_navReserved2: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 67108864
-BrowserNavConstants_navReserved3: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 134217728
-BrowserNavConstants_navReserved4: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 268435456
-BrowserNavConstants_navReserved5: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 536870912
-BrowserNavConstants_navReserved6: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1073741824
-BrowserNavConstants_navReserved7: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = -2147483648
+navOpenInNewWindow: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1
+navNoHistory: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2
+navNoReadFromCache: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4
+navNoWriteToCache: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8
+navAllowAutosearch: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16
+navBrowserBar: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 32
+navHyperlink: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 64
+navEnforceRestricted: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 128
+navNewWindowsManaged: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 256
+navUntrustedForDownload: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 512
+navTrustedForActiveX: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1024
+navOpenInNewTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2048
+navOpenInBackgroundTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4096
+navKeepWordWheelText: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8192
+navVirtualTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16384
+navBlockRedirectsXDomain: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 32768
+navOpenNewForegroundTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 65536
+navTravelLogScreenshot: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 131072
+navDeferUnload: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 262144
+navSpeculative: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 524288
+navSuggestNewWindow: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1048576
+navSuggestNewTab: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 2097152
+navReserved1: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 4194304
+navHomepageNavigate: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 8388608
+navRefresh: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 16777216
+navHostNavigation: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 33554432
+navReserved2: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 67108864
+navReserved3: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 134217728
+navReserved4: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 268435456
+navReserved5: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 536870912
+navReserved6: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = 1073741824
+navReserved7: win32more.Windows.Win32.UI.Shell.BrowserNavConstants = -2147483648
 class CABINETSTATE(EasyCastStructure):
     cLength: UInt16
     nVersion: UInt16
@@ -3791,7 +3793,7 @@ if ARCH in 'X64,ARM64':
         fNC: win32more.Windows.Win32.Foundation.BOOL
         lpFileList: win32more.Windows.Win32.Foundation.PSTR
         grfKeyState: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class DRAGINFOA(EasyCastStructure):
         uSize: UInt32
         pt: win32more.Windows.Win32.Foundation.POINT
@@ -3806,7 +3808,7 @@ if ARCH in 'X64,ARM64':
         fNC: win32more.Windows.Win32.Foundation.BOOL
         lpFileList: win32more.Windows.Win32.Foundation.PWSTR
         grfKeyState: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class DRAGINFOW(EasyCastStructure):
         uSize: UInt32
         pt: win32more.Windows.Win32.Foundation.POINT
@@ -7486,7 +7488,7 @@ class IShellFolder2(ComPtr):
     @commethod(15)
     def GetDefaultColumn(self, dwRes: UInt32, pSort: POINTER(UInt32), pDisplay: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(16)
-    def GetDefaultColumnState(self, iColumn: UInt32, pcsFlags: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def GetDefaultColumnState(self, iColumn: UInt32, pcsFlags: POINTER(win32more.Windows.Win32.UI.Shell.Common.SHCOLSTATE)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(17)
     def GetDetailsEx(self, pidl: POINTER(win32more.Windows.Win32.UI.Shell.Common.ITEMIDLIST), pscid: POINTER(win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY), pv: POINTER(win32more.Windows.Win32.System.Variant.VARIANT)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(18)
@@ -9519,7 +9521,7 @@ if ARCH in 'X64,ARM64':
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         szTip: win32more.Windows.Win32.Foundation.CHAR * 128
         dwState: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
-        dwStateMask: UInt32
+        dwStateMask: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
         szInfo: win32more.Windows.Win32.Foundation.CHAR * 256
         Anonymous: _Anonymous_e__Union
         szInfoTitle: win32more.Windows.Win32.Foundation.CHAR * 64
@@ -9529,7 +9531,7 @@ if ARCH in 'X64,ARM64':
         class _Anonymous_e__Union(EasyCastUnion):
             uTimeout: UInt32
             uVersion: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class NOTIFYICONDATAA(EasyCastStructure):
         cbSize: UInt32
         hWnd: win32more.Windows.Win32.Foundation.HWND
@@ -9539,7 +9541,7 @@ if ARCH in 'X86':
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         szTip: win32more.Windows.Win32.Foundation.CHAR * 128
         dwState: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
-        dwStateMask: UInt32
+        dwStateMask: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
         szInfo: win32more.Windows.Win32.Foundation.CHAR * 256
         Anonymous: _Anonymous_e__Union
         szInfoTitle: win32more.Windows.Win32.Foundation.CHAR * 64
@@ -9561,7 +9563,7 @@ if ARCH in 'X64,ARM64':
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         szTip: Char * 128
         dwState: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
-        dwStateMask: UInt32
+        dwStateMask: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
         szInfo: Char * 256
         Anonymous: _Anonymous_e__Union
         szInfoTitle: Char * 64
@@ -9571,7 +9573,7 @@ if ARCH in 'X64,ARM64':
         class _Anonymous_e__Union(EasyCastUnion):
             uTimeout: UInt32
             uVersion: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class NOTIFYICONDATAW(EasyCastStructure):
         cbSize: UInt32
         hWnd: win32more.Windows.Win32.Foundation.HWND
@@ -9581,7 +9583,7 @@ if ARCH in 'X86':
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         szTip: Char * 128
         dwState: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
-        dwStateMask: UInt32
+        dwStateMask: win32more.Windows.Win32.UI.Shell.NOTIFY_ICON_STATE
         szInfo: Char * 256
         Anonymous: _Anonymous_e__Union
         szInfoTitle: Char * 64
@@ -9599,7 +9601,7 @@ if ARCH in 'X64,ARM64':
         hWnd: win32more.Windows.Win32.Foundation.HWND
         uID: UInt32
         guidItem: Guid
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class NOTIFYICONIDENTIFIER(EasyCastStructure):
         cbSize: UInt32
         hWnd: win32more.Windows.Win32.Foundation.HWND
@@ -9716,7 +9718,7 @@ NetworkConnections = Guid('{7007acc7-3202-11d1-aad2-00805fc1270e}')
 NetworkExplorerFolder = Guid('{f02c1a0d-be21-4350-88b0-7367fc96ef3c}')
 NetworkPlaces = Guid('{208d2c60-3aea-1069-a2d7-08002b30309d}')
 NewProcessCauseConstants = Int32
-NewProcessCauseConstants_ProtectedModeRedirect: win32more.Windows.Win32.UI.Shell.NewProcessCauseConstants = 1
+ProtectedModeRedirect: win32more.Windows.Win32.UI.Shell.NewProcessCauseConstants = 1
 class OPENASINFO(EasyCastStructure):
     pcszFile: win32more.Windows.Win32.Foundation.PWSTR
     pcszClass: win32more.Windows.Win32.Foundation.PWSTR
@@ -9736,7 +9738,7 @@ if ARCH in 'X64,ARM64':
         uSheetIndex: UInt32
         dwFlags: UInt32
         bModal: win32more.Windows.Win32.Foundation.BOOL
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class OPEN_PRINTER_PROPS_INFOA(EasyCastStructure):
         dwSize: UInt32
         pszSheetName: win32more.Windows.Win32.Foundation.PSTR
@@ -9751,7 +9753,7 @@ if ARCH in 'X64,ARM64':
         uSheetIndex: UInt32
         dwFlags: UInt32
         bModal: win32more.Windows.Win32.Foundation.BOOL
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class OPEN_PRINTER_PROPS_INFOW(EasyCastStructure):
         dwSize: UInt32
         pszSheetName: win32more.Windows.Win32.Foundation.PWSTR
@@ -10338,7 +10340,7 @@ if ARCH in 'X64,ARM64':
         dwCreationFlags: UInt32
         lpStartupInfo: POINTER(win32more.Windows.Win32.System.Threading.STARTUPINFOW)
         lpProcessInformation: POINTER(win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION)
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHCREATEPROCESSINFOW(EasyCastStructure):
         cbSize: UInt32
         fMask: UInt32
@@ -10434,7 +10436,7 @@ if ARCH in 'X64,ARM64':
         class _Anonymous_e__Union(EasyCastUnion):
             hIcon: win32more.Windows.Win32.Foundation.HANDLE
             hMonitor: win32more.Windows.Win32.Foundation.HANDLE
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHELLEXECUTEINFOA(EasyCastStructure):
         cbSize: UInt32
         fMask: UInt32
@@ -10476,7 +10478,7 @@ if ARCH in 'X64,ARM64':
         class _Anonymous_e__Union(EasyCastUnion):
             hIcon: win32more.Windows.Win32.Foundation.HANDLE
             hMonitor: win32more.Windows.Win32.Foundation.HANDLE
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHELLEXECUTEINFOW(EasyCastStructure):
         cbSize: UInt32
         fMask: UInt32
@@ -10580,7 +10582,7 @@ if ARCH in 'X64,ARM64':
         dwAttributes: UInt32
         szDisplayName: win32more.Windows.Win32.Foundation.CHAR * 260
         szTypeName: win32more.Windows.Win32.Foundation.CHAR * 80
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHFILEINFOA(EasyCastStructure):
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         iIcon: Int32
@@ -10595,7 +10597,7 @@ if ARCH in 'X64,ARM64':
         dwAttributes: UInt32
         szDisplayName: Char * 260
         szTypeName: Char * 80
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHFILEINFOW(EasyCastStructure):
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
         iIcon: Int32
@@ -10613,7 +10615,7 @@ if ARCH in 'X64,ARM64':
         fAnyOperationsAborted: win32more.Windows.Win32.Foundation.BOOL
         hNameMappings: VoidPtr
         lpszProgressTitle: win32more.Windows.Win32.Foundation.PSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHFILEOPSTRUCTA(EasyCastStructure):
         hwnd: win32more.Windows.Win32.Foundation.HWND
         wFunc: UInt32
@@ -10634,7 +10636,7 @@ if ARCH in 'X64,ARM64':
         fAnyOperationsAborted: win32more.Windows.Win32.Foundation.BOOL
         hNameMappings: VoidPtr
         lpszProgressTitle: win32more.Windows.Win32.Foundation.PWSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHFILEOPSTRUCTW(EasyCastStructure):
         hwnd: win32more.Windows.Win32.Foundation.HWND
         wFunc: UInt32
@@ -10779,7 +10781,7 @@ if ARCH in 'X64,ARM64':
         pszNewPath: win32more.Windows.Win32.Foundation.PSTR
         cchOldPath: Int32
         cchNewPath: Int32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHNAMEMAPPINGA(EasyCastStructure):
         pszOldPath: win32more.Windows.Win32.Foundation.PSTR
         pszNewPath: win32more.Windows.Win32.Foundation.PSTR
@@ -10792,7 +10794,7 @@ if ARCH in 'X64,ARM64':
         pszNewPath: win32more.Windows.Win32.Foundation.PWSTR
         cchOldPath: Int32
         cchNewPath: Int32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHNAMEMAPPINGW(EasyCastStructure):
         pszOldPath: win32more.Windows.Win32.Foundation.PWSTR
         pszNewPath: win32more.Windows.Win32.Foundation.PWSTR
@@ -10808,7 +10810,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         i64Size: Int64
         i64NumItems: Int64
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHQUERYRBINFO(EasyCastStructure):
         cbSize: UInt32
         i64Size: Int64
@@ -10926,7 +10928,7 @@ if ARCH in 'X64,ARM64':
         iSysImageIndex: Int32
         iIcon: Int32
         szPath: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SHSTOCKICONINFO(EasyCastStructure):
         cbSize: UInt32
         hIcon: win32more.Windows.Win32.UI.WindowsAndMessaging.HICON
@@ -11326,13 +11328,13 @@ SYNCMGR_UR_MAX: win32more.Windows.Win32.UI.Shell.SYNCMGR_UPDATE_REASON = 2
 ScheduledTasks = Guid('{d6277990-4c6a-11cf-8d87-00aa0060f5bf}')
 SearchFolderItemFactory = Guid('{14010e02-bbbd-41f0-88e3-eda371216584}')
 SecureLockIconConstants = Int32
-SecureLockIconConstants_secureLockIconUnsecure: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 0
-SecureLockIconConstants_secureLockIconMixed: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 1
-SecureLockIconConstants_secureLockIconSecureUnknownBits: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 2
-SecureLockIconConstants_secureLockIconSecure40Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 3
-SecureLockIconConstants_secureLockIconSecure56Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 4
-SecureLockIconConstants_secureLockIconSecureFortezza: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 5
-SecureLockIconConstants_secureLockIconSecure128Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 6
+secureLockIconUnsecure: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 0
+secureLockIconMixed: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 1
+secureLockIconSecureUnknownBits: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 2
+secureLockIconSecure40Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 3
+secureLockIconSecure56Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 4
+secureLockIconSecureFortezza: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 5
+secureLockIconSecure128Bit: win32more.Windows.Win32.UI.Shell.SecureLockIconConstants = 6
 SharedBitmap = Guid('{4db26476-6787-4046-b836-e8412a9e8a27}')
 SharingConfigurationManager = Guid('{49f371e1-8c5c-4d9c-9a3b-54a6827f513c}')
 Shell = Guid('{13709620-c279-11ce-a49e-444553540000}')
@@ -11358,44 +11360,44 @@ ShellLink = Guid('{00021401-0000-0000-c000-000000000046}')
 ShellLinkObject = Guid('{11219420-1768-11d1-95be-00609797ea4f}')
 ShellNameSpace = Guid('{55136805-b2de-11d1-b9f2-00a0c98bc547}')
 ShellSpecialFolderConstants = Int32
-ShellSpecialFolderConstants_ssfDESKTOP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 0
-ShellSpecialFolderConstants_ssfPROGRAMS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 2
-ShellSpecialFolderConstants_ssfCONTROLS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 3
-ShellSpecialFolderConstants_ssfPRINTERS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 4
-ShellSpecialFolderConstants_ssfPERSONAL: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 5
-ShellSpecialFolderConstants_ssfFAVORITES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 6
-ShellSpecialFolderConstants_ssfSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 7
-ShellSpecialFolderConstants_ssfRECENT: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 8
-ShellSpecialFolderConstants_ssfSENDTO: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 9
-ShellSpecialFolderConstants_ssfBITBUCKET: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 10
-ShellSpecialFolderConstants_ssfSTARTMENU: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 11
-ShellSpecialFolderConstants_ssfDESKTOPDIRECTORY: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 16
-ShellSpecialFolderConstants_ssfDRIVES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 17
-ShellSpecialFolderConstants_ssfNETWORK: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 18
-ShellSpecialFolderConstants_ssfNETHOOD: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 19
-ShellSpecialFolderConstants_ssfFONTS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 20
-ShellSpecialFolderConstants_ssfTEMPLATES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 21
-ShellSpecialFolderConstants_ssfCOMMONSTARTMENU: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 22
-ShellSpecialFolderConstants_ssfCOMMONPROGRAMS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 23
-ShellSpecialFolderConstants_ssfCOMMONSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 24
-ShellSpecialFolderConstants_ssfCOMMONDESKTOPDIR: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 25
-ShellSpecialFolderConstants_ssfAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 26
-ShellSpecialFolderConstants_ssfPRINTHOOD: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 27
-ShellSpecialFolderConstants_ssfLOCALAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 28
-ShellSpecialFolderConstants_ssfALTSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 29
-ShellSpecialFolderConstants_ssfCOMMONALTSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 30
-ShellSpecialFolderConstants_ssfCOMMONFAVORITES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 31
-ShellSpecialFolderConstants_ssfINTERNETCACHE: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 32
-ShellSpecialFolderConstants_ssfCOOKIES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 33
-ShellSpecialFolderConstants_ssfHISTORY: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 34
-ShellSpecialFolderConstants_ssfCOMMONAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 35
-ShellSpecialFolderConstants_ssfWINDOWS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 36
-ShellSpecialFolderConstants_ssfSYSTEM: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 37
-ShellSpecialFolderConstants_ssfPROGRAMFILES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 38
-ShellSpecialFolderConstants_ssfMYPICTURES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 39
-ShellSpecialFolderConstants_ssfPROFILE: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 40
-ShellSpecialFolderConstants_ssfSYSTEMx86: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 41
-ShellSpecialFolderConstants_ssfPROGRAMFILESx86: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 48
+ssfDESKTOP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 0
+ssfPROGRAMS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 2
+ssfCONTROLS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 3
+ssfPRINTERS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 4
+ssfPERSONAL: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 5
+ssfFAVORITES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 6
+ssfSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 7
+ssfRECENT: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 8
+ssfSENDTO: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 9
+ssfBITBUCKET: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 10
+ssfSTARTMENU: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 11
+ssfDESKTOPDIRECTORY: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 16
+ssfDRIVES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 17
+ssfNETWORK: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 18
+ssfNETHOOD: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 19
+ssfFONTS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 20
+ssfTEMPLATES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 21
+ssfCOMMONSTARTMENU: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 22
+ssfCOMMONPROGRAMS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 23
+ssfCOMMONSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 24
+ssfCOMMONDESKTOPDIR: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 25
+ssfAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 26
+ssfPRINTHOOD: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 27
+ssfLOCALAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 28
+ssfALTSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 29
+ssfCOMMONALTSTARTUP: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 30
+ssfCOMMONFAVORITES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 31
+ssfINTERNETCACHE: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 32
+ssfCOOKIES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 33
+ssfHISTORY: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 34
+ssfCOMMONAPPDATA: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 35
+ssfWINDOWS: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 36
+ssfSYSTEM: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 37
+ssfPROGRAMFILES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 38
+ssfMYPICTURES: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 39
+ssfPROFILE: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 40
+ssfSYSTEMx86: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 41
+ssfPROGRAMFILESx86: win32more.Windows.Win32.UI.Shell.ShellSpecialFolderConstants = 48
 ShellUIHelper = Guid('{64ab4bb7-111e-11d1-8f79-00c04fc2fbe1}')
 ShellWindowFindWindowOptions = Int32
 SWFO_NEEDDISPATCH: win32more.Windows.Win32.UI.Shell.ShellWindowFindWindowOptions = 1
@@ -11476,10 +11478,10 @@ TRANSLATEURL_FL_USE_DEFAULT_PROTOCOL: win32more.Windows.Win32.UI.Shell.TRANSLATE
 TaskbarList = Guid('{56fdf344-fd6d-11d0-958a-006097c9a090}')
 ThumbnailStreamCache = Guid('{cbe0fed3-4b91-4e90-8354-8a8c84ec6872}')
 ThumbnailStreamCacheOptions = Int32
-ThumbnailStreamCacheOptions_ExtractIfNotCached: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 0
-ThumbnailStreamCacheOptions_ReturnOnlyIfCached: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 1
-ThumbnailStreamCacheOptions_ResizeThumbnail: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 2
-ThumbnailStreamCacheOptions_AllowSmallerSize: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 4
+ExtractIfNotCached: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 0
+ReturnOnlyIfCached: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 1
+ResizeThumbnail: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 2
+AllowSmallerSize: win32more.Windows.Win32.UI.Shell.ThumbnailStreamCacheOptions = 4
 TimeCategorizer = Guid('{3bb4118f-ddfd-4d30-a348-9fb5d6bf1afe}')
 TrackShellMenu = Guid('{8278f931-2a3e-11d2-838f-00c04fd918d0}')
 TrayBandSiteService = Guid('{f60ad0a0-e5e1-45cb-b51a-e15b9f8b2934}')

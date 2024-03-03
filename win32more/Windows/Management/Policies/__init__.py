@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Management.Policies
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class INamedPolicyData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Policies.INamedPolicyData'
@@ -50,10 +37,10 @@ class INamedPolicyData(ComPtr):
     @winrt_commethod(18)
     def remove_Changed(self, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Area = property(get_Area, None)
-    Name = property(get_Name, None)
-    Kind = property(get_Kind, None)
     IsManaged = property(get_IsManaged, None)
     IsUserPolicy = property(get_IsUserPolicy, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
     User = property(get_User, None)
 class INamedPolicyStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -101,16 +88,18 @@ class NamedPolicyData(ComPtr):
     @winrt_mixinmethod
     def remove_Changed(self: win32more.Windows.Management.Policies.INamedPolicyData, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Area = property(get_Area, None)
-    Name = property(get_Name, None)
-    Kind = property(get_Kind, None)
     IsManaged = property(get_IsManaged, None)
     IsUserPolicy = property(get_IsUserPolicy, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
     User = property(get_User, None)
-NamedPolicyKind = Int32
-NamedPolicyKind_Invalid: NamedPolicyKind = 0
-NamedPolicyKind_Binary: NamedPolicyKind = 1
-NamedPolicyKind_Boolean: NamedPolicyKind = 2
-NamedPolicyKind_Int32: NamedPolicyKind = 3
-NamedPolicyKind_Int64: NamedPolicyKind = 4
-NamedPolicyKind_String: NamedPolicyKind = 5
+class NamedPolicyKind(Int32):  # enum
+    Invalid = 0
+    Binary = 1
+    Boolean = 2
+    Int32 = 3
+    Int64 = 4
+    String = 5
+
+
 make_ready(__name__)

@@ -1,27 +1,23 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Globalization.NumberFormatting
+import win32more.Windows.Win32.System.WinRT
 class CurrencyFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.ICurrencyFormatter
     _classid_ = 'Windows.Globalization.NumberFormatting.CurrencyFormatter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Globalization.NumberFormatting.CurrencyFormatter.CreateCurrencyFormatterCode(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Globalization.NumberFormatting.CurrencyFormatter.CreateCurrencyFormatterCodeContext(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateCurrencyFormatterCode(cls: win32more.Windows.Globalization.NumberFormatting.ICurrencyFormatterFactory, currencyCode: WinRT_String) -> win32more.Windows.Globalization.NumberFormatting.CurrencyFormatter: ...
     @winrt_factorymethod
@@ -65,12 +61,6 @@ class CurrencyFormatter(ComPtr):
     @winrt_mixinmethod
     def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter2, value: Double) -> WinRT_String: ...
     @winrt_mixinmethod
-    def FormatInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter2, value: Int64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter2, value: UInt64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter2, value: Double) -> WinRT_String: ...
-    @winrt_mixinmethod
     def ParseInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[Int64]: ...
     @winrt_mixinmethod
     def ParseUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[UInt64]: ...
@@ -95,26 +85,35 @@ class CurrencyFormatter(ComPtr):
     @winrt_mixinmethod
     def put_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption, value: Boolean) -> Void: ...
     Currency = property(get_Currency, put_Currency)
-    Languages = property(get_Languages, None)
+    FractionDigits = property(get_FractionDigits, put_FractionDigits)
     GeographicRegion = property(get_GeographicRegion, None)
     IntegerDigits = property(get_IntegerDigits, put_IntegerDigits)
-    FractionDigits = property(get_FractionDigits, put_FractionDigits)
-    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsDecimalPointAlwaysDisplayed = property(get_IsDecimalPointAlwaysDisplayed, put_IsDecimalPointAlwaysDisplayed)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
-    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
-    Mode = property(get_Mode, put_Mode)
-    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
-    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsZeroSigned = property(get_IsZeroSigned, put_IsZeroSigned)
-CurrencyFormatterMode = Int32
-CurrencyFormatterMode_UseSymbol: CurrencyFormatterMode = 0
-CurrencyFormatterMode_UseCurrencyCode: CurrencyFormatterMode = 1
+    Languages = property(get_Languages, None)
+    Mode = property(get_Mode, put_Mode)
+    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
+class CurrencyFormatterMode(Int32):  # enum
+    UseSymbol = 0
+    UseCurrencyCode = 1
 class DecimalFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumberFormatter
     _classid_ = 'Windows.Globalization.NumberFormatting.DecimalFormatter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.DecimalFormatter.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Globalization.NumberFormatting.DecimalFormatter.CreateDecimalFormatter(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.DecimalFormatter: ...
     @winrt_factorymethod
@@ -154,12 +153,6 @@ class DecimalFormatter(ComPtr):
     @winrt_mixinmethod
     def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
     @winrt_mixinmethod
-    def FormatInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Int64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: UInt64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
-    @winrt_mixinmethod
     def ParseInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[Int64]: ...
     @winrt_mixinmethod
     def ParseUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[UInt64]: ...
@@ -177,18 +170,18 @@ class DecimalFormatter(ComPtr):
     def get_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption, value: Boolean) -> Void: ...
-    Languages = property(get_Languages, None)
+    FractionDigits = property(get_FractionDigits, put_FractionDigits)
     GeographicRegion = property(get_GeographicRegion, None)
     IntegerDigits = property(get_IntegerDigits, put_IntegerDigits)
-    FractionDigits = property(get_FractionDigits, put_FractionDigits)
-    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsDecimalPointAlwaysDisplayed = property(get_IsDecimalPointAlwaysDisplayed, put_IsDecimalPointAlwaysDisplayed)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
-    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
-    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
-    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsZeroSigned = property(get_IsZeroSigned, put_IsZeroSigned)
+    Languages = property(get_Languages, None)
+    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
 class ICurrencyFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.NumberFormatting.ICurrencyFormatter'
@@ -235,8 +228,8 @@ class IIncrementNumberRounder(ComPtr):
     def get_Increment(self) -> Double: ...
     @winrt_commethod(9)
     def put_Increment(self, value: Double) -> Void: ...
-    RoundingAlgorithm = property(get_RoundingAlgorithm, put_RoundingAlgorithm)
     Increment = property(get_Increment, put_Increment)
+    RoundingAlgorithm = property(get_RoundingAlgorithm, put_RoundingAlgorithm)
 class INumberFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.NumberFormatting.INumberFormatter'
@@ -289,15 +282,15 @@ class INumberFormatterOptions(ComPtr):
     def get_ResolvedLanguage(self) -> WinRT_String: ...
     @winrt_commethod(19)
     def get_ResolvedGeographicRegion(self) -> WinRT_String: ...
-    Languages = property(get_Languages, None)
+    FractionDigits = property(get_FractionDigits, put_FractionDigits)
     GeographicRegion = property(get_GeographicRegion, None)
     IntegerDigits = property(get_IntegerDigits, put_IntegerDigits)
-    FractionDigits = property(get_FractionDigits, put_FractionDigits)
-    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsDecimalPointAlwaysDisplayed = property(get_IsDecimalPointAlwaysDisplayed, put_IsDecimalPointAlwaysDisplayed)
+    IsGrouped = property(get_IsGrouped, put_IsGrouped)
+    Languages = property(get_Languages, None)
     NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
     ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
 class INumberParser(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.NumberFormatting.INumberParser'
@@ -348,8 +341,8 @@ class INumeralSystemTranslator(ComPtr):
     @winrt_commethod(10)
     def TranslateNumerals(self, value: WinRT_String) -> WinRT_String: ...
     Languages = property(get_Languages, None)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
     NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
 class INumeralSystemTranslatorFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.NumberFormatting.INumeralSystemTranslatorFactory'
@@ -404,6 +397,13 @@ class IncrementNumberRounder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumberRounder
     _classid_ = 'Windows.Globalization.NumberFormatting.IncrementNumberRounder'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.IncrementNumberRounder.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.IncrementNumberRounder: ...
     @winrt_mixinmethod
@@ -426,16 +426,25 @@ class IncrementNumberRounder(ComPtr):
     def get_Increment(self: win32more.Windows.Globalization.NumberFormatting.IIncrementNumberRounder) -> Double: ...
     @winrt_mixinmethod
     def put_Increment(self: win32more.Windows.Globalization.NumberFormatting.IIncrementNumberRounder, value: Double) -> Void: ...
-    RoundingAlgorithm = property(get_RoundingAlgorithm, put_RoundingAlgorithm)
     Increment = property(get_Increment, put_Increment)
+    RoundingAlgorithm = property(get_RoundingAlgorithm, put_RoundingAlgorithm)
 class NumeralSystemTranslator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumeralSystemTranslator
     _classid_ = 'Windows.Globalization.NumberFormatting.NumeralSystemTranslator'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.Globalization.NumberFormatting.INumeralSystemTranslatorFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Globalization.NumberFormatting.NumeralSystemTranslator: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.NumeralSystemTranslator.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Globalization.NumberFormatting.NumeralSystemTranslator.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.NumeralSystemTranslator: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.Globalization.NumberFormatting.INumeralSystemTranslatorFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Globalization.NumberFormatting.NumeralSystemTranslator: ...
     @winrt_mixinmethod
     def get_Languages(self: win32more.Windows.Globalization.NumberFormatting.INumeralSystemTranslator) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
@@ -447,16 +456,25 @@ class NumeralSystemTranslator(ComPtr):
     @winrt_mixinmethod
     def TranslateNumerals(self: win32more.Windows.Globalization.NumberFormatting.INumeralSystemTranslator, value: WinRT_String) -> WinRT_String: ...
     Languages = property(get_Languages, None)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
     NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
 class PercentFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumberFormatter
     _classid_ = 'Windows.Globalization.NumberFormatting.PercentFormatter'
-    @winrt_factorymethod
-    def CreatePercentFormatter(cls: win32more.Windows.Globalization.NumberFormatting.IPercentFormatterFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String) -> win32more.Windows.Globalization.NumberFormatting.PercentFormatter: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.PercentFormatter.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Globalization.NumberFormatting.PercentFormatter.CreatePercentFormatter(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.PercentFormatter: ...
+    @winrt_factorymethod
+    def CreatePercentFormatter(cls: win32more.Windows.Globalization.NumberFormatting.IPercentFormatterFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String) -> win32more.Windows.Globalization.NumberFormatting.PercentFormatter: ...
     @winrt_mixinmethod
     def get_Languages(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatterOptions) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
@@ -492,12 +510,6 @@ class PercentFormatter(ComPtr):
     @winrt_mixinmethod
     def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
     @winrt_mixinmethod
-    def FormatInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Int64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: UInt64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
-    @winrt_mixinmethod
     def ParseInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[Int64]: ...
     @winrt_mixinmethod
     def ParseUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[UInt64]: ...
@@ -515,26 +527,35 @@ class PercentFormatter(ComPtr):
     def get_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption, value: Boolean) -> Void: ...
-    Languages = property(get_Languages, None)
+    FractionDigits = property(get_FractionDigits, put_FractionDigits)
     GeographicRegion = property(get_GeographicRegion, None)
     IntegerDigits = property(get_IntegerDigits, put_IntegerDigits)
-    FractionDigits = property(get_FractionDigits, put_FractionDigits)
-    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsDecimalPointAlwaysDisplayed = property(get_IsDecimalPointAlwaysDisplayed, put_IsDecimalPointAlwaysDisplayed)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
-    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
-    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
-    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsZeroSigned = property(get_IsZeroSigned, put_IsZeroSigned)
+    Languages = property(get_Languages, None)
+    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
 class PermilleFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumberFormatter
     _classid_ = 'Windows.Globalization.NumberFormatting.PermilleFormatter'
-    @winrt_factorymethod
-    def CreatePermilleFormatter(cls: win32more.Windows.Globalization.NumberFormatting.IPermilleFormatterFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String) -> win32more.Windows.Globalization.NumberFormatting.PermilleFormatter: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.PermilleFormatter.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Globalization.NumberFormatting.PermilleFormatter.CreatePermilleFormatter(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.PermilleFormatter: ...
+    @winrt_factorymethod
+    def CreatePermilleFormatter(cls: win32more.Windows.Globalization.NumberFormatting.IPermilleFormatterFactory, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String) -> win32more.Windows.Globalization.NumberFormatting.PermilleFormatter: ...
     @winrt_mixinmethod
     def get_Languages(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatterOptions) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
@@ -570,12 +591,6 @@ class PermilleFormatter(ComPtr):
     @winrt_mixinmethod
     def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
     @winrt_mixinmethod
-    def FormatInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Int64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: UInt64) -> WinRT_String: ...
-    @winrt_mixinmethod
-    def FormatDouble(self: win32more.Windows.Globalization.NumberFormatting.INumberFormatter, value: Double) -> WinRT_String: ...
-    @winrt_mixinmethod
     def ParseInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[Int64]: ...
     @winrt_mixinmethod
     def ParseUInt(self: win32more.Windows.Globalization.NumberFormatting.INumberParser, text: WinRT_String) -> win32more.Windows.Foundation.IReference[UInt64]: ...
@@ -593,34 +608,41 @@ class PermilleFormatter(ComPtr):
     def get_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsZeroSigned(self: win32more.Windows.Globalization.NumberFormatting.ISignedZeroOption, value: Boolean) -> Void: ...
-    Languages = property(get_Languages, None)
+    FractionDigits = property(get_FractionDigits, put_FractionDigits)
     GeographicRegion = property(get_GeographicRegion, None)
     IntegerDigits = property(get_IntegerDigits, put_IntegerDigits)
-    FractionDigits = property(get_FractionDigits, put_FractionDigits)
-    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsDecimalPointAlwaysDisplayed = property(get_IsDecimalPointAlwaysDisplayed, put_IsDecimalPointAlwaysDisplayed)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
-    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
-    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
-    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    IsGrouped = property(get_IsGrouped, put_IsGrouped)
     IsZeroSigned = property(get_IsZeroSigned, put_IsZeroSigned)
-RoundingAlgorithm = Int32
-RoundingAlgorithm_None: RoundingAlgorithm = 0
-RoundingAlgorithm_RoundDown: RoundingAlgorithm = 1
-RoundingAlgorithm_RoundUp: RoundingAlgorithm = 2
-RoundingAlgorithm_RoundTowardsZero: RoundingAlgorithm = 3
-RoundingAlgorithm_RoundAwayFromZero: RoundingAlgorithm = 4
-RoundingAlgorithm_RoundHalfDown: RoundingAlgorithm = 5
-RoundingAlgorithm_RoundHalfUp: RoundingAlgorithm = 6
-RoundingAlgorithm_RoundHalfTowardsZero: RoundingAlgorithm = 7
-RoundingAlgorithm_RoundHalfAwayFromZero: RoundingAlgorithm = 8
-RoundingAlgorithm_RoundHalfToEven: RoundingAlgorithm = 9
-RoundingAlgorithm_RoundHalfToOdd: RoundingAlgorithm = 10
+    Languages = property(get_Languages, None)
+    NumberRounder = property(get_NumberRounder, put_NumberRounder)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
+class RoundingAlgorithm(Int32):  # enum
+    None_ = 0
+    RoundDown = 1
+    RoundUp = 2
+    RoundTowardsZero = 3
+    RoundAwayFromZero = 4
+    RoundHalfDown = 5
+    RoundHalfUp = 6
+    RoundHalfTowardsZero = 7
+    RoundHalfAwayFromZero = 8
+    RoundHalfToEven = 9
+    RoundHalfToOdd = 10
 class SignificantDigitsNumberRounder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.NumberFormatting.INumberRounder
     _classid_ = 'Windows.Globalization.NumberFormatting.SignificantDigitsNumberRounder'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Globalization.NumberFormatting.SignificantDigitsNumberRounder.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Globalization.NumberFormatting.SignificantDigitsNumberRounder: ...
     @winrt_mixinmethod
@@ -645,4 +667,6 @@ class SignificantDigitsNumberRounder(ComPtr):
     def put_SignificantDigits(self: win32more.Windows.Globalization.NumberFormatting.ISignificantDigitsNumberRounder, value: UInt32) -> Void: ...
     RoundingAlgorithm = property(get_RoundingAlgorithm, put_RoundingAlgorithm)
     SignificantDigits = property(get_SignificantDigits, put_SignificantDigits)
+
+
 make_ready(__name__)

@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Store.LicenseManagement
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class ILicenseManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.LicenseManagement.ILicenseManagerStatics'
@@ -51,13 +38,13 @@ class ILicenseSatisfactionInfo(ComPtr):
     def get_SatisfiedBySignedInUser(self) -> Boolean: ...
     @winrt_commethod(12)
     def get_IsSatisfied(self) -> Boolean: ...
-    SatisfiedByDevice = property(get_SatisfiedByDevice, None)
-    SatisfiedByOpenLicense = property(get_SatisfiedByOpenLicense, None)
-    SatisfiedByTrial = property(get_SatisfiedByTrial, None)
-    SatisfiedByPass = property(get_SatisfiedByPass, None)
-    SatisfiedByInstallMedia = property(get_SatisfiedByInstallMedia, None)
-    SatisfiedBySignedInUser = property(get_SatisfiedBySignedInUser, None)
     IsSatisfied = property(get_IsSatisfied, None)
+    SatisfiedByDevice = property(get_SatisfiedByDevice, None)
+    SatisfiedByInstallMedia = property(get_SatisfiedByInstallMedia, None)
+    SatisfiedByOpenLicense = property(get_SatisfiedByOpenLicense, None)
+    SatisfiedByPass = property(get_SatisfiedByPass, None)
+    SatisfiedBySignedInUser = property(get_SatisfiedBySignedInUser, None)
+    SatisfiedByTrial = property(get_SatisfiedByTrial, None)
 class ILicenseSatisfactionResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionResult'
@@ -66,8 +53,8 @@ class ILicenseSatisfactionResult(ComPtr):
     def get_LicenseSatisfactionInfos(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.ApplicationModel.Store.LicenseManagement.LicenseSatisfactionInfo]: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    LicenseSatisfactionInfos = property(get_LicenseSatisfactionInfos, None)
     ExtendedError = property(get_ExtendedError, None)
+    LicenseSatisfactionInfos = property(get_LicenseSatisfactionInfos, None)
 class LicenseManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.LicenseManagement.LicenseManager'
@@ -77,9 +64,9 @@ class LicenseManager(ComPtr):
     def AddLicenseAsync(cls: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseManagerStatics, license: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_classmethod
     def GetSatisfactionInfosAsync(cls: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseManagerStatics, contentIds: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], keyIds: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Store.LicenseManagement.LicenseSatisfactionResult]: ...
-LicenseRefreshOption = Int32
-LicenseRefreshOption_RunningLicenses: LicenseRefreshOption = 0
-LicenseRefreshOption_AllLicenses: LicenseRefreshOption = 1
+class LicenseRefreshOption(Int32):  # enum
+    RunningLicenses = 0
+    AllLicenses = 1
 class LicenseSatisfactionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionInfo
@@ -98,13 +85,13 @@ class LicenseSatisfactionInfo(ComPtr):
     def get_SatisfiedBySignedInUser(self: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionInfo) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsSatisfied(self: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionInfo) -> Boolean: ...
-    SatisfiedByDevice = property(get_SatisfiedByDevice, None)
-    SatisfiedByOpenLicense = property(get_SatisfiedByOpenLicense, None)
-    SatisfiedByTrial = property(get_SatisfiedByTrial, None)
-    SatisfiedByPass = property(get_SatisfiedByPass, None)
-    SatisfiedByInstallMedia = property(get_SatisfiedByInstallMedia, None)
-    SatisfiedBySignedInUser = property(get_SatisfiedBySignedInUser, None)
     IsSatisfied = property(get_IsSatisfied, None)
+    SatisfiedByDevice = property(get_SatisfiedByDevice, None)
+    SatisfiedByInstallMedia = property(get_SatisfiedByInstallMedia, None)
+    SatisfiedByOpenLicense = property(get_SatisfiedByOpenLicense, None)
+    SatisfiedByPass = property(get_SatisfiedByPass, None)
+    SatisfiedBySignedInUser = property(get_SatisfiedBySignedInUser, None)
+    SatisfiedByTrial = property(get_SatisfiedByTrial, None)
 class LicenseSatisfactionResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionResult
@@ -113,6 +100,8 @@ class LicenseSatisfactionResult(ComPtr):
     def get_LicenseSatisfactionInfos(self: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionResult) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.ApplicationModel.Store.LicenseManagement.LicenseSatisfactionInfo]: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.ApplicationModel.Store.LicenseManagement.ILicenseSatisfactionResult) -> win32more.Windows.Foundation.HResult: ...
-    LicenseSatisfactionInfos = property(get_LicenseSatisfactionInfos, None)
     ExtendedError = property(get_ExtendedError, None)
+    LicenseSatisfactionInfos = property(get_LicenseSatisfactionInfos, None)
+
+
 make_ready(__name__)

@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.ApplicationModel.DataTransfer
 import win32more.Windows.ApplicationModel.Search
@@ -36,6 +22,7 @@ import win32more.Windows.UI.Input.Inking
 import win32more.Windows.UI.Text
 import win32more.Windows.UI.Xaml
 import win32more.Windows.UI.Xaml.Automation
+import win32more.Windows.UI.Xaml.Automation.Peers
 import win32more.Windows.UI.Xaml.Automation.Provider
 import win32more.Windows.UI.Xaml.Controls
 import win32more.Windows.UI.Xaml.Controls.Primitives
@@ -48,6 +35,8 @@ import win32more.Windows.UI.Xaml.Media.Animation
 import win32more.Windows.UI.Xaml.Navigation
 import win32more.Windows.Web
 import win32more.Windows.Web.Http
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class AnchorRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IAnchorRequestedEventArgs
@@ -66,6 +55,13 @@ class AppBar(ComPtr, metaclass=_AppBar_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IAppBar
     _classid_ = 'Windows.UI.Xaml.Controls.AppBar'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AppBar.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IAppBarFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.AppBar: ...
     @winrt_mixinmethod
@@ -118,21 +114,28 @@ class AppBar(ComPtr, metaclass=_AppBar_Meta_):
     def get_IsOpenProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsStickyProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ClosedDisplayMode = property(get_ClosedDisplayMode, put_ClosedDisplayMode)
     IsOpen = property(get_IsOpen, put_IsOpen)
     IsSticky = property(get_IsSticky, put_IsSticky)
-    ClosedDisplayMode = property(get_ClosedDisplayMode, put_ClosedDisplayMode)
-    TemplateSettings = property(get_TemplateSettings, None)
     LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
-    _AppBar_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
+    TemplateSettings = property(get_TemplateSettings, None)
     _AppBar_Meta_.ClosedDisplayModeProperty = property(get_ClosedDisplayModeProperty.__wrapped__, None)
     _AppBar_Meta_.IsOpenProperty = property(get_IsOpenProperty.__wrapped__, None)
     _AppBar_Meta_.IsStickyProperty = property(get_IsStickyProperty.__wrapped__, None)
+    _AppBar_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
 class _AppBarButton_Meta_(ComPtr.__class__):
     pass
 class AppBarButton(ComPtr, metaclass=_AppBarButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Button
     default_interface: win32more.Windows.UI.Xaml.Controls.IAppBarButton
     _classid_ = 'Windows.UI.Xaml.Controls.AppBarButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AppBarButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IAppBarButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.AppBarButton: ...
     @winrt_mixinmethod
@@ -177,31 +180,38 @@ class AppBarButton(ComPtr, metaclass=_AppBarButton_Meta_):
     def get_IconProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsCompactProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Label = property(get_Label, put_Label)
+    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
     Icon = property(get_Icon, put_Icon)
-    LabelPosition = property(get_LabelPosition, put_LabelPosition)
-    KeyboardAcceleratorTextOverride = property(get_KeyboardAcceleratorTextOverride, put_KeyboardAcceleratorTextOverride)
-    TemplateSettings = property(get_TemplateSettings, None)
     IsCompact = property(get_IsCompact, put_IsCompact)
     IsInOverflow = property(get_IsInOverflow, None)
-    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
-    _AppBarButton_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
-    _AppBarButton_Meta_.LabelPositionProperty = property(get_LabelPositionProperty.__wrapped__, None)
-    _AppBarButton_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
+    KeyboardAcceleratorTextOverride = property(get_KeyboardAcceleratorTextOverride, put_KeyboardAcceleratorTextOverride)
+    Label = property(get_Label, put_Label)
+    LabelPosition = property(get_LabelPosition, put_LabelPosition)
+    TemplateSettings = property(get_TemplateSettings, None)
     _AppBarButton_Meta_.DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty.__wrapped__, None)
-    _AppBarButton_Meta_.LabelProperty = property(get_LabelProperty.__wrapped__, None)
     _AppBarButton_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
     _AppBarButton_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
-AppBarClosedDisplayMode = Int32
-AppBarClosedDisplayMode_Compact: AppBarClosedDisplayMode = 0
-AppBarClosedDisplayMode_Minimal: AppBarClosedDisplayMode = 1
-AppBarClosedDisplayMode_Hidden: AppBarClosedDisplayMode = 2
+    _AppBarButton_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
+    _AppBarButton_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
+    _AppBarButton_Meta_.LabelPositionProperty = property(get_LabelPositionProperty.__wrapped__, None)
+    _AppBarButton_Meta_.LabelProperty = property(get_LabelProperty.__wrapped__, None)
+class AppBarClosedDisplayMode(Int32):  # enum
+    Compact = 0
+    Minimal = 1
+    Hidden = 2
 class _AppBarElementContainer_Meta_(ComPtr.__class__):
     pass
 class AppBarElementContainer(ComPtr, metaclass=_AppBarElementContainer_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IAppBarElementContainer
     _classid_ = 'Windows.UI.Xaml.Controls.AppBarElementContainer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AppBarElementContainer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IAppBarElementContainerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.AppBarElementContainer: ...
     @winrt_mixinmethod
@@ -220,18 +230,25 @@ class AppBarElementContainer(ComPtr, metaclass=_AppBarElementContainer_Meta_):
     def get_IsInOverflowProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarElementContainerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_DynamicOverflowOrderProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarElementContainerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
     IsCompact = property(get_IsCompact, put_IsCompact)
     IsInOverflow = property(get_IsInOverflow, None)
-    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
+    _AppBarElementContainer_Meta_.DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty.__wrapped__, None)
     _AppBarElementContainer_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
     _AppBarElementContainer_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
-    _AppBarElementContainer_Meta_.DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty.__wrapped__, None)
 class _AppBarSeparator_Meta_(ComPtr.__class__):
     pass
 class AppBarSeparator(ComPtr, metaclass=_AppBarSeparator_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IAppBarSeparator
     _classid_ = 'Windows.UI.Xaml.Controls.AppBarSeparator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AppBarSeparator.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IAppBarSeparatorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.AppBarSeparator: ...
     @winrt_mixinmethod
@@ -250,18 +267,25 @@ class AppBarSeparator(ComPtr, metaclass=_AppBarSeparator_Meta_):
     def get_DynamicOverflowOrderProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarSeparatorStatics3) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsCompactProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarSeparatorStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
     IsCompact = property(get_IsCompact, put_IsCompact)
     IsInOverflow = property(get_IsInOverflow, None)
-    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
-    _AppBarSeparator_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
     _AppBarSeparator_Meta_.DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty.__wrapped__, None)
     _AppBarSeparator_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
+    _AppBarSeparator_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
 class _AppBarToggleButton_Meta_(ComPtr.__class__):
     pass
 class AppBarToggleButton(ComPtr, metaclass=_AppBarToggleButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ToggleButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IAppBarToggleButton
     _classid_ = 'Windows.UI.Xaml.Controls.AppBarToggleButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AppBarToggleButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IAppBarToggleButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.AppBarToggleButton: ...
     @winrt_mixinmethod
@@ -306,27 +330,34 @@ class AppBarToggleButton(ComPtr, metaclass=_AppBarToggleButton_Meta_):
     def get_IconProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarToggleButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsCompactProperty(cls: win32more.Windows.UI.Xaml.Controls.IAppBarToggleButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Label = property(get_Label, put_Label)
+    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
     Icon = property(get_Icon, put_Icon)
-    LabelPosition = property(get_LabelPosition, put_LabelPosition)
-    KeyboardAcceleratorTextOverride = property(get_KeyboardAcceleratorTextOverride, put_KeyboardAcceleratorTextOverride)
-    TemplateSettings = property(get_TemplateSettings, None)
     IsCompact = property(get_IsCompact, put_IsCompact)
     IsInOverflow = property(get_IsInOverflow, None)
-    DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
-    _AppBarToggleButton_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
-    _AppBarToggleButton_Meta_.LabelPositionProperty = property(get_LabelPositionProperty.__wrapped__, None)
-    _AppBarToggleButton_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
+    KeyboardAcceleratorTextOverride = property(get_KeyboardAcceleratorTextOverride, put_KeyboardAcceleratorTextOverride)
+    Label = property(get_Label, put_Label)
+    LabelPosition = property(get_LabelPosition, put_LabelPosition)
+    TemplateSettings = property(get_TemplateSettings, None)
     _AppBarToggleButton_Meta_.DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty.__wrapped__, None)
-    _AppBarToggleButton_Meta_.LabelProperty = property(get_LabelProperty.__wrapped__, None)
     _AppBarToggleButton_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
     _AppBarToggleButton_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
+    _AppBarToggleButton_Meta_.IsInOverflowProperty = property(get_IsInOverflowProperty.__wrapped__, None)
+    _AppBarToggleButton_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
+    _AppBarToggleButton_Meta_.LabelPositionProperty = property(get_LabelPositionProperty.__wrapped__, None)
+    _AppBarToggleButton_Meta_.LabelProperty = property(get_LabelProperty.__wrapped__, None)
 class _AutoSuggestBox_Meta_(ComPtr.__class__):
     pass
 class AutoSuggestBox(ComPtr, metaclass=_AutoSuggestBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ItemsControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBox
     _classid_ = 'Windows.UI.Xaml.Controls.AutoSuggestBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AutoSuggestBox.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.AutoSuggestBox: ...
     @winrt_mixinmethod
@@ -413,46 +444,60 @@ class AutoSuggestBox(ComPtr, metaclass=_AutoSuggestBox_Meta_):
     def get_AutoMaximizeSuggestionAreaProperty(cls: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TextBoxStyleProperty(cls: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    MaxSuggestionListHeight = property(get_MaxSuggestionListHeight, put_MaxSuggestionListHeight)
-    IsSuggestionListOpen = property(get_IsSuggestionListOpen, put_IsSuggestionListOpen)
-    TextMemberPath = property(get_TextMemberPath, put_TextMemberPath)
-    Text = property(get_Text, put_Text)
-    UpdateTextOnSelect = property(get_UpdateTextOnSelect, put_UpdateTextOnSelect)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    Header = property(get_Header, put_Header)
     AutoMaximizeSuggestionArea = property(get_AutoMaximizeSuggestionArea, put_AutoMaximizeSuggestionArea)
-    TextBoxStyle = property(get_TextBoxStyle, put_TextBoxStyle)
-    QueryIcon = property(get_QueryIcon, put_QueryIcon)
-    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
     Description = property(get_Description, put_Description)
+    Header = property(get_Header, put_Header)
+    IsSuggestionListOpen = property(get_IsSuggestionListOpen, put_IsSuggestionListOpen)
+    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
+    MaxSuggestionListHeight = property(get_MaxSuggestionListHeight, put_MaxSuggestionListHeight)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    QueryIcon = property(get_QueryIcon, put_QueryIcon)
+    Text = property(get_Text, put_Text)
+    TextBoxStyle = property(get_TextBoxStyle, put_TextBoxStyle)
+    TextMemberPath = property(get_TextMemberPath, put_TextMemberPath)
+    UpdateTextOnSelect = property(get_UpdateTextOnSelect, put_UpdateTextOnSelect)
+    _AutoSuggestBox_Meta_.AutoMaximizeSuggestionAreaProperty = property(get_AutoMaximizeSuggestionAreaProperty.__wrapped__, None)
     _AutoSuggestBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.QueryIconProperty = property(get_QueryIconProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.MaxSuggestionListHeightProperty = property(get_MaxSuggestionListHeightProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _AutoSuggestBox_Meta_.IsSuggestionListOpenProperty = property(get_IsSuggestionListOpenProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.MaxSuggestionListHeightProperty = property(get_MaxSuggestionListHeightProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.QueryIconProperty = property(get_QueryIconProperty.__wrapped__, None)
+    _AutoSuggestBox_Meta_.TextBoxStyleProperty = property(get_TextBoxStyleProperty.__wrapped__, None)
     _AutoSuggestBox_Meta_.TextMemberPathProperty = property(get_TextMemberPathProperty.__wrapped__, None)
     _AutoSuggestBox_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
     _AutoSuggestBox_Meta_.UpdateTextOnSelectProperty = property(get_UpdateTextOnSelectProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.AutoMaximizeSuggestionAreaProperty = property(get_AutoMaximizeSuggestionAreaProperty.__wrapped__, None)
-    _AutoSuggestBox_Meta_.TextBoxStyleProperty = property(get_TextBoxStyleProperty.__wrapped__, None)
 class AutoSuggestBoxQuerySubmittedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxQuerySubmittedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.AutoSuggestBoxQuerySubmittedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxQuerySubmittedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxQuerySubmittedEventArgs: ...
     @winrt_mixinmethod
     def get_QueryText(self: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxQuerySubmittedEventArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_ChosenSuggestion(self: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxQuerySubmittedEventArgs) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    QueryText = property(get_QueryText, None)
     ChosenSuggestion = property(get_ChosenSuggestion, None)
+    QueryText = property(get_QueryText, None)
 class AutoSuggestBoxSuggestionChosenEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxSuggestionChosenEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.AutoSuggestBoxSuggestionChosenEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxSuggestionChosenEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxSuggestionChosenEventArgs: ...
     @winrt_mixinmethod
@@ -464,6 +509,13 @@ class AutoSuggestBoxTextChangedEventArgs(ComPtr, metaclass=_AutoSuggestBoxTextCh
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxTextChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.AutoSuggestBoxTextChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxTextChangedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxTextChangedEventArgs: ...
     @winrt_mixinmethod
@@ -476,14 +528,21 @@ class AutoSuggestBoxTextChangedEventArgs(ComPtr, metaclass=_AutoSuggestBoxTextCh
     def get_ReasonProperty(cls: win32more.Windows.UI.Xaml.Controls.IAutoSuggestBoxTextChangedEventArgsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Reason = property(get_Reason, put_Reason)
     _AutoSuggestBoxTextChangedEventArgs_Meta_.ReasonProperty = property(get_ReasonProperty.__wrapped__, None)
-AutoSuggestionBoxTextChangeReason = Int32
-AutoSuggestionBoxTextChangeReason_UserInput: AutoSuggestionBoxTextChangeReason = 0
-AutoSuggestionBoxTextChangeReason_ProgrammaticChange: AutoSuggestionBoxTextChangeReason = 1
-AutoSuggestionBoxTextChangeReason_SuggestionChosen: AutoSuggestionBoxTextChangeReason = 2
+class AutoSuggestionBoxTextChangeReason(Int32):  # enum
+    UserInput = 0
+    ProgrammaticChange = 1
+    SuggestionChosen = 2
 class BackClickEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IBackClickEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.BackClickEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.BackClickEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.BackClickEventArgs: ...
     @winrt_mixinmethod
@@ -495,15 +554,22 @@ class BackClickEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{fa9bc21f-9892-482e-abf6-eb2d607d32de}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Controls.BackClickEventArgs) -> Void: ...
-BackgroundSizing = Int32
-BackgroundSizing_InnerBorderEdge: BackgroundSizing = 0
-BackgroundSizing_OuterBorderEdge: BackgroundSizing = 1
+class BackgroundSizing(Int32):  # enum
+    InnerBorderEdge = 0
+    OuterBorderEdge = 1
 class _BitmapIcon_Meta_(ComPtr.__class__):
     pass
 class BitmapIcon(ComPtr, metaclass=_BitmapIcon_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IBitmapIcon
     _classid_ = 'Windows.UI.Xaml.Controls.BitmapIcon'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.BitmapIcon.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.BitmapIcon: ...
     @winrt_mixinmethod
@@ -518,8 +584,8 @@ class BitmapIcon(ComPtr, metaclass=_BitmapIcon_Meta_):
     def get_ShowAsMonochromeProperty(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconStatics2) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_UriSourceProperty(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    UriSource = property(get_UriSource, put_UriSource)
     ShowAsMonochrome = property(get_ShowAsMonochrome, put_ShowAsMonochrome)
+    UriSource = property(get_UriSource, put_UriSource)
     _BitmapIcon_Meta_.ShowAsMonochromeProperty = property(get_ShowAsMonochromeProperty.__wrapped__, None)
     _BitmapIcon_Meta_.UriSourceProperty = property(get_UriSourceProperty.__wrapped__, None)
 class _BitmapIconSource_Meta_(ComPtr.__class__):
@@ -528,6 +594,13 @@ class BitmapIconSource(ComPtr, metaclass=_BitmapIconSource_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconSource
     default_interface: win32more.Windows.UI.Xaml.Controls.IBitmapIconSource
     _classid_ = 'Windows.UI.Xaml.Controls.BitmapIconSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.BitmapIconSource.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconSourceFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.BitmapIconSource: ...
     @winrt_mixinmethod
@@ -542,16 +615,23 @@ class BitmapIconSource(ComPtr, metaclass=_BitmapIconSource_Meta_):
     def get_UriSourceProperty(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ShowAsMonochromeProperty(cls: win32more.Windows.UI.Xaml.Controls.IBitmapIconSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    UriSource = property(get_UriSource, put_UriSource)
     ShowAsMonochrome = property(get_ShowAsMonochrome, put_ShowAsMonochrome)
-    _BitmapIconSource_Meta_.UriSourceProperty = property(get_UriSourceProperty.__wrapped__, None)
+    UriSource = property(get_UriSource, put_UriSource)
     _BitmapIconSource_Meta_.ShowAsMonochromeProperty = property(get_ShowAsMonochromeProperty.__wrapped__, None)
+    _BitmapIconSource_Meta_.UriSourceProperty = property(get_UriSourceProperty.__wrapped__, None)
 class _Border_Meta_(ComPtr.__class__):
     pass
 class Border(ComPtr, metaclass=_Border_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IBorder
     _classid_ = 'Windows.UI.Xaml.Controls.Border'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Border.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.Border: ...
     @winrt_mixinmethod
@@ -604,28 +684,35 @@ class Border(ComPtr, metaclass=_Border_Meta_):
     def get_PaddingProperty(cls: win32more.Windows.UI.Xaml.Controls.IBorderStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ChildTransitionsProperty(cls: win32more.Windows.UI.Xaml.Controls.IBorderStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    BorderBrush = property(get_BorderBrush, put_BorderBrush)
-    BorderThickness = property(get_BorderThickness, put_BorderThickness)
     Background = property(get_Background, put_Background)
-    CornerRadius = property(get_CornerRadius, put_CornerRadius)
-    Padding = property(get_Padding, put_Padding)
-    Child = property(get_Child, put_Child)
-    ChildTransitions = property(get_ChildTransitions, put_ChildTransitions)
     BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
     BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
+    BorderBrush = property(get_BorderBrush, put_BorderBrush)
+    BorderThickness = property(get_BorderThickness, put_BorderThickness)
+    Child = property(get_Child, put_Child)
+    ChildTransitions = property(get_ChildTransitions, put_ChildTransitions)
+    CornerRadius = property(get_CornerRadius, put_CornerRadius)
+    Padding = property(get_Padding, put_Padding)
+    _Border_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
     _Border_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
     _Border_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
     _Border_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
-    _Border_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
+    _Border_Meta_.ChildTransitionsProperty = property(get_ChildTransitionsProperty.__wrapped__, None)
     _Border_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
     _Border_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-    _Border_Meta_.ChildTransitionsProperty = property(get_ChildTransitionsProperty.__wrapped__, None)
 class _Button_Meta_(ComPtr.__class__):
     pass
 class Button(ComPtr, metaclass=_Button_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ButtonBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IButton
     _classid_ = 'Windows.UI.Xaml.Controls.Button'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Button.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Button: ...
     @winrt_mixinmethod
@@ -642,6 +729,13 @@ class CalendarDatePicker(ComPtr, metaclass=_CalendarDatePicker_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarDatePicker
     _classid_ = 'Windows.UI.Xaml.Controls.CalendarDatePicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CalendarDatePicker.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICalendarDatePickerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CalendarDatePicker: ...
     @winrt_mixinmethod
@@ -772,42 +866,42 @@ class CalendarDatePicker(ComPtr, metaclass=_CalendarDatePicker_Meta_):
     def get_IsOutOfScopeEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarDatePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsGroupLabelVisibleProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarDatePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Date = property(get_Date, put_Date)
-    IsCalendarOpen = property(get_IsCalendarOpen, put_IsCalendarOpen)
-    DateFormat = property(get_DateFormat, put_DateFormat)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     CalendarViewStyle = property(get_CalendarViewStyle, put_CalendarViewStyle)
-    MinDate = property(get_MinDate, put_MinDate)
-    MaxDate = property(get_MaxDate, put_MaxDate)
-    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
+    Date = property(get_Date, put_Date)
+    DateFormat = property(get_DateFormat, put_DateFormat)
+    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
+    Description = property(get_Description, put_Description)
     DisplayMode = property(get_DisplayMode, put_DisplayMode)
     FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
-    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
-    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
-    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    IsCalendarOpen = property(get_IsCalendarOpen, put_IsCalendarOpen)
     IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
+    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
     LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
-    Description = property(get_Description, put_Description)
-    _CalendarDatePicker_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.DateProperty = property(get_DateProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.IsCalendarOpenProperty = property(get_IsCalendarOpenProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.DateFormatProperty = property(get_DateFormatProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
+    MaxDate = property(get_MaxDate, put_MaxDate)
+    MinDate = property(get_MinDate, put_MinDate)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    _CalendarDatePicker_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
     _CalendarDatePicker_Meta_.CalendarViewStyleProperty = property(get_CalendarViewStyleProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.MinDateProperty = property(get_MinDateProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.MaxDateProperty = property(get_MaxDateProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.DateFormatProperty = property(get_DateFormatProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.DateProperty = property(get_DateProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
     _CalendarDatePicker_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
     _CalendarDatePicker_Meta_.FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
-    _CalendarDatePicker_Meta_.IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.IsCalendarOpenProperty = property(get_IsCalendarOpenProperty.__wrapped__, None)
     _CalendarDatePicker_Meta_.IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.MaxDateProperty = property(get_MaxDateProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.MinDateProperty = property(get_MinDateProperty.__wrapped__, None)
+    _CalendarDatePicker_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
 class CalendarDatePickerDateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarDatePickerDateChangedEventArgs
@@ -824,6 +918,13 @@ class CalendarView(ComPtr, metaclass=_CalendarView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarView
     _classid_ = 'Windows.UI.Xaml.Controls.CalendarView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CalendarView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CalendarView: ...
     @winrt_mixinmethod
@@ -1284,162 +1385,169 @@ class CalendarView(ComPtr, metaclass=_CalendarView_Meta_):
     def get_CalendarItemBorderThicknessProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CalendarViewDayItemStyleProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
-    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
-    IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
-    DisplayMode = property(get_DisplayMode, put_DisplayMode)
-    FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
-    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
-    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
-    MaxDate = property(get_MaxDate, put_MaxDate)
-    MinDate = property(get_MinDate, put_MinDate)
-    NumberOfWeeksInView = property(get_NumberOfWeeksInView, put_NumberOfWeeksInView)
-    SelectedDates = property(get_SelectedDates, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
-    TemplateSettings = property(get_TemplateSettings, None)
-    FocusBorderBrush = property(get_FocusBorderBrush, put_FocusBorderBrush)
-    SelectedHoverBorderBrush = property(get_SelectedHoverBorderBrush, put_SelectedHoverBorderBrush)
-    SelectedPressedBorderBrush = property(get_SelectedPressedBorderBrush, put_SelectedPressedBorderBrush)
-    SelectedBorderBrush = property(get_SelectedBorderBrush, put_SelectedBorderBrush)
-    HoverBorderBrush = property(get_HoverBorderBrush, put_HoverBorderBrush)
-    PressedBorderBrush = property(get_PressedBorderBrush, put_PressedBorderBrush)
-    CalendarItemBorderBrush = property(get_CalendarItemBorderBrush, put_CalendarItemBorderBrush)
-    OutOfScopeBackground = property(get_OutOfScopeBackground, put_OutOfScopeBackground)
-    CalendarItemBackground = property(get_CalendarItemBackground, put_CalendarItemBackground)
-    PressedForeground = property(get_PressedForeground, put_PressedForeground)
-    TodayForeground = property(get_TodayForeground, put_TodayForeground)
+    BlackoutBackground = property(get_BlackoutBackground, put_BlackoutBackground)
     BlackoutForeground = property(get_BlackoutForeground, put_BlackoutForeground)
-    SelectedForeground = property(get_SelectedForeground, put_SelectedForeground)
-    OutOfScopeForeground = property(get_OutOfScopeForeground, put_OutOfScopeForeground)
+    BlackoutStrikethroughBrush = property(get_BlackoutStrikethroughBrush, put_BlackoutStrikethroughBrush)
+    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
+    CalendarItemBackground = property(get_CalendarItemBackground, put_CalendarItemBackground)
+    CalendarItemBorderBrush = property(get_CalendarItemBorderBrush, put_CalendarItemBorderBrush)
+    CalendarItemBorderThickness = property(get_CalendarItemBorderThickness, put_CalendarItemBorderThickness)
+    CalendarItemCornerRadius = property(get_CalendarItemCornerRadius, put_CalendarItemCornerRadius)
+    CalendarItemDisabledBackground = property(get_CalendarItemDisabledBackground, put_CalendarItemDisabledBackground)
     CalendarItemForeground = property(get_CalendarItemForeground, put_CalendarItemForeground)
+    CalendarItemHoverBackground = property(get_CalendarItemHoverBackground, put_CalendarItemHoverBackground)
+    CalendarItemPressedBackground = property(get_CalendarItemPressedBackground, put_CalendarItemPressedBackground)
+    CalendarViewDayItemStyle = property(get_CalendarViewDayItemStyle, put_CalendarViewDayItemStyle)
     DayItemFontFamily = property(get_DayItemFontFamily, put_DayItemFontFamily)
     DayItemFontSize = property(get_DayItemFontSize, put_DayItemFontSize)
     DayItemFontStyle = property(get_DayItemFontStyle, put_DayItemFontStyle)
     DayItemFontWeight = property(get_DayItemFontWeight, put_DayItemFontWeight)
-    TodayFontWeight = property(get_TodayFontWeight, put_TodayFontWeight)
+    DayItemMargin = property(get_DayItemMargin, put_DayItemMargin)
+    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
+    DisabledForeground = property(get_DisabledForeground, put_DisabledForeground)
+    DisplayMode = property(get_DisplayMode, put_DisplayMode)
+    FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
     FirstOfMonthLabelFontFamily = property(get_FirstOfMonthLabelFontFamily, put_FirstOfMonthLabelFontFamily)
     FirstOfMonthLabelFontSize = property(get_FirstOfMonthLabelFontSize, put_FirstOfMonthLabelFontSize)
     FirstOfMonthLabelFontStyle = property(get_FirstOfMonthLabelFontStyle, put_FirstOfMonthLabelFontStyle)
     FirstOfMonthLabelFontWeight = property(get_FirstOfMonthLabelFontWeight, put_FirstOfMonthLabelFontWeight)
-    MonthYearItemFontFamily = property(get_MonthYearItemFontFamily, put_MonthYearItemFontFamily)
-    MonthYearItemFontSize = property(get_MonthYearItemFontSize, put_MonthYearItemFontSize)
-    MonthYearItemFontStyle = property(get_MonthYearItemFontStyle, put_MonthYearItemFontStyle)
-    MonthYearItemFontWeight = property(get_MonthYearItemFontWeight, put_MonthYearItemFontWeight)
+    FirstOfMonthLabelMargin = property(get_FirstOfMonthLabelMargin, put_FirstOfMonthLabelMargin)
     FirstOfYearDecadeLabelFontFamily = property(get_FirstOfYearDecadeLabelFontFamily, put_FirstOfYearDecadeLabelFontFamily)
     FirstOfYearDecadeLabelFontSize = property(get_FirstOfYearDecadeLabelFontSize, put_FirstOfYearDecadeLabelFontSize)
     FirstOfYearDecadeLabelFontStyle = property(get_FirstOfYearDecadeLabelFontStyle, put_FirstOfYearDecadeLabelFontStyle)
     FirstOfYearDecadeLabelFontWeight = property(get_FirstOfYearDecadeLabelFontWeight, put_FirstOfYearDecadeLabelFontWeight)
+    FirstOfYearDecadeLabelMargin = property(get_FirstOfYearDecadeLabelMargin, put_FirstOfYearDecadeLabelMargin)
+    FocusBorderBrush = property(get_FocusBorderBrush, put_FocusBorderBrush)
     HorizontalDayItemAlignment = property(get_HorizontalDayItemAlignment, put_HorizontalDayItemAlignment)
-    VerticalDayItemAlignment = property(get_VerticalDayItemAlignment, put_VerticalDayItemAlignment)
     HorizontalFirstOfMonthLabelAlignment = property(get_HorizontalFirstOfMonthLabelAlignment, put_HorizontalFirstOfMonthLabelAlignment)
-    VerticalFirstOfMonthLabelAlignment = property(get_VerticalFirstOfMonthLabelAlignment, put_VerticalFirstOfMonthLabelAlignment)
-    CalendarItemBorderThickness = property(get_CalendarItemBorderThickness, put_CalendarItemBorderThickness)
-    CalendarViewDayItemStyle = property(get_CalendarViewDayItemStyle, put_CalendarViewDayItemStyle)
-    SelectedDisabledBorderBrush = property(get_SelectedDisabledBorderBrush, put_SelectedDisabledBorderBrush)
-    TodaySelectedInnerBorderBrush = property(get_TodaySelectedInnerBorderBrush, put_TodaySelectedInnerBorderBrush)
-    BlackoutStrikethroughBrush = property(get_BlackoutStrikethroughBrush, put_BlackoutStrikethroughBrush)
-    BlackoutBackground = property(get_BlackoutBackground, put_BlackoutBackground)
-    CalendarItemHoverBackground = property(get_CalendarItemHoverBackground, put_CalendarItemHoverBackground)
-    CalendarItemPressedBackground = property(get_CalendarItemPressedBackground, put_CalendarItemPressedBackground)
-    CalendarItemDisabledBackground = property(get_CalendarItemDisabledBackground, put_CalendarItemDisabledBackground)
-    TodayBackground = property(get_TodayBackground, put_TodayBackground)
-    TodayBlackoutBackground = property(get_TodayBlackoutBackground, put_TodayBlackoutBackground)
-    TodayHoverBackground = property(get_TodayHoverBackground, put_TodayHoverBackground)
-    TodayPressedBackground = property(get_TodayPressedBackground, put_TodayPressedBackground)
-    TodayDisabledBackground = property(get_TodayDisabledBackground, put_TodayDisabledBackground)
-    TodayBlackoutForeground = property(get_TodayBlackoutForeground, put_TodayBlackoutForeground)
-    SelectedHoverForeground = property(get_SelectedHoverForeground, put_SelectedHoverForeground)
-    SelectedPressedForeground = property(get_SelectedPressedForeground, put_SelectedPressedForeground)
-    SelectedDisabledForeground = property(get_SelectedDisabledForeground, put_SelectedDisabledForeground)
+    HoverBorderBrush = property(get_HoverBorderBrush, put_HoverBorderBrush)
+    IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
+    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
+    MaxDate = property(get_MaxDate, put_MaxDate)
+    MinDate = property(get_MinDate, put_MinDate)
+    MonthYearItemFontFamily = property(get_MonthYearItemFontFamily, put_MonthYearItemFontFamily)
+    MonthYearItemFontSize = property(get_MonthYearItemFontSize, put_MonthYearItemFontSize)
+    MonthYearItemFontStyle = property(get_MonthYearItemFontStyle, put_MonthYearItemFontStyle)
+    MonthYearItemFontWeight = property(get_MonthYearItemFontWeight, put_MonthYearItemFontWeight)
+    MonthYearItemMargin = property(get_MonthYearItemMargin, put_MonthYearItemMargin)
+    NumberOfWeeksInView = property(get_NumberOfWeeksInView, put_NumberOfWeeksInView)
+    OutOfScopeBackground = property(get_OutOfScopeBackground, put_OutOfScopeBackground)
+    OutOfScopeForeground = property(get_OutOfScopeForeground, put_OutOfScopeForeground)
     OutOfScopeHoverForeground = property(get_OutOfScopeHoverForeground, put_OutOfScopeHoverForeground)
     OutOfScopePressedForeground = property(get_OutOfScopePressedForeground, put_OutOfScopePressedForeground)
-    DisabledForeground = property(get_DisabledForeground, put_DisabledForeground)
-    DayItemMargin = property(get_DayItemMargin, put_DayItemMargin)
-    MonthYearItemMargin = property(get_MonthYearItemMargin, put_MonthYearItemMargin)
-    FirstOfMonthLabelMargin = property(get_FirstOfMonthLabelMargin, put_FirstOfMonthLabelMargin)
-    FirstOfYearDecadeLabelMargin = property(get_FirstOfYearDecadeLabelMargin, put_FirstOfYearDecadeLabelMargin)
-    CalendarItemCornerRadius = property(get_CalendarItemCornerRadius, put_CalendarItemCornerRadius)
-    _CalendarView_Meta_.SelectedDisabledBorderBrushProperty = property(get_SelectedDisabledBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodaySelectedInnerBorderBrushProperty = property(get_TodaySelectedInnerBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.BlackoutStrikethroughBrushProperty = property(get_BlackoutStrikethroughBrushProperty.__wrapped__, None)
+    PressedBorderBrush = property(get_PressedBorderBrush, put_PressedBorderBrush)
+    PressedForeground = property(get_PressedForeground, put_PressedForeground)
+    SelectedBorderBrush = property(get_SelectedBorderBrush, put_SelectedBorderBrush)
+    SelectedDates = property(get_SelectedDates, None)
+    SelectedDisabledBorderBrush = property(get_SelectedDisabledBorderBrush, put_SelectedDisabledBorderBrush)
+    SelectedDisabledForeground = property(get_SelectedDisabledForeground, put_SelectedDisabledForeground)
+    SelectedForeground = property(get_SelectedForeground, put_SelectedForeground)
+    SelectedHoverBorderBrush = property(get_SelectedHoverBorderBrush, put_SelectedHoverBorderBrush)
+    SelectedHoverForeground = property(get_SelectedHoverForeground, put_SelectedHoverForeground)
+    SelectedPressedBorderBrush = property(get_SelectedPressedBorderBrush, put_SelectedPressedBorderBrush)
+    SelectedPressedForeground = property(get_SelectedPressedForeground, put_SelectedPressedForeground)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
+    TemplateSettings = property(get_TemplateSettings, None)
+    TodayBackground = property(get_TodayBackground, put_TodayBackground)
+    TodayBlackoutBackground = property(get_TodayBlackoutBackground, put_TodayBlackoutBackground)
+    TodayBlackoutForeground = property(get_TodayBlackoutForeground, put_TodayBlackoutForeground)
+    TodayDisabledBackground = property(get_TodayDisabledBackground, put_TodayDisabledBackground)
+    TodayFontWeight = property(get_TodayFontWeight, put_TodayFontWeight)
+    TodayForeground = property(get_TodayForeground, put_TodayForeground)
+    TodayHoverBackground = property(get_TodayHoverBackground, put_TodayHoverBackground)
+    TodayPressedBackground = property(get_TodayPressedBackground, put_TodayPressedBackground)
+    TodaySelectedInnerBorderBrush = property(get_TodaySelectedInnerBorderBrush, put_TodaySelectedInnerBorderBrush)
+    VerticalDayItemAlignment = property(get_VerticalDayItemAlignment, put_VerticalDayItemAlignment)
+    VerticalFirstOfMonthLabelAlignment = property(get_VerticalFirstOfMonthLabelAlignment, put_VerticalFirstOfMonthLabelAlignment)
     _CalendarView_Meta_.BlackoutBackgroundProperty = property(get_BlackoutBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.BlackoutForegroundProperty = property(get_BlackoutForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.BlackoutStrikethroughBrushProperty = property(get_BlackoutStrikethroughBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemBackgroundProperty = property(get_CalendarItemBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemBorderBrushProperty = property(get_CalendarItemBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemBorderThicknessProperty = property(get_CalendarItemBorderThicknessProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemCornerRadiusProperty = property(get_CalendarItemCornerRadiusProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemDisabledBackgroundProperty = property(get_CalendarItemDisabledBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarItemForegroundProperty = property(get_CalendarItemForegroundProperty.__wrapped__, None)
     _CalendarView_Meta_.CalendarItemHoverBackgroundProperty = property(get_CalendarItemHoverBackgroundProperty.__wrapped__, None)
     _CalendarView_Meta_.CalendarItemPressedBackgroundProperty = property(get_CalendarItemPressedBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemDisabledBackgroundProperty = property(get_CalendarItemDisabledBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayBackgroundProperty = property(get_TodayBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayBlackoutBackgroundProperty = property(get_TodayBlackoutBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayHoverBackgroundProperty = property(get_TodayHoverBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayPressedBackgroundProperty = property(get_TodayPressedBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayDisabledBackgroundProperty = property(get_TodayDisabledBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayBlackoutForegroundProperty = property(get_TodayBlackoutForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedHoverForegroundProperty = property(get_SelectedHoverForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedPressedForegroundProperty = property(get_SelectedPressedForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedDisabledForegroundProperty = property(get_SelectedDisabledForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.OutOfScopeHoverForegroundProperty = property(get_OutOfScopeHoverForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.OutOfScopePressedForegroundProperty = property(get_OutOfScopePressedForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.DisabledForegroundProperty = property(get_DisabledForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.DayItemMarginProperty = property(get_DayItemMarginProperty.__wrapped__, None)
-    _CalendarView_Meta_.MonthYearItemMarginProperty = property(get_MonthYearItemMarginProperty.__wrapped__, None)
-    _CalendarView_Meta_.FirstOfMonthLabelMarginProperty = property(get_FirstOfMonthLabelMarginProperty.__wrapped__, None)
-    _CalendarView_Meta_.FirstOfYearDecadeLabelMarginProperty = property(get_FirstOfYearDecadeLabelMarginProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemCornerRadiusProperty = property(get_CalendarItemCornerRadiusProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
-    _CalendarView_Meta_.DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty.__wrapped__, None)
-    _CalendarView_Meta_.IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty.__wrapped__, None)
-    _CalendarView_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
-    _CalendarView_Meta_.FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty.__wrapped__, None)
-    _CalendarView_Meta_.IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty.__wrapped__, None)
-    _CalendarView_Meta_.IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty.__wrapped__, None)
-    _CalendarView_Meta_.MaxDateProperty = property(get_MaxDateProperty.__wrapped__, None)
-    _CalendarView_Meta_.MinDateProperty = property(get_MinDateProperty.__wrapped__, None)
-    _CalendarView_Meta_.NumberOfWeeksInViewProperty = property(get_NumberOfWeeksInViewProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedDatesProperty = property(get_SelectedDatesProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
-    _CalendarView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
-    _CalendarView_Meta_.FocusBorderBrushProperty = property(get_FocusBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedHoverBorderBrushProperty = property(get_SelectedHoverBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedPressedBorderBrushProperty = property(get_SelectedPressedBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedBorderBrushProperty = property(get_SelectedBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.HoverBorderBrushProperty = property(get_HoverBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.PressedBorderBrushProperty = property(get_PressedBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemBorderBrushProperty = property(get_CalendarItemBorderBrushProperty.__wrapped__, None)
-    _CalendarView_Meta_.OutOfScopeBackgroundProperty = property(get_OutOfScopeBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemBackgroundProperty = property(get_CalendarItemBackgroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.PressedForegroundProperty = property(get_PressedForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayForegroundProperty = property(get_TodayForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.BlackoutForegroundProperty = property(get_BlackoutForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.SelectedForegroundProperty = property(get_SelectedForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.OutOfScopeForegroundProperty = property(get_OutOfScopeForegroundProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemForegroundProperty = property(get_CalendarItemForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.CalendarViewDayItemStyleProperty = property(get_CalendarViewDayItemStyleProperty.__wrapped__, None)
     _CalendarView_Meta_.DayItemFontFamilyProperty = property(get_DayItemFontFamilyProperty.__wrapped__, None)
     _CalendarView_Meta_.DayItemFontSizeProperty = property(get_DayItemFontSizeProperty.__wrapped__, None)
     _CalendarView_Meta_.DayItemFontStyleProperty = property(get_DayItemFontStyleProperty.__wrapped__, None)
     _CalendarView_Meta_.DayItemFontWeightProperty = property(get_DayItemFontWeightProperty.__wrapped__, None)
-    _CalendarView_Meta_.TodayFontWeightProperty = property(get_TodayFontWeightProperty.__wrapped__, None)
+    _CalendarView_Meta_.DayItemMarginProperty = property(get_DayItemMarginProperty.__wrapped__, None)
+    _CalendarView_Meta_.DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty.__wrapped__, None)
+    _CalendarView_Meta_.DisabledForegroundProperty = property(get_DisabledForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
+    _CalendarView_Meta_.FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfMonthLabelFontFamilyProperty = property(get_FirstOfMonthLabelFontFamilyProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfMonthLabelFontSizeProperty = property(get_FirstOfMonthLabelFontSizeProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfMonthLabelFontStyleProperty = property(get_FirstOfMonthLabelFontStyleProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfMonthLabelFontWeightProperty = property(get_FirstOfMonthLabelFontWeightProperty.__wrapped__, None)
-    _CalendarView_Meta_.MonthYearItemFontFamilyProperty = property(get_MonthYearItemFontFamilyProperty.__wrapped__, None)
-    _CalendarView_Meta_.MonthYearItemFontSizeProperty = property(get_MonthYearItemFontSizeProperty.__wrapped__, None)
-    _CalendarView_Meta_.MonthYearItemFontStyleProperty = property(get_MonthYearItemFontStyleProperty.__wrapped__, None)
-    _CalendarView_Meta_.MonthYearItemFontWeightProperty = property(get_MonthYearItemFontWeightProperty.__wrapped__, None)
+    _CalendarView_Meta_.FirstOfMonthLabelMarginProperty = property(get_FirstOfMonthLabelMarginProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfYearDecadeLabelFontFamilyProperty = property(get_FirstOfYearDecadeLabelFontFamilyProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfYearDecadeLabelFontSizeProperty = property(get_FirstOfYearDecadeLabelFontSizeProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfYearDecadeLabelFontStyleProperty = property(get_FirstOfYearDecadeLabelFontStyleProperty.__wrapped__, None)
     _CalendarView_Meta_.FirstOfYearDecadeLabelFontWeightProperty = property(get_FirstOfYearDecadeLabelFontWeightProperty.__wrapped__, None)
+    _CalendarView_Meta_.FirstOfYearDecadeLabelMarginProperty = property(get_FirstOfYearDecadeLabelMarginProperty.__wrapped__, None)
+    _CalendarView_Meta_.FocusBorderBrushProperty = property(get_FocusBorderBrushProperty.__wrapped__, None)
     _CalendarView_Meta_.HorizontalDayItemAlignmentProperty = property(get_HorizontalDayItemAlignmentProperty.__wrapped__, None)
-    _CalendarView_Meta_.VerticalDayItemAlignmentProperty = property(get_VerticalDayItemAlignmentProperty.__wrapped__, None)
     _CalendarView_Meta_.HorizontalFirstOfMonthLabelAlignmentProperty = property(get_HorizontalFirstOfMonthLabelAlignmentProperty.__wrapped__, None)
+    _CalendarView_Meta_.HoverBorderBrushProperty = property(get_HoverBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty.__wrapped__, None)
+    _CalendarView_Meta_.IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty.__wrapped__, None)
+    _CalendarView_Meta_.IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty.__wrapped__, None)
+    _CalendarView_Meta_.MaxDateProperty = property(get_MaxDateProperty.__wrapped__, None)
+    _CalendarView_Meta_.MinDateProperty = property(get_MinDateProperty.__wrapped__, None)
+    _CalendarView_Meta_.MonthYearItemFontFamilyProperty = property(get_MonthYearItemFontFamilyProperty.__wrapped__, None)
+    _CalendarView_Meta_.MonthYearItemFontSizeProperty = property(get_MonthYearItemFontSizeProperty.__wrapped__, None)
+    _CalendarView_Meta_.MonthYearItemFontStyleProperty = property(get_MonthYearItemFontStyleProperty.__wrapped__, None)
+    _CalendarView_Meta_.MonthYearItemFontWeightProperty = property(get_MonthYearItemFontWeightProperty.__wrapped__, None)
+    _CalendarView_Meta_.MonthYearItemMarginProperty = property(get_MonthYearItemMarginProperty.__wrapped__, None)
+    _CalendarView_Meta_.NumberOfWeeksInViewProperty = property(get_NumberOfWeeksInViewProperty.__wrapped__, None)
+    _CalendarView_Meta_.OutOfScopeBackgroundProperty = property(get_OutOfScopeBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.OutOfScopeForegroundProperty = property(get_OutOfScopeForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.OutOfScopeHoverForegroundProperty = property(get_OutOfScopeHoverForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.OutOfScopePressedForegroundProperty = property(get_OutOfScopePressedForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.PressedBorderBrushProperty = property(get_PressedBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.PressedForegroundProperty = property(get_PressedForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedBorderBrushProperty = property(get_SelectedBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedDatesProperty = property(get_SelectedDatesProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedDisabledBorderBrushProperty = property(get_SelectedDisabledBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedDisabledForegroundProperty = property(get_SelectedDisabledForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedForegroundProperty = property(get_SelectedForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedHoverBorderBrushProperty = property(get_SelectedHoverBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedHoverForegroundProperty = property(get_SelectedHoverForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedPressedBorderBrushProperty = property(get_SelectedPressedBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectedPressedForegroundProperty = property(get_SelectedPressedForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
+    _CalendarView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayBackgroundProperty = property(get_TodayBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayBlackoutBackgroundProperty = property(get_TodayBlackoutBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayBlackoutForegroundProperty = property(get_TodayBlackoutForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayDisabledBackgroundProperty = property(get_TodayDisabledBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayFontWeightProperty = property(get_TodayFontWeightProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayForegroundProperty = property(get_TodayForegroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayHoverBackgroundProperty = property(get_TodayHoverBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodayPressedBackgroundProperty = property(get_TodayPressedBackgroundProperty.__wrapped__, None)
+    _CalendarView_Meta_.TodaySelectedInnerBorderBrushProperty = property(get_TodaySelectedInnerBorderBrushProperty.__wrapped__, None)
+    _CalendarView_Meta_.VerticalDayItemAlignmentProperty = property(get_VerticalDayItemAlignmentProperty.__wrapped__, None)
     _CalendarView_Meta_.VerticalFirstOfMonthLabelAlignmentProperty = property(get_VerticalFirstOfMonthLabelAlignmentProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarItemBorderThicknessProperty = property(get_CalendarItemBorderThicknessProperty.__wrapped__, None)
-    _CalendarView_Meta_.CalendarViewDayItemStyleProperty = property(get_CalendarViewDayItemStyleProperty.__wrapped__, None)
 class _CalendarViewDayItem_Meta_(ComPtr.__class__):
     pass
 class CalendarViewDayItem(ComPtr, metaclass=_CalendarViewDayItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarViewDayItem
     _classid_ = 'Windows.UI.Xaml.Controls.CalendarViewDayItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CalendarViewDayItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewDayItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CalendarViewDayItem: ...
     @winrt_mixinmethod
@@ -1454,10 +1562,10 @@ class CalendarViewDayItem(ComPtr, metaclass=_CalendarViewDayItem_Meta_):
     def get_IsBlackoutProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewDayItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_DateProperty(cls: win32more.Windows.UI.Xaml.Controls.ICalendarViewDayItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsBlackout = property(get_IsBlackout, put_IsBlackout)
     Date = property(get_Date, None)
-    _CalendarViewDayItem_Meta_.IsBlackoutProperty = property(get_IsBlackoutProperty.__wrapped__, None)
+    IsBlackout = property(get_IsBlackout, put_IsBlackout)
     _CalendarViewDayItem_Meta_.DateProperty = property(get_DateProperty.__wrapped__, None)
+    _CalendarViewDayItem_Meta_.IsBlackoutProperty = property(get_IsBlackoutProperty.__wrapped__, None)
 class CalendarViewDayItemChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarViewDayItemChangingEventArgs
@@ -1479,10 +1587,10 @@ class CalendarViewDayItemChangingEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{8d745891-4de3-49cb-974b-083871a3afe6}')
     def Invoke(self, sender: win32more.Windows.UI.Xaml.Controls.CalendarView, e: win32more.Windows.UI.Xaml.Controls.CalendarViewDayItemChangingEventArgs) -> Void: ...
-CalendarViewDisplayMode = Int32
-CalendarViewDisplayMode_Month: CalendarViewDisplayMode = 0
-CalendarViewDisplayMode_Year: CalendarViewDisplayMode = 1
-CalendarViewDisplayMode_Decade: CalendarViewDisplayMode = 2
+class CalendarViewDisplayMode(Int32):  # enum
+    Month = 0
+    Year = 1
+    Decade = 2
 class CalendarViewSelectedDatesChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ICalendarViewSelectedDatesChangedEventArgs
@@ -1493,13 +1601,13 @@ class CalendarViewSelectedDatesChangedEventArgs(ComPtr):
     def get_RemovedDates(self: win32more.Windows.UI.Xaml.Controls.ICalendarViewSelectedDatesChangedEventArgs) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Foundation.DateTime]: ...
     AddedDates = property(get_AddedDates, None)
     RemovedDates = property(get_RemovedDates, None)
-CalendarViewSelectionMode = Int32
-CalendarViewSelectionMode_None: CalendarViewSelectionMode = 0
-CalendarViewSelectionMode_Single: CalendarViewSelectionMode = 1
-CalendarViewSelectionMode_Multiple: CalendarViewSelectionMode = 2
-CandidateWindowAlignment = Int32
-CandidateWindowAlignment_Default: CandidateWindowAlignment = 0
-CandidateWindowAlignment_BottomEdge: CandidateWindowAlignment = 1
+class CalendarViewSelectionMode(Int32):  # enum
+    None_ = 0
+    Single = 1
+    Multiple = 2
+class CandidateWindowAlignment(Int32):  # enum
+    Default = 0
+    BottomEdge = 1
 class CandidateWindowBoundsChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ICandidateWindowBoundsChangedEventArgs
@@ -1513,6 +1621,13 @@ class Canvas(ComPtr, metaclass=_Canvas_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.ICanvas
     _classid_ = 'Windows.UI.Xaml.Controls.Canvas'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Canvas.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICanvasFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Canvas: ...
     @winrt_classmethod
@@ -1542,6 +1657,13 @@ class CaptureElement(ComPtr, metaclass=_CaptureElement_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.ICaptureElement
     _classid_ = 'Windows.UI.Xaml.Controls.CaptureElement'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CaptureElement.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.CaptureElement: ...
     @winrt_mixinmethod
@@ -1560,20 +1682,34 @@ class CaptureElement(ComPtr, metaclass=_CaptureElement_Meta_):
     Stretch = property(get_Stretch, put_Stretch)
     _CaptureElement_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
     _CaptureElement_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
-CharacterCasing = Int32
-CharacterCasing_Normal: CharacterCasing = 0
-CharacterCasing_Lower: CharacterCasing = 1
-CharacterCasing_Upper: CharacterCasing = 2
+class CharacterCasing(Int32):  # enum
+    Normal = 0
+    Lower = 1
+    Upper = 2
 class CheckBox(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ToggleButton
     default_interface: win32more.Windows.UI.Xaml.Controls.ICheckBox
     _classid_ = 'Windows.UI.Xaml.Controls.CheckBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CheckBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICheckBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CheckBox: ...
 class ChoosingGroupHeaderContainerEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IChoosingGroupHeaderContainerEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ChoosingGroupHeaderContainerEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ChoosingGroupHeaderContainerEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ChoosingGroupHeaderContainerEventArgs: ...
     @winrt_mixinmethod
@@ -1584,13 +1720,20 @@ class ChoosingGroupHeaderContainerEventArgs(ComPtr):
     def get_GroupIndex(self: win32more.Windows.UI.Xaml.Controls.IChoosingGroupHeaderContainerEventArgs) -> Int32: ...
     @winrt_mixinmethod
     def get_Group(self: win32more.Windows.UI.Xaml.Controls.IChoosingGroupHeaderContainerEventArgs) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
+    Group = property(get_Group, None)
     GroupHeaderContainer = property(get_GroupHeaderContainer, put_GroupHeaderContainer)
     GroupIndex = property(get_GroupIndex, None)
-    Group = property(get_Group, None)
 class ChoosingItemContainerEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IChoosingItemContainerEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ChoosingItemContainerEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ChoosingItemContainerEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ChoosingItemContainerEventArgs: ...
     @winrt_mixinmethod
@@ -1605,10 +1748,10 @@ class ChoosingItemContainerEventArgs(ComPtr):
     def get_IsContainerPrepared(self: win32more.Windows.UI.Xaml.Controls.IChoosingItemContainerEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsContainerPrepared(self: win32more.Windows.UI.Xaml.Controls.IChoosingItemContainerEventArgs, value: Boolean) -> Void: ...
-    ItemIndex = property(get_ItemIndex, None)
+    IsContainerPrepared = property(get_IsContainerPrepared, put_IsContainerPrepared)
     Item = property(get_Item, None)
     ItemContainer = property(get_ItemContainer, put_ItemContainer)
-    IsContainerPrepared = property(get_IsContainerPrepared, put_IsContainerPrepared)
+    ItemIndex = property(get_ItemIndex, None)
 class CleanUpVirtualizedItemEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Controls.ICleanUpVirtualizedItemEventArgs
@@ -1621,17 +1764,17 @@ class CleanUpVirtualizedItemEventArgs(ComPtr):
     def get_Cancel(self: win32more.Windows.UI.Xaml.Controls.ICleanUpVirtualizedItemEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.ICleanUpVirtualizedItemEventArgs, value: Boolean) -> Void: ...
-    Value = property(get_Value, None)
-    UIElement = property(get_UIElement, None)
     Cancel = property(get_Cancel, put_Cancel)
+    UIElement = property(get_UIElement, None)
+    Value = property(get_Value, None)
 class CleanUpVirtualizedItemEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{cacad0d6-0f0d-4870-884d-f2dedf674288}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Controls.CleanUpVirtualizedItemEventArgs) -> Void: ...
-ClickMode = Int32
-ClickMode_Release: ClickMode = 0
-ClickMode_Press: ClickMode = 1
-ClickMode_Hover: ClickMode = 2
+class ClickMode(Int32):  # enum
+    Release = 0
+    Press = 1
+    Hover = 2
 class ColorChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IColorChangedEventArgs
@@ -1640,14 +1783,21 @@ class ColorChangedEventArgs(ComPtr):
     def get_OldColor(self: win32more.Windows.UI.Xaml.Controls.IColorChangedEventArgs) -> win32more.Windows.UI.Color: ...
     @winrt_mixinmethod
     def get_NewColor(self: win32more.Windows.UI.Xaml.Controls.IColorChangedEventArgs) -> win32more.Windows.UI.Color: ...
-    OldColor = property(get_OldColor, None)
     NewColor = property(get_NewColor, None)
+    OldColor = property(get_OldColor, None)
 class _ColorPicker_Meta_(ComPtr.__class__):
     pass
 class ColorPicker(ComPtr, metaclass=_ColorPicker_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IColorPicker
     _classid_ = 'Windows.UI.Xaml.Controls.ColorPicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ColorPicker.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IColorPickerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ColorPicker: ...
     @winrt_mixinmethod
@@ -1769,64 +1919,71 @@ class ColorPicker(ComPtr, metaclass=_ColorPicker_Meta_):
     @winrt_classmethod
     def get_ColorSpectrumComponentsProperty(cls: win32more.Windows.UI.Xaml.Controls.IColorPickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Color = property(get_Color, put_Color)
-    PreviousColor = property(get_PreviousColor, put_PreviousColor)
+    ColorSpectrumComponents = property(get_ColorSpectrumComponents, put_ColorSpectrumComponents)
+    ColorSpectrumShape = property(get_ColorSpectrumShape, put_ColorSpectrumShape)
     IsAlphaEnabled = property(get_IsAlphaEnabled, put_IsAlphaEnabled)
-    IsColorSpectrumVisible = property(get_IsColorSpectrumVisible, put_IsColorSpectrumVisible)
+    IsAlphaSliderVisible = property(get_IsAlphaSliderVisible, put_IsAlphaSliderVisible)
+    IsAlphaTextInputVisible = property(get_IsAlphaTextInputVisible, put_IsAlphaTextInputVisible)
+    IsColorChannelTextInputVisible = property(get_IsColorChannelTextInputVisible, put_IsColorChannelTextInputVisible)
     IsColorPreviewVisible = property(get_IsColorPreviewVisible, put_IsColorPreviewVisible)
     IsColorSliderVisible = property(get_IsColorSliderVisible, put_IsColorSliderVisible)
-    IsAlphaSliderVisible = property(get_IsAlphaSliderVisible, put_IsAlphaSliderVisible)
-    IsMoreButtonVisible = property(get_IsMoreButtonVisible, put_IsMoreButtonVisible)
-    IsColorChannelTextInputVisible = property(get_IsColorChannelTextInputVisible, put_IsColorChannelTextInputVisible)
-    IsAlphaTextInputVisible = property(get_IsAlphaTextInputVisible, put_IsAlphaTextInputVisible)
+    IsColorSpectrumVisible = property(get_IsColorSpectrumVisible, put_IsColorSpectrumVisible)
     IsHexInputVisible = property(get_IsHexInputVisible, put_IsHexInputVisible)
-    MinHue = property(get_MinHue, put_MinHue)
+    IsMoreButtonVisible = property(get_IsMoreButtonVisible, put_IsMoreButtonVisible)
     MaxHue = property(get_MaxHue, put_MaxHue)
-    MinSaturation = property(get_MinSaturation, put_MinSaturation)
     MaxSaturation = property(get_MaxSaturation, put_MaxSaturation)
-    MinValue = property(get_MinValue, put_MinValue)
     MaxValue = property(get_MaxValue, put_MaxValue)
-    ColorSpectrumShape = property(get_ColorSpectrumShape, put_ColorSpectrumShape)
-    ColorSpectrumComponents = property(get_ColorSpectrumComponents, put_ColorSpectrumComponents)
+    MinHue = property(get_MinHue, put_MinHue)
+    MinSaturation = property(get_MinSaturation, put_MinSaturation)
+    MinValue = property(get_MinValue, put_MinValue)
+    PreviousColor = property(get_PreviousColor, put_PreviousColor)
     _ColorPicker_Meta_.ColorProperty = property(get_ColorProperty.__wrapped__, None)
-    _ColorPicker_Meta_.PreviousColorProperty = property(get_PreviousColorProperty.__wrapped__, None)
+    _ColorPicker_Meta_.ColorSpectrumComponentsProperty = property(get_ColorSpectrumComponentsProperty.__wrapped__, None)
+    _ColorPicker_Meta_.ColorSpectrumShapeProperty = property(get_ColorSpectrumShapeProperty.__wrapped__, None)
     _ColorPicker_Meta_.IsAlphaEnabledProperty = property(get_IsAlphaEnabledProperty.__wrapped__, None)
-    _ColorPicker_Meta_.IsColorSpectrumVisibleProperty = property(get_IsColorSpectrumVisibleProperty.__wrapped__, None)
+    _ColorPicker_Meta_.IsAlphaSliderVisibleProperty = property(get_IsAlphaSliderVisibleProperty.__wrapped__, None)
+    _ColorPicker_Meta_.IsAlphaTextInputVisibleProperty = property(get_IsAlphaTextInputVisibleProperty.__wrapped__, None)
+    _ColorPicker_Meta_.IsColorChannelTextInputVisibleProperty = property(get_IsColorChannelTextInputVisibleProperty.__wrapped__, None)
     _ColorPicker_Meta_.IsColorPreviewVisibleProperty = property(get_IsColorPreviewVisibleProperty.__wrapped__, None)
     _ColorPicker_Meta_.IsColorSliderVisibleProperty = property(get_IsColorSliderVisibleProperty.__wrapped__, None)
-    _ColorPicker_Meta_.IsAlphaSliderVisibleProperty = property(get_IsAlphaSliderVisibleProperty.__wrapped__, None)
-    _ColorPicker_Meta_.IsMoreButtonVisibleProperty = property(get_IsMoreButtonVisibleProperty.__wrapped__, None)
-    _ColorPicker_Meta_.IsColorChannelTextInputVisibleProperty = property(get_IsColorChannelTextInputVisibleProperty.__wrapped__, None)
-    _ColorPicker_Meta_.IsAlphaTextInputVisibleProperty = property(get_IsAlphaTextInputVisibleProperty.__wrapped__, None)
+    _ColorPicker_Meta_.IsColorSpectrumVisibleProperty = property(get_IsColorSpectrumVisibleProperty.__wrapped__, None)
     _ColorPicker_Meta_.IsHexInputVisibleProperty = property(get_IsHexInputVisibleProperty.__wrapped__, None)
-    _ColorPicker_Meta_.MinHueProperty = property(get_MinHueProperty.__wrapped__, None)
+    _ColorPicker_Meta_.IsMoreButtonVisibleProperty = property(get_IsMoreButtonVisibleProperty.__wrapped__, None)
     _ColorPicker_Meta_.MaxHueProperty = property(get_MaxHueProperty.__wrapped__, None)
-    _ColorPicker_Meta_.MinSaturationProperty = property(get_MinSaturationProperty.__wrapped__, None)
     _ColorPicker_Meta_.MaxSaturationProperty = property(get_MaxSaturationProperty.__wrapped__, None)
-    _ColorPicker_Meta_.MinValueProperty = property(get_MinValueProperty.__wrapped__, None)
     _ColorPicker_Meta_.MaxValueProperty = property(get_MaxValueProperty.__wrapped__, None)
-    _ColorPicker_Meta_.ColorSpectrumShapeProperty = property(get_ColorSpectrumShapeProperty.__wrapped__, None)
-    _ColorPicker_Meta_.ColorSpectrumComponentsProperty = property(get_ColorSpectrumComponentsProperty.__wrapped__, None)
-ColorPickerHsvChannel = Int32
-ColorPickerHsvChannel_Hue: ColorPickerHsvChannel = 0
-ColorPickerHsvChannel_Saturation: ColorPickerHsvChannel = 1
-ColorPickerHsvChannel_Value: ColorPickerHsvChannel = 2
-ColorPickerHsvChannel_Alpha: ColorPickerHsvChannel = 3
-ColorSpectrumComponents = Int32
-ColorSpectrumComponents_HueValue: ColorSpectrumComponents = 0
-ColorSpectrumComponents_ValueHue: ColorSpectrumComponents = 1
-ColorSpectrumComponents_HueSaturation: ColorSpectrumComponents = 2
-ColorSpectrumComponents_SaturationHue: ColorSpectrumComponents = 3
-ColorSpectrumComponents_SaturationValue: ColorSpectrumComponents = 4
-ColorSpectrumComponents_ValueSaturation: ColorSpectrumComponents = 5
-ColorSpectrumShape = Int32
-ColorSpectrumShape_Box: ColorSpectrumShape = 0
-ColorSpectrumShape_Ring: ColorSpectrumShape = 1
+    _ColorPicker_Meta_.MinHueProperty = property(get_MinHueProperty.__wrapped__, None)
+    _ColorPicker_Meta_.MinSaturationProperty = property(get_MinSaturationProperty.__wrapped__, None)
+    _ColorPicker_Meta_.MinValueProperty = property(get_MinValueProperty.__wrapped__, None)
+    _ColorPicker_Meta_.PreviousColorProperty = property(get_PreviousColorProperty.__wrapped__, None)
+class ColorPickerHsvChannel(Int32):  # enum
+    Hue = 0
+    Saturation = 1
+    Value = 2
+    Alpha = 3
+class ColorSpectrumComponents(Int32):  # enum
+    HueValue = 0
+    ValueHue = 1
+    HueSaturation = 2
+    SaturationHue = 3
+    SaturationValue = 4
+    ValueSaturation = 5
+class ColorSpectrumShape(Int32):  # enum
+    Box = 0
+    Ring = 1
 class _ColumnDefinition_Meta_(ComPtr.__class__):
     pass
 class ColumnDefinition(ComPtr, metaclass=_ColumnDefinition_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IColumnDefinition
     _classid_ = 'Windows.UI.Xaml.Controls.ColumnDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ColumnDefinition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ColumnDefinition: ...
     @winrt_mixinmethod
@@ -1849,13 +2006,13 @@ class ColumnDefinition(ComPtr, metaclass=_ColumnDefinition_Meta_):
     def get_MaxWidthProperty(cls: win32more.Windows.UI.Xaml.Controls.IColumnDefinitionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MinWidthProperty(cls: win32more.Windows.UI.Xaml.Controls.IColumnDefinitionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Width = property(get_Width, put_Width)
+    ActualWidth = property(get_ActualWidth, None)
     MaxWidth = property(get_MaxWidth, put_MaxWidth)
     MinWidth = property(get_MinWidth, put_MinWidth)
-    ActualWidth = property(get_ActualWidth, None)
-    _ColumnDefinition_Meta_.WidthProperty = property(get_WidthProperty.__wrapped__, None)
+    Width = property(get_Width, put_Width)
     _ColumnDefinition_Meta_.MaxWidthProperty = property(get_MaxWidthProperty.__wrapped__, None)
     _ColumnDefinition_Meta_.MinWidthProperty = property(get_MinWidthProperty.__wrapped__, None)
+    _ColumnDefinition_Meta_.WidthProperty = property(get_WidthProperty.__wrapped__, None)
 class ColumnDefinitionCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Controls.ColumnDefinition]
@@ -1893,6 +2050,13 @@ class ComboBox(ComPtr, metaclass=_ComboBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.Selector
     default_interface: win32more.Windows.UI.Xaml.Controls.IComboBox
     _classid_ = 'Windows.UI.Xaml.Controls.ComboBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ComboBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IComboBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ComboBox: ...
     @winrt_mixinmethod
@@ -1997,45 +2161,52 @@ class ComboBox(ComPtr, metaclass=_ComboBox_Meta_):
     def get_IsDropDownOpenProperty(cls: win32more.Windows.UI.Xaml.Controls.IComboBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MaxDropDownHeightProperty(cls: win32more.Windows.UI.Xaml.Controls.IComboBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Description = property(get_Description, put_Description)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     IsDropDownOpen = property(get_IsDropDownOpen, put_IsDropDownOpen)
     IsEditable = property(get_IsEditable, put_IsEditable)
     IsSelectionBoxHighlighted = property(get_IsSelectionBoxHighlighted, None)
+    IsTextSearchEnabled = property(get_IsTextSearchEnabled, put_IsTextSearchEnabled)
+    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
     MaxDropDownHeight = property(get_MaxDropDownHeight, put_MaxDropDownHeight)
+    PlaceholderForeground = property(get_PlaceholderForeground, put_PlaceholderForeground)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
     SelectionBoxItem = property(get_SelectionBoxItem, None)
     SelectionBoxItemTemplate = property(get_SelectionBoxItemTemplate, None)
-    TemplateSettings = property(get_TemplateSettings, None)
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
-    IsTextSearchEnabled = property(get_IsTextSearchEnabled, put_IsTextSearchEnabled)
     SelectionChangedTrigger = property(get_SelectionChangedTrigger, put_SelectionChangedTrigger)
-    PlaceholderForeground = property(get_PlaceholderForeground, put_PlaceholderForeground)
+    TemplateSettings = property(get_TemplateSettings, None)
     Text = property(get_Text, put_Text)
     TextBoxStyle = property(get_TextBoxStyle, put_TextBoxStyle)
-    Description = property(get_Description, put_Description)
-    _ComboBox_Meta_.IsEditableProperty = property(get_IsEditableProperty.__wrapped__, None)
-    _ComboBox_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
-    _ComboBox_Meta_.TextBoxStyleProperty = property(get_TextBoxStyleProperty.__wrapped__, None)
     _ComboBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _ComboBox_Meta_.PlaceholderForegroundProperty = property(get_PlaceholderForegroundProperty.__wrapped__, None)
-    _ComboBox_Meta_.SelectionChangedTriggerProperty = property(get_SelectionChangedTriggerProperty.__wrapped__, None)
-    _ComboBox_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
-    _ComboBox_Meta_.IsTextSearchEnabledProperty = property(get_IsTextSearchEnabledProperty.__wrapped__, None)
     _ComboBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _ComboBox_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _ComboBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
     _ComboBox_Meta_.IsDropDownOpenProperty = property(get_IsDropDownOpenProperty.__wrapped__, None)
+    _ComboBox_Meta_.IsEditableProperty = property(get_IsEditableProperty.__wrapped__, None)
+    _ComboBox_Meta_.IsTextSearchEnabledProperty = property(get_IsTextSearchEnabledProperty.__wrapped__, None)
+    _ComboBox_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
     _ComboBox_Meta_.MaxDropDownHeightProperty = property(get_MaxDropDownHeightProperty.__wrapped__, None)
+    _ComboBox_Meta_.PlaceholderForegroundProperty = property(get_PlaceholderForegroundProperty.__wrapped__, None)
+    _ComboBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
+    _ComboBox_Meta_.SelectionChangedTriggerProperty = property(get_SelectionChangedTriggerProperty.__wrapped__, None)
+    _ComboBox_Meta_.TextBoxStyleProperty = property(get_TextBoxStyleProperty.__wrapped__, None)
+    _ComboBox_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
 class ComboBoxItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.SelectorItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IComboBoxItem
     _classid_ = 'Windows.UI.Xaml.Controls.ComboBoxItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ComboBoxItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IComboBoxItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ComboBoxItem: ...
-ComboBoxSelectionChangedTrigger = Int32
-ComboBoxSelectionChangedTrigger_Committed: ComboBoxSelectionChangedTrigger = 0
-ComboBoxSelectionChangedTrigger_Always: ComboBoxSelectionChangedTrigger = 1
+class ComboBoxSelectionChangedTrigger(Int32):  # enum
+    Committed = 0
+    Always = 1
 class ComboBoxTextSubmittedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IComboBoxTextSubmittedEventArgs
@@ -2046,14 +2217,21 @@ class ComboBoxTextSubmittedEventArgs(ComPtr):
     def get_Handled(self: win32more.Windows.UI.Xaml.Controls.IComboBoxTextSubmittedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Handled(self: win32more.Windows.UI.Xaml.Controls.IComboBoxTextSubmittedEventArgs, value: Boolean) -> Void: ...
-    Text = property(get_Text, None)
     Handled = property(get_Handled, put_Handled)
+    Text = property(get_Text, None)
 class _CommandBar_Meta_(ComPtr.__class__):
     pass
 class CommandBar(ComPtr, metaclass=_CommandBar_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.AppBar
     default_interface: win32more.Windows.UI.Xaml.Controls.ICommandBar
     _classid_ = 'Windows.UI.Xaml.Controls.CommandBar'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CommandBar.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICommandBarFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CommandBar: ...
     @winrt_mixinmethod
@@ -2094,30 +2272,37 @@ class CommandBar(ComPtr, metaclass=_CommandBar_Meta_):
     def get_PrimaryCommandsProperty(cls: win32more.Windows.UI.Xaml.Controls.ICommandBarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SecondaryCommandsProperty(cls: win32more.Windows.UI.Xaml.Controls.ICommandBarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PrimaryCommands = property(get_PrimaryCommands, None)
-    SecondaryCommands = property(get_SecondaryCommands, None)
     CommandBarOverflowPresenterStyle = property(get_CommandBarOverflowPresenterStyle, put_CommandBarOverflowPresenterStyle)
     CommandBarTemplateSettings = property(get_CommandBarTemplateSettings, None)
     DefaultLabelPosition = property(get_DefaultLabelPosition, put_DefaultLabelPosition)
-    OverflowButtonVisibility = property(get_OverflowButtonVisibility, put_OverflowButtonVisibility)
     IsDynamicOverflowEnabled = property(get_IsDynamicOverflowEnabled, put_IsDynamicOverflowEnabled)
-    _CommandBar_Meta_.DefaultLabelPositionProperty = property(get_DefaultLabelPositionProperty.__wrapped__, None)
-    _CommandBar_Meta_.OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty.__wrapped__, None)
-    _CommandBar_Meta_.IsDynamicOverflowEnabledProperty = property(get_IsDynamicOverflowEnabledProperty.__wrapped__, None)
+    OverflowButtonVisibility = property(get_OverflowButtonVisibility, put_OverflowButtonVisibility)
+    PrimaryCommands = property(get_PrimaryCommands, None)
+    SecondaryCommands = property(get_SecondaryCommands, None)
     _CommandBar_Meta_.CommandBarOverflowPresenterStyleProperty = property(get_CommandBarOverflowPresenterStyleProperty.__wrapped__, None)
+    _CommandBar_Meta_.DefaultLabelPositionProperty = property(get_DefaultLabelPositionProperty.__wrapped__, None)
+    _CommandBar_Meta_.IsDynamicOverflowEnabledProperty = property(get_IsDynamicOverflowEnabledProperty.__wrapped__, None)
+    _CommandBar_Meta_.OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty.__wrapped__, None)
     _CommandBar_Meta_.PrimaryCommandsProperty = property(get_PrimaryCommandsProperty.__wrapped__, None)
     _CommandBar_Meta_.SecondaryCommandsProperty = property(get_SecondaryCommandsProperty.__wrapped__, None)
-CommandBarDefaultLabelPosition = Int32
-CommandBarDefaultLabelPosition_Bottom: CommandBarDefaultLabelPosition = 0
-CommandBarDefaultLabelPosition_Right: CommandBarDefaultLabelPosition = 1
-CommandBarDefaultLabelPosition_Collapsed: CommandBarDefaultLabelPosition = 2
-CommandBarDynamicOverflowAction = Int32
-CommandBarDynamicOverflowAction_AddingToOverflow: CommandBarDynamicOverflowAction = 0
-CommandBarDynamicOverflowAction_RemovingFromOverflow: CommandBarDynamicOverflowAction = 1
+class CommandBarDefaultLabelPosition(Int32):  # enum
+    Bottom = 0
+    Right = 1
+    Collapsed = 2
+class CommandBarDynamicOverflowAction(Int32):  # enum
+    AddingToOverflow = 0
+    RemovingFromOverflow = 1
 class CommandBarFlyout(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.FlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.ICommandBarFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.CommandBarFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CommandBarFlyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICommandBarFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CommandBarFlyout: ...
     @winrt_mixinmethod
@@ -2126,23 +2311,37 @@ class CommandBarFlyout(ComPtr):
     def get_SecondaryCommands(self: win32more.Windows.UI.Xaml.Controls.ICommandBarFlyout) -> win32more.Windows.Foundation.Collections.IObservableVector[win32more.Windows.UI.Xaml.Controls.ICommandBarElement]: ...
     PrimaryCommands = property(get_PrimaryCommands, None)
     SecondaryCommands = property(get_SecondaryCommands, None)
-CommandBarLabelPosition = Int32
-CommandBarLabelPosition_Default: CommandBarLabelPosition = 0
-CommandBarLabelPosition_Collapsed: CommandBarLabelPosition = 1
-CommandBarOverflowButtonVisibility = Int32
-CommandBarOverflowButtonVisibility_Auto: CommandBarOverflowButtonVisibility = 0
-CommandBarOverflowButtonVisibility_Visible: CommandBarOverflowButtonVisibility = 1
-CommandBarOverflowButtonVisibility_Collapsed: CommandBarOverflowButtonVisibility = 2
+class CommandBarLabelPosition(Int32):  # enum
+    Default = 0
+    Collapsed = 1
+class CommandBarOverflowButtonVisibility(Int32):  # enum
+    Auto = 0
+    Visible = 1
+    Collapsed = 2
 class CommandBarOverflowPresenter(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ItemsControl
     default_interface: win32more.Windows.UI.Xaml.Controls.ICommandBarOverflowPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.CommandBarOverflowPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.CommandBarOverflowPresenter.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ICommandBarOverflowPresenterFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.CommandBarOverflowPresenter: ...
 class ContainerContentChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IContainerContentChangingEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs: ...
     @winrt_mixinmethod
@@ -2163,18 +2362,25 @@ class ContainerContentChangingEventArgs(ComPtr):
     def RegisterUpdateCallback(self: win32more.Windows.UI.Xaml.Controls.IContainerContentChangingEventArgs, callback: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ListViewBase, win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs]) -> Void: ...
     @winrt_mixinmethod
     def RegisterUpdateCallbackWithPhase(self: win32more.Windows.UI.Xaml.Controls.IContainerContentChangingEventArgs, callbackPhase: UInt32, callback: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ListViewBase, win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs]) -> Void: ...
-    ItemContainer = property(get_ItemContainer, None)
-    InRecycleQueue = property(get_InRecycleQueue, None)
-    ItemIndex = property(get_ItemIndex, None)
-    Item = property(get_Item, None)
-    Phase = property(get_Phase, None)
     Handled = property(get_Handled, put_Handled)
+    InRecycleQueue = property(get_InRecycleQueue, None)
+    Item = property(get_Item, None)
+    ItemContainer = property(get_ItemContainer, None)
+    ItemIndex = property(get_ItemIndex, None)
+    Phase = property(get_Phase, None)
 class _ContentControl_Meta_(ComPtr.__class__):
     pass
 class ContentControl(ComPtr, metaclass=_ContentControl_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentControl
     _classid_ = 'Windows.UI.Xaml.Controls.ContentControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ContentControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IContentControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ContentControl: ...
     @winrt_mixinmethod
@@ -2211,9 +2417,9 @@ class ContentControl(ComPtr, metaclass=_ContentControl_Meta_):
     def get_ContentTransitionsProperty(cls: win32more.Windows.UI.Xaml.Controls.IContentControlStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Content = property(get_Content, put_Content)
     ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
+    ContentTemplateRoot = property(get_ContentTemplateRoot, None)
     ContentTemplateSelector = property(get_ContentTemplateSelector, put_ContentTemplateSelector)
     ContentTransitions = property(get_ContentTransitions, put_ContentTransitions)
-    ContentTemplateRoot = property(get_ContentTemplateRoot, None)
     _ContentControl_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _ContentControl_Meta_.ContentTemplateProperty = property(get_ContentTemplateProperty.__wrapped__, None)
     _ContentControl_Meta_.ContentTemplateSelectorProperty = property(get_ContentTemplateSelectorProperty.__wrapped__, None)
@@ -2224,6 +2430,13 @@ class ContentDialog(ComPtr, metaclass=_ContentDialog_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentDialog
     _classid_ = 'Windows.UI.Xaml.Controls.ContentDialog'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ContentDialog.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IContentDialogFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ContentDialog: ...
     @winrt_mixinmethod
@@ -2364,47 +2577,47 @@ class ContentDialog(ComPtr, metaclass=_ContentDialog_Meta_):
     def get_IsPrimaryButtonEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IContentDialogStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsSecondaryButtonEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IContentDialogStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Title = property(get_Title, put_Title)
-    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
-    FullSizeDesired = property(get_FullSizeDesired, put_FullSizeDesired)
-    PrimaryButtonText = property(get_PrimaryButtonText, put_PrimaryButtonText)
-    SecondaryButtonText = property(get_SecondaryButtonText, put_SecondaryButtonText)
-    PrimaryButtonCommand = property(get_PrimaryButtonCommand, put_PrimaryButtonCommand)
-    SecondaryButtonCommand = property(get_SecondaryButtonCommand, put_SecondaryButtonCommand)
-    PrimaryButtonCommandParameter = property(get_PrimaryButtonCommandParameter, put_PrimaryButtonCommandParameter)
-    SecondaryButtonCommandParameter = property(get_SecondaryButtonCommandParameter, put_SecondaryButtonCommandParameter)
-    IsPrimaryButtonEnabled = property(get_IsPrimaryButtonEnabled, put_IsPrimaryButtonEnabled)
-    IsSecondaryButtonEnabled = property(get_IsSecondaryButtonEnabled, put_IsSecondaryButtonEnabled)
-    CloseButtonText = property(get_CloseButtonText, put_CloseButtonText)
     CloseButtonCommand = property(get_CloseButtonCommand, put_CloseButtonCommand)
     CloseButtonCommandParameter = property(get_CloseButtonCommandParameter, put_CloseButtonCommandParameter)
-    PrimaryButtonStyle = property(get_PrimaryButtonStyle, put_PrimaryButtonStyle)
-    SecondaryButtonStyle = property(get_SecondaryButtonStyle, put_SecondaryButtonStyle)
     CloseButtonStyle = property(get_CloseButtonStyle, put_CloseButtonStyle)
+    CloseButtonText = property(get_CloseButtonText, put_CloseButtonText)
     DefaultButton = property(get_DefaultButton, put_DefaultButton)
-    _ContentDialog_Meta_.CloseButtonTextProperty = property(get_CloseButtonTextProperty.__wrapped__, None)
-    _ContentDialog_Meta_.CloseButtonCommandProperty = property(get_CloseButtonCommandProperty.__wrapped__, None)
+    FullSizeDesired = property(get_FullSizeDesired, put_FullSizeDesired)
+    IsPrimaryButtonEnabled = property(get_IsPrimaryButtonEnabled, put_IsPrimaryButtonEnabled)
+    IsSecondaryButtonEnabled = property(get_IsSecondaryButtonEnabled, put_IsSecondaryButtonEnabled)
+    PrimaryButtonCommand = property(get_PrimaryButtonCommand, put_PrimaryButtonCommand)
+    PrimaryButtonCommandParameter = property(get_PrimaryButtonCommandParameter, put_PrimaryButtonCommandParameter)
+    PrimaryButtonStyle = property(get_PrimaryButtonStyle, put_PrimaryButtonStyle)
+    PrimaryButtonText = property(get_PrimaryButtonText, put_PrimaryButtonText)
+    SecondaryButtonCommand = property(get_SecondaryButtonCommand, put_SecondaryButtonCommand)
+    SecondaryButtonCommandParameter = property(get_SecondaryButtonCommandParameter, put_SecondaryButtonCommandParameter)
+    SecondaryButtonStyle = property(get_SecondaryButtonStyle, put_SecondaryButtonStyle)
+    SecondaryButtonText = property(get_SecondaryButtonText, put_SecondaryButtonText)
+    Title = property(get_Title, put_Title)
+    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
     _ContentDialog_Meta_.CloseButtonCommandParameterProperty = property(get_CloseButtonCommandParameterProperty.__wrapped__, None)
-    _ContentDialog_Meta_.PrimaryButtonStyleProperty = property(get_PrimaryButtonStyleProperty.__wrapped__, None)
-    _ContentDialog_Meta_.SecondaryButtonStyleProperty = property(get_SecondaryButtonStyleProperty.__wrapped__, None)
+    _ContentDialog_Meta_.CloseButtonCommandProperty = property(get_CloseButtonCommandProperty.__wrapped__, None)
     _ContentDialog_Meta_.CloseButtonStyleProperty = property(get_CloseButtonStyleProperty.__wrapped__, None)
+    _ContentDialog_Meta_.CloseButtonTextProperty = property(get_CloseButtonTextProperty.__wrapped__, None)
     _ContentDialog_Meta_.DefaultButtonProperty = property(get_DefaultButtonProperty.__wrapped__, None)
-    _ContentDialog_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
-    _ContentDialog_Meta_.TitleTemplateProperty = property(get_TitleTemplateProperty.__wrapped__, None)
     _ContentDialog_Meta_.FullSizeDesiredProperty = property(get_FullSizeDesiredProperty.__wrapped__, None)
-    _ContentDialog_Meta_.PrimaryButtonTextProperty = property(get_PrimaryButtonTextProperty.__wrapped__, None)
-    _ContentDialog_Meta_.SecondaryButtonTextProperty = property(get_SecondaryButtonTextProperty.__wrapped__, None)
-    _ContentDialog_Meta_.PrimaryButtonCommandProperty = property(get_PrimaryButtonCommandProperty.__wrapped__, None)
-    _ContentDialog_Meta_.SecondaryButtonCommandProperty = property(get_SecondaryButtonCommandProperty.__wrapped__, None)
-    _ContentDialog_Meta_.PrimaryButtonCommandParameterProperty = property(get_PrimaryButtonCommandParameterProperty.__wrapped__, None)
-    _ContentDialog_Meta_.SecondaryButtonCommandParameterProperty = property(get_SecondaryButtonCommandParameterProperty.__wrapped__, None)
     _ContentDialog_Meta_.IsPrimaryButtonEnabledProperty = property(get_IsPrimaryButtonEnabledProperty.__wrapped__, None)
     _ContentDialog_Meta_.IsSecondaryButtonEnabledProperty = property(get_IsSecondaryButtonEnabledProperty.__wrapped__, None)
-ContentDialogButton = Int32
-ContentDialogButton_None: ContentDialogButton = 0
-ContentDialogButton_Primary: ContentDialogButton = 1
-ContentDialogButton_Secondary: ContentDialogButton = 2
-ContentDialogButton_Close: ContentDialogButton = 3
+    _ContentDialog_Meta_.PrimaryButtonCommandParameterProperty = property(get_PrimaryButtonCommandParameterProperty.__wrapped__, None)
+    _ContentDialog_Meta_.PrimaryButtonCommandProperty = property(get_PrimaryButtonCommandProperty.__wrapped__, None)
+    _ContentDialog_Meta_.PrimaryButtonStyleProperty = property(get_PrimaryButtonStyleProperty.__wrapped__, None)
+    _ContentDialog_Meta_.PrimaryButtonTextProperty = property(get_PrimaryButtonTextProperty.__wrapped__, None)
+    _ContentDialog_Meta_.SecondaryButtonCommandParameterProperty = property(get_SecondaryButtonCommandParameterProperty.__wrapped__, None)
+    _ContentDialog_Meta_.SecondaryButtonCommandProperty = property(get_SecondaryButtonCommandProperty.__wrapped__, None)
+    _ContentDialog_Meta_.SecondaryButtonStyleProperty = property(get_SecondaryButtonStyleProperty.__wrapped__, None)
+    _ContentDialog_Meta_.SecondaryButtonTextProperty = property(get_SecondaryButtonTextProperty.__wrapped__, None)
+    _ContentDialog_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
+    _ContentDialog_Meta_.TitleTemplateProperty = property(get_TitleTemplateProperty.__wrapped__, None)
+class ContentDialogButton(Int32):  # enum
+    None_ = 0
+    Primary = 1
+    Secondary = 2
+    Close = 3
 class ContentDialogButtonClickDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentDialogButtonClickDeferral
@@ -2447,23 +2660,23 @@ class ContentDialogClosingEventArgs(ComPtr):
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.IContentDialogClosingEventArgs, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.UI.Xaml.Controls.IContentDialogClosingEventArgs) -> win32more.Windows.UI.Xaml.Controls.ContentDialogClosingDeferral: ...
-    Result = property(get_Result, None)
     Cancel = property(get_Cancel, put_Cancel)
+    Result = property(get_Result, None)
 class ContentDialogOpenedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentDialogOpenedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ContentDialogOpenedEventArgs'
-ContentDialogPlacement = Int32
-ContentDialogPlacement_Popup: ContentDialogPlacement = 0
-ContentDialogPlacement_InPlace: ContentDialogPlacement = 1
-ContentDialogResult = Int32
-ContentDialogResult_None: ContentDialogResult = 0
-ContentDialogResult_Primary: ContentDialogResult = 1
-ContentDialogResult_Secondary: ContentDialogResult = 2
-ContentLinkChangeKind = Int32
-ContentLinkChangeKind_Inserted: ContentLinkChangeKind = 0
-ContentLinkChangeKind_Removed: ContentLinkChangeKind = 1
-ContentLinkChangeKind_Edited: ContentLinkChangeKind = 2
+class ContentDialogPlacement(Int32):  # enum
+    Popup = 0
+    InPlace = 1
+class ContentDialogResult(Int32):  # enum
+    None_ = 0
+    Primary = 1
+    Secondary = 2
+class ContentLinkChangeKind(Int32):  # enum
+    Inserted = 0
+    Removed = 1
+    Edited = 2
 class ContentLinkChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentLinkChangedEventArgs
@@ -2483,6 +2696,13 @@ class ContentPresenter(ComPtr, metaclass=_ContentPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IContentPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.ContentPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ContentPresenter.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IContentPresenterFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ContentPresenter: ...
     @winrt_mixinmethod
@@ -2649,59 +2869,59 @@ class ContentPresenter(ComPtr, metaclass=_ContentPresenter_Meta_):
     def get_CharacterSpacingProperty(cls: win32more.Windows.UI.Xaml.Controls.IContentPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ForegroundProperty(cls: win32more.Windows.UI.Xaml.Controls.IContentPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Background = property(get_Background, put_Background)
+    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
+    BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
+    BorderBrush = property(get_BorderBrush, put_BorderBrush)
+    BorderThickness = property(get_BorderThickness, put_BorderThickness)
+    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
     Content = property(get_Content, put_Content)
     ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     ContentTemplateSelector = property(get_ContentTemplateSelector, put_ContentTemplateSelector)
     ContentTransitions = property(get_ContentTransitions, put_ContentTransitions)
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
-    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
-    Foreground = property(get_Foreground, put_Foreground)
-    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
-    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
-    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    MaxLines = property(get_MaxLines, put_MaxLines)
-    LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    LineHeight = property(get_LineHeight, put_LineHeight)
-    BorderBrush = property(get_BorderBrush, put_BorderBrush)
-    BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CornerRadius = property(get_CornerRadius, put_CornerRadius)
-    Padding = property(get_Padding, put_Padding)
-    Background = property(get_Background, put_Background)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Foreground = property(get_Foreground, put_Foreground)
     HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
+    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
+    LineHeight = property(get_LineHeight, put_LineHeight)
+    LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
+    MaxLines = property(get_MaxLines, put_MaxLines)
+    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
+    Padding = property(get_Padding, put_Padding)
+    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
     VerticalContentAlignment = property(get_VerticalContentAlignment, put_VerticalContentAlignment)
-    BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
-    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
+    _ContentPresenter_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
     _ContentPresenter_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.LineStackingStrategyProperty = property(get_LineStackingStrategyProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.LineHeightProperty = property(get_LineHeightProperty.__wrapped__, None)
     _ContentPresenter_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
     _ContentPresenter_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.VerticalContentAlignmentProperty = property(get_VerticalContentAlignmentProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
     _ContentPresenter_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _ContentPresenter_Meta_.ContentTemplateProperty = property(get_ContentTemplateProperty.__wrapped__, None)
     _ContentPresenter_Meta_.ContentTemplateSelectorProperty = property(get_ContentTemplateSelectorProperty.__wrapped__, None)
     _ContentPresenter_Meta_.ContentTransitionsProperty = property(get_ContentTransitionsProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
     _ContentPresenter_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _ContentPresenter_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
-    _ContentPresenter_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
     _ContentPresenter_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.LineHeightProperty = property(get_LineHeightProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.LineStackingStrategyProperty = property(get_LineStackingStrategyProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
+    _ContentPresenter_Meta_.VerticalContentAlignmentProperty = property(get_VerticalContentAlignmentProperty.__wrapped__, None)
 class ContextMenuEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Controls.IContextMenuEventArgs
@@ -2714,9 +2934,9 @@ class ContextMenuEventArgs(ComPtr):
     def get_CursorLeft(self: win32more.Windows.UI.Xaml.Controls.IContextMenuEventArgs) -> Double: ...
     @winrt_mixinmethod
     def get_CursorTop(self: win32more.Windows.UI.Xaml.Controls.IContextMenuEventArgs) -> Double: ...
-    Handled = property(get_Handled, put_Handled)
     CursorLeft = property(get_CursorLeft, None)
     CursorTop = property(get_CursorTop, None)
+    Handled = property(get_Handled, put_Handled)
 class ContextMenuOpeningEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{df945151-745c-4446-b2fc-216d765847a0}')
@@ -2727,6 +2947,13 @@ class Control(ComPtr, metaclass=_Control_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IControl
     _classid_ = 'Windows.UI.Xaml.Controls.Control'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Control.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Control: ...
     @winrt_mixinmethod
@@ -3013,78 +3240,85 @@ class Control(ComPtr, metaclass=_Control_Meta_):
     def get_DefaultStyleKeyProperty(cls: win32more.Windows.UI.Xaml.Controls.IControlStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FocusStateProperty(cls: win32more.Windows.UI.Xaml.Controls.IControlStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
+    Background = property(get_Background, put_Background)
+    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
+    BorderBrush = property(get_BorderBrush, put_BorderBrush)
+    BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    CornerRadius = property(get_CornerRadius, put_CornerRadius)
+    DefaultStyleKey = property(get_DefaultStyleKey, put_DefaultStyleKey)
+    DefaultStyleResourceUri = property(get_DefaultStyleResourceUri, put_DefaultStyleResourceUri)
+    ElementSoundMode = property(get_ElementSoundMode, put_ElementSoundMode)
+    FocusState = property(get_FocusState, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
     Foreground = property(get_Foreground, put_Foreground)
-    IsTabStop = property(get_IsTabStop, put_IsTabStop)
+    HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    IsFocusEngaged = property(get_IsFocusEngaged, put_IsFocusEngaged)
+    IsFocusEngagementEnabled = property(get_IsFocusEngagementEnabled, put_IsFocusEngagementEnabled)
+    IsTabStop = property(get_IsTabStop, put_IsTabStop)
+    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
+    Padding = property(get_Padding, put_Padding)
+    RequiresPointer = property(get_RequiresPointer, put_RequiresPointer)
     TabIndex = property(get_TabIndex, put_TabIndex)
     TabNavigation = property(get_TabNavigation, put_TabNavigation)
     Template = property(get_Template, put_Template)
-    Padding = property(get_Padding, put_Padding)
-    HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
-    VerticalContentAlignment = property(get_VerticalContentAlignment, put_VerticalContentAlignment)
-    Background = property(get_Background, put_Background)
-    BorderThickness = property(get_BorderThickness, put_BorderThickness)
-    BorderBrush = property(get_BorderBrush, put_BorderBrush)
-    FocusState = property(get_FocusState, None)
-    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
     UseSystemFocusVisuals = property(get_UseSystemFocusVisuals, put_UseSystemFocusVisuals)
-    IsFocusEngagementEnabled = property(get_IsFocusEngagementEnabled, put_IsFocusEngagementEnabled)
-    IsFocusEngaged = property(get_IsFocusEngaged, put_IsFocusEngaged)
-    RequiresPointer = property(get_RequiresPointer, put_RequiresPointer)
+    VerticalContentAlignment = property(get_VerticalContentAlignment, put_VerticalContentAlignment)
+    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
     XYFocusLeft = property(get_XYFocusLeft, put_XYFocusLeft)
     XYFocusRight = property(get_XYFocusRight, put_XYFocusRight)
     XYFocusUp = property(get_XYFocusUp, put_XYFocusUp)
-    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
-    ElementSoundMode = property(get_ElementSoundMode, put_ElementSoundMode)
-    DefaultStyleResourceUri = property(get_DefaultStyleResourceUri, put_DefaultStyleResourceUri)
-    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
-    CornerRadius = property(get_CornerRadius, put_CornerRadius)
-    DefaultStyleKey = property(get_DefaultStyleKey, put_DefaultStyleKey)
+    _Control_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
     _Control_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
-    _Control_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
-    _Control_Meta_.DefaultStyleResourceUriProperty = property(get_DefaultStyleResourceUriProperty.__wrapped__, None)
-    _Control_Meta_.IsTemplateKeyTipTargetProperty = property(get_IsTemplateKeyTipTargetProperty.__wrapped__, None)
-    _Control_Meta_.IsFocusEngagementEnabledProperty = property(get_IsFocusEngagementEnabledProperty.__wrapped__, None)
-    _Control_Meta_.IsFocusEngagedProperty = property(get_IsFocusEngagedProperty.__wrapped__, None)
-    _Control_Meta_.RequiresPointerProperty = property(get_RequiresPointerProperty.__wrapped__, None)
-    _Control_Meta_.XYFocusLeftProperty = property(get_XYFocusLeftProperty.__wrapped__, None)
-    _Control_Meta_.XYFocusRightProperty = property(get_XYFocusRightProperty.__wrapped__, None)
-    _Control_Meta_.XYFocusUpProperty = property(get_XYFocusUpProperty.__wrapped__, None)
-    _Control_Meta_.XYFocusDownProperty = property(get_XYFocusDownProperty.__wrapped__, None)
-    _Control_Meta_.ElementSoundModeProperty = property(get_ElementSoundModeProperty.__wrapped__, None)
-    _Control_Meta_.UseSystemFocusVisualsProperty = property(get_UseSystemFocusVisualsProperty.__wrapped__, None)
-    _Control_Meta_.IsTemplateFocusTargetProperty = property(get_IsTemplateFocusTargetProperty.__wrapped__, None)
-    _Control_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
-    _Control_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
-    _Control_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _Control_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
-    _Control_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
-    _Control_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
+    _Control_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
+    _Control_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
     _Control_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
+    _Control_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
+    _Control_Meta_.DefaultStyleKeyProperty = property(get_DefaultStyleKeyProperty.__wrapped__, None)
+    _Control_Meta_.DefaultStyleResourceUriProperty = property(get_DefaultStyleResourceUriProperty.__wrapped__, None)
+    _Control_Meta_.ElementSoundModeProperty = property(get_ElementSoundModeProperty.__wrapped__, None)
+    _Control_Meta_.FocusStateProperty = property(get_FocusStateProperty.__wrapped__, None)
+    _Control_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
+    _Control_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
+    _Control_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
+    _Control_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _Control_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
     _Control_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
-    _Control_Meta_.IsTabStopProperty = property(get_IsTabStopProperty.__wrapped__, None)
+    _Control_Meta_.HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty.__wrapped__, None)
     _Control_Meta_.IsEnabledProperty = property(get_IsEnabledProperty.__wrapped__, None)
+    _Control_Meta_.IsFocusEngagedProperty = property(get_IsFocusEngagedProperty.__wrapped__, None)
+    _Control_Meta_.IsFocusEngagementEnabledProperty = property(get_IsFocusEngagementEnabledProperty.__wrapped__, None)
+    _Control_Meta_.IsTabStopProperty = property(get_IsTabStopProperty.__wrapped__, None)
+    _Control_Meta_.IsTemplateFocusTargetProperty = property(get_IsTemplateFocusTargetProperty.__wrapped__, None)
+    _Control_Meta_.IsTemplateKeyTipTargetProperty = property(get_IsTemplateKeyTipTargetProperty.__wrapped__, None)
+    _Control_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
+    _Control_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
+    _Control_Meta_.RequiresPointerProperty = property(get_RequiresPointerProperty.__wrapped__, None)
     _Control_Meta_.TabIndexProperty = property(get_TabIndexProperty.__wrapped__, None)
     _Control_Meta_.TabNavigationProperty = property(get_TabNavigationProperty.__wrapped__, None)
     _Control_Meta_.TemplateProperty = property(get_TemplateProperty.__wrapped__, None)
-    _Control_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-    _Control_Meta_.HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty.__wrapped__, None)
+    _Control_Meta_.UseSystemFocusVisualsProperty = property(get_UseSystemFocusVisualsProperty.__wrapped__, None)
     _Control_Meta_.VerticalContentAlignmentProperty = property(get_VerticalContentAlignmentProperty.__wrapped__, None)
-    _Control_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
-    _Control_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
-    _Control_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
-    _Control_Meta_.DefaultStyleKeyProperty = property(get_DefaultStyleKeyProperty.__wrapped__, None)
-    _Control_Meta_.FocusStateProperty = property(get_FocusStateProperty.__wrapped__, None)
+    _Control_Meta_.XYFocusDownProperty = property(get_XYFocusDownProperty.__wrapped__, None)
+    _Control_Meta_.XYFocusLeftProperty = property(get_XYFocusLeftProperty.__wrapped__, None)
+    _Control_Meta_.XYFocusRightProperty = property(get_XYFocusRightProperty.__wrapped__, None)
+    _Control_Meta_.XYFocusUpProperty = property(get_XYFocusUpProperty.__wrapped__, None)
 class ControlTemplate(ComPtr):
     extends: win32more.Windows.UI.Xaml.FrameworkTemplate
     default_interface: win32more.Windows.UI.Xaml.Controls.IControlTemplate
     _classid_ = 'Windows.UI.Xaml.Controls.ControlTemplate'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ControlTemplate.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ControlTemplate: ...
     @winrt_mixinmethod
@@ -3096,6 +3330,13 @@ class DataTemplateSelector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IDataTemplateSelector
     _classid_ = 'Windows.UI.Xaml.Controls.DataTemplateSelector'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DataTemplateSelector.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IDataTemplateSelectorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.DataTemplateSelector: ...
     @winrt_mixinmethod
@@ -3114,20 +3355,34 @@ class DatePickedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IDatePickedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.DatePickedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DatePickedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.DatePickedEventArgs: ...
     @winrt_mixinmethod
     def get_OldDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickedEventArgs) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_NewDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickedEventArgs) -> win32more.Windows.Foundation.DateTime: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
+    OldDate = property(get_OldDate, None)
 class _DatePicker_Meta_(ComPtr.__class__):
     pass
 class DatePicker(ComPtr, metaclass=_DatePicker_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IDatePicker
     _classid_ = 'Windows.UI.Xaml.Controls.DatePicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DatePicker.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IDatePickerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.DatePicker: ...
     @winrt_mixinmethod
@@ -3228,42 +3483,49 @@ class DatePicker(ComPtr, metaclass=_DatePicker_Meta_):
     def get_MaxYearProperty(cls: win32more.Windows.UI.Xaml.Controls.IDatePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_OrientationProperty(cls: win32more.Windows.UI.Xaml.Controls.IDatePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     Date = property(get_Date, put_Date)
-    DayVisible = property(get_DayVisible, put_DayVisible)
-    MonthVisible = property(get_MonthVisible, put_MonthVisible)
-    YearVisible = property(get_YearVisible, put_YearVisible)
     DayFormat = property(get_DayFormat, put_DayFormat)
-    MonthFormat = property(get_MonthFormat, put_MonthFormat)
-    YearFormat = property(get_YearFormat, put_YearFormat)
-    MinYear = property(get_MinYear, put_MinYear)
-    MaxYear = property(get_MaxYear, put_MaxYear)
-    Orientation = property(get_Orientation, put_Orientation)
+    DayVisible = property(get_DayVisible, put_DayVisible)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
+    MaxYear = property(get_MaxYear, put_MaxYear)
+    MinYear = property(get_MinYear, put_MinYear)
+    MonthFormat = property(get_MonthFormat, put_MonthFormat)
+    MonthVisible = property(get_MonthVisible, put_MonthVisible)
+    Orientation = property(get_Orientation, put_Orientation)
     SelectedDate = property(get_SelectedDate, put_SelectedDate)
-    _DatePicker_Meta_.SelectedDateProperty = property(get_SelectedDateProperty.__wrapped__, None)
-    _DatePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
-    _DatePicker_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
-    _DatePicker_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
+    YearFormat = property(get_YearFormat, put_YearFormat)
+    YearVisible = property(get_YearVisible, put_YearVisible)
     _DatePicker_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
     _DatePicker_Meta_.DateProperty = property(get_DateProperty.__wrapped__, None)
-    _DatePicker_Meta_.DayVisibleProperty = property(get_DayVisibleProperty.__wrapped__, None)
-    _DatePicker_Meta_.MonthVisibleProperty = property(get_MonthVisibleProperty.__wrapped__, None)
-    _DatePicker_Meta_.YearVisibleProperty = property(get_YearVisibleProperty.__wrapped__, None)
     _DatePicker_Meta_.DayFormatProperty = property(get_DayFormatProperty.__wrapped__, None)
-    _DatePicker_Meta_.MonthFormatProperty = property(get_MonthFormatProperty.__wrapped__, None)
-    _DatePicker_Meta_.YearFormatProperty = property(get_YearFormatProperty.__wrapped__, None)
-    _DatePicker_Meta_.MinYearProperty = property(get_MinYearProperty.__wrapped__, None)
+    _DatePicker_Meta_.DayVisibleProperty = property(get_DayVisibleProperty.__wrapped__, None)
+    _DatePicker_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
+    _DatePicker_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
+    _DatePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
     _DatePicker_Meta_.MaxYearProperty = property(get_MaxYearProperty.__wrapped__, None)
+    _DatePicker_Meta_.MinYearProperty = property(get_MinYearProperty.__wrapped__, None)
+    _DatePicker_Meta_.MonthFormatProperty = property(get_MonthFormatProperty.__wrapped__, None)
+    _DatePicker_Meta_.MonthVisibleProperty = property(get_MonthVisibleProperty.__wrapped__, None)
     _DatePicker_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+    _DatePicker_Meta_.SelectedDateProperty = property(get_SelectedDateProperty.__wrapped__, None)
+    _DatePicker_Meta_.YearFormatProperty = property(get_YearFormatProperty.__wrapped__, None)
+    _DatePicker_Meta_.YearVisibleProperty = property(get_YearVisibleProperty.__wrapped__, None)
 class _DatePickerFlyout_Meta_(ComPtr.__class__):
     pass
 class DatePickerFlyout(ComPtr, metaclass=_DatePickerFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.PickerFlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IDatePickerFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.DatePickerFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DatePickerFlyout.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.DatePickerFlyout: ...
     @winrt_mixinmethod
@@ -3334,24 +3596,24 @@ class DatePickerFlyout(ComPtr, metaclass=_DatePickerFlyout_Meta_):
     def get_MaxYearProperty(cls: win32more.Windows.UI.Xaml.Controls.IDatePickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     Date = property(get_Date, put_Date)
-    DayVisible = property(get_DayVisible, put_DayVisible)
-    MonthVisible = property(get_MonthVisible, put_MonthVisible)
-    YearVisible = property(get_YearVisible, put_YearVisible)
-    MinYear = property(get_MinYear, put_MinYear)
-    MaxYear = property(get_MaxYear, put_MaxYear)
     DayFormat = property(get_DayFormat, put_DayFormat)
+    DayVisible = property(get_DayVisible, put_DayVisible)
+    MaxYear = property(get_MaxYear, put_MaxYear)
+    MinYear = property(get_MinYear, put_MinYear)
     MonthFormat = property(get_MonthFormat, put_MonthFormat)
+    MonthVisible = property(get_MonthVisible, put_MonthVisible)
     YearFormat = property(get_YearFormat, put_YearFormat)
-    _DatePickerFlyout_Meta_.DayFormatProperty = property(get_DayFormatProperty.__wrapped__, None)
-    _DatePickerFlyout_Meta_.MonthFormatProperty = property(get_MonthFormatProperty.__wrapped__, None)
-    _DatePickerFlyout_Meta_.YearFormatProperty = property(get_YearFormatProperty.__wrapped__, None)
+    YearVisible = property(get_YearVisible, put_YearVisible)
     _DatePickerFlyout_Meta_.CalendarIdentifierProperty = property(get_CalendarIdentifierProperty.__wrapped__, None)
     _DatePickerFlyout_Meta_.DateProperty = property(get_DateProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.DayFormatProperty = property(get_DayFormatProperty.__wrapped__, None)
     _DatePickerFlyout_Meta_.DayVisibleProperty = property(get_DayVisibleProperty.__wrapped__, None)
-    _DatePickerFlyout_Meta_.MonthVisibleProperty = property(get_MonthVisibleProperty.__wrapped__, None)
-    _DatePickerFlyout_Meta_.YearVisibleProperty = property(get_YearVisibleProperty.__wrapped__, None)
-    _DatePickerFlyout_Meta_.MinYearProperty = property(get_MinYearProperty.__wrapped__, None)
     _DatePickerFlyout_Meta_.MaxYearProperty = property(get_MaxYearProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.MinYearProperty = property(get_MinYearProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.MonthFormatProperty = property(get_MonthFormatProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.MonthVisibleProperty = property(get_MonthVisibleProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.YearFormatProperty = property(get_YearFormatProperty.__wrapped__, None)
+    _DatePickerFlyout_Meta_.YearVisibleProperty = property(get_YearVisibleProperty.__wrapped__, None)
 class _DatePickerFlyoutItem_Meta_(ComPtr.__class__):
     pass
 class DatePickerFlyoutItem(ComPtr, metaclass=_DatePickerFlyoutItem_Meta_):
@@ -3405,8 +3667,8 @@ class DatePickerSelectedValueChangedEventArgs(ComPtr):
     def get_OldDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickerSelectedValueChangedEventArgs) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     @winrt_mixinmethod
     def get_NewDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickerSelectedValueChangedEventArgs) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
+    OldDate = property(get_OldDate, None)
 class DatePickerValueChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IDatePickerValueChangedEventArgs
@@ -3415,14 +3677,14 @@ class DatePickerValueChangedEventArgs(ComPtr):
     def get_OldDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickerValueChangedEventArgs) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_NewDate(self: win32more.Windows.UI.Xaml.Controls.IDatePickerValueChangedEventArgs) -> win32more.Windows.Foundation.DateTime: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
-DisabledFormattingAccelerators = UInt32
-DisabledFormattingAccelerators_None: DisabledFormattingAccelerators = 0
-DisabledFormattingAccelerators_Bold: DisabledFormattingAccelerators = 1
-DisabledFormattingAccelerators_Italic: DisabledFormattingAccelerators = 2
-DisabledFormattingAccelerators_Underline: DisabledFormattingAccelerators = 4
-DisabledFormattingAccelerators_All: DisabledFormattingAccelerators = 4294967295
+    OldDate = property(get_OldDate, None)
+class DisabledFormattingAccelerators(UInt32):  # enum
+    None_ = 0
+    Bold = 1
+    Italic = 2
+    Underline = 4
+    All = 4294967295
 class DragItemsCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IDragItemsCompletedEventArgs
@@ -3431,12 +3693,19 @@ class DragItemsCompletedEventArgs(ComPtr):
     def get_Items(self: win32more.Windows.UI.Xaml.Controls.IDragItemsCompletedEventArgs) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     @winrt_mixinmethod
     def get_DropResult(self: win32more.Windows.UI.Xaml.Controls.IDragItemsCompletedEventArgs) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation: ...
-    Items = property(get_Items, None)
     DropResult = property(get_DropResult, None)
+    Items = property(get_Items, None)
 class DragItemsStartingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IDragItemsStartingEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.DragItemsStartingEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DragItemsStartingEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.DragItemsStartingEventArgs: ...
     @winrt_mixinmethod
@@ -3448,8 +3717,8 @@ class DragItemsStartingEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Data(self: win32more.Windows.UI.Xaml.Controls.IDragItemsStartingEventArgs) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackage: ...
     Cancel = property(get_Cancel, put_Cancel)
-    Items = property(get_Items, None)
     Data = property(get_Data, None)
+    Items = property(get_Items, None)
 class DragItemsStartingEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{3aaeab4c-14cb-4434-becc-88a8585c2f89}')
@@ -3458,12 +3727,26 @@ class DropDownButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Button
     default_interface: win32more.Windows.UI.Xaml.Controls.IDropDownButton
     _classid_ = 'Windows.UI.Xaml.Controls.DropDownButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DropDownButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IDropDownButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.DropDownButton: ...
 class DropDownButtonAutomationPeer(ComPtr):
     extends: win32more.Windows.UI.Xaml.Automation.Peers.ButtonAutomationPeer
     default_interface: win32more.Windows.UI.Xaml.Controls.IDropDownButtonAutomationPeer
     _classid_ = 'Windows.UI.Xaml.Controls.DropDownButtonAutomationPeer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Controls.DropDownButtonAutomationPeer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IDropDownButtonAutomationPeerFactory, owner: win32more.Windows.UI.Xaml.Controls.DropDownButton, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.DropDownButtonAutomationPeer: ...
     @winrt_mixinmethod
@@ -3477,6 +3760,13 @@ class DynamicOverflowItemsChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IDynamicOverflowItemsChangingEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.DynamicOverflowItemsChangingEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.DynamicOverflowItemsChangingEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.DynamicOverflowItemsChangingEventArgs: ...
     @winrt_mixinmethod
@@ -3488,6 +3778,13 @@ class FlipView(ComPtr, metaclass=_FlipView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.Selector
     default_interface: win32more.Windows.UI.Xaml.Controls.IFlipView
     _classid_ = 'Windows.UI.Xaml.Controls.FlipView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.FlipView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFlipViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.FlipView: ...
     @winrt_mixinmethod
@@ -3502,6 +3799,13 @@ class FlipViewItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.SelectorItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IFlipViewItem
     _classid_ = 'Windows.UI.Xaml.Controls.FlipViewItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.FlipViewItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFlipViewItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.FlipViewItem: ...
 class _Flyout_Meta_(ComPtr.__class__):
@@ -3510,6 +3814,13 @@ class Flyout(ComPtr, metaclass=_Flyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.FlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.Flyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Flyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Flyout: ...
     @winrt_mixinmethod
@@ -3534,6 +3845,13 @@ class FlyoutPresenter(ComPtr, metaclass=_FlyoutPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IFlyoutPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.FlyoutPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.FlyoutPresenter.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFlyoutPresenterFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.FlyoutPresenter: ...
     @winrt_mixinmethod
@@ -3563,6 +3881,13 @@ class FontIcon(ComPtr, metaclass=_FontIcon_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IFontIcon
     _classid_ = 'Windows.UI.Xaml.Controls.FontIcon'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.FontIcon.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFontIconFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.FontIcon: ...
     @winrt_mixinmethod
@@ -3607,26 +3932,33 @@ class FontIcon(ComPtr, metaclass=_FontIcon_Meta_):
     def get_FontWeightProperty(cls: win32more.Windows.UI.Xaml.Controls.IFontIconStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FontStyleProperty(cls: win32more.Windows.UI.Xaml.Controls.IFontIconStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Glyph = property(get_Glyph, put_Glyph)
-    FontSize = property(get_FontSize, put_FontSize)
     FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
+    FontSize = property(get_FontSize, put_FontSize)
     FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Glyph = property(get_Glyph, put_Glyph)
     IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
     MirroredWhenRightToLeft = property(get_MirroredWhenRightToLeft, put_MirroredWhenRightToLeft)
-    _FontIcon_Meta_.MirroredWhenRightToLeftProperty = property(get_MirroredWhenRightToLeftProperty.__wrapped__, None)
-    _FontIcon_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
-    _FontIcon_Meta_.GlyphProperty = property(get_GlyphProperty.__wrapped__, None)
-    _FontIcon_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _FontIcon_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _FontIcon_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
+    _FontIcon_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _FontIcon_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _FontIcon_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
+    _FontIcon_Meta_.GlyphProperty = property(get_GlyphProperty.__wrapped__, None)
+    _FontIcon_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
+    _FontIcon_Meta_.MirroredWhenRightToLeftProperty = property(get_MirroredWhenRightToLeftProperty.__wrapped__, None)
 class _FontIconSource_Meta_(ComPtr.__class__):
     pass
 class FontIconSource(ComPtr, metaclass=_FontIconSource_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconSource
     default_interface: win32more.Windows.UI.Xaml.Controls.IFontIconSource
     _classid_ = 'Windows.UI.Xaml.Controls.FontIconSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.FontIconSource.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFontIconSourceFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.FontIconSource: ...
     @winrt_mixinmethod
@@ -3671,18 +4003,18 @@ class FontIconSource(ComPtr, metaclass=_FontIconSource_Meta_):
     def get_IsTextScaleFactorEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IFontIconSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MirroredWhenRightToLeftProperty(cls: win32more.Windows.UI.Xaml.Controls.IFontIconSourceStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Glyph = property(get_Glyph, put_Glyph)
-    FontSize = property(get_FontSize, put_FontSize)
     FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
+    FontSize = property(get_FontSize, put_FontSize)
     FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Glyph = property(get_Glyph, put_Glyph)
     IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
     MirroredWhenRightToLeft = property(get_MirroredWhenRightToLeft, put_MirroredWhenRightToLeft)
-    _FontIconSource_Meta_.GlyphProperty = property(get_GlyphProperty.__wrapped__, None)
-    _FontIconSource_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _FontIconSource_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _FontIconSource_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
+    _FontIconSource_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _FontIconSource_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _FontIconSource_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
+    _FontIconSource_Meta_.GlyphProperty = property(get_GlyphProperty.__wrapped__, None)
     _FontIconSource_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
     _FontIconSource_Meta_.MirroredWhenRightToLeftProperty = property(get_MirroredWhenRightToLeftProperty.__wrapped__, None)
 class _Frame_Meta_(ComPtr.__class__):
@@ -3691,6 +4023,13 @@ class Frame(ComPtr, metaclass=_Frame_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IFrame
     _classid_ = 'Windows.UI.Xaml.Controls.Frame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Frame.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IFrameFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Frame: ...
     @winrt_mixinmethod
@@ -3725,10 +4064,12 @@ class Frame(ComPtr, metaclass=_Frame_Meta_):
     def add_NavigationStopped(self: win32more.Windows.UI.Xaml.Controls.IFrame, handler: win32more.Windows.UI.Xaml.Navigation.NavigationStoppedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_NavigationStopped(self: win32more.Windows.UI.Xaml.Controls.IFrame, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    @winrt_overload
     @winrt_mixinmethod
     def GoBack(self: win32more.Windows.UI.Xaml.Controls.IFrame) -> Void: ...
     @winrt_mixinmethod
     def GoForward(self: win32more.Windows.UI.Xaml.Controls.IFrame) -> Void: ...
+    @winrt_overload
     @winrt_mixinmethod
     def Navigate(self: win32more.Windows.UI.Xaml.Controls.IFrame, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName, parameter: win32more.Windows.Win32.System.WinRT.IInspectable) -> Boolean: ...
     @winrt_mixinmethod
@@ -3739,10 +4080,12 @@ class Frame(ComPtr, metaclass=_Frame_Meta_):
     def get_BackStack(self: win32more.Windows.UI.Xaml.Controls.IFrame2) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Navigation.PageStackEntry]: ...
     @winrt_mixinmethod
     def get_ForwardStack(self: win32more.Windows.UI.Xaml.Controls.IFrame2) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Navigation.PageStackEntry]: ...
+    @Navigate.register
     @winrt_mixinmethod
-    def Navigate_2(self: win32more.Windows.UI.Xaml.Controls.IFrame2, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName, parameter: win32more.Windows.Win32.System.WinRT.IInspectable, infoOverride: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo) -> Boolean: ...
+    def Navigate(self: win32more.Windows.UI.Xaml.Controls.IFrame2, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName, parameter: win32more.Windows.Win32.System.WinRT.IInspectable, infoOverride: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo) -> Boolean: ...
+    @GoBack.register
     @winrt_mixinmethod
-    def GoBack_2(self: win32more.Windows.UI.Xaml.Controls.IFrame3, transitionInfoOverride: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo) -> Void: ...
+    def GoBack(self: win32more.Windows.UI.Xaml.Controls.IFrame3, transitionInfoOverride: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo) -> Void: ...
     @winrt_mixinmethod
     def SetNavigationStateWithNavigationControl(self: win32more.Windows.UI.Xaml.Controls.IFrame4, navigationState: WinRT_String, suppressNavigate: Boolean) -> Void: ...
     @winrt_mixinmethod
@@ -3751,8 +4094,9 @@ class Frame(ComPtr, metaclass=_Frame_Meta_):
     def put_IsNavigationStackEnabled(self: win32more.Windows.UI.Xaml.Controls.IFrame5, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def NavigateToType(self: win32more.Windows.UI.Xaml.Controls.IFrame5, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName, parameter: win32more.Windows.Win32.System.WinRT.IInspectable, navigationOptions: win32more.Windows.UI.Xaml.Navigation.FrameNavigationOptions) -> Boolean: ...
+    @Navigate.register
     @winrt_mixinmethod
-    def Navigate_3(self: win32more.Windows.UI.Xaml.Controls.INavigate, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName) -> Boolean: ...
+    def Navigate(self: win32more.Windows.UI.Xaml.Controls.INavigate, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName) -> Boolean: ...
     @winrt_classmethod
     def get_IsNavigationStackEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IFrameStatics5) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
@@ -3771,30 +4115,37 @@ class Frame(ComPtr, metaclass=_Frame_Meta_):
     def get_SourcePageTypeProperty(cls: win32more.Windows.UI.Xaml.Controls.IFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_BackStackDepthProperty(cls: win32more.Windows.UI.Xaml.Controls.IFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BackStack = property(get_BackStack, None)
+    BackStackDepth = property(get_BackStackDepth, None)
     CacheSize = property(get_CacheSize, put_CacheSize)
     CanGoBack = property(get_CanGoBack, None)
     CanGoForward = property(get_CanGoForward, None)
     CurrentSourcePageType = property(get_CurrentSourcePageType, None)
-    SourcePageType = property(get_SourcePageType, put_SourcePageType)
-    BackStackDepth = property(get_BackStackDepth, None)
-    BackStack = property(get_BackStack, None)
     ForwardStack = property(get_ForwardStack, None)
     IsNavigationStackEnabled = property(get_IsNavigationStackEnabled, put_IsNavigationStackEnabled)
-    _Frame_Meta_.IsNavigationStackEnabledProperty = property(get_IsNavigationStackEnabledProperty.__wrapped__, None)
+    SourcePageType = property(get_SourcePageType, put_SourcePageType)
+    _Frame_Meta_.BackStackDepthProperty = property(get_BackStackDepthProperty.__wrapped__, None)
     _Frame_Meta_.BackStackProperty = property(get_BackStackProperty.__wrapped__, None)
-    _Frame_Meta_.ForwardStackProperty = property(get_ForwardStackProperty.__wrapped__, None)
     _Frame_Meta_.CacheSizeProperty = property(get_CacheSizeProperty.__wrapped__, None)
     _Frame_Meta_.CanGoBackProperty = property(get_CanGoBackProperty.__wrapped__, None)
     _Frame_Meta_.CanGoForwardProperty = property(get_CanGoForwardProperty.__wrapped__, None)
     _Frame_Meta_.CurrentSourcePageTypeProperty = property(get_CurrentSourcePageTypeProperty.__wrapped__, None)
+    _Frame_Meta_.ForwardStackProperty = property(get_ForwardStackProperty.__wrapped__, None)
+    _Frame_Meta_.IsNavigationStackEnabledProperty = property(get_IsNavigationStackEnabledProperty.__wrapped__, None)
     _Frame_Meta_.SourcePageTypeProperty = property(get_SourcePageTypeProperty.__wrapped__, None)
-    _Frame_Meta_.BackStackDepthProperty = property(get_BackStackDepthProperty.__wrapped__, None)
 class _Grid_Meta_(ComPtr.__class__):
     pass
 class Grid(ComPtr, metaclass=_Grid_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IGrid
     _classid_ = 'Windows.UI.Xaml.Controls.Grid'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Grid.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGridFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Grid: ...
     @winrt_mixinmethod
@@ -3867,42 +4218,63 @@ class Grid(ComPtr, metaclass=_Grid_Meta_):
     def GetColumnSpan(cls: win32more.Windows.UI.Xaml.Controls.IGridStatics, element: win32more.Windows.UI.Xaml.FrameworkElement) -> Int32: ...
     @winrt_classmethod
     def SetColumnSpan(cls: win32more.Windows.UI.Xaml.Controls.IGridStatics, element: win32more.Windows.UI.Xaml.FrameworkElement, value: Int32) -> Void: ...
-    RowDefinitions = property(get_RowDefinitions, None)
-    ColumnDefinitions = property(get_ColumnDefinitions, None)
+    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
     BorderBrush = property(get_BorderBrush, put_BorderBrush)
     BorderThickness = property(get_BorderThickness, put_BorderThickness)
+    ColumnDefinitions = property(get_ColumnDefinitions, None)
+    ColumnSpacing = property(get_ColumnSpacing, put_ColumnSpacing)
     CornerRadius = property(get_CornerRadius, put_CornerRadius)
     Padding = property(get_Padding, put_Padding)
+    RowDefinitions = property(get_RowDefinitions, None)
     RowSpacing = property(get_RowSpacing, put_RowSpacing)
-    ColumnSpacing = property(get_ColumnSpacing, put_ColumnSpacing)
-    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
     _Grid_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
-    _Grid_Meta_.RowSpacingProperty = property(get_RowSpacingProperty.__wrapped__, None)
-    _Grid_Meta_.ColumnSpacingProperty = property(get_ColumnSpacingProperty.__wrapped__, None)
     _Grid_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
     _Grid_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
+    _Grid_Meta_.ColumnProperty = property(get_ColumnProperty.__wrapped__, None)
+    _Grid_Meta_.ColumnSpacingProperty = property(get_ColumnSpacingProperty.__wrapped__, None)
+    _Grid_Meta_.ColumnSpanProperty = property(get_ColumnSpanProperty.__wrapped__, None)
     _Grid_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
     _Grid_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
     _Grid_Meta_.RowProperty = property(get_RowProperty.__wrapped__, None)
-    _Grid_Meta_.ColumnProperty = property(get_ColumnProperty.__wrapped__, None)
+    _Grid_Meta_.RowSpacingProperty = property(get_RowSpacingProperty.__wrapped__, None)
     _Grid_Meta_.RowSpanProperty = property(get_RowSpanProperty.__wrapped__, None)
-    _Grid_Meta_.ColumnSpanProperty = property(get_ColumnSpanProperty.__wrapped__, None)
 class GridView(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IGridView
     _classid_ = 'Windows.UI.Xaml.Controls.GridView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GridView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGridViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GridView: ...
 class GridViewHeaderItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewBaseHeaderItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IGridViewHeaderItem
     _classid_ = 'Windows.UI.Xaml.Controls.GridViewHeaderItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GridViewHeaderItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGridViewHeaderItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GridViewHeaderItem: ...
 class GridViewItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.SelectorItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IGridViewItem
     _classid_ = 'Windows.UI.Xaml.Controls.GridViewItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GridViewItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGridViewItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GridViewItem: ...
     @winrt_mixinmethod
@@ -3912,12 +4284,26 @@ class GroupItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IGroupItem
     _classid_ = 'Windows.UI.Xaml.Controls.GroupItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GroupItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGroupItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GroupItem: ...
 class GroupStyle(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IGroupStyle
     _classid_ = 'Windows.UI.Xaml.Controls.GroupStyle'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GroupStyle.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGroupStyleFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GroupStyle: ...
     @winrt_mixinmethod
@@ -3952,17 +4338,24 @@ class GroupStyle(ComPtr):
     def add_PropertyChanged(self: win32more.Windows.UI.Xaml.Data.INotifyPropertyChanged, handler: win32more.Windows.UI.Xaml.Data.PropertyChangedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_PropertyChanged(self: win32more.Windows.UI.Xaml.Data.INotifyPropertyChanged, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Panel = property(get_Panel, put_Panel)
     ContainerStyle = property(get_ContainerStyle, put_ContainerStyle)
     ContainerStyleSelector = property(get_ContainerStyleSelector, put_ContainerStyleSelector)
+    HeaderContainerStyle = property(get_HeaderContainerStyle, put_HeaderContainerStyle)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     HeaderTemplateSelector = property(get_HeaderTemplateSelector, put_HeaderTemplateSelector)
     HidesIfEmpty = property(get_HidesIfEmpty, put_HidesIfEmpty)
-    HeaderContainerStyle = property(get_HeaderContainerStyle, put_HeaderContainerStyle)
+    Panel = property(get_Panel, put_Panel)
 class GroupStyleSelector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IGroupStyleSelector
     _classid_ = 'Windows.UI.Xaml.Controls.GroupStyleSelector'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.GroupStyleSelector.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IGroupStyleSelectorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.GroupStyleSelector: ...
     @winrt_mixinmethod
@@ -3977,18 +4370,25 @@ class HandwritingPanelOpenedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IHandwritingPanelOpenedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.HandwritingPanelOpenedEventArgs'
-HandwritingPanelPlacementAlignment = Int32
-HandwritingPanelPlacementAlignment_Auto: HandwritingPanelPlacementAlignment = 0
-HandwritingPanelPlacementAlignment_TopLeft: HandwritingPanelPlacementAlignment = 1
-HandwritingPanelPlacementAlignment_TopRight: HandwritingPanelPlacementAlignment = 2
-HandwritingPanelPlacementAlignment_BottomLeft: HandwritingPanelPlacementAlignment = 3
-HandwritingPanelPlacementAlignment_BottomRight: HandwritingPanelPlacementAlignment = 4
+class HandwritingPanelPlacementAlignment(Int32):  # enum
+    Auto = 0
+    TopLeft = 1
+    TopRight = 2
+    BottomLeft = 3
+    BottomRight = 4
 class _HandwritingView_Meta_(ComPtr.__class__):
     pass
 class HandwritingView(ComPtr, metaclass=_HandwritingView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IHandwritingView
     _classid_ = 'Windows.UI.Xaml.Controls.HandwritingView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.HandwritingView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IHandwritingViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.HandwritingView: ...
     @winrt_mixinmethod
@@ -4053,19 +4453,19 @@ class HandwritingView(ComPtr, metaclass=_HandwritingView_Meta_):
     def get_IsOpenProperty(cls: win32more.Windows.UI.Xaml.Controls.IHandwritingViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_AreCandidatesEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IHandwritingViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
-    PlacementAlignment = property(get_PlacementAlignment, put_PlacementAlignment)
-    IsOpen = property(get_IsOpen, None)
     AreCandidatesEnabled = property(get_AreCandidatesEnabled, put_AreCandidatesEnabled)
-    IsSwitchToKeyboardEnabled = property(get_IsSwitchToKeyboardEnabled, put_IsSwitchToKeyboardEnabled)
-    IsCommandBarOpen = property(get_IsCommandBarOpen, put_IsCommandBarOpen)
     InputDeviceTypes = property(get_InputDeviceTypes, put_InputDeviceTypes)
-    _HandwritingView_Meta_.IsSwitchToKeyboardEnabledProperty = property(get_IsSwitchToKeyboardEnabledProperty.__wrapped__, None)
-    _HandwritingView_Meta_.IsCommandBarOpenProperty = property(get_IsCommandBarOpenProperty.__wrapped__, None)
-    _HandwritingView_Meta_.PlacementTargetProperty = property(get_PlacementTargetProperty.__wrapped__, None)
-    _HandwritingView_Meta_.PlacementAlignmentProperty = property(get_PlacementAlignmentProperty.__wrapped__, None)
-    _HandwritingView_Meta_.IsOpenProperty = property(get_IsOpenProperty.__wrapped__, None)
+    IsCommandBarOpen = property(get_IsCommandBarOpen, put_IsCommandBarOpen)
+    IsOpen = property(get_IsOpen, None)
+    IsSwitchToKeyboardEnabled = property(get_IsSwitchToKeyboardEnabled, put_IsSwitchToKeyboardEnabled)
+    PlacementAlignment = property(get_PlacementAlignment, put_PlacementAlignment)
+    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
     _HandwritingView_Meta_.AreCandidatesEnabledProperty = property(get_AreCandidatesEnabledProperty.__wrapped__, None)
+    _HandwritingView_Meta_.IsCommandBarOpenProperty = property(get_IsCommandBarOpenProperty.__wrapped__, None)
+    _HandwritingView_Meta_.IsOpenProperty = property(get_IsOpenProperty.__wrapped__, None)
+    _HandwritingView_Meta_.IsSwitchToKeyboardEnabledProperty = property(get_IsSwitchToKeyboardEnabledProperty.__wrapped__, None)
+    _HandwritingView_Meta_.PlacementAlignmentProperty = property(get_PlacementAlignmentProperty.__wrapped__, None)
+    _HandwritingView_Meta_.PlacementTargetProperty = property(get_PlacementTargetProperty.__wrapped__, None)
 class HandwritingViewCandidatesChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IHandwritingViewCandidatesChangedEventArgs
@@ -4083,6 +4483,13 @@ class Hub(ComPtr, metaclass=_Hub_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IHub
     _classid_ = 'Windows.UI.Xaml.Controls.Hub'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Hub.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IHubFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Hub: ...
     @winrt_mixinmethod
@@ -4157,29 +4564,36 @@ class Hub(ComPtr, metaclass=_Hub_Meta_):
     def get_IsActiveViewProperty(cls: win32more.Windows.UI.Xaml.Controls.IHubStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsZoomedInViewProperty(cls: win32more.Windows.UI.Xaml.Controls.IHubStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DefaultSectionIndex = property(get_DefaultSectionIndex, put_DefaultSectionIndex)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    Orientation = property(get_Orientation, put_Orientation)
-    DefaultSectionIndex = property(get_DefaultSectionIndex, put_DefaultSectionIndex)
-    Sections = property(get_Sections, None)
-    SectionsInView = property(get_SectionsInView, None)
-    SectionHeaders = property(get_SectionHeaders, None)
-    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
     IsActiveView = property(get_IsActiveView, put_IsActiveView)
     IsZoomedInView = property(get_IsZoomedInView, put_IsZoomedInView)
+    Orientation = property(get_Orientation, put_Orientation)
+    SectionHeaders = property(get_SectionHeaders, None)
+    Sections = property(get_Sections, None)
+    SectionsInView = property(get_SectionsInView, None)
+    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
+    _Hub_Meta_.DefaultSectionIndexProperty = property(get_DefaultSectionIndexProperty.__wrapped__, None)
     _Hub_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _Hub_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _Hub_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _Hub_Meta_.DefaultSectionIndexProperty = property(get_DefaultSectionIndexProperty.__wrapped__, None)
-    _Hub_Meta_.SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty.__wrapped__, None)
     _Hub_Meta_.IsActiveViewProperty = property(get_IsActiveViewProperty.__wrapped__, None)
     _Hub_Meta_.IsZoomedInViewProperty = property(get_IsZoomedInViewProperty.__wrapped__, None)
+    _Hub_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+    _Hub_Meta_.SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty.__wrapped__, None)
 class _HubSection_Meta_(ComPtr.__class__):
     pass
 class HubSection(ComPtr, metaclass=_HubSection_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IHubSection
     _classid_ = 'Windows.UI.Xaml.Controls.HubSection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.HubSection.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IHubSectionFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.HubSection: ...
     @winrt_mixinmethod
@@ -4206,13 +4620,13 @@ class HubSection(ComPtr, metaclass=_HubSection_Meta_):
     def get_ContentTemplateProperty(cls: win32more.Windows.UI.Xaml.Controls.IHubSectionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsHeaderInteractiveProperty(cls: win32more.Windows.UI.Xaml.Controls.IHubSectionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     IsHeaderInteractive = property(get_IsHeaderInteractive, put_IsHeaderInteractive)
+    _HubSection_Meta_.ContentTemplateProperty = property(get_ContentTemplateProperty.__wrapped__, None)
     _HubSection_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _HubSection_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _HubSection_Meta_.ContentTemplateProperty = property(get_ContentTemplateProperty.__wrapped__, None)
     _HubSection_Meta_.IsHeaderInteractiveProperty = property(get_IsHeaderInteractiveProperty.__wrapped__, None)
 class HubSectionCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -4249,6 +4663,13 @@ class HubSectionHeaderClickEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IHubSectionHeaderClickEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.HubSectionHeaderClickEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.HubSectionHeaderClickEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.HubSectionHeaderClickEventArgs: ...
     @winrt_mixinmethod
@@ -4264,6 +4685,13 @@ class HyperlinkButton(ComPtr, metaclass=_HyperlinkButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ButtonBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IHyperlinkButton
     _classid_ = 'Windows.UI.Xaml.Controls.HyperlinkButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.HyperlinkButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IHyperlinkButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.HyperlinkButton: ...
     @winrt_mixinmethod
@@ -4353,8 +4781,8 @@ class IAppBarButton(ComPtr):
     def get_Icon(self) -> win32more.Windows.UI.Xaml.Controls.IconElement: ...
     @winrt_commethod(9)
     def put_Icon(self, value: win32more.Windows.UI.Xaml.Controls.IconElement) -> Void: ...
-    Label = property(get_Label, put_Label)
     Icon = property(get_Icon, put_Icon)
+    Label = property(get_Label, put_Label)
 class IAppBarButton3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarButton3'
@@ -4396,9 +4824,9 @@ class IAppBarButtonStatics(ComPtr):
     def get_IconProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_IsCompactProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LabelProperty = property(get_LabelProperty, None)
     IconProperty = property(get_IconProperty, None)
     IsCompactProperty = property(get_IsCompactProperty, None)
+    LabelProperty = property(get_LabelProperty, None)
 class IAppBarButtonStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarButtonStatics3'
@@ -4409,9 +4837,9 @@ class IAppBarButtonStatics3(ComPtr):
     def get_IsInOverflowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DynamicOverflowOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LabelPositionProperty = property(get_LabelPositionProperty, None)
-    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
     DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty, None)
+    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
+    LabelPositionProperty = property(get_LabelPositionProperty, None)
 class IAppBarButtonStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarButtonStatics4'
@@ -4439,9 +4867,9 @@ class IAppBarElementContainerStatics(ComPtr):
     def get_IsInOverflowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DynamicOverflowOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty, None)
     IsCompactProperty = property(get_IsCompactProperty, None)
     IsInOverflowProperty = property(get_IsInOverflowProperty, None)
-    DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty, None)
 class IAppBarFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarFactory'
@@ -4489,8 +4917,8 @@ class IAppBarSeparatorStatics3(ComPtr):
     def get_IsInOverflowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_DynamicOverflowOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
     DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty, None)
+    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
 class IAppBarStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarStatics'
@@ -4527,8 +4955,8 @@ class IAppBarToggleButton(ComPtr):
     def get_Icon(self) -> win32more.Windows.UI.Xaml.Controls.IconElement: ...
     @winrt_commethod(9)
     def put_Icon(self, value: win32more.Windows.UI.Xaml.Controls.IconElement) -> Void: ...
-    Label = property(get_Label, put_Label)
     Icon = property(get_Icon, put_Icon)
+    Label = property(get_Label, put_Label)
 class IAppBarToggleButton3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarToggleButton3'
@@ -4570,9 +4998,9 @@ class IAppBarToggleButtonStatics(ComPtr):
     def get_IconProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_IsCompactProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LabelProperty = property(get_LabelProperty, None)
     IconProperty = property(get_IconProperty, None)
     IsCompactProperty = property(get_IsCompactProperty, None)
+    LabelProperty = property(get_LabelProperty, None)
 class IAppBarToggleButtonStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarToggleButtonStatics3'
@@ -4583,9 +5011,9 @@ class IAppBarToggleButtonStatics3(ComPtr):
     def get_IsInOverflowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DynamicOverflowOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LabelPositionProperty = property(get_LabelPositionProperty, None)
-    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
     DynamicOverflowOrderProperty = property(get_DynamicOverflowOrderProperty, None)
+    IsInOverflowProperty = property(get_IsInOverflowProperty, None)
+    LabelPositionProperty = property(get_LabelPositionProperty, None)
 class IAppBarToggleButtonStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAppBarToggleButtonStatics4'
@@ -4641,15 +5069,15 @@ class IAutoSuggestBox(ComPtr):
     def add_TextChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.AutoSuggestBox, win32more.Windows.UI.Xaml.Controls.AutoSuggestBoxTextChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(27)
     def remove_TextChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    MaxSuggestionListHeight = property(get_MaxSuggestionListHeight, put_MaxSuggestionListHeight)
-    IsSuggestionListOpen = property(get_IsSuggestionListOpen, put_IsSuggestionListOpen)
-    TextMemberPath = property(get_TextMemberPath, put_TextMemberPath)
-    Text = property(get_Text, put_Text)
-    UpdateTextOnSelect = property(get_UpdateTextOnSelect, put_UpdateTextOnSelect)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    Header = property(get_Header, put_Header)
     AutoMaximizeSuggestionArea = property(get_AutoMaximizeSuggestionArea, put_AutoMaximizeSuggestionArea)
+    Header = property(get_Header, put_Header)
+    IsSuggestionListOpen = property(get_IsSuggestionListOpen, put_IsSuggestionListOpen)
+    MaxSuggestionListHeight = property(get_MaxSuggestionListHeight, put_MaxSuggestionListHeight)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    Text = property(get_Text, put_Text)
     TextBoxStyle = property(get_TextBoxStyle, put_TextBoxStyle)
+    TextMemberPath = property(get_TextMemberPath, put_TextMemberPath)
+    UpdateTextOnSelect = property(get_UpdateTextOnSelect, put_UpdateTextOnSelect)
 class IAutoSuggestBox2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAutoSuggestBox2'
@@ -4689,8 +5117,8 @@ class IAutoSuggestBoxQuerySubmittedEventArgs(ComPtr):
     def get_QueryText(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_ChosenSuggestion(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    QueryText = property(get_QueryText, None)
     ChosenSuggestion = property(get_ChosenSuggestion, None)
+    QueryText = property(get_QueryText, None)
 class IAutoSuggestBoxStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAutoSuggestBoxStatics'
@@ -4713,15 +5141,15 @@ class IAutoSuggestBoxStatics(ComPtr):
     def get_AutoMaximizeSuggestionAreaProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(14)
     def get_TextBoxStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    MaxSuggestionListHeightProperty = property(get_MaxSuggestionListHeightProperty, None)
+    AutoMaximizeSuggestionAreaProperty = property(get_AutoMaximizeSuggestionAreaProperty, None)
+    HeaderProperty = property(get_HeaderProperty, None)
     IsSuggestionListOpenProperty = property(get_IsSuggestionListOpenProperty, None)
+    MaxSuggestionListHeightProperty = property(get_MaxSuggestionListHeightProperty, None)
+    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
+    TextBoxStyleProperty = property(get_TextBoxStyleProperty, None)
     TextMemberPathProperty = property(get_TextMemberPathProperty, None)
     TextProperty = property(get_TextProperty, None)
     UpdateTextOnSelectProperty = property(get_UpdateTextOnSelectProperty, None)
-    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
-    HeaderProperty = property(get_HeaderProperty, None)
-    AutoMaximizeSuggestionAreaProperty = property(get_AutoMaximizeSuggestionAreaProperty, None)
-    TextBoxStyleProperty = property(get_TextBoxStyleProperty, None)
 class IAutoSuggestBoxStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IAutoSuggestBoxStatics2'
@@ -4813,8 +5241,8 @@ class IBitmapIconSource(ComPtr):
     def get_ShowAsMonochrome(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_ShowAsMonochrome(self, value: Boolean) -> Void: ...
-    UriSource = property(get_UriSource, put_UriSource)
     ShowAsMonochrome = property(get_ShowAsMonochrome, put_ShowAsMonochrome)
+    UriSource = property(get_UriSource, put_UriSource)
 class IBitmapIconSourceFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IBitmapIconSourceFactory'
@@ -4829,8 +5257,8 @@ class IBitmapIconSourceStatics(ComPtr):
     def get_UriSourceProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ShowAsMonochromeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    UriSourceProperty = property(get_UriSourceProperty, None)
     ShowAsMonochromeProperty = property(get_ShowAsMonochromeProperty, None)
+    UriSourceProperty = property(get_UriSourceProperty, None)
 class IBitmapIconStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IBitmapIconStatics'
@@ -4877,13 +5305,13 @@ class IBorder(ComPtr):
     def get_ChildTransitions(self) -> win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection: ...
     @winrt_commethod(19)
     def put_ChildTransitions(self, value: win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection) -> Void: ...
+    Background = property(get_Background, put_Background)
     BorderBrush = property(get_BorderBrush, put_BorderBrush)
     BorderThickness = property(get_BorderThickness, put_BorderThickness)
-    Background = property(get_Background, put_Background)
-    CornerRadius = property(get_CornerRadius, put_CornerRadius)
-    Padding = property(get_Padding, put_Padding)
     Child = property(get_Child, put_Child)
     ChildTransitions = property(get_ChildTransitions, put_ChildTransitions)
+    CornerRadius = property(get_CornerRadius, put_CornerRadius)
+    Padding = property(get_Padding, put_Padding)
 class IBorder2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IBorder2'
@@ -4914,12 +5342,12 @@ class IBorderStatics(ComPtr):
     def get_PaddingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_ChildTransitionsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BackgroundProperty = property(get_BackgroundProperty, None)
     BorderBrushProperty = property(get_BorderBrushProperty, None)
     BorderThicknessProperty = property(get_BorderThicknessProperty, None)
-    BackgroundProperty = property(get_BackgroundProperty, None)
+    ChildTransitionsProperty = property(get_ChildTransitionsProperty, None)
     CornerRadiusProperty = property(get_CornerRadiusProperty, None)
     PaddingProperty = property(get_PaddingProperty, None)
-    ChildTransitionsProperty = property(get_ChildTransitionsProperty, None)
 class IBorderStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IBorderStatics2'
@@ -5041,22 +5469,22 @@ class ICalendarDatePicker(ComPtr):
     def SetDisplayDate(self, date: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_commethod(47)
     def SetYearDecadeDisplayDimensions(self, columns: Int32, rows: Int32) -> Void: ...
-    Date = property(get_Date, put_Date)
-    IsCalendarOpen = property(get_IsCalendarOpen, put_IsCalendarOpen)
-    DateFormat = property(get_DateFormat, put_DateFormat)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     CalendarViewStyle = property(get_CalendarViewStyle, put_CalendarViewStyle)
-    MinDate = property(get_MinDate, put_MinDate)
-    MaxDate = property(get_MaxDate, put_MaxDate)
-    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
+    Date = property(get_Date, put_Date)
+    DateFormat = property(get_DateFormat, put_DateFormat)
+    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
     DisplayMode = property(get_DisplayMode, put_DisplayMode)
     FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
-    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
-    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
-    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    IsCalendarOpen = property(get_IsCalendarOpen, put_IsCalendarOpen)
     IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
+    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
+    MaxDate = property(get_MaxDate, put_MaxDate)
+    MinDate = property(get_MinDate, put_MinDate)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
 class ICalendarDatePicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarDatePicker2'
@@ -5127,22 +5555,22 @@ class ICalendarDatePickerStatics(ComPtr):
     def get_IsOutOfScopeEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(21)
     def get_IsGroupLabelVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    DateProperty = property(get_DateProperty, None)
-    IsCalendarOpenProperty = property(get_IsCalendarOpenProperty, None)
-    DateFormatProperty = property(get_DateFormatProperty, None)
-    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
-    HeaderProperty = property(get_HeaderProperty, None)
-    HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
+    CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
     CalendarViewStyleProperty = property(get_CalendarViewStyleProperty, None)
-    MinDateProperty = property(get_MinDateProperty, None)
-    MaxDateProperty = property(get_MaxDateProperty, None)
-    IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty, None)
+    DateFormatProperty = property(get_DateFormatProperty, None)
+    DateProperty = property(get_DateProperty, None)
+    DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty, None)
     DisplayModeProperty = property(get_DisplayModeProperty, None)
     FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty, None)
-    DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty, None)
-    CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
-    IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty, None)
+    HeaderProperty = property(get_HeaderProperty, None)
+    HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
+    IsCalendarOpenProperty = property(get_IsCalendarOpenProperty, None)
     IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty, None)
+    IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty, None)
+    IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty, None)
+    MaxDateProperty = property(get_MaxDateProperty, None)
+    MinDateProperty = property(get_MinDateProperty, None)
+    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
 class ICalendarDatePickerStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarDatePickerStatics2'
@@ -5373,57 +5801,57 @@ class ICalendarView(ComPtr):
     def SetDisplayDate(self, date: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_commethod(111)
     def SetYearDecadeDisplayDimensions(self, columns: Int32, rows: Int32) -> Void: ...
-    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
-    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
-    IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
-    DisplayMode = property(get_DisplayMode, put_DisplayMode)
-    FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
-    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
-    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
-    MaxDate = property(get_MaxDate, put_MaxDate)
-    MinDate = property(get_MinDate, put_MinDate)
-    NumberOfWeeksInView = property(get_NumberOfWeeksInView, put_NumberOfWeeksInView)
-    SelectedDates = property(get_SelectedDates, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
-    TemplateSettings = property(get_TemplateSettings, None)
-    FocusBorderBrush = property(get_FocusBorderBrush, put_FocusBorderBrush)
-    SelectedHoverBorderBrush = property(get_SelectedHoverBorderBrush, put_SelectedHoverBorderBrush)
-    SelectedPressedBorderBrush = property(get_SelectedPressedBorderBrush, put_SelectedPressedBorderBrush)
-    SelectedBorderBrush = property(get_SelectedBorderBrush, put_SelectedBorderBrush)
-    HoverBorderBrush = property(get_HoverBorderBrush, put_HoverBorderBrush)
-    PressedBorderBrush = property(get_PressedBorderBrush, put_PressedBorderBrush)
-    CalendarItemBorderBrush = property(get_CalendarItemBorderBrush, put_CalendarItemBorderBrush)
-    OutOfScopeBackground = property(get_OutOfScopeBackground, put_OutOfScopeBackground)
-    CalendarItemBackground = property(get_CalendarItemBackground, put_CalendarItemBackground)
-    PressedForeground = property(get_PressedForeground, put_PressedForeground)
-    TodayForeground = property(get_TodayForeground, put_TodayForeground)
     BlackoutForeground = property(get_BlackoutForeground, put_BlackoutForeground)
-    SelectedForeground = property(get_SelectedForeground, put_SelectedForeground)
-    OutOfScopeForeground = property(get_OutOfScopeForeground, put_OutOfScopeForeground)
+    CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
+    CalendarItemBackground = property(get_CalendarItemBackground, put_CalendarItemBackground)
+    CalendarItemBorderBrush = property(get_CalendarItemBorderBrush, put_CalendarItemBorderBrush)
+    CalendarItemBorderThickness = property(get_CalendarItemBorderThickness, put_CalendarItemBorderThickness)
     CalendarItemForeground = property(get_CalendarItemForeground, put_CalendarItemForeground)
+    CalendarViewDayItemStyle = property(get_CalendarViewDayItemStyle, put_CalendarViewDayItemStyle)
     DayItemFontFamily = property(get_DayItemFontFamily, put_DayItemFontFamily)
     DayItemFontSize = property(get_DayItemFontSize, put_DayItemFontSize)
     DayItemFontStyle = property(get_DayItemFontStyle, put_DayItemFontStyle)
     DayItemFontWeight = property(get_DayItemFontWeight, put_DayItemFontWeight)
-    TodayFontWeight = property(get_TodayFontWeight, put_TodayFontWeight)
+    DayOfWeekFormat = property(get_DayOfWeekFormat, put_DayOfWeekFormat)
+    DisplayMode = property(get_DisplayMode, put_DisplayMode)
+    FirstDayOfWeek = property(get_FirstDayOfWeek, put_FirstDayOfWeek)
     FirstOfMonthLabelFontFamily = property(get_FirstOfMonthLabelFontFamily, put_FirstOfMonthLabelFontFamily)
     FirstOfMonthLabelFontSize = property(get_FirstOfMonthLabelFontSize, put_FirstOfMonthLabelFontSize)
     FirstOfMonthLabelFontStyle = property(get_FirstOfMonthLabelFontStyle, put_FirstOfMonthLabelFontStyle)
     FirstOfMonthLabelFontWeight = property(get_FirstOfMonthLabelFontWeight, put_FirstOfMonthLabelFontWeight)
-    MonthYearItemFontFamily = property(get_MonthYearItemFontFamily, put_MonthYearItemFontFamily)
-    MonthYearItemFontSize = property(get_MonthYearItemFontSize, put_MonthYearItemFontSize)
-    MonthYearItemFontStyle = property(get_MonthYearItemFontStyle, put_MonthYearItemFontStyle)
-    MonthYearItemFontWeight = property(get_MonthYearItemFontWeight, put_MonthYearItemFontWeight)
     FirstOfYearDecadeLabelFontFamily = property(get_FirstOfYearDecadeLabelFontFamily, put_FirstOfYearDecadeLabelFontFamily)
     FirstOfYearDecadeLabelFontSize = property(get_FirstOfYearDecadeLabelFontSize, put_FirstOfYearDecadeLabelFontSize)
     FirstOfYearDecadeLabelFontStyle = property(get_FirstOfYearDecadeLabelFontStyle, put_FirstOfYearDecadeLabelFontStyle)
     FirstOfYearDecadeLabelFontWeight = property(get_FirstOfYearDecadeLabelFontWeight, put_FirstOfYearDecadeLabelFontWeight)
+    FocusBorderBrush = property(get_FocusBorderBrush, put_FocusBorderBrush)
     HorizontalDayItemAlignment = property(get_HorizontalDayItemAlignment, put_HorizontalDayItemAlignment)
-    VerticalDayItemAlignment = property(get_VerticalDayItemAlignment, put_VerticalDayItemAlignment)
     HorizontalFirstOfMonthLabelAlignment = property(get_HorizontalFirstOfMonthLabelAlignment, put_HorizontalFirstOfMonthLabelAlignment)
+    HoverBorderBrush = property(get_HoverBorderBrush, put_HoverBorderBrush)
+    IsGroupLabelVisible = property(get_IsGroupLabelVisible, put_IsGroupLabelVisible)
+    IsOutOfScopeEnabled = property(get_IsOutOfScopeEnabled, put_IsOutOfScopeEnabled)
+    IsTodayHighlighted = property(get_IsTodayHighlighted, put_IsTodayHighlighted)
+    MaxDate = property(get_MaxDate, put_MaxDate)
+    MinDate = property(get_MinDate, put_MinDate)
+    MonthYearItemFontFamily = property(get_MonthYearItemFontFamily, put_MonthYearItemFontFamily)
+    MonthYearItemFontSize = property(get_MonthYearItemFontSize, put_MonthYearItemFontSize)
+    MonthYearItemFontStyle = property(get_MonthYearItemFontStyle, put_MonthYearItemFontStyle)
+    MonthYearItemFontWeight = property(get_MonthYearItemFontWeight, put_MonthYearItemFontWeight)
+    NumberOfWeeksInView = property(get_NumberOfWeeksInView, put_NumberOfWeeksInView)
+    OutOfScopeBackground = property(get_OutOfScopeBackground, put_OutOfScopeBackground)
+    OutOfScopeForeground = property(get_OutOfScopeForeground, put_OutOfScopeForeground)
+    PressedBorderBrush = property(get_PressedBorderBrush, put_PressedBorderBrush)
+    PressedForeground = property(get_PressedForeground, put_PressedForeground)
+    SelectedBorderBrush = property(get_SelectedBorderBrush, put_SelectedBorderBrush)
+    SelectedDates = property(get_SelectedDates, None)
+    SelectedForeground = property(get_SelectedForeground, put_SelectedForeground)
+    SelectedHoverBorderBrush = property(get_SelectedHoverBorderBrush, put_SelectedHoverBorderBrush)
+    SelectedPressedBorderBrush = property(get_SelectedPressedBorderBrush, put_SelectedPressedBorderBrush)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
+    TemplateSettings = property(get_TemplateSettings, None)
+    TodayFontWeight = property(get_TodayFontWeight, put_TodayFontWeight)
+    TodayForeground = property(get_TodayForeground, put_TodayForeground)
+    VerticalDayItemAlignment = property(get_VerticalDayItemAlignment, put_VerticalDayItemAlignment)
     VerticalFirstOfMonthLabelAlignment = property(get_VerticalFirstOfMonthLabelAlignment, put_VerticalFirstOfMonthLabelAlignment)
-    CalendarItemBorderThickness = property(get_CalendarItemBorderThickness, put_CalendarItemBorderThickness)
-    CalendarViewDayItemStyle = property(get_CalendarViewDayItemStyle, put_CalendarViewDayItemStyle)
 class ICalendarView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarView2'
@@ -5524,30 +5952,30 @@ class ICalendarView2(ComPtr):
     def get_CalendarItemCornerRadius(self) -> win32more.Windows.UI.Xaml.CornerRadius: ...
     @winrt_commethod(53)
     def put_CalendarItemCornerRadius(self, value: win32more.Windows.UI.Xaml.CornerRadius) -> Void: ...
-    SelectedDisabledBorderBrush = property(get_SelectedDisabledBorderBrush, put_SelectedDisabledBorderBrush)
-    TodaySelectedInnerBorderBrush = property(get_TodaySelectedInnerBorderBrush, put_TodaySelectedInnerBorderBrush)
-    BlackoutStrikethroughBrush = property(get_BlackoutStrikethroughBrush, put_BlackoutStrikethroughBrush)
     BlackoutBackground = property(get_BlackoutBackground, put_BlackoutBackground)
+    BlackoutStrikethroughBrush = property(get_BlackoutStrikethroughBrush, put_BlackoutStrikethroughBrush)
+    CalendarItemCornerRadius = property(get_CalendarItemCornerRadius, put_CalendarItemCornerRadius)
+    CalendarItemDisabledBackground = property(get_CalendarItemDisabledBackground, put_CalendarItemDisabledBackground)
     CalendarItemHoverBackground = property(get_CalendarItemHoverBackground, put_CalendarItemHoverBackground)
     CalendarItemPressedBackground = property(get_CalendarItemPressedBackground, put_CalendarItemPressedBackground)
-    CalendarItemDisabledBackground = property(get_CalendarItemDisabledBackground, put_CalendarItemDisabledBackground)
-    TodayBackground = property(get_TodayBackground, put_TodayBackground)
-    TodayBlackoutBackground = property(get_TodayBlackoutBackground, put_TodayBlackoutBackground)
-    TodayHoverBackground = property(get_TodayHoverBackground, put_TodayHoverBackground)
-    TodayPressedBackground = property(get_TodayPressedBackground, put_TodayPressedBackground)
-    TodayDisabledBackground = property(get_TodayDisabledBackground, put_TodayDisabledBackground)
-    TodayBlackoutForeground = property(get_TodayBlackoutForeground, put_TodayBlackoutForeground)
-    SelectedHoverForeground = property(get_SelectedHoverForeground, put_SelectedHoverForeground)
-    SelectedPressedForeground = property(get_SelectedPressedForeground, put_SelectedPressedForeground)
-    SelectedDisabledForeground = property(get_SelectedDisabledForeground, put_SelectedDisabledForeground)
-    OutOfScopeHoverForeground = property(get_OutOfScopeHoverForeground, put_OutOfScopeHoverForeground)
-    OutOfScopePressedForeground = property(get_OutOfScopePressedForeground, put_OutOfScopePressedForeground)
-    DisabledForeground = property(get_DisabledForeground, put_DisabledForeground)
     DayItemMargin = property(get_DayItemMargin, put_DayItemMargin)
-    MonthYearItemMargin = property(get_MonthYearItemMargin, put_MonthYearItemMargin)
+    DisabledForeground = property(get_DisabledForeground, put_DisabledForeground)
     FirstOfMonthLabelMargin = property(get_FirstOfMonthLabelMargin, put_FirstOfMonthLabelMargin)
     FirstOfYearDecadeLabelMargin = property(get_FirstOfYearDecadeLabelMargin, put_FirstOfYearDecadeLabelMargin)
-    CalendarItemCornerRadius = property(get_CalendarItemCornerRadius, put_CalendarItemCornerRadius)
+    MonthYearItemMargin = property(get_MonthYearItemMargin, put_MonthYearItemMargin)
+    OutOfScopeHoverForeground = property(get_OutOfScopeHoverForeground, put_OutOfScopeHoverForeground)
+    OutOfScopePressedForeground = property(get_OutOfScopePressedForeground, put_OutOfScopePressedForeground)
+    SelectedDisabledBorderBrush = property(get_SelectedDisabledBorderBrush, put_SelectedDisabledBorderBrush)
+    SelectedDisabledForeground = property(get_SelectedDisabledForeground, put_SelectedDisabledForeground)
+    SelectedHoverForeground = property(get_SelectedHoverForeground, put_SelectedHoverForeground)
+    SelectedPressedForeground = property(get_SelectedPressedForeground, put_SelectedPressedForeground)
+    TodayBackground = property(get_TodayBackground, put_TodayBackground)
+    TodayBlackoutBackground = property(get_TodayBlackoutBackground, put_TodayBlackoutBackground)
+    TodayBlackoutForeground = property(get_TodayBlackoutForeground, put_TodayBlackoutForeground)
+    TodayDisabledBackground = property(get_TodayDisabledBackground, put_TodayDisabledBackground)
+    TodayHoverBackground = property(get_TodayHoverBackground, put_TodayHoverBackground)
+    TodayPressedBackground = property(get_TodayPressedBackground, put_TodayPressedBackground)
+    TodaySelectedInnerBorderBrush = property(get_TodaySelectedInnerBorderBrush, put_TodaySelectedInnerBorderBrush)
 class ICalendarViewDayItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarViewDayItem'
@@ -5560,8 +5988,8 @@ class ICalendarViewDayItem(ComPtr):
     def get_Date(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(9)
     def SetDensityColors(self, colors: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Color]) -> Void: ...
-    IsBlackout = property(get_IsBlackout, put_IsBlackout)
     Date = property(get_Date, None)
+    IsBlackout = property(get_IsBlackout, put_IsBlackout)
 class ICalendarViewDayItemChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarViewDayItemChangingEventArgs'
@@ -5593,8 +6021,8 @@ class ICalendarViewDayItemStatics(ComPtr):
     def get_IsBlackoutProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_DateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsBlackoutProperty = property(get_IsBlackoutProperty, None)
     DateProperty = property(get_DateProperty, None)
+    IsBlackoutProperty = property(get_IsBlackoutProperty, None)
 class ICalendarViewFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarViewFactory'
@@ -5717,57 +6145,57 @@ class ICalendarViewStatics(ComPtr):
     def get_CalendarItemBorderThicknessProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(56)
     def get_CalendarViewDayItemStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
-    DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty, None)
-    IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty, None)
-    DisplayModeProperty = property(get_DisplayModeProperty, None)
-    FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty, None)
-    IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty, None)
-    IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty, None)
-    MaxDateProperty = property(get_MaxDateProperty, None)
-    MinDateProperty = property(get_MinDateProperty, None)
-    NumberOfWeeksInViewProperty = property(get_NumberOfWeeksInViewProperty, None)
-    SelectedDatesProperty = property(get_SelectedDatesProperty, None)
-    SelectionModeProperty = property(get_SelectionModeProperty, None)
-    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
-    FocusBorderBrushProperty = property(get_FocusBorderBrushProperty, None)
-    SelectedHoverBorderBrushProperty = property(get_SelectedHoverBorderBrushProperty, None)
-    SelectedPressedBorderBrushProperty = property(get_SelectedPressedBorderBrushProperty, None)
-    SelectedBorderBrushProperty = property(get_SelectedBorderBrushProperty, None)
-    HoverBorderBrushProperty = property(get_HoverBorderBrushProperty, None)
-    PressedBorderBrushProperty = property(get_PressedBorderBrushProperty, None)
-    CalendarItemBorderBrushProperty = property(get_CalendarItemBorderBrushProperty, None)
-    OutOfScopeBackgroundProperty = property(get_OutOfScopeBackgroundProperty, None)
-    CalendarItemBackgroundProperty = property(get_CalendarItemBackgroundProperty, None)
-    PressedForegroundProperty = property(get_PressedForegroundProperty, None)
-    TodayForegroundProperty = property(get_TodayForegroundProperty, None)
     BlackoutForegroundProperty = property(get_BlackoutForegroundProperty, None)
-    SelectedForegroundProperty = property(get_SelectedForegroundProperty, None)
-    OutOfScopeForegroundProperty = property(get_OutOfScopeForegroundProperty, None)
+    CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
+    CalendarItemBackgroundProperty = property(get_CalendarItemBackgroundProperty, None)
+    CalendarItemBorderBrushProperty = property(get_CalendarItemBorderBrushProperty, None)
+    CalendarItemBorderThicknessProperty = property(get_CalendarItemBorderThicknessProperty, None)
     CalendarItemForegroundProperty = property(get_CalendarItemForegroundProperty, None)
+    CalendarViewDayItemStyleProperty = property(get_CalendarViewDayItemStyleProperty, None)
     DayItemFontFamilyProperty = property(get_DayItemFontFamilyProperty, None)
     DayItemFontSizeProperty = property(get_DayItemFontSizeProperty, None)
     DayItemFontStyleProperty = property(get_DayItemFontStyleProperty, None)
     DayItemFontWeightProperty = property(get_DayItemFontWeightProperty, None)
-    TodayFontWeightProperty = property(get_TodayFontWeightProperty, None)
+    DayOfWeekFormatProperty = property(get_DayOfWeekFormatProperty, None)
+    DisplayModeProperty = property(get_DisplayModeProperty, None)
+    FirstDayOfWeekProperty = property(get_FirstDayOfWeekProperty, None)
     FirstOfMonthLabelFontFamilyProperty = property(get_FirstOfMonthLabelFontFamilyProperty, None)
     FirstOfMonthLabelFontSizeProperty = property(get_FirstOfMonthLabelFontSizeProperty, None)
     FirstOfMonthLabelFontStyleProperty = property(get_FirstOfMonthLabelFontStyleProperty, None)
     FirstOfMonthLabelFontWeightProperty = property(get_FirstOfMonthLabelFontWeightProperty, None)
-    MonthYearItemFontFamilyProperty = property(get_MonthYearItemFontFamilyProperty, None)
-    MonthYearItemFontSizeProperty = property(get_MonthYearItemFontSizeProperty, None)
-    MonthYearItemFontStyleProperty = property(get_MonthYearItemFontStyleProperty, None)
-    MonthYearItemFontWeightProperty = property(get_MonthYearItemFontWeightProperty, None)
     FirstOfYearDecadeLabelFontFamilyProperty = property(get_FirstOfYearDecadeLabelFontFamilyProperty, None)
     FirstOfYearDecadeLabelFontSizeProperty = property(get_FirstOfYearDecadeLabelFontSizeProperty, None)
     FirstOfYearDecadeLabelFontStyleProperty = property(get_FirstOfYearDecadeLabelFontStyleProperty, None)
     FirstOfYearDecadeLabelFontWeightProperty = property(get_FirstOfYearDecadeLabelFontWeightProperty, None)
+    FocusBorderBrushProperty = property(get_FocusBorderBrushProperty, None)
     HorizontalDayItemAlignmentProperty = property(get_HorizontalDayItemAlignmentProperty, None)
-    VerticalDayItemAlignmentProperty = property(get_VerticalDayItemAlignmentProperty, None)
     HorizontalFirstOfMonthLabelAlignmentProperty = property(get_HorizontalFirstOfMonthLabelAlignmentProperty, None)
+    HoverBorderBrushProperty = property(get_HoverBorderBrushProperty, None)
+    IsGroupLabelVisibleProperty = property(get_IsGroupLabelVisibleProperty, None)
+    IsOutOfScopeEnabledProperty = property(get_IsOutOfScopeEnabledProperty, None)
+    IsTodayHighlightedProperty = property(get_IsTodayHighlightedProperty, None)
+    MaxDateProperty = property(get_MaxDateProperty, None)
+    MinDateProperty = property(get_MinDateProperty, None)
+    MonthYearItemFontFamilyProperty = property(get_MonthYearItemFontFamilyProperty, None)
+    MonthYearItemFontSizeProperty = property(get_MonthYearItemFontSizeProperty, None)
+    MonthYearItemFontStyleProperty = property(get_MonthYearItemFontStyleProperty, None)
+    MonthYearItemFontWeightProperty = property(get_MonthYearItemFontWeightProperty, None)
+    NumberOfWeeksInViewProperty = property(get_NumberOfWeeksInViewProperty, None)
+    OutOfScopeBackgroundProperty = property(get_OutOfScopeBackgroundProperty, None)
+    OutOfScopeForegroundProperty = property(get_OutOfScopeForegroundProperty, None)
+    PressedBorderBrushProperty = property(get_PressedBorderBrushProperty, None)
+    PressedForegroundProperty = property(get_PressedForegroundProperty, None)
+    SelectedBorderBrushProperty = property(get_SelectedBorderBrushProperty, None)
+    SelectedDatesProperty = property(get_SelectedDatesProperty, None)
+    SelectedForegroundProperty = property(get_SelectedForegroundProperty, None)
+    SelectedHoverBorderBrushProperty = property(get_SelectedHoverBorderBrushProperty, None)
+    SelectedPressedBorderBrushProperty = property(get_SelectedPressedBorderBrushProperty, None)
+    SelectionModeProperty = property(get_SelectionModeProperty, None)
+    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
+    TodayFontWeightProperty = property(get_TodayFontWeightProperty, None)
+    TodayForegroundProperty = property(get_TodayForegroundProperty, None)
+    VerticalDayItemAlignmentProperty = property(get_VerticalDayItemAlignmentProperty, None)
     VerticalFirstOfMonthLabelAlignmentProperty = property(get_VerticalFirstOfMonthLabelAlignmentProperty, None)
-    CalendarItemBorderThicknessProperty = property(get_CalendarItemBorderThicknessProperty, None)
-    CalendarViewDayItemStyleProperty = property(get_CalendarViewDayItemStyleProperty, None)
 class ICalendarViewStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICalendarViewStatics2'
@@ -5820,30 +6248,30 @@ class ICalendarViewStatics2(ComPtr):
     def get_FirstOfYearDecadeLabelMarginProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(29)
     def get_CalendarItemCornerRadiusProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectedDisabledBorderBrushProperty = property(get_SelectedDisabledBorderBrushProperty, None)
-    TodaySelectedInnerBorderBrushProperty = property(get_TodaySelectedInnerBorderBrushProperty, None)
-    BlackoutStrikethroughBrushProperty = property(get_BlackoutStrikethroughBrushProperty, None)
     BlackoutBackgroundProperty = property(get_BlackoutBackgroundProperty, None)
+    BlackoutStrikethroughBrushProperty = property(get_BlackoutStrikethroughBrushProperty, None)
+    CalendarItemCornerRadiusProperty = property(get_CalendarItemCornerRadiusProperty, None)
+    CalendarItemDisabledBackgroundProperty = property(get_CalendarItemDisabledBackgroundProperty, None)
     CalendarItemHoverBackgroundProperty = property(get_CalendarItemHoverBackgroundProperty, None)
     CalendarItemPressedBackgroundProperty = property(get_CalendarItemPressedBackgroundProperty, None)
-    CalendarItemDisabledBackgroundProperty = property(get_CalendarItemDisabledBackgroundProperty, None)
-    TodayBackgroundProperty = property(get_TodayBackgroundProperty, None)
-    TodayBlackoutBackgroundProperty = property(get_TodayBlackoutBackgroundProperty, None)
-    TodayHoverBackgroundProperty = property(get_TodayHoverBackgroundProperty, None)
-    TodayPressedBackgroundProperty = property(get_TodayPressedBackgroundProperty, None)
-    TodayDisabledBackgroundProperty = property(get_TodayDisabledBackgroundProperty, None)
-    TodayBlackoutForegroundProperty = property(get_TodayBlackoutForegroundProperty, None)
-    SelectedHoverForegroundProperty = property(get_SelectedHoverForegroundProperty, None)
-    SelectedPressedForegroundProperty = property(get_SelectedPressedForegroundProperty, None)
-    SelectedDisabledForegroundProperty = property(get_SelectedDisabledForegroundProperty, None)
-    OutOfScopeHoverForegroundProperty = property(get_OutOfScopeHoverForegroundProperty, None)
-    OutOfScopePressedForegroundProperty = property(get_OutOfScopePressedForegroundProperty, None)
-    DisabledForegroundProperty = property(get_DisabledForegroundProperty, None)
     DayItemMarginProperty = property(get_DayItemMarginProperty, None)
-    MonthYearItemMarginProperty = property(get_MonthYearItemMarginProperty, None)
+    DisabledForegroundProperty = property(get_DisabledForegroundProperty, None)
     FirstOfMonthLabelMarginProperty = property(get_FirstOfMonthLabelMarginProperty, None)
     FirstOfYearDecadeLabelMarginProperty = property(get_FirstOfYearDecadeLabelMarginProperty, None)
-    CalendarItemCornerRadiusProperty = property(get_CalendarItemCornerRadiusProperty, None)
+    MonthYearItemMarginProperty = property(get_MonthYearItemMarginProperty, None)
+    OutOfScopeHoverForegroundProperty = property(get_OutOfScopeHoverForegroundProperty, None)
+    OutOfScopePressedForegroundProperty = property(get_OutOfScopePressedForegroundProperty, None)
+    SelectedDisabledBorderBrushProperty = property(get_SelectedDisabledBorderBrushProperty, None)
+    SelectedDisabledForegroundProperty = property(get_SelectedDisabledForegroundProperty, None)
+    SelectedHoverForegroundProperty = property(get_SelectedHoverForegroundProperty, None)
+    SelectedPressedForegroundProperty = property(get_SelectedPressedForegroundProperty, None)
+    TodayBackgroundProperty = property(get_TodayBackgroundProperty, None)
+    TodayBlackoutBackgroundProperty = property(get_TodayBlackoutBackgroundProperty, None)
+    TodayBlackoutForegroundProperty = property(get_TodayBlackoutForegroundProperty, None)
+    TodayDisabledBackgroundProperty = property(get_TodayDisabledBackgroundProperty, None)
+    TodayHoverBackgroundProperty = property(get_TodayHoverBackgroundProperty, None)
+    TodayPressedBackgroundProperty = property(get_TodayPressedBackgroundProperty, None)
+    TodaySelectedInnerBorderBrushProperty = property(get_TodaySelectedInnerBorderBrushProperty, None)
 class ICandidateWindowBoundsChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICandidateWindowBoundsChangedEventArgs'
@@ -5932,9 +6360,9 @@ class IChoosingGroupHeaderContainerEventArgs(ComPtr):
     def get_GroupIndex(self) -> Int32: ...
     @winrt_commethod(9)
     def get_Group(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
+    Group = property(get_Group, None)
     GroupHeaderContainer = property(get_GroupHeaderContainer, put_GroupHeaderContainer)
     GroupIndex = property(get_GroupIndex, None)
-    Group = property(get_Group, None)
 class IChoosingItemContainerEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IChoosingItemContainerEventArgs'
@@ -5951,10 +6379,10 @@ class IChoosingItemContainerEventArgs(ComPtr):
     def get_IsContainerPrepared(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_IsContainerPrepared(self, value: Boolean) -> Void: ...
-    ItemIndex = property(get_ItemIndex, None)
+    IsContainerPrepared = property(get_IsContainerPrepared, put_IsContainerPrepared)
     Item = property(get_Item, None)
     ItemContainer = property(get_ItemContainer, put_ItemContainer)
-    IsContainerPrepared = property(get_IsContainerPrepared, put_IsContainerPrepared)
+    ItemIndex = property(get_ItemIndex, None)
 class ICleanUpVirtualizedItemEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICleanUpVirtualizedItemEventArgs'
@@ -5967,9 +6395,9 @@ class ICleanUpVirtualizedItemEventArgs(ComPtr):
     def get_Cancel(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_Cancel(self, value: Boolean) -> Void: ...
-    Value = property(get_Value, None)
-    UIElement = property(get_UIElement, None)
     Cancel = property(get_Cancel, put_Cancel)
+    UIElement = property(get_UIElement, None)
+    Value = property(get_Value, None)
 class IColorChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IColorChangedEventArgs'
@@ -5978,8 +6406,8 @@ class IColorChangedEventArgs(ComPtr):
     def get_OldColor(self) -> win32more.Windows.UI.Color: ...
     @winrt_commethod(7)
     def get_NewColor(self) -> win32more.Windows.UI.Color: ...
-    OldColor = property(get_OldColor, None)
     NewColor = property(get_NewColor, None)
+    OldColor = property(get_OldColor, None)
 class IColorPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IColorPicker'
@@ -6065,24 +6493,24 @@ class IColorPicker(ComPtr):
     @winrt_commethod(45)
     def remove_ColorChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Color = property(get_Color, put_Color)
-    PreviousColor = property(get_PreviousColor, put_PreviousColor)
+    ColorSpectrumComponents = property(get_ColorSpectrumComponents, put_ColorSpectrumComponents)
+    ColorSpectrumShape = property(get_ColorSpectrumShape, put_ColorSpectrumShape)
     IsAlphaEnabled = property(get_IsAlphaEnabled, put_IsAlphaEnabled)
-    IsColorSpectrumVisible = property(get_IsColorSpectrumVisible, put_IsColorSpectrumVisible)
+    IsAlphaSliderVisible = property(get_IsAlphaSliderVisible, put_IsAlphaSliderVisible)
+    IsAlphaTextInputVisible = property(get_IsAlphaTextInputVisible, put_IsAlphaTextInputVisible)
+    IsColorChannelTextInputVisible = property(get_IsColorChannelTextInputVisible, put_IsColorChannelTextInputVisible)
     IsColorPreviewVisible = property(get_IsColorPreviewVisible, put_IsColorPreviewVisible)
     IsColorSliderVisible = property(get_IsColorSliderVisible, put_IsColorSliderVisible)
-    IsAlphaSliderVisible = property(get_IsAlphaSliderVisible, put_IsAlphaSliderVisible)
-    IsMoreButtonVisible = property(get_IsMoreButtonVisible, put_IsMoreButtonVisible)
-    IsColorChannelTextInputVisible = property(get_IsColorChannelTextInputVisible, put_IsColorChannelTextInputVisible)
-    IsAlphaTextInputVisible = property(get_IsAlphaTextInputVisible, put_IsAlphaTextInputVisible)
+    IsColorSpectrumVisible = property(get_IsColorSpectrumVisible, put_IsColorSpectrumVisible)
     IsHexInputVisible = property(get_IsHexInputVisible, put_IsHexInputVisible)
-    MinHue = property(get_MinHue, put_MinHue)
+    IsMoreButtonVisible = property(get_IsMoreButtonVisible, put_IsMoreButtonVisible)
     MaxHue = property(get_MaxHue, put_MaxHue)
-    MinSaturation = property(get_MinSaturation, put_MinSaturation)
     MaxSaturation = property(get_MaxSaturation, put_MaxSaturation)
-    MinValue = property(get_MinValue, put_MinValue)
     MaxValue = property(get_MaxValue, put_MaxValue)
-    ColorSpectrumShape = property(get_ColorSpectrumShape, put_ColorSpectrumShape)
-    ColorSpectrumComponents = property(get_ColorSpectrumComponents, put_ColorSpectrumComponents)
+    MinHue = property(get_MinHue, put_MinHue)
+    MinSaturation = property(get_MinSaturation, put_MinSaturation)
+    MinValue = property(get_MinValue, put_MinValue)
+    PreviousColor = property(get_PreviousColor, put_PreviousColor)
 class IColorPickerFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IColorPickerFactory'
@@ -6132,24 +6560,24 @@ class IColorPickerStatics(ComPtr):
     @winrt_commethod(24)
     def get_ColorSpectrumComponentsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     ColorProperty = property(get_ColorProperty, None)
-    PreviousColorProperty = property(get_PreviousColorProperty, None)
+    ColorSpectrumComponentsProperty = property(get_ColorSpectrumComponentsProperty, None)
+    ColorSpectrumShapeProperty = property(get_ColorSpectrumShapeProperty, None)
     IsAlphaEnabledProperty = property(get_IsAlphaEnabledProperty, None)
-    IsColorSpectrumVisibleProperty = property(get_IsColorSpectrumVisibleProperty, None)
+    IsAlphaSliderVisibleProperty = property(get_IsAlphaSliderVisibleProperty, None)
+    IsAlphaTextInputVisibleProperty = property(get_IsAlphaTextInputVisibleProperty, None)
+    IsColorChannelTextInputVisibleProperty = property(get_IsColorChannelTextInputVisibleProperty, None)
     IsColorPreviewVisibleProperty = property(get_IsColorPreviewVisibleProperty, None)
     IsColorSliderVisibleProperty = property(get_IsColorSliderVisibleProperty, None)
-    IsAlphaSliderVisibleProperty = property(get_IsAlphaSliderVisibleProperty, None)
-    IsMoreButtonVisibleProperty = property(get_IsMoreButtonVisibleProperty, None)
-    IsColorChannelTextInputVisibleProperty = property(get_IsColorChannelTextInputVisibleProperty, None)
-    IsAlphaTextInputVisibleProperty = property(get_IsAlphaTextInputVisibleProperty, None)
+    IsColorSpectrumVisibleProperty = property(get_IsColorSpectrumVisibleProperty, None)
     IsHexInputVisibleProperty = property(get_IsHexInputVisibleProperty, None)
-    MinHueProperty = property(get_MinHueProperty, None)
+    IsMoreButtonVisibleProperty = property(get_IsMoreButtonVisibleProperty, None)
     MaxHueProperty = property(get_MaxHueProperty, None)
-    MinSaturationProperty = property(get_MinSaturationProperty, None)
     MaxSaturationProperty = property(get_MaxSaturationProperty, None)
-    MinValueProperty = property(get_MinValueProperty, None)
     MaxValueProperty = property(get_MaxValueProperty, None)
-    ColorSpectrumShapeProperty = property(get_ColorSpectrumShapeProperty, None)
-    ColorSpectrumComponentsProperty = property(get_ColorSpectrumComponentsProperty, None)
+    MinHueProperty = property(get_MinHueProperty, None)
+    MinSaturationProperty = property(get_MinSaturationProperty, None)
+    MinValueProperty = property(get_MinValueProperty, None)
+    PreviousColorProperty = property(get_PreviousColorProperty, None)
 class IColumnDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IColumnDefinition'
@@ -6168,10 +6596,10 @@ class IColumnDefinition(ComPtr):
     def put_MinWidth(self, value: Double) -> Void: ...
     @winrt_commethod(12)
     def get_ActualWidth(self) -> Double: ...
-    Width = property(get_Width, put_Width)
+    ActualWidth = property(get_ActualWidth, None)
     MaxWidth = property(get_MaxWidth, put_MaxWidth)
     MinWidth = property(get_MinWidth, put_MinWidth)
-    ActualWidth = property(get_ActualWidth, None)
+    Width = property(get_Width, put_Width)
 class IColumnDefinitionStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IColumnDefinitionStatics'
@@ -6182,9 +6610,9 @@ class IColumnDefinitionStatics(ComPtr):
     def get_MaxWidthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_MinWidthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    WidthProperty = property(get_WidthProperty, None)
     MaxWidthProperty = property(get_MaxWidthProperty, None)
     MinWidthProperty = property(get_MinWidthProperty, None)
+    WidthProperty = property(get_WidthProperty, None)
 class IComboBox(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IComboBox'
@@ -6253,8 +6681,8 @@ class IComboBox3(ComPtr):
     def get_IsTextSearchEnabled(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_IsTextSearchEnabled(self, value: Boolean) -> Void: ...
-    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
     IsTextSearchEnabled = property(get_IsTextSearchEnabled, put_IsTextSearchEnabled)
+    LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
 class IComboBox4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IComboBox4'
@@ -6295,10 +6723,10 @@ class IComboBox6(ComPtr):
     def add_TextSubmitted(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ComboBox, win32more.Windows.UI.Xaml.Controls.ComboBoxTextSubmittedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(14)
     def remove_TextSubmitted(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    Description = property(get_Description, put_Description)
     IsEditable = property(None, put_IsEditable)
     Text = property(get_Text, put_Text)
     TextBoxStyle = property(get_TextBoxStyle, put_TextBoxStyle)
-    Description = property(get_Description, put_Description)
 class IComboBoxFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IComboBoxFactory'
@@ -6354,8 +6782,8 @@ class IComboBoxStatics3(ComPtr):
     def get_LightDismissOverlayModeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_IsTextSearchEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty, None)
     IsTextSearchEnabledProperty = property(get_IsTextSearchEnabledProperty, None)
+    LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty, None)
 class IComboBoxStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IComboBoxStatics4'
@@ -6382,10 +6810,10 @@ class IComboBoxStatics6(ComPtr):
     def get_TextBoxStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_DescriptionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsEditableProperty = property(get_IsEditableProperty, None)
-    TextProperty = property(get_TextProperty, None)
-    TextBoxStyleProperty = property(get_TextBoxStyleProperty, None)
     DescriptionProperty = property(get_DescriptionProperty, None)
+    IsEditableProperty = property(get_IsEditableProperty, None)
+    TextBoxStyleProperty = property(get_TextBoxStyleProperty, None)
+    TextProperty = property(get_TextProperty, None)
 class IComboBoxTextSubmittedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IComboBoxTextSubmittedEventArgs'
@@ -6396,8 +6824,8 @@ class IComboBoxTextSubmittedEventArgs(ComPtr):
     def get_Handled(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_Handled(self, value: Boolean) -> Void: ...
-    Text = property(get_Text, None)
     Handled = property(get_Handled, put_Handled)
+    Text = property(get_Text, None)
 class ICommandBar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICommandBar'
@@ -6441,8 +6869,8 @@ class ICommandBar3(ComPtr):
     @winrt_commethod(13)
     def remove_DynamicOverflowItemsChanging(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     DefaultLabelPosition = property(get_DefaultLabelPosition, put_DefaultLabelPosition)
-    OverflowButtonVisibility = property(get_OverflowButtonVisibility, put_OverflowButtonVisibility)
     IsDynamicOverflowEnabled = property(get_IsDynamicOverflowEnabled, put_IsDynamicOverflowEnabled)
+    OverflowButtonVisibility = property(get_OverflowButtonVisibility, put_OverflowButtonVisibility)
 class ICommandBarElement(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICommandBarElement'
@@ -6462,8 +6890,8 @@ class ICommandBarElement2(ComPtr):
     def get_DynamicOverflowOrder(self) -> Int32: ...
     @winrt_commethod(8)
     def put_DynamicOverflowOrder(self, value: Int32) -> Void: ...
-    IsInOverflow = property(get_IsInOverflow, None)
     DynamicOverflowOrder = property(get_DynamicOverflowOrder, put_DynamicOverflowOrder)
+    IsInOverflow = property(get_IsInOverflow, None)
 class ICommandBarFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ICommandBarFactory'
@@ -6524,8 +6952,8 @@ class ICommandBarStatics3(ComPtr):
     @winrt_commethod(8)
     def get_IsDynamicOverflowEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     DefaultLabelPositionProperty = property(get_DefaultLabelPositionProperty, None)
-    OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty, None)
     IsDynamicOverflowEnabledProperty = property(get_IsDynamicOverflowEnabledProperty, None)
+    OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty, None)
 class IContainerContentChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContainerContentChangingEventArgs'
@@ -6548,12 +6976,12 @@ class IContainerContentChangingEventArgs(ComPtr):
     def RegisterUpdateCallback(self, callback: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ListViewBase, win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs]) -> Void: ...
     @winrt_commethod(14)
     def RegisterUpdateCallbackWithPhase(self, callbackPhase: UInt32, callback: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ListViewBase, win32more.Windows.UI.Xaml.Controls.ContainerContentChangingEventArgs]) -> Void: ...
-    ItemContainer = property(get_ItemContainer, None)
-    InRecycleQueue = property(get_InRecycleQueue, None)
-    ItemIndex = property(get_ItemIndex, None)
-    Item = property(get_Item, None)
-    Phase = property(get_Phase, None)
     Handled = property(get_Handled, put_Handled)
+    InRecycleQueue = property(get_InRecycleQueue, None)
+    Item = property(get_Item, None)
+    ItemContainer = property(get_ItemContainer, None)
+    ItemIndex = property(get_ItemIndex, None)
+    Phase = property(get_Phase, None)
 class IContentControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentControl'
@@ -6689,17 +7117,17 @@ class IContentDialog(ComPtr):
     def Hide(self) -> Void: ...
     @winrt_commethod(39)
     def ShowAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.UI.Xaml.Controls.ContentDialogResult]: ...
-    Title = property(get_Title, put_Title)
-    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
     FullSizeDesired = property(get_FullSizeDesired, put_FullSizeDesired)
-    PrimaryButtonText = property(get_PrimaryButtonText, put_PrimaryButtonText)
-    SecondaryButtonText = property(get_SecondaryButtonText, put_SecondaryButtonText)
-    PrimaryButtonCommand = property(get_PrimaryButtonCommand, put_PrimaryButtonCommand)
-    SecondaryButtonCommand = property(get_SecondaryButtonCommand, put_SecondaryButtonCommand)
-    PrimaryButtonCommandParameter = property(get_PrimaryButtonCommandParameter, put_PrimaryButtonCommandParameter)
-    SecondaryButtonCommandParameter = property(get_SecondaryButtonCommandParameter, put_SecondaryButtonCommandParameter)
     IsPrimaryButtonEnabled = property(get_IsPrimaryButtonEnabled, put_IsPrimaryButtonEnabled)
     IsSecondaryButtonEnabled = property(get_IsSecondaryButtonEnabled, put_IsSecondaryButtonEnabled)
+    PrimaryButtonCommand = property(get_PrimaryButtonCommand, put_PrimaryButtonCommand)
+    PrimaryButtonCommandParameter = property(get_PrimaryButtonCommandParameter, put_PrimaryButtonCommandParameter)
+    PrimaryButtonText = property(get_PrimaryButtonText, put_PrimaryButtonText)
+    SecondaryButtonCommand = property(get_SecondaryButtonCommand, put_SecondaryButtonCommand)
+    SecondaryButtonCommandParameter = property(get_SecondaryButtonCommandParameter, put_SecondaryButtonCommandParameter)
+    SecondaryButtonText = property(get_SecondaryButtonText, put_SecondaryButtonText)
+    Title = property(get_Title, put_Title)
+    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
 class IContentDialog2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentDialog2'
@@ -6736,13 +7164,13 @@ class IContentDialog2(ComPtr):
     def add_CloseButtonClick(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ContentDialog, win32more.Windows.UI.Xaml.Controls.ContentDialogButtonClickEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(21)
     def remove_CloseButtonClick(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    CloseButtonText = property(get_CloseButtonText, put_CloseButtonText)
     CloseButtonCommand = property(get_CloseButtonCommand, put_CloseButtonCommand)
     CloseButtonCommandParameter = property(get_CloseButtonCommandParameter, put_CloseButtonCommandParameter)
+    CloseButtonStyle = property(get_CloseButtonStyle, put_CloseButtonStyle)
+    CloseButtonText = property(get_CloseButtonText, put_CloseButtonText)
+    DefaultButton = property(get_DefaultButton, put_DefaultButton)
     PrimaryButtonStyle = property(get_PrimaryButtonStyle, put_PrimaryButtonStyle)
     SecondaryButtonStyle = property(get_SecondaryButtonStyle, put_SecondaryButtonStyle)
-    CloseButtonStyle = property(get_CloseButtonStyle, put_CloseButtonStyle)
-    DefaultButton = property(get_DefaultButton, put_DefaultButton)
 class IContentDialog3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentDialog3'
@@ -6791,8 +7219,8 @@ class IContentDialogClosingEventArgs(ComPtr):
     def put_Cancel(self, value: Boolean) -> Void: ...
     @winrt_commethod(9)
     def GetDeferral(self) -> win32more.Windows.UI.Xaml.Controls.ContentDialogClosingDeferral: ...
-    Result = property(get_Result, None)
     Cancel = property(get_Cancel, put_Cancel)
+    Result = property(get_Result, None)
 class IContentDialogFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentDialogFactory'
@@ -6829,17 +7257,17 @@ class IContentDialogStatics(ComPtr):
     def get_IsPrimaryButtonEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(16)
     def get_IsSecondaryButtonEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TitleProperty = property(get_TitleProperty, None)
-    TitleTemplateProperty = property(get_TitleTemplateProperty, None)
     FullSizeDesiredProperty = property(get_FullSizeDesiredProperty, None)
-    PrimaryButtonTextProperty = property(get_PrimaryButtonTextProperty, None)
-    SecondaryButtonTextProperty = property(get_SecondaryButtonTextProperty, None)
-    PrimaryButtonCommandProperty = property(get_PrimaryButtonCommandProperty, None)
-    SecondaryButtonCommandProperty = property(get_SecondaryButtonCommandProperty, None)
-    PrimaryButtonCommandParameterProperty = property(get_PrimaryButtonCommandParameterProperty, None)
-    SecondaryButtonCommandParameterProperty = property(get_SecondaryButtonCommandParameterProperty, None)
     IsPrimaryButtonEnabledProperty = property(get_IsPrimaryButtonEnabledProperty, None)
     IsSecondaryButtonEnabledProperty = property(get_IsSecondaryButtonEnabledProperty, None)
+    PrimaryButtonCommandParameterProperty = property(get_PrimaryButtonCommandParameterProperty, None)
+    PrimaryButtonCommandProperty = property(get_PrimaryButtonCommandProperty, None)
+    PrimaryButtonTextProperty = property(get_PrimaryButtonTextProperty, None)
+    SecondaryButtonCommandParameterProperty = property(get_SecondaryButtonCommandParameterProperty, None)
+    SecondaryButtonCommandProperty = property(get_SecondaryButtonCommandProperty, None)
+    SecondaryButtonTextProperty = property(get_SecondaryButtonTextProperty, None)
+    TitleProperty = property(get_TitleProperty, None)
+    TitleTemplateProperty = property(get_TitleTemplateProperty, None)
 class IContentDialogStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentDialogStatics2'
@@ -6858,13 +7286,13 @@ class IContentDialogStatics2(ComPtr):
     def get_CloseButtonStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_DefaultButtonProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CloseButtonTextProperty = property(get_CloseButtonTextProperty, None)
-    CloseButtonCommandProperty = property(get_CloseButtonCommandProperty, None)
     CloseButtonCommandParameterProperty = property(get_CloseButtonCommandParameterProperty, None)
+    CloseButtonCommandProperty = property(get_CloseButtonCommandProperty, None)
+    CloseButtonStyleProperty = property(get_CloseButtonStyleProperty, None)
+    CloseButtonTextProperty = property(get_CloseButtonTextProperty, None)
+    DefaultButtonProperty = property(get_DefaultButtonProperty, None)
     PrimaryButtonStyleProperty = property(get_PrimaryButtonStyleProperty, None)
     SecondaryButtonStyleProperty = property(get_SecondaryButtonStyleProperty, None)
-    CloseButtonStyleProperty = property(get_CloseButtonStyleProperty, None)
-    DefaultButtonProperty = property(get_DefaultButtonProperty, None)
 class IContentLinkChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentLinkChangedEventArgs'
@@ -6926,16 +7354,16 @@ class IContentPresenter(ComPtr):
     def get_Foreground(self) -> win32more.Windows.UI.Xaml.Media.Brush: ...
     @winrt_commethod(27)
     def put_Foreground(self, value: win32more.Windows.UI.Xaml.Media.Brush) -> Void: ...
+    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
     Content = property(get_Content, put_Content)
     ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     ContentTemplateSelector = property(get_ContentTemplateSelector, put_ContentTemplateSelector)
     ContentTransitions = property(get_ContentTransitions, put_ContentTransitions)
-    FontSize = property(get_FontSize, put_FontSize)
     FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontSize = property(get_FontSize, put_FontSize)
     FontStretch = property(get_FontStretch, put_FontStretch)
-    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
     Foreground = property(get_Foreground, put_Foreground)
 class IContentPresenter2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -7008,16 +7436,16 @@ class IContentPresenter4(ComPtr):
     def get_VerticalContentAlignment(self) -> win32more.Windows.UI.Xaml.VerticalAlignment: ...
     @winrt_commethod(27)
     def put_VerticalContentAlignment(self, value: win32more.Windows.UI.Xaml.VerticalAlignment) -> Void: ...
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    MaxLines = property(get_MaxLines, put_MaxLines)
-    LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    LineHeight = property(get_LineHeight, put_LineHeight)
+    Background = property(get_Background, put_Background)
     BorderBrush = property(get_BorderBrush, put_BorderBrush)
     BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CornerRadius = property(get_CornerRadius, put_CornerRadius)
-    Padding = property(get_Padding, put_Padding)
-    Background = property(get_Background, put_Background)
     HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
+    LineHeight = property(get_LineHeight, put_LineHeight)
+    LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
+    MaxLines = property(get_MaxLines, put_MaxLines)
+    Padding = property(get_Padding, put_Padding)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
     VerticalContentAlignment = property(get_VerticalContentAlignment, put_VerticalContentAlignment)
 class IContentPresenter5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -7031,8 +7459,8 @@ class IContentPresenter5(ComPtr):
     def get_BackgroundSizing(self) -> win32more.Windows.UI.Xaml.Controls.BackgroundSizing: ...
     @winrt_commethod(9)
     def put_BackgroundSizing(self, value: win32more.Windows.UI.Xaml.Controls.BackgroundSizing) -> Void: ...
-    BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
     BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
+    BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
 class IContentPresenterFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IContentPresenterFactory'
@@ -7073,16 +7501,16 @@ class IContentPresenterStatics(ComPtr):
     def get_CharacterSpacingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(16)
     def get_ForegroundProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
     ContentProperty = property(get_ContentProperty, None)
     ContentTemplateProperty = property(get_ContentTemplateProperty, None)
     ContentTemplateSelectorProperty = property(get_ContentTemplateSelectorProperty, None)
     ContentTransitionsProperty = property(get_ContentTransitionsProperty, None)
-    FontSizeProperty = property(get_FontSizeProperty, None)
     FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
-    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
     FontStretchProperty = property(get_FontStretchProperty, None)
-    CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
+    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
     ForegroundProperty = property(get_ForegroundProperty, None)
 class IContentPresenterStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -7127,16 +7555,16 @@ class IContentPresenterStatics4(ComPtr):
     def get_HorizontalContentAlignmentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(16)
     def get_VerticalContentAlignmentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TextWrappingProperty = property(get_TextWrappingProperty, None)
-    MaxLinesProperty = property(get_MaxLinesProperty, None)
-    LineStackingStrategyProperty = property(get_LineStackingStrategyProperty, None)
-    LineHeightProperty = property(get_LineHeightProperty, None)
+    BackgroundProperty = property(get_BackgroundProperty, None)
     BorderBrushProperty = property(get_BorderBrushProperty, None)
     BorderThicknessProperty = property(get_BorderThicknessProperty, None)
     CornerRadiusProperty = property(get_CornerRadiusProperty, None)
-    PaddingProperty = property(get_PaddingProperty, None)
-    BackgroundProperty = property(get_BackgroundProperty, None)
     HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty, None)
+    LineHeightProperty = property(get_LineHeightProperty, None)
+    LineStackingStrategyProperty = property(get_LineStackingStrategyProperty, None)
+    MaxLinesProperty = property(get_MaxLinesProperty, None)
+    PaddingProperty = property(get_PaddingProperty, None)
+    TextWrappingProperty = property(get_TextWrappingProperty, None)
     VerticalContentAlignmentProperty = property(get_VerticalContentAlignmentProperty, None)
 class IContentPresenterStatics5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -7157,9 +7585,9 @@ class IContextMenuEventArgs(ComPtr):
     def get_CursorLeft(self) -> Double: ...
     @winrt_commethod(9)
     def get_CursorTop(self) -> Double: ...
-    Handled = property(get_Handled, put_Handled)
     CursorLeft = property(get_CursorLeft, None)
     CursorTop = property(get_CursorTop, None)
+    Handled = property(get_Handled, put_Handled)
 class IControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControl'
@@ -7246,25 +7674,25 @@ class IControl(ComPtr):
     def ApplyTemplate(self) -> Boolean: ...
     @winrt_commethod(46)
     def Focus(self, value: win32more.Windows.UI.Xaml.FocusState) -> Boolean: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
+    Background = property(get_Background, put_Background)
+    BorderBrush = property(get_BorderBrush, put_BorderBrush)
+    BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    FocusState = property(get_FocusState, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
     Foreground = property(get_Foreground, put_Foreground)
-    IsTabStop = property(get_IsTabStop, put_IsTabStop)
+    HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    IsTabStop = property(get_IsTabStop, put_IsTabStop)
+    Padding = property(get_Padding, put_Padding)
     TabIndex = property(get_TabIndex, put_TabIndex)
     TabNavigation = property(get_TabNavigation, put_TabNavigation)
     Template = property(get_Template, put_Template)
-    Padding = property(get_Padding, put_Padding)
-    HorizontalContentAlignment = property(get_HorizontalContentAlignment, put_HorizontalContentAlignment)
     VerticalContentAlignment = property(get_VerticalContentAlignment, put_VerticalContentAlignment)
-    Background = property(get_Background, put_Background)
-    BorderThickness = property(get_BorderThickness, put_BorderThickness)
-    BorderBrush = property(get_BorderBrush, put_BorderBrush)
-    FocusState = property(get_FocusState, None)
 class IControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControl2'
@@ -7329,14 +7757,14 @@ class IControl4(ComPtr):
     def remove_FocusDisengaged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(26)
     def RemoveFocusEngagement(self) -> Void: ...
-    IsFocusEngagementEnabled = property(get_IsFocusEngagementEnabled, put_IsFocusEngagementEnabled)
+    ElementSoundMode = property(get_ElementSoundMode, put_ElementSoundMode)
     IsFocusEngaged = property(get_IsFocusEngaged, put_IsFocusEngaged)
+    IsFocusEngagementEnabled = property(get_IsFocusEngagementEnabled, put_IsFocusEngagementEnabled)
     RequiresPointer = property(get_RequiresPointer, put_RequiresPointer)
+    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
     XYFocusLeft = property(get_XYFocusLeft, put_XYFocusLeft)
     XYFocusRight = property(get_XYFocusRight, put_XYFocusRight)
     XYFocusUp = property(get_XYFocusUp, put_XYFocusUp)
-    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
-    ElementSoundMode = property(get_ElementSoundMode, put_ElementSoundMode)
 class IControl5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControl5'
@@ -7485,26 +7913,26 @@ class IControlStatics(ComPtr):
     def get_DefaultStyleKeyProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(25)
     def get_FocusStateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSizeProperty = property(get_FontSizeProperty, None)
-    FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
-    FontStyleProperty = property(get_FontStyleProperty, None)
-    FontStretchProperty = property(get_FontStretchProperty, None)
+    BackgroundProperty = property(get_BackgroundProperty, None)
+    BorderBrushProperty = property(get_BorderBrushProperty, None)
+    BorderThicknessProperty = property(get_BorderThicknessProperty, None)
     CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
+    DefaultStyleKeyProperty = property(get_DefaultStyleKeyProperty, None)
+    FocusStateProperty = property(get_FocusStateProperty, None)
+    FontFamilyProperty = property(get_FontFamilyProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
+    FontStretchProperty = property(get_FontStretchProperty, None)
+    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
     ForegroundProperty = property(get_ForegroundProperty, None)
-    IsTabStopProperty = property(get_IsTabStopProperty, None)
+    HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty, None)
     IsEnabledProperty = property(get_IsEnabledProperty, None)
+    IsTabStopProperty = property(get_IsTabStopProperty, None)
+    PaddingProperty = property(get_PaddingProperty, None)
     TabIndexProperty = property(get_TabIndexProperty, None)
     TabNavigationProperty = property(get_TabNavigationProperty, None)
     TemplateProperty = property(get_TemplateProperty, None)
-    PaddingProperty = property(get_PaddingProperty, None)
-    HorizontalContentAlignmentProperty = property(get_HorizontalContentAlignmentProperty, None)
     VerticalContentAlignmentProperty = property(get_VerticalContentAlignmentProperty, None)
-    BackgroundProperty = property(get_BackgroundProperty, None)
-    BorderThicknessProperty = property(get_BorderThicknessProperty, None)
-    BorderBrushProperty = property(get_BorderBrushProperty, None)
-    DefaultStyleKeyProperty = property(get_DefaultStyleKeyProperty, None)
-    FocusStateProperty = property(get_FocusStateProperty, None)
 class IControlStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControlStatics2'
@@ -7524,8 +7952,8 @@ class IControlStatics3(ComPtr):
     def GetIsTemplateFocusTarget(self, element: win32more.Windows.UI.Xaml.FrameworkElement) -> Boolean: ...
     @winrt_commethod(9)
     def SetIsTemplateFocusTarget(self, element: win32more.Windows.UI.Xaml.FrameworkElement, value: Boolean) -> Void: ...
-    UseSystemFocusVisualsProperty = property(get_UseSystemFocusVisualsProperty, None)
     IsTemplateFocusTargetProperty = property(get_IsTemplateFocusTargetProperty, None)
+    UseSystemFocusVisualsProperty = property(get_UseSystemFocusVisualsProperty, None)
 class IControlStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControlStatics4'
@@ -7546,14 +7974,14 @@ class IControlStatics4(ComPtr):
     def get_XYFocusDownProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(13)
     def get_ElementSoundModeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsFocusEngagementEnabledProperty = property(get_IsFocusEngagementEnabledProperty, None)
+    ElementSoundModeProperty = property(get_ElementSoundModeProperty, None)
     IsFocusEngagedProperty = property(get_IsFocusEngagedProperty, None)
+    IsFocusEngagementEnabledProperty = property(get_IsFocusEngagementEnabledProperty, None)
     RequiresPointerProperty = property(get_RequiresPointerProperty, None)
+    XYFocusDownProperty = property(get_XYFocusDownProperty, None)
     XYFocusLeftProperty = property(get_XYFocusLeftProperty, None)
     XYFocusRightProperty = property(get_XYFocusRightProperty, None)
     XYFocusUpProperty = property(get_XYFocusUpProperty, None)
-    XYFocusDownProperty = property(get_XYFocusDownProperty, None)
-    ElementSoundModeProperty = property(get_ElementSoundModeProperty, None)
 class IControlStatics5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IControlStatics5'
@@ -7625,8 +8053,8 @@ class IDatePickedEventArgs(ComPtr):
     def get_OldDate(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(7)
     def get_NewDate(self) -> win32more.Windows.Foundation.DateTime: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
+    OldDate = property(get_OldDate, None)
 class IDatePicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePicker'
@@ -7687,19 +8115,19 @@ class IDatePicker(ComPtr):
     def add_DateChanged(self, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.UI.Xaml.Controls.DatePickerValueChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(33)
     def remove_DateChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     Date = property(get_Date, put_Date)
-    DayVisible = property(get_DayVisible, put_DayVisible)
-    MonthVisible = property(get_MonthVisible, put_MonthVisible)
-    YearVisible = property(get_YearVisible, put_YearVisible)
     DayFormat = property(get_DayFormat, put_DayFormat)
-    MonthFormat = property(get_MonthFormat, put_MonthFormat)
-    YearFormat = property(get_YearFormat, put_YearFormat)
-    MinYear = property(get_MinYear, put_MinYear)
+    DayVisible = property(get_DayVisible, put_DayVisible)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     MaxYear = property(get_MaxYear, put_MaxYear)
+    MinYear = property(get_MinYear, put_MinYear)
+    MonthFormat = property(get_MonthFormat, put_MonthFormat)
+    MonthVisible = property(get_MonthVisible, put_MonthVisible)
     Orientation = property(get_Orientation, put_Orientation)
+    YearFormat = property(get_YearFormat, put_YearFormat)
+    YearVisible = property(get_YearVisible, put_YearVisible)
 class IDatePicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePicker2'
@@ -7769,10 +8197,10 @@ class IDatePickerFlyout(ComPtr):
     CalendarIdentifier = property(get_CalendarIdentifier, put_CalendarIdentifier)
     Date = property(get_Date, put_Date)
     DayVisible = property(get_DayVisible, put_DayVisible)
+    MaxYear = property(get_MaxYear, put_MaxYear)
+    MinYear = property(get_MinYear, put_MinYear)
     MonthVisible = property(get_MonthVisible, put_MonthVisible)
     YearVisible = property(get_YearVisible, put_YearVisible)
-    MinYear = property(get_MinYear, put_MinYear)
-    MaxYear = property(get_MaxYear, put_MaxYear)
 class IDatePickerFlyout2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePickerFlyout2'
@@ -7857,10 +8285,10 @@ class IDatePickerFlyoutStatics(ComPtr):
     CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
     DateProperty = property(get_DateProperty, None)
     DayVisibleProperty = property(get_DayVisibleProperty, None)
+    MaxYearProperty = property(get_MaxYearProperty, None)
+    MinYearProperty = property(get_MinYearProperty, None)
     MonthVisibleProperty = property(get_MonthVisibleProperty, None)
     YearVisibleProperty = property(get_YearVisibleProperty, None)
-    MinYearProperty = property(get_MinYearProperty, None)
-    MaxYearProperty = property(get_MaxYearProperty, None)
 class IDatePickerFlyoutStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePickerFlyoutStatics2'
@@ -7882,8 +8310,8 @@ class IDatePickerSelectedValueChangedEventArgs(ComPtr):
     def get_OldDate(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     @winrt_commethod(7)
     def get_NewDate(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
+    OldDate = property(get_OldDate, None)
 class IDatePickerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePickerStatics'
@@ -7914,19 +8342,19 @@ class IDatePickerStatics(ComPtr):
     def get_MaxYearProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(18)
     def get_OrientationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    HeaderProperty = property(get_HeaderProperty, None)
-    HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
     CalendarIdentifierProperty = property(get_CalendarIdentifierProperty, None)
     DateProperty = property(get_DateProperty, None)
-    DayVisibleProperty = property(get_DayVisibleProperty, None)
-    MonthVisibleProperty = property(get_MonthVisibleProperty, None)
-    YearVisibleProperty = property(get_YearVisibleProperty, None)
     DayFormatProperty = property(get_DayFormatProperty, None)
-    MonthFormatProperty = property(get_MonthFormatProperty, None)
-    YearFormatProperty = property(get_YearFormatProperty, None)
-    MinYearProperty = property(get_MinYearProperty, None)
+    DayVisibleProperty = property(get_DayVisibleProperty, None)
+    HeaderProperty = property(get_HeaderProperty, None)
+    HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
     MaxYearProperty = property(get_MaxYearProperty, None)
+    MinYearProperty = property(get_MinYearProperty, None)
+    MonthFormatProperty = property(get_MonthFormatProperty, None)
+    MonthVisibleProperty = property(get_MonthVisibleProperty, None)
     OrientationProperty = property(get_OrientationProperty, None)
+    YearFormatProperty = property(get_YearFormatProperty, None)
+    YearVisibleProperty = property(get_YearVisibleProperty, None)
 class IDatePickerStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDatePickerStatics2'
@@ -7949,8 +8377,8 @@ class IDatePickerValueChangedEventArgs(ComPtr):
     def get_OldDate(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(7)
     def get_NewDate(self) -> win32more.Windows.Foundation.DateTime: ...
-    OldDate = property(get_OldDate, None)
     NewDate = property(get_NewDate, None)
+    OldDate = property(get_OldDate, None)
 class IDragItemsCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDragItemsCompletedEventArgs'
@@ -7959,8 +8387,8 @@ class IDragItemsCompletedEventArgs(ComPtr):
     def get_Items(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     @winrt_commethod(7)
     def get_DropResult(self) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation: ...
-    Items = property(get_Items, None)
     DropResult = property(get_DropResult, None)
+    Items = property(get_Items, None)
 class IDragItemsStartingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDragItemsStartingEventArgs'
@@ -7974,8 +8402,8 @@ class IDragItemsStartingEventArgs(ComPtr):
     @winrt_commethod(9)
     def get_Data(self) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackage: ...
     Cancel = property(get_Cancel, put_Cancel)
-    Items = property(get_Items, None)
     Data = property(get_Data, None)
+    Items = property(get_Items, None)
 class IDropDownButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IDropDownButton'
@@ -8136,11 +8564,11 @@ class IFontIcon(ComPtr):
     def get_FontStyle(self) -> win32more.Windows.UI.Text.FontStyle: ...
     @winrt_commethod(15)
     def put_FontStyle(self, value: win32more.Windows.UI.Text.FontStyle) -> Void: ...
-    Glyph = property(get_Glyph, put_Glyph)
-    FontSize = property(get_FontSize, put_FontSize)
     FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
+    FontSize = property(get_FontSize, put_FontSize)
     FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Glyph = property(get_Glyph, put_Glyph)
 class IFontIcon2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IFontIcon2'
@@ -8197,11 +8625,11 @@ class IFontIconSource(ComPtr):
     def get_MirroredWhenRightToLeft(self) -> Boolean: ...
     @winrt_commethod(19)
     def put_MirroredWhenRightToLeft(self, value: Boolean) -> Void: ...
-    Glyph = property(get_Glyph, put_Glyph)
-    FontSize = property(get_FontSize, put_FontSize)
     FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
+    FontSize = property(get_FontSize, put_FontSize)
     FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Glyph = property(get_Glyph, put_Glyph)
     IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
     MirroredWhenRightToLeft = property(get_MirroredWhenRightToLeft, put_MirroredWhenRightToLeft)
 class IFontIconSourceFactory(ComPtr):
@@ -8228,11 +8656,11 @@ class IFontIconSourceStatics(ComPtr):
     def get_IsTextScaleFactorEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_MirroredWhenRightToLeftProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GlyphProperty = property(get_GlyphProperty, None)
-    FontSizeProperty = property(get_FontSizeProperty, None)
     FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
     FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
+    GlyphProperty = property(get_GlyphProperty, None)
     IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty, None)
     MirroredWhenRightToLeftProperty = property(get_MirroredWhenRightToLeftProperty, None)
 class IFontIconStatics(ComPtr):
@@ -8249,11 +8677,11 @@ class IFontIconStatics(ComPtr):
     def get_FontWeightProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_FontStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GlyphProperty = property(get_GlyphProperty, None)
-    FontSizeProperty = property(get_FontSizeProperty, None)
     FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
     FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
+    GlyphProperty = property(get_GlyphProperty, None)
 class IFontIconStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IFontIconStatics2'
@@ -8314,12 +8742,12 @@ class IFrame(ComPtr):
     def GetNavigationState(self) -> WinRT_String: ...
     @winrt_commethod(26)
     def SetNavigationState(self, navigationState: WinRT_String) -> Void: ...
+    BackStackDepth = property(get_BackStackDepth, None)
     CacheSize = property(get_CacheSize, put_CacheSize)
     CanGoBack = property(get_CanGoBack, None)
     CanGoForward = property(get_CanGoForward, None)
     CurrentSourcePageType = property(get_CurrentSourcePageType, None)
     SourcePageType = property(get_SourcePageType, put_SourcePageType)
-    BackStackDepth = property(get_BackStackDepth, None)
 class IFrame2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IFrame2'
@@ -8377,12 +8805,12 @@ class IFrameStatics(ComPtr):
     def get_SourcePageTypeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_BackStackDepthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BackStackDepthProperty = property(get_BackStackDepthProperty, None)
     CacheSizeProperty = property(get_CacheSizeProperty, None)
     CanGoBackProperty = property(get_CanGoBackProperty, None)
     CanGoForwardProperty = property(get_CanGoForwardProperty, None)
     CurrentSourcePageTypeProperty = property(get_CurrentSourcePageTypeProperty, None)
     SourcePageTypeProperty = property(get_SourcePageTypeProperty, None)
-    BackStackDepthProperty = property(get_BackStackDepthProperty, None)
 class IFrameStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IFrameStatics2'
@@ -8408,8 +8836,8 @@ class IGrid(ComPtr):
     def get_RowDefinitions(self) -> win32more.Windows.UI.Xaml.Controls.RowDefinitionCollection: ...
     @winrt_commethod(7)
     def get_ColumnDefinitions(self) -> win32more.Windows.UI.Xaml.Controls.ColumnDefinitionCollection: ...
-    RowDefinitions = property(get_RowDefinitions, None)
     ColumnDefinitions = property(get_ColumnDefinitions, None)
+    RowDefinitions = property(get_RowDefinitions, None)
 class IGrid2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IGrid2'
@@ -8446,8 +8874,8 @@ class IGrid3(ComPtr):
     def get_ColumnSpacing(self) -> Double: ...
     @winrt_commethod(9)
     def put_ColumnSpacing(self, value: Double) -> Void: ...
-    RowSpacing = property(get_RowSpacing, put_RowSpacing)
     ColumnSpacing = property(get_ColumnSpacing, put_ColumnSpacing)
+    RowSpacing = property(get_RowSpacing, put_RowSpacing)
 class IGrid4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IGrid4'
@@ -8491,10 +8919,10 @@ class IGridStatics(ComPtr):
     def GetColumnSpan(self, element: win32more.Windows.UI.Xaml.FrameworkElement) -> Int32: ...
     @winrt_commethod(17)
     def SetColumnSpan(self, element: win32more.Windows.UI.Xaml.FrameworkElement, value: Int32) -> Void: ...
-    RowProperty = property(get_RowProperty, None)
     ColumnProperty = property(get_ColumnProperty, None)
-    RowSpanProperty = property(get_RowSpanProperty, None)
     ColumnSpanProperty = property(get_ColumnSpanProperty, None)
+    RowProperty = property(get_RowProperty, None)
+    RowSpanProperty = property(get_RowSpanProperty, None)
 class IGridStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IGridStatics2'
@@ -8519,8 +8947,8 @@ class IGridStatics3(ComPtr):
     def get_RowSpacingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ColumnSpacingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    RowSpacingProperty = property(get_RowSpacingProperty, None)
     ColumnSpacingProperty = property(get_ColumnSpacingProperty, None)
+    RowSpacingProperty = property(get_RowSpacingProperty, None)
 class IGridStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IGridStatics4'
@@ -8599,12 +9027,12 @@ class IGroupStyle(ComPtr):
     def get_HidesIfEmpty(self) -> Boolean: ...
     @winrt_commethod(17)
     def put_HidesIfEmpty(self, value: Boolean) -> Void: ...
-    Panel = property(get_Panel, put_Panel)
     ContainerStyle = property(get_ContainerStyle, put_ContainerStyle)
     ContainerStyleSelector = property(get_ContainerStyleSelector, put_ContainerStyleSelector)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     HeaderTemplateSelector = property(get_HeaderTemplateSelector, put_HeaderTemplateSelector)
     HidesIfEmpty = property(get_HidesIfEmpty, put_HidesIfEmpty)
+    Panel = property(get_Panel, put_Panel)
 class IGroupStyle2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IGroupStyle2'
@@ -8676,10 +9104,10 @@ class IHandwritingView(ComPtr):
     def TryClose(self) -> Boolean: ...
     @winrt_commethod(18)
     def TryOpen(self) -> Boolean: ...
-    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
-    PlacementAlignment = property(get_PlacementAlignment, put_PlacementAlignment)
-    IsOpen = property(get_IsOpen, None)
     AreCandidatesEnabled = property(get_AreCandidatesEnabled, put_AreCandidatesEnabled)
+    IsOpen = property(get_IsOpen, None)
+    PlacementAlignment = property(get_PlacementAlignment, put_PlacementAlignment)
+    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
 class IHandwritingView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHandwritingView2'
@@ -8708,9 +9136,9 @@ class IHandwritingView2(ComPtr):
     def GetCandidates(self, candidatesSessionId: UInt32) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_commethod(17)
     def SelectCandidate(self, candidatesSessionId: UInt32, selectedCandidateIndex: UInt32) -> Void: ...
-    IsSwitchToKeyboardEnabled = property(get_IsSwitchToKeyboardEnabled, put_IsSwitchToKeyboardEnabled)
-    IsCommandBarOpen = property(get_IsCommandBarOpen, put_IsCommandBarOpen)
     InputDeviceTypes = property(get_InputDeviceTypes, put_InputDeviceTypes)
+    IsCommandBarOpen = property(get_IsCommandBarOpen, put_IsCommandBarOpen)
+    IsSwitchToKeyboardEnabled = property(get_IsSwitchToKeyboardEnabled, put_IsSwitchToKeyboardEnabled)
 class IHandwritingViewCandidatesChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHandwritingViewCandidatesChangedEventArgs'
@@ -8736,10 +9164,10 @@ class IHandwritingViewStatics(ComPtr):
     def get_IsOpenProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_AreCandidatesEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PlacementTargetProperty = property(get_PlacementTargetProperty, None)
-    PlacementAlignmentProperty = property(get_PlacementAlignmentProperty, None)
-    IsOpenProperty = property(get_IsOpenProperty, None)
     AreCandidatesEnabledProperty = property(get_AreCandidatesEnabledProperty, None)
+    IsOpenProperty = property(get_IsOpenProperty, None)
+    PlacementAlignmentProperty = property(get_PlacementAlignmentProperty, None)
+    PlacementTargetProperty = property(get_PlacementTargetProperty, None)
 class IHandwritingViewStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHandwritingViewStatics2'
@@ -8748,8 +9176,8 @@ class IHandwritingViewStatics2(ComPtr):
     def get_IsSwitchToKeyboardEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_IsCommandBarOpenProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsSwitchToKeyboardEnabledProperty = property(get_IsSwitchToKeyboardEnabledProperty, None)
     IsCommandBarOpenProperty = property(get_IsCommandBarOpenProperty, None)
+    IsSwitchToKeyboardEnabledProperty = property(get_IsSwitchToKeyboardEnabledProperty, None)
 class IHandwritingViewTextSubmittedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHandwritingViewTextSubmittedEventArgs'
@@ -8790,13 +9218,13 @@ class IHub(ComPtr):
     def remove_SectionsInViewChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(21)
     def ScrollToSection(self, section: win32more.Windows.UI.Xaml.Controls.HubSection) -> Void: ...
+    DefaultSectionIndex = property(get_DefaultSectionIndex, put_DefaultSectionIndex)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     Orientation = property(get_Orientation, put_Orientation)
-    DefaultSectionIndex = property(get_DefaultSectionIndex, put_DefaultSectionIndex)
+    SectionHeaders = property(get_SectionHeaders, None)
     Sections = property(get_Sections, None)
     SectionsInView = property(get_SectionsInView, None)
-    SectionHeaders = property(get_SectionHeaders, None)
 class IHubFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHubFactory'
@@ -8823,9 +9251,9 @@ class IHubSection(ComPtr):
     def get_IsHeaderInteractive(self) -> Boolean: ...
     @winrt_commethod(13)
     def put_IsHeaderInteractive(self, value: Boolean) -> Void: ...
+    ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    ContentTemplate = property(get_ContentTemplate, put_ContentTemplate)
     IsHeaderInteractive = property(get_IsHeaderInteractive, put_IsHeaderInteractive)
 class IHubSectionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -8852,9 +9280,9 @@ class IHubSectionStatics(ComPtr):
     def get_ContentTemplateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_IsHeaderInteractiveProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ContentTemplateProperty = property(get_ContentTemplateProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    ContentTemplateProperty = property(get_ContentTemplateProperty, None)
     IsHeaderInteractiveProperty = property(get_IsHeaderInteractiveProperty, None)
 class IHubStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -8874,13 +9302,13 @@ class IHubStatics(ComPtr):
     def get_IsActiveViewProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_IsZoomedInViewProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DefaultSectionIndexProperty = property(get_DefaultSectionIndexProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    OrientationProperty = property(get_OrientationProperty, None)
-    DefaultSectionIndexProperty = property(get_DefaultSectionIndexProperty, None)
-    SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty, None)
     IsActiveViewProperty = property(get_IsActiveViewProperty, None)
     IsZoomedInViewProperty = property(get_IsZoomedInViewProperty, None)
+    OrientationProperty = property(get_OrientationProperty, None)
+    SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty, None)
 class IHyperlinkButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IHyperlinkButton'
@@ -8991,10 +9419,10 @@ class IImage(ComPtr):
     def add_ImageOpened(self, handler: win32more.Windows.UI.Xaml.RoutedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(16)
     def remove_ImageOpened(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Source = property(get_Source, put_Source)
-    Stretch = property(get_Stretch, put_Stretch)
     NineGrid = property(get_NineGrid, put_NineGrid)
     PlayToSource = property(get_PlayToSource, None)
+    Source = property(get_Source, put_Source)
+    Stretch = property(get_Stretch, put_Stretch)
 class IImage2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IImage2'
@@ -9019,10 +9447,10 @@ class IImageStatics(ComPtr):
     def get_NineGridProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_PlayToSourceProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SourceProperty = property(get_SourceProperty, None)
-    StretchProperty = property(get_StretchProperty, None)
     NineGridProperty = property(get_NineGridProperty, None)
     PlayToSourceProperty = property(get_PlayToSourceProperty, None)
+    SourceProperty = property(get_SourceProperty, None)
+    StretchProperty = property(get_StretchProperty, None)
 class IInkCanvas(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkCanvas'
@@ -9080,9 +9508,9 @@ class IInkToolbar(ComPtr):
     def GetToolButton(self, tool: win32more.Windows.UI.Xaml.Controls.InkToolbarTool) -> win32more.Windows.UI.Xaml.Controls.InkToolbarToolButton: ...
     @winrt_commethod(25)
     def GetToggleButton(self, tool: win32more.Windows.UI.Xaml.Controls.InkToolbarToggle) -> win32more.Windows.UI.Xaml.Controls.InkToolbarToggleButton: ...
-    InitialControls = property(get_InitialControls, put_InitialControls)
-    Children = property(get_Children, None)
     ActiveTool = property(get_ActiveTool, put_ActiveTool)
+    Children = property(get_Children, None)
+    InitialControls = property(get_InitialControls, put_InitialControls)
     InkDrawingAttributes = property(get_InkDrawingAttributes, None)
     IsRulerButtonChecked = property(get_IsRulerButtonChecked, put_IsRulerButtonChecked)
     TargetInkCanvas = property(get_TargetInkCanvas, put_TargetInkCanvas)
@@ -9108,8 +9536,8 @@ class IInkToolbar2(ComPtr):
     def remove_IsStencilButtonCheckedChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(14)
     def GetMenuButton(self, menu: win32more.Windows.UI.Xaml.Controls.InkToolbarMenuKind) -> win32more.Windows.UI.Xaml.Controls.InkToolbarMenuButton: ...
-    IsStencilButtonChecked = property(get_IsStencilButtonChecked, put_IsStencilButtonChecked)
     ButtonFlyoutPlacement = property(get_ButtonFlyoutPlacement, put_ButtonFlyoutPlacement)
+    IsStencilButtonChecked = property(get_IsStencilButtonChecked, put_IsStencilButtonChecked)
     Orientation = property(get_Orientation, put_Orientation)
 class IInkToolbar3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -9148,8 +9576,8 @@ class IInkToolbarCustomPenButton(ComPtr):
     def get_ConfigurationContent(self) -> win32more.Windows.UI.Xaml.UIElement: ...
     @winrt_commethod(9)
     def put_ConfigurationContent(self, value: win32more.Windows.UI.Xaml.UIElement) -> Void: ...
-    CustomPen = property(get_CustomPen, put_CustomPen)
     ConfigurationContent = property(get_ConfigurationContent, put_ConfigurationContent)
+    CustomPen = property(get_CustomPen, put_CustomPen)
 class IInkToolbarCustomPenButtonFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarCustomPenButtonFactory'
@@ -9164,8 +9592,8 @@ class IInkToolbarCustomPenButtonStatics(ComPtr):
     def get_CustomPenProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ConfigurationContentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CustomPenProperty = property(get_CustomPenProperty, None)
     ConfigurationContentProperty = property(get_ConfigurationContentProperty, None)
+    CustomPenProperty = property(get_CustomPenProperty, None)
 class IInkToolbarCustomPenFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarCustomPenFactory'
@@ -9262,8 +9690,8 @@ class IInkToolbarFlyoutItem(ComPtr):
     def add_Unchecked(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.InkToolbarFlyoutItem, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_Unchecked(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Kind = property(get_Kind, put_Kind)
     IsChecked = property(get_IsChecked, put_IsChecked)
+    Kind = property(get_Kind, put_Kind)
 class IInkToolbarFlyoutItemFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarFlyoutItemFactory'
@@ -9278,8 +9706,8 @@ class IInkToolbarFlyoutItemStatics(ComPtr):
     def get_KindProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_IsCheckedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    KindProperty = property(get_KindProperty, None)
     IsCheckedProperty = property(get_IsCheckedProperty, None)
+    KindProperty = property(get_KindProperty, None)
 class IInkToolbarHighlighterButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarHighlighterButton'
@@ -9310,8 +9738,8 @@ class IInkToolbarMenuButton(ComPtr):
     def get_IsExtensionGlyphShown(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_IsExtensionGlyphShown(self, value: Boolean) -> Void: ...
-    MenuKind = property(get_MenuKind, None)
     IsExtensionGlyphShown = property(get_IsExtensionGlyphShown, put_IsExtensionGlyphShown)
+    MenuKind = property(get_MenuKind, None)
 class IInkToolbarMenuButtonFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarMenuButtonFactory'
@@ -9349,9 +9777,9 @@ class IInkToolbarPenButton(ComPtr):
     def get_SelectedStrokeWidth(self) -> Double: ...
     @winrt_commethod(16)
     def put_SelectedStrokeWidth(self, value: Double) -> Void: ...
-    Palette = property(get_Palette, put_Palette)
-    MinStrokeWidth = property(get_MinStrokeWidth, put_MinStrokeWidth)
     MaxStrokeWidth = property(get_MaxStrokeWidth, put_MaxStrokeWidth)
+    MinStrokeWidth = property(get_MinStrokeWidth, put_MinStrokeWidth)
+    Palette = property(get_Palette, put_Palette)
     SelectedBrush = property(get_SelectedBrush, None)
     SelectedBrushIndex = property(get_SelectedBrushIndex, put_SelectedBrushIndex)
     SelectedStrokeWidth = property(get_SelectedStrokeWidth, put_SelectedStrokeWidth)
@@ -9375,11 +9803,11 @@ class IInkToolbarPenButtonStatics(ComPtr):
     def get_SelectedBrushIndexProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_SelectedStrokeWidthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PaletteProperty = property(get_PaletteProperty, None)
-    MinStrokeWidthProperty = property(get_MinStrokeWidthProperty, None)
     MaxStrokeWidthProperty = property(get_MaxStrokeWidthProperty, None)
-    SelectedBrushProperty = property(get_SelectedBrushProperty, None)
+    MinStrokeWidthProperty = property(get_MinStrokeWidthProperty, None)
+    PaletteProperty = property(get_PaletteProperty, None)
     SelectedBrushIndexProperty = property(get_SelectedBrushIndexProperty, None)
+    SelectedBrushProperty = property(get_SelectedBrushProperty, None)
     SelectedStrokeWidthProperty = property(get_SelectedStrokeWidthProperty, None)
 class IInkToolbarPenConfigurationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -9447,9 +9875,9 @@ class IInkToolbarStatics(ComPtr):
     def get_IsRulerButtonCheckedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_TargetInkCanvasProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    InitialControlsProperty = property(get_InitialControlsProperty, None)
-    ChildrenProperty = property(get_ChildrenProperty, None)
     ActiveToolProperty = property(get_ActiveToolProperty, None)
+    ChildrenProperty = property(get_ChildrenProperty, None)
+    InitialControlsProperty = property(get_InitialControlsProperty, None)
     InkDrawingAttributesProperty = property(get_InkDrawingAttributesProperty, None)
     IsRulerButtonCheckedProperty = property(get_IsRulerButtonCheckedProperty, None)
     TargetInkCanvasProperty = property(get_TargetInkCanvasProperty, None)
@@ -9463,8 +9891,8 @@ class IInkToolbarStatics2(ComPtr):
     def get_ButtonFlyoutPlacementProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_OrientationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsStencilButtonCheckedProperty = property(get_IsStencilButtonCheckedProperty, None)
     ButtonFlyoutPlacementProperty = property(get_ButtonFlyoutPlacementProperty, None)
+    IsStencilButtonCheckedProperty = property(get_IsStencilButtonCheckedProperty, None)
     OrientationProperty = property(get_OrientationProperty, None)
 class IInkToolbarStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -9493,11 +9921,11 @@ class IInkToolbarStencilButton(ComPtr):
     def get_IsProtractorItemVisible(self) -> Boolean: ...
     @winrt_commethod(13)
     def put_IsProtractorItemVisible(self, value: Boolean) -> Void: ...
-    Ruler = property(get_Ruler, None)
-    Protractor = property(get_Protractor, None)
-    SelectedStencil = property(get_SelectedStencil, put_SelectedStencil)
-    IsRulerItemVisible = property(get_IsRulerItemVisible, put_IsRulerItemVisible)
     IsProtractorItemVisible = property(get_IsProtractorItemVisible, put_IsProtractorItemVisible)
+    IsRulerItemVisible = property(get_IsRulerItemVisible, put_IsRulerItemVisible)
+    Protractor = property(get_Protractor, None)
+    Ruler = property(get_Ruler, None)
+    SelectedStencil = property(get_SelectedStencil, put_SelectedStencil)
 class IInkToolbarStencilButtonFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarStencilButtonFactory'
@@ -9518,11 +9946,11 @@ class IInkToolbarStencilButtonStatics(ComPtr):
     def get_IsRulerItemVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_IsProtractorItemVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    RulerProperty = property(get_RulerProperty, None)
-    ProtractorProperty = property(get_ProtractorProperty, None)
-    SelectedStencilProperty = property(get_SelectedStencilProperty, None)
-    IsRulerItemVisibleProperty = property(get_IsRulerItemVisibleProperty, None)
     IsProtractorItemVisibleProperty = property(get_IsProtractorItemVisibleProperty, None)
+    IsRulerItemVisibleProperty = property(get_IsRulerItemVisibleProperty, None)
+    ProtractorProperty = property(get_ProtractorProperty, None)
+    RulerProperty = property(get_RulerProperty, None)
+    SelectedStencilProperty = property(get_SelectedStencilProperty, None)
 class IInkToolbarToggleButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarToggleButton'
@@ -9544,8 +9972,8 @@ class IInkToolbarToolButton(ComPtr):
     def get_IsExtensionGlyphShown(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_IsExtensionGlyphShown(self, value: Boolean) -> Void: ...
-    ToolKind = property(get_ToolKind, None)
     IsExtensionGlyphShown = property(get_IsExtensionGlyphShown, put_IsExtensionGlyphShown)
+    ToolKind = property(get_ToolKind, None)
 class IInkToolbarToolButtonFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IInkToolbarToolButtonFactory'
@@ -9670,19 +10098,19 @@ class IItemsControl(ComPtr):
     def put_GroupStyleSelector(self, value: win32more.Windows.UI.Xaml.Controls.GroupStyleSelector) -> Void: ...
     @winrt_commethod(27)
     def get_IsGrouping(self) -> Boolean: ...
-    ItemsSource = property(get_ItemsSource, put_ItemsSource)
-    Items = property(get_Items, None)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
-    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
-    ItemsPanel = property(get_ItemsPanel, put_ItemsPanel)
     DisplayMemberPath = property(get_DisplayMemberPath, put_DisplayMemberPath)
-    ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
-    ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
-    ItemContainerGenerator = property(get_ItemContainerGenerator, None)
-    ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
     GroupStyle = property(get_GroupStyle, None)
     GroupStyleSelector = property(get_GroupStyleSelector, put_GroupStyleSelector)
     IsGrouping = property(get_IsGrouping, None)
+    ItemContainerGenerator = property(get_ItemContainerGenerator, None)
+    ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
+    ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
+    ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
+    Items = property(get_Items, None)
+    ItemsPanel = property(get_ItemsPanel, put_ItemsPanel)
+    ItemsSource = property(get_ItemsSource, put_ItemsSource)
 class IItemsControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsControl2'
@@ -9754,16 +10182,16 @@ class IItemsControlStatics(ComPtr):
     def GetItemsOwner(self, element: win32more.Windows.UI.Xaml.DependencyObject) -> win32more.Windows.UI.Xaml.Controls.ItemsControl: ...
     @winrt_commethod(17)
     def ItemsControlFromItemContainer(self, container: win32more.Windows.UI.Xaml.DependencyObject) -> win32more.Windows.UI.Xaml.Controls.ItemsControl: ...
-    ItemsSourceProperty = property(get_ItemsSourceProperty, None)
-    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
-    ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty, None)
-    ItemsPanelProperty = property(get_ItemsPanelProperty, None)
     DisplayMemberPathProperty = property(get_DisplayMemberPathProperty, None)
+    GroupStyleSelectorProperty = property(get_GroupStyleSelectorProperty, None)
+    IsGroupingProperty = property(get_IsGroupingProperty, None)
     ItemContainerStyleProperty = property(get_ItemContainerStyleProperty, None)
     ItemContainerStyleSelectorProperty = property(get_ItemContainerStyleSelectorProperty, None)
     ItemContainerTransitionsProperty = property(get_ItemContainerTransitionsProperty, None)
-    GroupStyleSelectorProperty = property(get_GroupStyleSelectorProperty, None)
-    IsGroupingProperty = property(get_IsGroupingProperty, None)
+    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
+    ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty, None)
+    ItemsPanelProperty = property(get_ItemsPanelProperty, None)
+    ItemsSourceProperty = property(get_ItemsSourceProperty, None)
 class IItemsPanelTemplate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsPanelTemplate'
@@ -9884,16 +10312,16 @@ class IItemsStackPanel(ComPtr):
     def get_CacheLength(self) -> Double: ...
     @winrt_commethod(20)
     def put_CacheLength(self, value: Double) -> Void: ...
-    GroupPadding = property(get_GroupPadding, put_GroupPadding)
-    Orientation = property(get_Orientation, put_Orientation)
+    CacheLength = property(get_CacheLength, put_CacheLength)
     FirstCacheIndex = property(get_FirstCacheIndex, None)
     FirstVisibleIndex = property(get_FirstVisibleIndex, None)
-    LastVisibleIndex = property(get_LastVisibleIndex, None)
-    LastCacheIndex = property(get_LastCacheIndex, None)
-    ScrollingDirection = property(get_ScrollingDirection, None)
     GroupHeaderPlacement = property(get_GroupHeaderPlacement, put_GroupHeaderPlacement)
+    GroupPadding = property(get_GroupPadding, put_GroupPadding)
     ItemsUpdatingScrollMode = property(get_ItemsUpdatingScrollMode, put_ItemsUpdatingScrollMode)
-    CacheLength = property(get_CacheLength, put_CacheLength)
+    LastCacheIndex = property(get_LastCacheIndex, None)
+    LastVisibleIndex = property(get_LastVisibleIndex, None)
+    Orientation = property(get_Orientation, put_Orientation)
+    ScrollingDirection = property(get_ScrollingDirection, None)
 class IItemsStackPanel2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsStackPanel2'
@@ -9915,10 +10343,10 @@ class IItemsStackPanelStatics(ComPtr):
     def get_GroupHeaderPlacementProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_CacheLengthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    CacheLengthProperty = property(get_CacheLengthProperty, None)
+    GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty, None)
     GroupPaddingProperty = property(get_GroupPaddingProperty, None)
     OrientationProperty = property(get_OrientationProperty, None)
-    GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty, None)
-    CacheLengthProperty = property(get_CacheLengthProperty, None)
 class IItemsStackPanelStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsStackPanelStatics2'
@@ -9968,18 +10396,18 @@ class IItemsWrapGrid(ComPtr):
     def get_CacheLength(self) -> Double: ...
     @winrt_commethod(24)
     def put_CacheLength(self, value: Double) -> Void: ...
-    GroupPadding = property(get_GroupPadding, put_GroupPadding)
-    Orientation = property(get_Orientation, put_Orientation)
-    MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
-    ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    CacheLength = property(get_CacheLength, put_CacheLength)
     FirstCacheIndex = property(get_FirstCacheIndex, None)
     FirstVisibleIndex = property(get_FirstVisibleIndex, None)
-    LastVisibleIndex = property(get_LastVisibleIndex, None)
-    LastCacheIndex = property(get_LastCacheIndex, None)
-    ScrollingDirection = property(get_ScrollingDirection, None)
     GroupHeaderPlacement = property(get_GroupHeaderPlacement, put_GroupHeaderPlacement)
-    CacheLength = property(get_CacheLength, put_CacheLength)
+    GroupPadding = property(get_GroupPadding, put_GroupPadding)
+    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    ItemWidth = property(get_ItemWidth, put_ItemWidth)
+    LastCacheIndex = property(get_LastCacheIndex, None)
+    LastVisibleIndex = property(get_LastVisibleIndex, None)
+    MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
+    Orientation = property(get_Orientation, put_Orientation)
+    ScrollingDirection = property(get_ScrollingDirection, None)
 class IItemsWrapGrid2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsWrapGrid2'
@@ -10007,13 +10435,13 @@ class IItemsWrapGridStatics(ComPtr):
     def get_GroupHeaderPlacementProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_CacheLengthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GroupPaddingProperty = property(get_GroupPaddingProperty, None)
-    OrientationProperty = property(get_OrientationProperty, None)
-    MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty, None)
-    ItemWidthProperty = property(get_ItemWidthProperty, None)
-    ItemHeightProperty = property(get_ItemHeightProperty, None)
-    GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty, None)
     CacheLengthProperty = property(get_CacheLengthProperty, None)
+    GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty, None)
+    GroupPaddingProperty = property(get_GroupPaddingProperty, None)
+    ItemHeightProperty = property(get_ItemHeightProperty, None)
+    ItemWidthProperty = property(get_ItemWidthProperty, None)
+    MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty, None)
+    OrientationProperty = property(get_OrientationProperty, None)
 class IItemsWrapGridStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IItemsWrapGridStatics2'
@@ -10120,15 +10548,15 @@ class IListPickerFlyout(ComPtr):
     def remove_ItemsPicked(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(25)
     def ShowAtAsync(self, target: win32more.Windows.UI.Xaml.FrameworkElement) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Win32.System.WinRT.IInspectable]]: ...
-    ItemsSource = property(get_ItemsSource, put_ItemsSource)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
     DisplayMemberPath = property(get_DisplayMemberPath, put_DisplayMemberPath)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemsSource = property(get_ItemsSource, put_ItemsSource)
     SelectedIndex = property(get_SelectedIndex, put_SelectedIndex)
     SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    SelectedItems = property(get_SelectedItems, None)
     SelectedValue = property(get_SelectedValue, put_SelectedValue)
     SelectedValuePath = property(get_SelectedValuePath, put_SelectedValuePath)
-    SelectedItems = property(get_SelectedItems, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
 class IListPickerFlyoutPresenter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListPickerFlyoutPresenter'
@@ -10153,14 +10581,14 @@ class IListPickerFlyoutStatics(ComPtr):
     def get_SelectedValueProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(13)
     def get_SelectedValuePathProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ItemsSourceProperty = property(get_ItemsSourceProperty, None)
-    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
     DisplayMemberPathProperty = property(get_DisplayMemberPathProperty, None)
-    SelectionModeProperty = property(get_SelectionModeProperty, None)
+    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
+    ItemsSourceProperty = property(get_ItemsSourceProperty, None)
     SelectedIndexProperty = property(get_SelectedIndexProperty, None)
     SelectedItemProperty = property(get_SelectedItemProperty, None)
-    SelectedValueProperty = property(get_SelectedValueProperty, None)
     SelectedValuePathProperty = property(get_SelectedValuePathProperty, None)
+    SelectedValueProperty = property(get_SelectedValueProperty, None)
+    SelectionModeProperty = property(get_SelectionModeProperty, None)
 class IListView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListView'
@@ -10231,18 +10659,18 @@ class IListViewBase(ComPtr):
     def get_HeaderTransitions(self) -> win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection: ...
     @winrt_commethod(36)
     def put_HeaderTransitions(self, value: win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection) -> Void: ...
-    SelectedItems = property(get_SelectedItems, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
-    IsSwipeEnabled = property(get_IsSwipeEnabled, put_IsSwipeEnabled)
     CanDragItems = property(get_CanDragItems, put_CanDragItems)
     CanReorderItems = property(get_CanReorderItems, put_CanReorderItems)
-    IsItemClickEnabled = property(get_IsItemClickEnabled, put_IsItemClickEnabled)
     DataFetchSize = property(get_DataFetchSize, put_DataFetchSize)
-    IncrementalLoadingThreshold = property(get_IncrementalLoadingThreshold, put_IncrementalLoadingThreshold)
-    IncrementalLoadingTrigger = property(get_IncrementalLoadingTrigger, put_IncrementalLoadingTrigger)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     HeaderTransitions = property(get_HeaderTransitions, put_HeaderTransitions)
+    IncrementalLoadingThreshold = property(get_IncrementalLoadingThreshold, put_IncrementalLoadingThreshold)
+    IncrementalLoadingTrigger = property(get_IncrementalLoadingTrigger, put_IncrementalLoadingTrigger)
+    IsItemClickEnabled = property(get_IsItemClickEnabled, put_IsItemClickEnabled)
+    IsSwipeEnabled = property(get_IsSwipeEnabled, put_IsSwipeEnabled)
+    SelectedItems = property(get_SelectedItems, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
 class IListViewBase2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListViewBase2'
@@ -10269,10 +10697,10 @@ class IListViewBase2(ComPtr):
     def get_FooterTransitions(self) -> win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection: ...
     @winrt_commethod(16)
     def put_FooterTransitions(self, value: win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection) -> Void: ...
-    ShowsScrollingPlaceholders = property(get_ShowsScrollingPlaceholders, put_ShowsScrollingPlaceholders)
     Footer = property(get_Footer, put_Footer)
     FooterTemplate = property(get_FooterTemplate, put_FooterTemplate)
     FooterTransitions = property(get_FooterTransitions, put_FooterTransitions)
+    ShowsScrollingPlaceholders = property(get_ShowsScrollingPlaceholders, put_ShowsScrollingPlaceholders)
 class IListViewBase3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListViewBase3'
@@ -10308,8 +10736,8 @@ class IListViewBase4(ComPtr):
     def SelectRange(self, itemIndexRange: win32more.Windows.UI.Xaml.Data.ItemIndexRange) -> Void: ...
     @winrt_commethod(16)
     def DeselectRange(self, itemIndexRange: win32more.Windows.UI.Xaml.Data.ItemIndexRange) -> Void: ...
-    SelectedRanges = property(get_SelectedRanges, None)
     IsMultiSelectCheckBoxEnabled = property(get_IsMultiSelectCheckBoxEnabled, put_IsMultiSelectCheckBoxEnabled)
+    SelectedRanges = property(get_SelectedRanges, None)
 class IListViewBase5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListViewBase5'
@@ -10375,20 +10803,20 @@ class IListViewBaseStatics(ComPtr):
     def get_HeaderTemplateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(19)
     def get_HeaderTransitionsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectionModeProperty = property(get_SelectionModeProperty, None)
-    IsSwipeEnabledProperty = property(get_IsSwipeEnabledProperty, None)
     CanDragItemsProperty = property(get_CanDragItemsProperty, None)
     CanReorderItemsProperty = property(get_CanReorderItemsProperty, None)
-    IsItemClickEnabledProperty = property(get_IsItemClickEnabledProperty, None)
     DataFetchSizeProperty = property(get_DataFetchSizeProperty, None)
-    IncrementalLoadingThresholdProperty = property(get_IncrementalLoadingThresholdProperty, None)
-    IncrementalLoadingTriggerProperty = property(get_IncrementalLoadingTriggerProperty, None)
-    SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty, None)
-    IsActiveViewProperty = property(get_IsActiveViewProperty, None)
-    IsZoomedInViewProperty = property(get_IsZoomedInViewProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
     HeaderTransitionsProperty = property(get_HeaderTransitionsProperty, None)
+    IncrementalLoadingThresholdProperty = property(get_IncrementalLoadingThresholdProperty, None)
+    IncrementalLoadingTriggerProperty = property(get_IncrementalLoadingTriggerProperty, None)
+    IsActiveViewProperty = property(get_IsActiveViewProperty, None)
+    IsItemClickEnabledProperty = property(get_IsItemClickEnabledProperty, None)
+    IsSwipeEnabledProperty = property(get_IsSwipeEnabledProperty, None)
+    IsZoomedInViewProperty = property(get_IsZoomedInViewProperty, None)
+    SelectionModeProperty = property(get_SelectionModeProperty, None)
+    SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty, None)
 class IListViewBaseStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListViewBaseStatics2'
@@ -10401,10 +10829,10 @@ class IListViewBaseStatics2(ComPtr):
     def get_FooterTemplateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_FooterTransitionsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ShowsScrollingPlaceholdersProperty = property(get_ShowsScrollingPlaceholdersProperty, None)
     FooterProperty = property(get_FooterProperty, None)
     FooterTemplateProperty = property(get_FooterTemplateProperty, None)
     FooterTransitionsProperty = property(get_FooterTransitionsProperty, None)
+    ShowsScrollingPlaceholdersProperty = property(get_ShowsScrollingPlaceholdersProperty, None)
 class IListViewBaseStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IListViewBaseStatics3'
@@ -10631,40 +11059,40 @@ class IMediaElement(ComPtr):
     def RemoveAllEffects(self) -> Void: ...
     @winrt_commethod(85)
     def get_ActualStereo3DVideoPackingMode(self) -> win32more.Windows.UI.Xaml.Media.Stereo3DVideoPackingMode: ...
-    PosterSource = property(get_PosterSource, put_PosterSource)
-    Source = property(get_Source, put_Source)
-    IsMuted = property(get_IsMuted, put_IsMuted)
-    IsAudioOnly = property(get_IsAudioOnly, None)
-    AutoPlay = property(get_AutoPlay, put_AutoPlay)
-    Volume = property(get_Volume, put_Volume)
-    Balance = property(get_Balance, put_Balance)
-    NaturalVideoHeight = property(get_NaturalVideoHeight, None)
-    NaturalVideoWidth = property(get_NaturalVideoWidth, None)
-    NaturalDuration = property(get_NaturalDuration, None)
-    Position = property(get_Position, put_Position)
-    DownloadProgress = property(get_DownloadProgress, None)
-    BufferingProgress = property(get_BufferingProgress, None)
-    DownloadProgressOffset = property(get_DownloadProgressOffset, None)
-    CurrentState = property(get_CurrentState, None)
-    Markers = property(get_Markers, None)
-    CanSeek = property(get_CanSeek, None)
-    CanPause = property(get_CanPause, None)
-    AudioStreamCount = property(get_AudioStreamCount, None)
-    AudioStreamIndex = property(get_AudioStreamIndex, put_AudioStreamIndex)
-    PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
-    IsLooping = property(get_IsLooping, put_IsLooping)
-    PlayToSource = property(get_PlayToSource, None)
-    DefaultPlaybackRate = property(get_DefaultPlaybackRate, put_DefaultPlaybackRate)
-    AspectRatioWidth = property(get_AspectRatioWidth, None)
+    ActualStereo3DVideoPackingMode = property(get_ActualStereo3DVideoPackingMode, None)
     AspectRatioHeight = property(get_AspectRatioHeight, None)
-    RealTimePlayback = property(get_RealTimePlayback, put_RealTimePlayback)
+    AspectRatioWidth = property(get_AspectRatioWidth, None)
     AudioCategory = property(get_AudioCategory, put_AudioCategory)
     AudioDeviceType = property(get_AudioDeviceType, put_AudioDeviceType)
+    AudioStreamCount = property(get_AudioStreamCount, None)
+    AudioStreamIndex = property(get_AudioStreamIndex, put_AudioStreamIndex)
+    AutoPlay = property(get_AutoPlay, put_AutoPlay)
+    Balance = property(get_Balance, put_Balance)
+    BufferingProgress = property(get_BufferingProgress, None)
+    CanPause = property(get_CanPause, None)
+    CanSeek = property(get_CanSeek, None)
+    CurrentState = property(get_CurrentState, None)
+    DefaultPlaybackRate = property(get_DefaultPlaybackRate, put_DefaultPlaybackRate)
+    DownloadProgress = property(get_DownloadProgress, None)
+    DownloadProgressOffset = property(get_DownloadProgressOffset, None)
+    IsAudioOnly = property(get_IsAudioOnly, None)
+    IsLooping = property(get_IsLooping, put_IsLooping)
+    IsMuted = property(get_IsMuted, put_IsMuted)
+    IsStereo3DVideo = property(get_IsStereo3DVideo, None)
+    Markers = property(get_Markers, None)
+    NaturalDuration = property(get_NaturalDuration, None)
+    NaturalVideoHeight = property(get_NaturalVideoHeight, None)
+    NaturalVideoWidth = property(get_NaturalVideoWidth, None)
+    PlayToSource = property(get_PlayToSource, None)
+    PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
+    Position = property(get_Position, put_Position)
+    PosterSource = property(get_PosterSource, put_PosterSource)
     ProtectionManager = property(get_ProtectionManager, put_ProtectionManager)
+    RealTimePlayback = property(get_RealTimePlayback, put_RealTimePlayback)
+    Source = property(get_Source, put_Source)
     Stereo3DVideoPackingMode = property(get_Stereo3DVideoPackingMode, put_Stereo3DVideoPackingMode)
     Stereo3DVideoRenderMode = property(get_Stereo3DVideoRenderMode, put_Stereo3DVideoRenderMode)
-    IsStereo3DVideo = property(get_IsStereo3DVideo, None)
-    ActualStereo3DVideoPackingMode = property(get_ActualStereo3DVideoPackingMode, None)
+    Volume = property(get_Volume, put_Volume)
 class IMediaElement2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaElement2'
@@ -10688,9 +11116,9 @@ class IMediaElement2(ComPtr):
     @winrt_commethod(14)
     def put_PlayToPreferredSourceUri(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
     AreTransportControlsEnabled = property(get_AreTransportControlsEnabled, put_AreTransportControlsEnabled)
-    Stretch = property(get_Stretch, put_Stretch)
     IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
     PlayToPreferredSourceUri = property(get_PlayToPreferredSourceUri, put_PlayToPreferredSourceUri)
+    Stretch = property(get_Stretch, put_Stretch)
 class IMediaElement3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaElement3'
@@ -10778,39 +11206,39 @@ class IMediaElementStatics(ComPtr):
     def get_IsStereo3DVideoProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(38)
     def get_ActualStereo3DVideoPackingModeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PosterSourceProperty = property(get_PosterSourceProperty, None)
-    SourceProperty = property(get_SourceProperty, None)
-    IsMutedProperty = property(get_IsMutedProperty, None)
-    IsAudioOnlyProperty = property(get_IsAudioOnlyProperty, None)
-    AutoPlayProperty = property(get_AutoPlayProperty, None)
-    VolumeProperty = property(get_VolumeProperty, None)
-    BalanceProperty = property(get_BalanceProperty, None)
-    NaturalVideoHeightProperty = property(get_NaturalVideoHeightProperty, None)
-    NaturalVideoWidthProperty = property(get_NaturalVideoWidthProperty, None)
-    NaturalDurationProperty = property(get_NaturalDurationProperty, None)
-    PositionProperty = property(get_PositionProperty, None)
-    DownloadProgressProperty = property(get_DownloadProgressProperty, None)
-    BufferingProgressProperty = property(get_BufferingProgressProperty, None)
-    DownloadProgressOffsetProperty = property(get_DownloadProgressOffsetProperty, None)
-    CurrentStateProperty = property(get_CurrentStateProperty, None)
-    CanSeekProperty = property(get_CanSeekProperty, None)
-    CanPauseProperty = property(get_CanPauseProperty, None)
-    AudioStreamCountProperty = property(get_AudioStreamCountProperty, None)
-    AudioStreamIndexProperty = property(get_AudioStreamIndexProperty, None)
-    PlaybackRateProperty = property(get_PlaybackRateProperty, None)
-    IsLoopingProperty = property(get_IsLoopingProperty, None)
-    PlayToSourceProperty = property(get_PlayToSourceProperty, None)
-    DefaultPlaybackRateProperty = property(get_DefaultPlaybackRateProperty, None)
-    AspectRatioWidthProperty = property(get_AspectRatioWidthProperty, None)
+    ActualStereo3DVideoPackingModeProperty = property(get_ActualStereo3DVideoPackingModeProperty, None)
     AspectRatioHeightProperty = property(get_AspectRatioHeightProperty, None)
-    RealTimePlaybackProperty = property(get_RealTimePlaybackProperty, None)
+    AspectRatioWidthProperty = property(get_AspectRatioWidthProperty, None)
     AudioCategoryProperty = property(get_AudioCategoryProperty, None)
     AudioDeviceTypeProperty = property(get_AudioDeviceTypeProperty, None)
+    AudioStreamCountProperty = property(get_AudioStreamCountProperty, None)
+    AudioStreamIndexProperty = property(get_AudioStreamIndexProperty, None)
+    AutoPlayProperty = property(get_AutoPlayProperty, None)
+    BalanceProperty = property(get_BalanceProperty, None)
+    BufferingProgressProperty = property(get_BufferingProgressProperty, None)
+    CanPauseProperty = property(get_CanPauseProperty, None)
+    CanSeekProperty = property(get_CanSeekProperty, None)
+    CurrentStateProperty = property(get_CurrentStateProperty, None)
+    DefaultPlaybackRateProperty = property(get_DefaultPlaybackRateProperty, None)
+    DownloadProgressOffsetProperty = property(get_DownloadProgressOffsetProperty, None)
+    DownloadProgressProperty = property(get_DownloadProgressProperty, None)
+    IsAudioOnlyProperty = property(get_IsAudioOnlyProperty, None)
+    IsLoopingProperty = property(get_IsLoopingProperty, None)
+    IsMutedProperty = property(get_IsMutedProperty, None)
+    IsStereo3DVideoProperty = property(get_IsStereo3DVideoProperty, None)
+    NaturalDurationProperty = property(get_NaturalDurationProperty, None)
+    NaturalVideoHeightProperty = property(get_NaturalVideoHeightProperty, None)
+    NaturalVideoWidthProperty = property(get_NaturalVideoWidthProperty, None)
+    PlayToSourceProperty = property(get_PlayToSourceProperty, None)
+    PlaybackRateProperty = property(get_PlaybackRateProperty, None)
+    PositionProperty = property(get_PositionProperty, None)
+    PosterSourceProperty = property(get_PosterSourceProperty, None)
     ProtectionManagerProperty = property(get_ProtectionManagerProperty, None)
+    RealTimePlaybackProperty = property(get_RealTimePlaybackProperty, None)
+    SourceProperty = property(get_SourceProperty, None)
     Stereo3DVideoPackingModeProperty = property(get_Stereo3DVideoPackingModeProperty, None)
     Stereo3DVideoRenderModeProperty = property(get_Stereo3DVideoRenderModeProperty, None)
-    IsStereo3DVideoProperty = property(get_IsStereo3DVideoProperty, None)
-    ActualStereo3DVideoPackingModeProperty = property(get_ActualStereo3DVideoPackingModeProperty, None)
+    VolumeProperty = property(get_VolumeProperty, None)
 class IMediaElementStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaElementStatics2'
@@ -10824,9 +11252,9 @@ class IMediaElementStatics2(ComPtr):
     @winrt_commethod(9)
     def get_PlayToPreferredSourceUriProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     AreTransportControlsEnabledProperty = property(get_AreTransportControlsEnabledProperty, None)
-    StretchProperty = property(get_StretchProperty, None)
     IsFullWindowProperty = property(get_IsFullWindowProperty, None)
     PlayToPreferredSourceUriProperty = property(get_PlayToPreferredSourceUriProperty, None)
+    StretchProperty = property(get_StretchProperty, None)
 class IMediaPlayerElement(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaPlayerElement'
@@ -10863,14 +11291,14 @@ class IMediaPlayerElement(ComPtr):
     def get_MediaPlayer(self) -> win32more.Windows.Media.Playback.MediaPlayer: ...
     @winrt_commethod(21)
     def SetMediaPlayer(self, mediaPlayer: win32more.Windows.Media.Playback.MediaPlayer) -> Void: ...
-    Source = property(get_Source, put_Source)
-    TransportControls = property(get_TransportControls, put_TransportControls)
     AreTransportControlsEnabled = property(get_AreTransportControlsEnabled, put_AreTransportControlsEnabled)
-    PosterSource = property(get_PosterSource, put_PosterSource)
-    Stretch = property(get_Stretch, put_Stretch)
     AutoPlay = property(get_AutoPlay, put_AutoPlay)
     IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
     MediaPlayer = property(get_MediaPlayer, None)
+    PosterSource = property(get_PosterSource, put_PosterSource)
+    Source = property(get_Source, put_Source)
+    Stretch = property(get_Stretch, put_Stretch)
+    TransportControls = property(get_TransportControls, put_TransportControls)
 class IMediaPlayerElementFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaPlayerElementFactory'
@@ -10895,13 +11323,13 @@ class IMediaPlayerElementStatics(ComPtr):
     def get_IsFullWindowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_MediaPlayerProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SourceProperty = property(get_SourceProperty, None)
     AreTransportControlsEnabledProperty = property(get_AreTransportControlsEnabledProperty, None)
-    PosterSourceProperty = property(get_PosterSourceProperty, None)
-    StretchProperty = property(get_StretchProperty, None)
     AutoPlayProperty = property(get_AutoPlayProperty, None)
     IsFullWindowProperty = property(get_IsFullWindowProperty, None)
     MediaPlayerProperty = property(get_MediaPlayerProperty, None)
+    PosterSourceProperty = property(get_PosterSourceProperty, None)
+    SourceProperty = property(get_SourceProperty, None)
+    StretchProperty = property(get_StretchProperty, None)
 class IMediaPlayerPresenter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaPlayerPresenter'
@@ -10918,9 +11346,9 @@ class IMediaPlayerPresenter(ComPtr):
     def get_IsFullWindow(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_IsFullWindow(self, value: Boolean) -> Void: ...
+    IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
     MediaPlayer = property(get_MediaPlayer, put_MediaPlayer)
     Stretch = property(get_Stretch, put_Stretch)
-    IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
 class IMediaPlayerPresenterFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaPlayerPresenterFactory'
@@ -10937,9 +11365,9 @@ class IMediaPlayerPresenterStatics(ComPtr):
     def get_StretchProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_IsFullWindowProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    IsFullWindowProperty = property(get_IsFullWindowProperty, None)
     MediaPlayerProperty = property(get_MediaPlayerProperty, None)
     StretchProperty = property(get_StretchProperty, None)
-    IsFullWindowProperty = property(get_IsFullWindowProperty, None)
 class IMediaTransportControls(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControls'
@@ -11012,23 +11440,23 @@ class IMediaTransportControls(ComPtr):
     def get_IsCompact(self) -> Boolean: ...
     @winrt_commethod(39)
     def put_IsCompact(self, value: Boolean) -> Void: ...
-    IsFullWindowButtonVisible = property(get_IsFullWindowButtonVisible, put_IsFullWindowButtonVisible)
-    IsFullWindowEnabled = property(get_IsFullWindowEnabled, put_IsFullWindowEnabled)
-    IsZoomButtonVisible = property(get_IsZoomButtonVisible, put_IsZoomButtonVisible)
-    IsZoomEnabled = property(get_IsZoomEnabled, put_IsZoomEnabled)
+    IsCompact = property(get_IsCompact, put_IsCompact)
     IsFastForwardButtonVisible = property(get_IsFastForwardButtonVisible, put_IsFastForwardButtonVisible)
     IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
     IsFastRewindButtonVisible = property(get_IsFastRewindButtonVisible, put_IsFastRewindButtonVisible)
     IsFastRewindEnabled = property(get_IsFastRewindEnabled, put_IsFastRewindEnabled)
-    IsStopButtonVisible = property(get_IsStopButtonVisible, put_IsStopButtonVisible)
-    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
-    IsVolumeButtonVisible = property(get_IsVolumeButtonVisible, put_IsVolumeButtonVisible)
-    IsVolumeEnabled = property(get_IsVolumeEnabled, put_IsVolumeEnabled)
+    IsFullWindowButtonVisible = property(get_IsFullWindowButtonVisible, put_IsFullWindowButtonVisible)
+    IsFullWindowEnabled = property(get_IsFullWindowEnabled, put_IsFullWindowEnabled)
     IsPlaybackRateButtonVisible = property(get_IsPlaybackRateButtonVisible, put_IsPlaybackRateButtonVisible)
     IsPlaybackRateEnabled = property(get_IsPlaybackRateEnabled, put_IsPlaybackRateEnabled)
     IsSeekBarVisible = property(get_IsSeekBarVisible, put_IsSeekBarVisible)
     IsSeekEnabled = property(get_IsSeekEnabled, put_IsSeekEnabled)
-    IsCompact = property(get_IsCompact, put_IsCompact)
+    IsStopButtonVisible = property(get_IsStopButtonVisible, put_IsStopButtonVisible)
+    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
+    IsVolumeButtonVisible = property(get_IsVolumeButtonVisible, put_IsVolumeButtonVisible)
+    IsVolumeEnabled = property(get_IsVolumeEnabled, put_IsVolumeEnabled)
+    IsZoomButtonVisible = property(get_IsZoomButtonVisible, put_IsZoomButtonVisible)
+    IsZoomEnabled = property(get_IsZoomEnabled, put_IsZoomEnabled)
 class IMediaTransportControls2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControls2'
@@ -11065,13 +11493,13 @@ class IMediaTransportControls2(ComPtr):
     def add_ThumbnailRequested(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.MediaTransportControls, win32more.Windows.UI.Xaml.Media.MediaTransportControlsThumbnailRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(21)
     def remove_ThumbnailRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsSkipForwardButtonVisible = property(get_IsSkipForwardButtonVisible, put_IsSkipForwardButtonVisible)
-    IsSkipForwardEnabled = property(get_IsSkipForwardEnabled, put_IsSkipForwardEnabled)
-    IsSkipBackwardButtonVisible = property(get_IsSkipBackwardButtonVisible, put_IsSkipBackwardButtonVisible)
-    IsSkipBackwardEnabled = property(get_IsSkipBackwardEnabled, put_IsSkipBackwardEnabled)
+    FastPlayFallbackBehaviour = property(get_FastPlayFallbackBehaviour, put_FastPlayFallbackBehaviour)
     IsNextTrackButtonVisible = property(get_IsNextTrackButtonVisible, put_IsNextTrackButtonVisible)
     IsPreviousTrackButtonVisible = property(get_IsPreviousTrackButtonVisible, put_IsPreviousTrackButtonVisible)
-    FastPlayFallbackBehaviour = property(get_FastPlayFallbackBehaviour, put_FastPlayFallbackBehaviour)
+    IsSkipBackwardButtonVisible = property(get_IsSkipBackwardButtonVisible, put_IsSkipBackwardButtonVisible)
+    IsSkipBackwardEnabled = property(get_IsSkipBackwardEnabled, put_IsSkipBackwardEnabled)
+    IsSkipForwardButtonVisible = property(get_IsSkipForwardButtonVisible, put_IsSkipForwardButtonVisible)
+    IsSkipForwardEnabled = property(get_IsSkipForwardEnabled, put_IsSkipForwardEnabled)
 class IMediaTransportControls3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControls3'
@@ -11092,9 +11520,9 @@ class IMediaTransportControls3(ComPtr):
     def Show(self) -> Void: ...
     @winrt_commethod(13)
     def Hide(self) -> Void: ...
-    ShowAndHideAutomatically = property(get_ShowAndHideAutomatically, put_ShowAndHideAutomatically)
-    IsRepeatEnabled = property(get_IsRepeatEnabled, put_IsRepeatEnabled)
     IsRepeatButtonVisible = property(get_IsRepeatButtonVisible, put_IsRepeatButtonVisible)
+    IsRepeatEnabled = property(get_IsRepeatEnabled, put_IsRepeatEnabled)
+    ShowAndHideAutomatically = property(get_ShowAndHideAutomatically, put_ShowAndHideAutomatically)
 class IMediaTransportControls4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControls4'
@@ -11168,23 +11596,23 @@ class IMediaTransportControlsStatics(ComPtr):
     def get_IsSeekEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(22)
     def get_IsCompactProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsFullWindowButtonVisibleProperty = property(get_IsFullWindowButtonVisibleProperty, None)
-    IsFullWindowEnabledProperty = property(get_IsFullWindowEnabledProperty, None)
-    IsZoomButtonVisibleProperty = property(get_IsZoomButtonVisibleProperty, None)
-    IsZoomEnabledProperty = property(get_IsZoomEnabledProperty, None)
+    IsCompactProperty = property(get_IsCompactProperty, None)
     IsFastForwardButtonVisibleProperty = property(get_IsFastForwardButtonVisibleProperty, None)
     IsFastForwardEnabledProperty = property(get_IsFastForwardEnabledProperty, None)
     IsFastRewindButtonVisibleProperty = property(get_IsFastRewindButtonVisibleProperty, None)
     IsFastRewindEnabledProperty = property(get_IsFastRewindEnabledProperty, None)
-    IsStopButtonVisibleProperty = property(get_IsStopButtonVisibleProperty, None)
-    IsStopEnabledProperty = property(get_IsStopEnabledProperty, None)
-    IsVolumeButtonVisibleProperty = property(get_IsVolumeButtonVisibleProperty, None)
-    IsVolumeEnabledProperty = property(get_IsVolumeEnabledProperty, None)
+    IsFullWindowButtonVisibleProperty = property(get_IsFullWindowButtonVisibleProperty, None)
+    IsFullWindowEnabledProperty = property(get_IsFullWindowEnabledProperty, None)
     IsPlaybackRateButtonVisibleProperty = property(get_IsPlaybackRateButtonVisibleProperty, None)
     IsPlaybackRateEnabledProperty = property(get_IsPlaybackRateEnabledProperty, None)
     IsSeekBarVisibleProperty = property(get_IsSeekBarVisibleProperty, None)
     IsSeekEnabledProperty = property(get_IsSeekEnabledProperty, None)
-    IsCompactProperty = property(get_IsCompactProperty, None)
+    IsStopButtonVisibleProperty = property(get_IsStopButtonVisibleProperty, None)
+    IsStopEnabledProperty = property(get_IsStopEnabledProperty, None)
+    IsVolumeButtonVisibleProperty = property(get_IsVolumeButtonVisibleProperty, None)
+    IsVolumeEnabledProperty = property(get_IsVolumeEnabledProperty, None)
+    IsZoomButtonVisibleProperty = property(get_IsZoomButtonVisibleProperty, None)
+    IsZoomEnabledProperty = property(get_IsZoomEnabledProperty, None)
 class IMediaTransportControlsStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControlsStatics2'
@@ -11203,13 +11631,13 @@ class IMediaTransportControlsStatics2(ComPtr):
     def get_IsPreviousTrackButtonVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_FastPlayFallbackBehaviourProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsSkipForwardButtonVisibleProperty = property(get_IsSkipForwardButtonVisibleProperty, None)
-    IsSkipForwardEnabledProperty = property(get_IsSkipForwardEnabledProperty, None)
-    IsSkipBackwardButtonVisibleProperty = property(get_IsSkipBackwardButtonVisibleProperty, None)
-    IsSkipBackwardEnabledProperty = property(get_IsSkipBackwardEnabledProperty, None)
+    FastPlayFallbackBehaviourProperty = property(get_FastPlayFallbackBehaviourProperty, None)
     IsNextTrackButtonVisibleProperty = property(get_IsNextTrackButtonVisibleProperty, None)
     IsPreviousTrackButtonVisibleProperty = property(get_IsPreviousTrackButtonVisibleProperty, None)
-    FastPlayFallbackBehaviourProperty = property(get_FastPlayFallbackBehaviourProperty, None)
+    IsSkipBackwardButtonVisibleProperty = property(get_IsSkipBackwardButtonVisibleProperty, None)
+    IsSkipBackwardEnabledProperty = property(get_IsSkipBackwardEnabledProperty, None)
+    IsSkipForwardButtonVisibleProperty = property(get_IsSkipForwardButtonVisibleProperty, None)
+    IsSkipForwardEnabledProperty = property(get_IsSkipForwardEnabledProperty, None)
 class IMediaTransportControlsStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControlsStatics3'
@@ -11220,9 +11648,9 @@ class IMediaTransportControlsStatics3(ComPtr):
     def get_IsRepeatEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_IsRepeatButtonVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ShowAndHideAutomaticallyProperty = property(get_ShowAndHideAutomaticallyProperty, None)
-    IsRepeatEnabledProperty = property(get_IsRepeatEnabledProperty, None)
     IsRepeatButtonVisibleProperty = property(get_IsRepeatButtonVisibleProperty, None)
+    IsRepeatEnabledProperty = property(get_IsRepeatEnabledProperty, None)
+    ShowAndHideAutomaticallyProperty = property(get_ShowAndHideAutomaticallyProperty, None)
 class IMediaTransportControlsStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMediaTransportControlsStatics4'
@@ -11256,8 +11684,8 @@ class IMenuBarItem(ComPtr):
     def put_Title(self, value: WinRT_String) -> Void: ...
     @winrt_commethod(8)
     def get_Items(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Controls.MenuFlyoutItemBase]: ...
-    Title = property(get_Title, put_Title)
     Items = property(get_Items, None)
+    Title = property(get_Title, put_Title)
 class IMenuBarItemFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMenuBarItemFactory'
@@ -11282,8 +11710,8 @@ class IMenuBarItemStatics(ComPtr):
     def get_TitleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ItemsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TitleProperty = property(get_TitleProperty, None)
     ItemsProperty = property(get_ItemsProperty, None)
+    TitleProperty = property(get_TitleProperty, None)
 class IMenuBarStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMenuBarStatics'
@@ -11335,9 +11763,9 @@ class IMenuFlyoutItem(ComPtr):
     def add_Click(self, handler: win32more.Windows.UI.Xaml.RoutedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_Click(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Text = property(get_Text, put_Text)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
+    Text = property(get_Text, put_Text)
 class IMenuFlyoutItem2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMenuFlyoutItem2'
@@ -11383,9 +11811,9 @@ class IMenuFlyoutItemStatics(ComPtr):
     def get_CommandProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_CommandParameterProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TextProperty = property(get_TextProperty, None)
-    CommandProperty = property(get_CommandProperty, None)
     CommandParameterProperty = property(get_CommandParameterProperty, None)
+    CommandProperty = property(get_CommandProperty, None)
+    TextProperty = property(get_TextProperty, None)
 class IMenuFlyoutItemStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IMenuFlyoutItemStatics2'
@@ -11593,28 +12021,28 @@ class INavigationView(ComPtr):
     def add_DisplayModeChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.NavigationView, win32more.Windows.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(54)
     def remove_DisplayModeChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
+    AlwaysShowHeader = property(get_AlwaysShowHeader, put_AlwaysShowHeader)
+    AutoSuggestBox = property(get_AutoSuggestBox, put_AutoSuggestBox)
     CompactModeThresholdWidth = property(get_CompactModeThresholdWidth, put_CompactModeThresholdWidth)
+    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
+    DisplayMode = property(get_DisplayMode, None)
     ExpandedModeThresholdWidth = property(get_ExpandedModeThresholdWidth, put_ExpandedModeThresholdWidth)
-    PaneFooter = property(get_PaneFooter, put_PaneFooter)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    DisplayMode = property(get_DisplayMode, None)
-    IsSettingsVisible = property(get_IsSettingsVisible, put_IsSettingsVisible)
+    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
     IsPaneToggleButtonVisible = property(get_IsPaneToggleButtonVisible, put_IsPaneToggleButtonVisible)
-    AlwaysShowHeader = property(get_AlwaysShowHeader, put_AlwaysShowHeader)
-    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
-    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
-    PaneToggleButtonStyle = property(get_PaneToggleButtonStyle, put_PaneToggleButtonStyle)
-    SelectedItem = property(get_SelectedItem, put_SelectedItem)
-    MenuItems = property(get_MenuItems, None)
-    MenuItemsSource = property(get_MenuItemsSource, put_MenuItemsSource)
-    SettingsItem = property(get_SettingsItem, None)
-    AutoSuggestBox = property(get_AutoSuggestBox, put_AutoSuggestBox)
-    MenuItemTemplate = property(get_MenuItemTemplate, put_MenuItemTemplate)
-    MenuItemTemplateSelector = property(get_MenuItemTemplateSelector, put_MenuItemTemplateSelector)
+    IsSettingsVisible = property(get_IsSettingsVisible, put_IsSettingsVisible)
     MenuItemContainerStyle = property(get_MenuItemContainerStyle, put_MenuItemContainerStyle)
     MenuItemContainerStyleSelector = property(get_MenuItemContainerStyleSelector, put_MenuItemContainerStyleSelector)
+    MenuItemTemplate = property(get_MenuItemTemplate, put_MenuItemTemplate)
+    MenuItemTemplateSelector = property(get_MenuItemTemplateSelector, put_MenuItemTemplateSelector)
+    MenuItems = property(get_MenuItems, None)
+    MenuItemsSource = property(get_MenuItemsSource, put_MenuItemsSource)
+    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
+    PaneFooter = property(get_PaneFooter, put_PaneFooter)
+    PaneToggleButtonStyle = property(get_PaneToggleButtonStyle, put_PaneToggleButtonStyle)
+    SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    SettingsItem = property(get_SettingsItem, None)
 class INavigationView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationView2'
@@ -11692,15 +12120,15 @@ class INavigationView3(ComPtr):
     def get_OverflowLabelMode(self) -> win32more.Windows.UI.Xaml.Controls.NavigationViewOverflowLabelMode: ...
     @winrt_commethod(22)
     def put_OverflowLabelMode(self, value: win32more.Windows.UI.Xaml.Controls.NavigationViewOverflowLabelMode) -> Void: ...
-    PaneDisplayMode = property(get_PaneDisplayMode, put_PaneDisplayMode)
-    PaneHeader = property(get_PaneHeader, put_PaneHeader)
-    PaneCustomContent = property(get_PaneCustomContent, put_PaneCustomContent)
     ContentOverlay = property(get_ContentOverlay, put_ContentOverlay)
     IsPaneVisible = property(get_IsPaneVisible, put_IsPaneVisible)
-    SelectionFollowsFocus = property(get_SelectionFollowsFocus, put_SelectionFollowsFocus)
-    TemplateSettings = property(get_TemplateSettings, None)
-    ShoulderNavigationEnabled = property(get_ShoulderNavigationEnabled, put_ShoulderNavigationEnabled)
     OverflowLabelMode = property(get_OverflowLabelMode, put_OverflowLabelMode)
+    PaneCustomContent = property(get_PaneCustomContent, put_PaneCustomContent)
+    PaneDisplayMode = property(get_PaneDisplayMode, put_PaneDisplayMode)
+    PaneHeader = property(get_PaneHeader, put_PaneHeader)
+    SelectionFollowsFocus = property(get_SelectionFollowsFocus, put_SelectionFollowsFocus)
+    ShoulderNavigationEnabled = property(get_ShoulderNavigationEnabled, put_ShoulderNavigationEnabled)
+    TemplateSettings = property(get_TemplateSettings, None)
 class INavigationViewBackRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewBackRequestedEventArgs'
@@ -11728,8 +12156,8 @@ class INavigationViewItem(ComPtr):
     def put_Icon(self, value: win32more.Windows.UI.Xaml.Controls.IconElement) -> Void: ...
     @winrt_commethod(8)
     def get_CompactPaneLength(self) -> Double: ...
-    Icon = property(get_Icon, put_Icon)
     CompactPaneLength = property(get_CompactPaneLength, None)
+    Icon = property(get_Icon, put_Icon)
 class INavigationViewItem2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewItem2'
@@ -11801,8 +12229,8 @@ class INavigationViewItemStatics(ComPtr):
     def get_IconProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_CompactPaneLengthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IconProperty = property(get_IconProperty, None)
     CompactPaneLengthProperty = property(get_CompactPaneLengthProperty, None)
+    IconProperty = property(get_IconProperty, None)
 class INavigationViewItemStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewItemStatics2'
@@ -11837,8 +12265,8 @@ class INavigationViewSelectionChangedEventArgs(ComPtr):
     def get_SelectedItem(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_commethod(7)
     def get_IsSettingsSelected(self) -> Boolean: ...
-    SelectedItem = property(get_SelectedItem, None)
     IsSettingsSelected = property(get_IsSettingsSelected, None)
+    SelectedItem = property(get_SelectedItem, None)
 class INavigationViewSelectionChangedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewSelectionChangedEventArgs2'
@@ -11847,8 +12275,8 @@ class INavigationViewSelectionChangedEventArgs2(ComPtr):
     def get_SelectedItemContainer(self) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItemBase: ...
     @winrt_commethod(7)
     def get_RecommendedNavigationTransitionInfo(self) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
-    SelectedItemContainer = property(get_SelectedItemContainer, None)
     RecommendedNavigationTransitionInfo = property(get_RecommendedNavigationTransitionInfo, None)
+    SelectedItemContainer = property(get_SelectedItemContainer, None)
 class INavigationViewStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewStatics'
@@ -11897,28 +12325,28 @@ class INavigationViewStatics(ComPtr):
     def get_MenuItemContainerStyleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(27)
     def get_MenuItemContainerStyleSelectorProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsPaneOpenProperty = property(get_IsPaneOpenProperty, None)
+    AlwaysShowHeaderProperty = property(get_AlwaysShowHeaderProperty, None)
+    AutoSuggestBoxProperty = property(get_AutoSuggestBoxProperty, None)
     CompactModeThresholdWidthProperty = property(get_CompactModeThresholdWidthProperty, None)
+    CompactPaneLengthProperty = property(get_CompactPaneLengthProperty, None)
+    DisplayModeProperty = property(get_DisplayModeProperty, None)
     ExpandedModeThresholdWidthProperty = property(get_ExpandedModeThresholdWidthProperty, None)
-    PaneFooterProperty = property(get_PaneFooterProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    DisplayModeProperty = property(get_DisplayModeProperty, None)
-    IsSettingsVisibleProperty = property(get_IsSettingsVisibleProperty, None)
+    IsPaneOpenProperty = property(get_IsPaneOpenProperty, None)
     IsPaneToggleButtonVisibleProperty = property(get_IsPaneToggleButtonVisibleProperty, None)
-    AlwaysShowHeaderProperty = property(get_AlwaysShowHeaderProperty, None)
-    CompactPaneLengthProperty = property(get_CompactPaneLengthProperty, None)
-    OpenPaneLengthProperty = property(get_OpenPaneLengthProperty, None)
-    PaneToggleButtonStyleProperty = property(get_PaneToggleButtonStyleProperty, None)
-    MenuItemsProperty = property(get_MenuItemsProperty, None)
-    MenuItemsSourceProperty = property(get_MenuItemsSourceProperty, None)
-    SelectedItemProperty = property(get_SelectedItemProperty, None)
-    SettingsItemProperty = property(get_SettingsItemProperty, None)
-    AutoSuggestBoxProperty = property(get_AutoSuggestBoxProperty, None)
-    MenuItemTemplateProperty = property(get_MenuItemTemplateProperty, None)
-    MenuItemTemplateSelectorProperty = property(get_MenuItemTemplateSelectorProperty, None)
+    IsSettingsVisibleProperty = property(get_IsSettingsVisibleProperty, None)
     MenuItemContainerStyleProperty = property(get_MenuItemContainerStyleProperty, None)
     MenuItemContainerStyleSelectorProperty = property(get_MenuItemContainerStyleSelectorProperty, None)
+    MenuItemTemplateProperty = property(get_MenuItemTemplateProperty, None)
+    MenuItemTemplateSelectorProperty = property(get_MenuItemTemplateSelectorProperty, None)
+    MenuItemsProperty = property(get_MenuItemsProperty, None)
+    MenuItemsSourceProperty = property(get_MenuItemsSourceProperty, None)
+    OpenPaneLengthProperty = property(get_OpenPaneLengthProperty, None)
+    PaneFooterProperty = property(get_PaneFooterProperty, None)
+    PaneToggleButtonStyleProperty = property(get_PaneToggleButtonStyleProperty, None)
+    SelectedItemProperty = property(get_SelectedItemProperty, None)
+    SettingsItemProperty = property(get_SettingsItemProperty, None)
 class INavigationViewStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewStatics2'
@@ -11954,15 +12382,15 @@ class INavigationViewStatics3(ComPtr):
     def get_ShoulderNavigationEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(14)
     def get_OverflowLabelModeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PaneDisplayModeProperty = property(get_PaneDisplayModeProperty, None)
-    PaneHeaderProperty = property(get_PaneHeaderProperty, None)
-    PaneCustomContentProperty = property(get_PaneCustomContentProperty, None)
     ContentOverlayProperty = property(get_ContentOverlayProperty, None)
     IsPaneVisibleProperty = property(get_IsPaneVisibleProperty, None)
-    SelectionFollowsFocusProperty = property(get_SelectionFollowsFocusProperty, None)
-    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
-    ShoulderNavigationEnabledProperty = property(get_ShoulderNavigationEnabledProperty, None)
     OverflowLabelModeProperty = property(get_OverflowLabelModeProperty, None)
+    PaneCustomContentProperty = property(get_PaneCustomContentProperty, None)
+    PaneDisplayModeProperty = property(get_PaneDisplayModeProperty, None)
+    PaneHeaderProperty = property(get_PaneHeaderProperty, None)
+    SelectionFollowsFocusProperty = property(get_SelectionFollowsFocusProperty, None)
+    ShoulderNavigationEnabledProperty = property(get_ShoulderNavigationEnabledProperty, None)
+    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
 class INavigationViewTemplateSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewTemplateSettings'
@@ -11981,13 +12409,13 @@ class INavigationViewTemplateSettings(ComPtr):
     def get_LeftPaneVisibility(self) -> win32more.Windows.UI.Xaml.Visibility: ...
     @winrt_commethod(12)
     def get_SingleSelectionFollowsFocus(self) -> Boolean: ...
-    TopPadding = property(get_TopPadding, None)
+    BackButtonVisibility = property(get_BackButtonVisibility, None)
+    LeftPaneVisibility = property(get_LeftPaneVisibility, None)
     OverflowButtonVisibility = property(get_OverflowButtonVisibility, None)
     PaneToggleButtonVisibility = property(get_PaneToggleButtonVisibility, None)
-    BackButtonVisibility = property(get_BackButtonVisibility, None)
-    TopPaneVisibility = property(get_TopPaneVisibility, None)
-    LeftPaneVisibility = property(get_LeftPaneVisibility, None)
     SingleSelectionFollowsFocus = property(get_SingleSelectionFollowsFocus, None)
+    TopPadding = property(get_TopPadding, None)
+    TopPaneVisibility = property(get_TopPaneVisibility, None)
 class INavigationViewTemplateSettingsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INavigationViewTemplateSettingsFactory'
@@ -12012,13 +12440,13 @@ class INavigationViewTemplateSettingsStatics(ComPtr):
     def get_LeftPaneVisibilityProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_SingleSelectionFollowsFocusProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TopPaddingProperty = property(get_TopPaddingProperty, None)
+    BackButtonVisibilityProperty = property(get_BackButtonVisibilityProperty, None)
+    LeftPaneVisibilityProperty = property(get_LeftPaneVisibilityProperty, None)
     OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty, None)
     PaneToggleButtonVisibilityProperty = property(get_PaneToggleButtonVisibilityProperty, None)
-    BackButtonVisibilityProperty = property(get_BackButtonVisibilityProperty, None)
-    TopPaneVisibilityProperty = property(get_TopPaneVisibilityProperty, None)
-    LeftPaneVisibilityProperty = property(get_LeftPaneVisibilityProperty, None)
     SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty, None)
+    TopPaddingProperty = property(get_TopPaddingProperty, None)
+    TopPaneVisibilityProperty = property(get_TopPaneVisibilityProperty, None)
 class INotifyEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.INotifyEventArgs'
@@ -12051,10 +12479,10 @@ class IPage(ComPtr):
     def get_BottomAppBar(self) -> win32more.Windows.UI.Xaml.Controls.AppBar: ...
     @winrt_commethod(12)
     def put_BottomAppBar(self, value: win32more.Windows.UI.Xaml.Controls.AppBar) -> Void: ...
+    BottomAppBar = property(get_BottomAppBar, put_BottomAppBar)
     Frame = property(get_Frame, None)
     NavigationCacheMode = property(get_NavigationCacheMode, put_NavigationCacheMode)
     TopAppBar = property(get_TopAppBar, put_TopAppBar)
-    BottomAppBar = property(get_BottomAppBar, put_BottomAppBar)
 class IPageFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPageFactory'
@@ -12081,9 +12509,9 @@ class IPageStatics(ComPtr):
     def get_TopAppBarProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_BottomAppBarProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BottomAppBarProperty = property(get_BottomAppBarProperty, None)
     FrameProperty = property(get_FrameProperty, None)
     TopAppBarProperty = property(get_TopAppBarProperty, None)
-    BottomAppBarProperty = property(get_BottomAppBarProperty, None)
 class IPanel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPanel'
@@ -12100,10 +12528,10 @@ class IPanel(ComPtr):
     def get_ChildrenTransitions(self) -> win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection: ...
     @winrt_commethod(11)
     def put_ChildrenTransitions(self, value: win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection) -> Void: ...
-    Children = property(get_Children, None)
     Background = property(get_Background, put_Background)
-    IsItemsHost = property(get_IsItemsHost, None)
+    Children = property(get_Children, None)
     ChildrenTransitions = property(get_ChildrenTransitions, put_ChildrenTransitions)
+    IsItemsHost = property(get_IsItemsHost, None)
 class IPanel2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPanel2'
@@ -12130,8 +12558,8 @@ class IPanelStatics(ComPtr):
     @winrt_commethod(8)
     def get_ChildrenTransitionsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     BackgroundProperty = property(get_BackgroundProperty, None)
-    IsItemsHostProperty = property(get_IsItemsHostProperty, None)
     ChildrenTransitionsProperty = property(get_ChildrenTransitionsProperty, None)
+    IsItemsHostProperty = property(get_IsItemsHostProperty, None)
 class IParallaxView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IParallaxView'
@@ -12249,19 +12677,19 @@ class IParallaxViewStatics(ComPtr):
     @winrt_commethod(19)
     def get_VerticalShiftProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     ChildProperty = property(get_ChildProperty, None)
+    HorizontalShiftProperty = property(get_HorizontalShiftProperty, None)
     HorizontalSourceEndOffsetProperty = property(get_HorizontalSourceEndOffsetProperty, None)
     HorizontalSourceOffsetKindProperty = property(get_HorizontalSourceOffsetKindProperty, None)
     HorizontalSourceStartOffsetProperty = property(get_HorizontalSourceStartOffsetProperty, None)
-    MaxHorizontalShiftRatioProperty = property(get_MaxHorizontalShiftRatioProperty, None)
-    HorizontalShiftProperty = property(get_HorizontalShiftProperty, None)
     IsHorizontalShiftClampedProperty = property(get_IsHorizontalShiftClampedProperty, None)
     IsVerticalShiftClampedProperty = property(get_IsVerticalShiftClampedProperty, None)
+    MaxHorizontalShiftRatioProperty = property(get_MaxHorizontalShiftRatioProperty, None)
+    MaxVerticalShiftRatioProperty = property(get_MaxVerticalShiftRatioProperty, None)
     SourceProperty = property(get_SourceProperty, None)
+    VerticalShiftProperty = property(get_VerticalShiftProperty, None)
     VerticalSourceEndOffsetProperty = property(get_VerticalSourceEndOffsetProperty, None)
     VerticalSourceOffsetKindProperty = property(get_VerticalSourceOffsetKindProperty, None)
     VerticalSourceStartOffsetProperty = property(get_VerticalSourceStartOffsetProperty, None)
-    MaxVerticalShiftRatioProperty = property(get_MaxVerticalShiftRatioProperty, None)
-    VerticalShiftProperty = property(get_VerticalShiftProperty, None)
 class IPasswordBox(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBox'
@@ -12292,10 +12720,10 @@ class IPasswordBox(ComPtr):
     def remove_ContextMenuOpening(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(18)
     def SelectAll(self) -> Void: ...
-    Password = property(get_Password, put_Password)
-    PasswordChar = property(get_PasswordChar, put_PasswordChar)
     IsPasswordRevealButtonEnabled = property(get_IsPasswordRevealButtonEnabled, put_IsPasswordRevealButtonEnabled)
     MaxLength = property(get_MaxLength, put_MaxLength)
+    Password = property(get_Password, put_Password)
+    PasswordChar = property(get_PasswordChar, put_PasswordChar)
 class IPasswordBox2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBox2'
@@ -12327,8 +12755,8 @@ class IPasswordBox2(ComPtr):
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
     PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
 class IPasswordBox3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBox3'
@@ -12345,9 +12773,9 @@ class IPasswordBox3(ComPtr):
     def get_InputScope(self) -> win32more.Windows.UI.Xaml.Input.InputScope: ...
     @winrt_commethod(11)
     def put_InputScope(self, value: win32more.Windows.UI.Xaml.Input.InputScope) -> Void: ...
+    InputScope = property(get_InputScope, put_InputScope)
     PasswordRevealMode = property(get_PasswordRevealMode, put_PasswordRevealMode)
     TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
-    InputScope = property(get_InputScope, put_InputScope)
 class IPasswordBox4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBox4'
@@ -12373,8 +12801,8 @@ class IPasswordBox5(ComPtr):
     @winrt_commethod(11)
     def PasteFromClipboard(self) -> Void: ...
     CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
-    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
     Description = property(get_Description, put_Description)
+    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
 class IPasswordBoxPasswordChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBoxPasswordChangingEventArgs'
@@ -12394,10 +12822,10 @@ class IPasswordBoxStatics(ComPtr):
     def get_IsPasswordRevealButtonEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_MaxLengthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PasswordProperty = property(get_PasswordProperty, None)
-    PasswordCharProperty = property(get_PasswordCharProperty, None)
     IsPasswordRevealButtonEnabledProperty = property(get_IsPasswordRevealButtonEnabledProperty, None)
     MaxLengthProperty = property(get_MaxLengthProperty, None)
+    PasswordCharProperty = property(get_PasswordCharProperty, None)
+    PasswordProperty = property(get_PasswordProperty, None)
 class IPasswordBoxStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBoxStatics2'
@@ -12415,8 +12843,8 @@ class IPasswordBoxStatics2(ComPtr):
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
     PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
-    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
     PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty, None)
+    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
 class IPasswordBoxStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBoxStatics3'
@@ -12427,9 +12855,9 @@ class IPasswordBoxStatics3(ComPtr):
     def get_TextReadingOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_InputScopeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    InputScopeProperty = property(get_InputScopeProperty, None)
     PasswordRevealModeProperty = property(get_PasswordRevealModeProperty, None)
     TextReadingOrderProperty = property(get_TextReadingOrderProperty, None)
-    InputScopeProperty = property(get_InputScopeProperty, None)
 class IPasswordBoxStatics5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPasswordBoxStatics5'
@@ -12441,8 +12869,8 @@ class IPasswordBoxStatics5(ComPtr):
     @winrt_commethod(8)
     def get_DescriptionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CanPasteClipboardContentProperty = property(get_CanPasteClipboardContentProperty, None)
-    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
     DescriptionProperty = property(get_DescriptionProperty, None)
+    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
 class IPathIcon(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPathIcon'
@@ -12531,14 +12959,14 @@ class IPersonPicture(ComPtr):
     def get_ProfilePicture(self) -> win32more.Windows.UI.Xaml.Media.ImageSource: ...
     @winrt_commethod(25)
     def put_ProfilePicture(self, value: win32more.Windows.UI.Xaml.Media.ImageSource) -> Void: ...
-    BadgeNumber = property(get_BadgeNumber, put_BadgeNumber)
     BadgeGlyph = property(get_BadgeGlyph, put_BadgeGlyph)
     BadgeImageSource = property(get_BadgeImageSource, put_BadgeImageSource)
+    BadgeNumber = property(get_BadgeNumber, put_BadgeNumber)
     BadgeText = property(get_BadgeText, put_BadgeText)
-    IsGroup = property(get_IsGroup, put_IsGroup)
     Contact = property(get_Contact, put_Contact)
     DisplayName = property(get_DisplayName, put_DisplayName)
     Initials = property(get_Initials, put_Initials)
+    IsGroup = property(get_IsGroup, put_IsGroup)
     PreferSmallImage = property(get_PreferSmallImage, put_PreferSmallImage)
     ProfilePicture = property(get_ProfilePicture, put_ProfilePicture)
 class IPersonPictureFactory(ComPtr):
@@ -12571,14 +12999,14 @@ class IPersonPictureStatics(ComPtr):
     def get_PreferSmallImageProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(15)
     def get_ProfilePictureProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    BadgeNumberProperty = property(get_BadgeNumberProperty, None)
     BadgeGlyphProperty = property(get_BadgeGlyphProperty, None)
     BadgeImageSourceProperty = property(get_BadgeImageSourceProperty, None)
+    BadgeNumberProperty = property(get_BadgeNumberProperty, None)
     BadgeTextProperty = property(get_BadgeTextProperty, None)
-    IsGroupProperty = property(get_IsGroupProperty, None)
     ContactProperty = property(get_ContactProperty, None)
     DisplayNameProperty = property(get_DisplayNameProperty, None)
     InitialsProperty = property(get_InitialsProperty, None)
+    IsGroupProperty = property(get_IsGroupProperty, None)
     PreferSmallImageProperty = property(get_PreferSmallImageProperty, None)
     ProfilePictureProperty = property(get_ProfilePictureProperty, None)
 class IPickerConfirmedEventArgs(ComPtr):
@@ -12603,8 +13031,8 @@ class IPickerFlyout(ComPtr):
     def remove_Confirmed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(12)
     def ShowAtAsync(self, target: win32more.Windows.UI.Xaml.FrameworkElement) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-    Content = property(get_Content, put_Content)
     ConfirmationButtonsVisible = property(get_ConfirmationButtonsVisible, put_ConfirmationButtonsVisible)
+    Content = property(get_Content, put_Content)
 class IPickerFlyoutPresenter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPickerFlyoutPresenter'
@@ -12617,8 +13045,8 @@ class IPickerFlyoutStatics(ComPtr):
     def get_ContentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ConfirmationButtonsVisibleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ContentProperty = property(get_ContentProperty, None)
     ConfirmationButtonsVisibleProperty = property(get_ConfirmationButtonsVisibleProperty, None)
+    ContentProperty = property(get_ContentProperty, None)
 class IPivot(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPivot'
@@ -12667,12 +13095,12 @@ class IPivot(ComPtr):
     def add_PivotItemUnloaded(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.Pivot, win32more.Windows.UI.Xaml.Controls.PivotItemEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(27)
     def remove_PivotItemUnloaded(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Title = property(get_Title, put_Title)
-    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    IsLocked = property(get_IsLocked, put_IsLocked)
     SelectedIndex = property(get_SelectedIndex, put_SelectedIndex)
     SelectedItem = property(get_SelectedItem, put_SelectedItem)
-    IsLocked = property(get_IsLocked, put_IsLocked)
+    Title = property(get_Title, put_Title)
+    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
 class IPivot2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPivot2'
@@ -12770,13 +13198,13 @@ class IPivotStatics(ComPtr):
     def GetSlideInAnimationGroup(self, element: win32more.Windows.UI.Xaml.FrameworkElement) -> win32more.Windows.UI.Xaml.Controls.PivotSlideInAnimationGroup: ...
     @winrt_commethod(14)
     def SetSlideInAnimationGroup(self, element: win32more.Windows.UI.Xaml.FrameworkElement, value: win32more.Windows.UI.Xaml.Controls.PivotSlideInAnimationGroup) -> Void: ...
-    TitleProperty = property(get_TitleProperty, None)
-    TitleTemplateProperty = property(get_TitleTemplateProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
+    IsLockedProperty = property(get_IsLockedProperty, None)
     SelectedIndexProperty = property(get_SelectedIndexProperty, None)
     SelectedItemProperty = property(get_SelectedItemProperty, None)
-    IsLockedProperty = property(get_IsLockedProperty, None)
     SlideInAnimationGroupProperty = property(get_SlideInAnimationGroupProperty, None)
+    TitleProperty = property(get_TitleProperty, None)
+    TitleTemplateProperty = property(get_TitleTemplateProperty, None)
 class IPivotStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IPivotStatics2'
@@ -12929,9 +13357,9 @@ class IRatingControl(ComPtr):
     InitialSetValue = property(get_InitialSetValue, put_InitialSetValue)
     IsClearEnabled = property(get_IsClearEnabled, put_IsClearEnabled)
     IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    ItemInfo = property(get_ItemInfo, put_ItemInfo)
     MaxRating = property(get_MaxRating, put_MaxRating)
     PlaceholderValue = property(get_PlaceholderValue, put_PlaceholderValue)
-    ItemInfo = property(get_ItemInfo, put_ItemInfo)
     Value = property(get_Value, put_Value)
 class IRatingControlFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -12963,9 +13391,9 @@ class IRatingControlStatics(ComPtr):
     InitialSetValueProperty = property(get_InitialSetValueProperty, None)
     IsClearEnabledProperty = property(get_IsClearEnabledProperty, None)
     IsReadOnlyProperty = property(get_IsReadOnlyProperty, None)
+    ItemInfoProperty = property(get_ItemInfoProperty, None)
     MaxRatingProperty = property(get_MaxRatingProperty, None)
     PlaceholderValueProperty = property(get_PlaceholderValueProperty, None)
-    ItemInfoProperty = property(get_ItemInfoProperty, None)
     ValueProperty = property(get_ValueProperty, None)
 class IRatingItemFontInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -12997,9 +13425,9 @@ class IRatingItemFontInfo(ComPtr):
     def put_UnsetGlyph(self, value: WinRT_String) -> Void: ...
     DisabledGlyph = property(get_DisabledGlyph, put_DisabledGlyph)
     Glyph = property(get_Glyph, put_Glyph)
+    PlaceholderGlyph = property(get_PlaceholderGlyph, put_PlaceholderGlyph)
     PointerOverGlyph = property(get_PointerOverGlyph, put_PointerOverGlyph)
     PointerOverPlaceholderGlyph = property(get_PointerOverPlaceholderGlyph, put_PointerOverPlaceholderGlyph)
-    PlaceholderGlyph = property(get_PlaceholderGlyph, put_PlaceholderGlyph)
     UnsetGlyph = property(get_UnsetGlyph, put_UnsetGlyph)
 class IRatingItemFontInfoFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -13119,8 +13547,8 @@ class IRefreshContainer(ComPtr):
     def remove_RefreshRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(12)
     def RequestRefresh(self) -> Void: ...
-    Visualizer = property(get_Visualizer, put_Visualizer)
     PullDirection = property(get_PullDirection, put_PullDirection)
+    Visualizer = property(get_Visualizer, put_Visualizer)
 class IRefreshContainerFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRefreshContainerFactory'
@@ -13135,8 +13563,8 @@ class IRefreshContainerStatics(ComPtr):
     def get_VisualizerProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_PullDirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    VisualizerProperty = property(get_VisualizerProperty, None)
     PullDirectionProperty = property(get_PullDirectionProperty, None)
+    VisualizerProperty = property(get_VisualizerProperty, None)
 class IRefreshInteractionRatioChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRefreshInteractionRatioChangedEventArgs'
@@ -13158,8 +13586,8 @@ class IRefreshStateChangedEventArgs(ComPtr):
     def get_OldState(self) -> win32more.Windows.UI.Xaml.Controls.RefreshVisualizerState: ...
     @winrt_commethod(7)
     def get_NewState(self) -> win32more.Windows.UI.Xaml.Controls.RefreshVisualizerState: ...
-    OldState = property(get_OldState, None)
     NewState = property(get_NewState, None)
+    OldState = property(get_OldState, None)
 class IRefreshVisualizer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRefreshVisualizer'
@@ -13184,8 +13612,8 @@ class IRefreshVisualizer(ComPtr):
     def add_RefreshStateChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RefreshVisualizer, win32more.Windows.UI.Xaml.Controls.RefreshStateChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(15)
     def remove_RefreshStateChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Orientation = property(get_Orientation, put_Orientation)
     Content = property(get_Content, put_Content)
+    Orientation = property(get_Orientation, put_Orientation)
     State = property(get_State, None)
 class IRefreshVisualizerFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -13205,9 +13633,9 @@ class IRefreshVisualizerStatics(ComPtr):
     def get_ContentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_StateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ContentProperty = property(get_ContentProperty, None)
     InfoProviderProperty = property(get_InfoProviderProperty, None)
     OrientationProperty = property(get_OrientationProperty, None)
-    ContentProperty = property(get_ContentProperty, None)
     StateProperty = property(get_StateProperty, None)
 class IRelativePanel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -13356,26 +13784,26 @@ class IRelativePanelStatics(ComPtr):
     def get_CornerRadiusProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(57)
     def get_PaddingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LeftOfProperty = property(get_LeftOfProperty, None)
     AboveProperty = property(get_AboveProperty, None)
-    RightOfProperty = property(get_RightOfProperty, None)
-    BelowProperty = property(get_BelowProperty, None)
-    AlignHorizontalCenterWithProperty = property(get_AlignHorizontalCenterWithProperty, None)
-    AlignVerticalCenterWithProperty = property(get_AlignVerticalCenterWithProperty, None)
-    AlignLeftWithProperty = property(get_AlignLeftWithProperty, None)
-    AlignTopWithProperty = property(get_AlignTopWithProperty, None)
-    AlignRightWithProperty = property(get_AlignRightWithProperty, None)
-    AlignBottomWithProperty = property(get_AlignBottomWithProperty, None)
-    AlignLeftWithPanelProperty = property(get_AlignLeftWithPanelProperty, None)
-    AlignTopWithPanelProperty = property(get_AlignTopWithPanelProperty, None)
-    AlignRightWithPanelProperty = property(get_AlignRightWithPanelProperty, None)
     AlignBottomWithPanelProperty = property(get_AlignBottomWithPanelProperty, None)
+    AlignBottomWithProperty = property(get_AlignBottomWithProperty, None)
     AlignHorizontalCenterWithPanelProperty = property(get_AlignHorizontalCenterWithPanelProperty, None)
+    AlignHorizontalCenterWithProperty = property(get_AlignHorizontalCenterWithProperty, None)
+    AlignLeftWithPanelProperty = property(get_AlignLeftWithPanelProperty, None)
+    AlignLeftWithProperty = property(get_AlignLeftWithProperty, None)
+    AlignRightWithPanelProperty = property(get_AlignRightWithPanelProperty, None)
+    AlignRightWithProperty = property(get_AlignRightWithProperty, None)
+    AlignTopWithPanelProperty = property(get_AlignTopWithPanelProperty, None)
+    AlignTopWithProperty = property(get_AlignTopWithProperty, None)
     AlignVerticalCenterWithPanelProperty = property(get_AlignVerticalCenterWithPanelProperty, None)
+    AlignVerticalCenterWithProperty = property(get_AlignVerticalCenterWithProperty, None)
+    BelowProperty = property(get_BelowProperty, None)
     BorderBrushProperty = property(get_BorderBrushProperty, None)
     BorderThicknessProperty = property(get_BorderThicknessProperty, None)
     CornerRadiusProperty = property(get_CornerRadiusProperty, None)
+    LeftOfProperty = property(get_LeftOfProperty, None)
     PaddingProperty = property(get_PaddingProperty, None)
+    RightOfProperty = property(get_RightOfProperty, None)
 class IRelativePanelStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRelativePanelStatics2'
@@ -13429,14 +13857,14 @@ class IRichEditBox(ComPtr):
     def add_ContextMenuOpening(self, handler: win32more.Windows.UI.Xaml.Controls.ContextMenuOpeningEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(26)
     def remove_ContextMenuOpening(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
     AcceptsReturn = property(get_AcceptsReturn, put_AcceptsReturn)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
-    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
     Document = property(get_Document, None)
     InputScope = property(get_InputScope, put_InputScope)
+    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
+    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
 class IRichEditBox2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBox2'
@@ -13471,10 +13899,10 @@ class IRichEditBox2(ComPtr):
     def remove_Paste(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
     IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
 class IRichEditBox3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBox3'
@@ -13507,8 +13935,8 @@ class IRichEditBox3(ComPtr):
     def add_TextChanging(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RichEditBox, win32more.Windows.UI.Xaml.Controls.RichEditBoxTextChangingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_TextChanging(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
     DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
 class IRichEditBox4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBox4'
@@ -13532,8 +13960,8 @@ class IRichEditBox5(ComPtr):
     def get_MaxLength(self) -> Int32: ...
     @winrt_commethod(9)
     def put_MaxLength(self, value: Int32) -> Void: ...
-    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
     MaxLength = property(get_MaxLength, put_MaxLength)
+    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
 class IRichEditBox6(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBox6'
@@ -13558,9 +13986,9 @@ class IRichEditBox6(ComPtr):
     def add_CuttingToClipboard(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RichEditBox, win32more.Windows.UI.Xaml.Controls.TextControlCuttingToClipboardEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(15)
     def remove_CuttingToClipboard(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
     CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
     DisabledFormattingAccelerators = property(get_DisabledFormattingAccelerators, put_DisabledFormattingAccelerators)
+    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
 class IRichEditBox7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBox7'
@@ -13593,8 +14021,8 @@ class IRichEditBox7(ComPtr):
     def add_ContentLinkInvoked(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RichEditBox, win32more.Windows.UI.Xaml.Documents.ContentLinkInvokedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_ContentLinkInvoked(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ContentLinkForegroundColor = property(get_ContentLinkForegroundColor, put_ContentLinkForegroundColor)
     ContentLinkBackgroundColor = property(get_ContentLinkBackgroundColor, put_ContentLinkBackgroundColor)
+    ContentLinkForegroundColor = property(get_ContentLinkForegroundColor, put_ContentLinkForegroundColor)
     ContentLinkProviders = property(get_ContentLinkProviders, put_ContentLinkProviders)
     HandwritingView = property(get_HandwritingView, put_HandwritingView)
     IsHandwritingViewEnabled = property(get_IsHandwritingViewEnabled, put_IsHandwritingViewEnabled)
@@ -13618,10 +14046,10 @@ class IRichEditBox8(ComPtr):
     def add_SelectionChanging(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RichEditBox, win32more.Windows.UI.Xaml.Controls.RichEditBoxSelectionChangingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_SelectionChanging(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TextDocument = property(get_TextDocument, None)
-    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
-    ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
     Description = property(get_Description, put_Description)
+    ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
+    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
+    TextDocument = property(get_TextDocument, None)
 class IRichEditBoxFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxFactory'
@@ -13640,9 +14068,9 @@ class IRichEditBoxSelectionChangingEventArgs(ComPtr):
     def get_Cancel(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_Cancel(self, value: Boolean) -> Void: ...
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionLength = property(get_SelectionLength, None)
     Cancel = property(get_Cancel, put_Cancel)
+    SelectionLength = property(get_SelectionLength, None)
+    SelectionStart = property(get_SelectionStart, None)
 class IRichEditBoxStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxStatics'
@@ -13661,13 +14089,13 @@ class IRichEditBoxStatics(ComPtr):
     def get_IsTextPredictionEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_InputScopeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsReadOnlyProperty = property(get_IsReadOnlyProperty, None)
     AcceptsReturnProperty = property(get_AcceptsReturnProperty, None)
-    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
-    TextWrappingProperty = property(get_TextWrappingProperty, None)
+    InputScopeProperty = property(get_InputScopeProperty, None)
+    IsReadOnlyProperty = property(get_IsReadOnlyProperty, None)
     IsSpellCheckEnabledProperty = property(get_IsSpellCheckEnabledProperty, None)
     IsTextPredictionEnabledProperty = property(get_IsTextPredictionEnabledProperty, None)
-    InputScopeProperty = property(get_InputScopeProperty, None)
+    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
+    TextWrappingProperty = property(get_TextWrappingProperty, None)
 class IRichEditBoxStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxStatics2'
@@ -13686,10 +14114,10 @@ class IRichEditBoxStatics2(ComPtr):
     def get_IsColorFontEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
-    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
-    PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty, None)
     IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty, None)
+    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
+    PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty, None)
+    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
 class IRichEditBoxStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxStatics3'
@@ -13715,8 +14143,8 @@ class IRichEditBoxStatics5(ComPtr):
     def get_SelectionHighlightColorWhenNotFocusedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_MaxLengthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty, None)
     MaxLengthProperty = property(get_MaxLengthProperty, None)
+    SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty, None)
 class IRichEditBoxStatics6(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxStatics6'
@@ -13727,9 +14155,9 @@ class IRichEditBoxStatics6(ComPtr):
     def get_CharacterCasingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DisabledFormattingAcceleratorsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
     CharacterCasingProperty = property(get_CharacterCasingProperty, None)
     DisabledFormattingAcceleratorsProperty = property(get_DisabledFormattingAcceleratorsProperty, None)
+    HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
 class IRichEditBoxStatics7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxStatics7'
@@ -13744,8 +14172,8 @@ class IRichEditBoxStatics7(ComPtr):
     def get_HandwritingViewProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_IsHandwritingViewEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ContentLinkForegroundColorProperty = property(get_ContentLinkForegroundColorProperty, None)
     ContentLinkBackgroundColorProperty = property(get_ContentLinkBackgroundColorProperty, None)
+    ContentLinkForegroundColorProperty = property(get_ContentLinkForegroundColorProperty, None)
     ContentLinkProvidersProperty = property(get_ContentLinkProvidersProperty, None)
     HandwritingViewProperty = property(get_HandwritingViewProperty, None)
     IsHandwritingViewEnabledProperty = property(get_IsHandwritingViewEnabledProperty, None)
@@ -13759,9 +14187,9 @@ class IRichEditBoxStatics8(ComPtr):
     def get_ProofingMenuFlyoutProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DescriptionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
-    ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty, None)
     DescriptionProperty = property(get_DescriptionProperty, None)
+    ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty, None)
+    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
 class IRichEditBoxTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichEditBoxTextChangingEventArgs'
@@ -13873,30 +14301,30 @@ class IRichTextBlock(ComPtr):
     def get_TextIndent(self) -> Double: ...
     @winrt_commethod(53)
     def put_TextIndent(self, value: Double) -> Void: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
-    Foreground = property(get_Foreground, put_Foreground)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    TextTrimming = property(get_TextTrimming, put_TextTrimming)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    BaselineOffset = property(get_BaselineOffset, None)
     Blocks = property(get_Blocks, None)
-    Padding = property(get_Padding, put_Padding)
+    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentStart = property(get_ContentStart, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Foreground = property(get_Foreground, put_Foreground)
+    HasOverflowContent = property(get_HasOverflowContent, None)
+    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
     LineHeight = property(get_LineHeight, put_LineHeight)
     LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
     OverflowContentTarget = property(get_OverflowContentTarget, put_OverflowContentTarget)
-    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
-    HasOverflowContent = property(get_HasOverflowContent, None)
+    Padding = property(get_Padding, put_Padding)
     SelectedText = property(get_SelectedText, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    SelectionStart = property(get_SelectionStart, None)
     SelectionEnd = property(get_SelectionEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
+    SelectionStart = property(get_SelectionStart, None)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
     TextIndent = property(get_TextIndent, put_TextIndent)
+    TextTrimming = property(get_TextTrimming, put_TextTrimming)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
 class IRichTextBlock2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichTextBlock2'
@@ -13925,11 +14353,11 @@ class IRichTextBlock2(ComPtr):
     def get_TextReadingOrder(self) -> win32more.Windows.UI.Xaml.TextReadingOrder: ...
     @winrt_commethod(17)
     def put_TextReadingOrder(self, value: win32more.Windows.UI.Xaml.TextReadingOrder) -> Void: ...
-    MaxLines = property(get_MaxLines, put_MaxLines)
-    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
     IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    MaxLines = property(get_MaxLines, put_MaxLines)
+    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
     TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
 class IRichTextBlock3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -13965,8 +14393,8 @@ class IRichTextBlock5(ComPtr):
     def add_IsTextTrimmedChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.RichTextBlock, win32more.Windows.UI.Xaml.Controls.IsTextTrimmedChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_IsTextTrimmedChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsTextTrimmed = property(get_IsTextTrimmed, None)
     HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
+    IsTextTrimmed = property(get_IsTextTrimmed, None)
     TextHighlighters = property(get_TextHighlighters, None)
 class IRichTextBlock6(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -14005,13 +14433,13 @@ class IRichTextBlockOverflow(ComPtr):
     def GetPositionFromPoint(self, point: win32more.Windows.Foundation.Point) -> win32more.Windows.UI.Xaml.Documents.TextPointer: ...
     @winrt_commethod(16)
     def Focus(self, value: win32more.Windows.UI.Xaml.FocusState) -> Boolean: ...
+    BaselineOffset = property(get_BaselineOffset, None)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentSource = property(get_ContentSource, None)
+    ContentStart = property(get_ContentStart, None)
+    HasOverflowContent = property(get_HasOverflowContent, None)
     OverflowContentTarget = property(get_OverflowContentTarget, put_OverflowContentTarget)
     Padding = property(get_Padding, put_Padding)
-    ContentSource = property(get_ContentSource, None)
-    HasOverflowContent = property(get_HasOverflowContent, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
 class IRichTextBlockOverflow2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichTextBlockOverflow2'
@@ -14042,9 +14470,9 @@ class IRichTextBlockOverflowStatics(ComPtr):
     def get_PaddingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_HasOverflowContentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    HasOverflowContentProperty = property(get_HasOverflowContentProperty, None)
     OverflowContentTargetProperty = property(get_OverflowContentTargetProperty, None)
     PaddingProperty = property(get_PaddingProperty, None)
-    HasOverflowContentProperty = property(get_HasOverflowContentProperty, None)
 class IRichTextBlockOverflowStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichTextBlockOverflowStatics2'
@@ -14099,24 +14527,24 @@ class IRichTextBlockStatics(ComPtr):
     def get_SelectedTextProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(23)
     def get_TextIndentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSizeProperty = property(get_FontSizeProperty, None)
+    CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
     FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
-    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
     FontStretchProperty = property(get_FontStretchProperty, None)
+    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
     ForegroundProperty = property(get_ForegroundProperty, None)
-    TextWrappingProperty = property(get_TextWrappingProperty, None)
-    TextTrimmingProperty = property(get_TextTrimmingProperty, None)
-    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
-    PaddingProperty = property(get_PaddingProperty, None)
+    HasOverflowContentProperty = property(get_HasOverflowContentProperty, None)
+    IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty, None)
     LineHeightProperty = property(get_LineHeightProperty, None)
     LineStackingStrategyProperty = property(get_LineStackingStrategyProperty, None)
-    CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
     OverflowContentTargetProperty = property(get_OverflowContentTargetProperty, None)
-    IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty, None)
-    HasOverflowContentProperty = property(get_HasOverflowContentProperty, None)
+    PaddingProperty = property(get_PaddingProperty, None)
     SelectedTextProperty = property(get_SelectedTextProperty, None)
+    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
     TextIndentProperty = property(get_TextIndentProperty, None)
+    TextTrimmingProperty = property(get_TextTrimmingProperty, None)
+    TextWrappingProperty = property(get_TextWrappingProperty, None)
 class IRichTextBlockStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichTextBlockStatics2'
@@ -14133,11 +14561,11 @@ class IRichTextBlockStatics2(ComPtr):
     def get_IsColorFontEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_TextReadingOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    MaxLinesProperty = property(get_MaxLinesProperty, None)
-    TextLineBoundsProperty = property(get_TextLineBoundsProperty, None)
-    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
-    OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty, None)
     IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty, None)
+    MaxLinesProperty = property(get_MaxLinesProperty, None)
+    OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty, None)
+    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
+    TextLineBoundsProperty = property(get_TextLineBoundsProperty, None)
     TextReadingOrderProperty = property(get_TextReadingOrderProperty, None)
 class IRichTextBlockStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -14161,8 +14589,8 @@ class IRichTextBlockStatics5(ComPtr):
     def get_IsTextTrimmedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_HorizontalTextAlignmentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsTextTrimmedProperty = property(get_IsTextTrimmedProperty, None)
     HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
+    IsTextTrimmedProperty = property(get_IsTextTrimmedProperty, None)
 class IRichTextBlockStatics6(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRichTextBlockStatics6'
@@ -14188,10 +14616,10 @@ class IRowDefinition(ComPtr):
     def put_MinHeight(self, value: Double) -> Void: ...
     @winrt_commethod(12)
     def get_ActualHeight(self) -> Double: ...
+    ActualHeight = property(get_ActualHeight, None)
     Height = property(get_Height, put_Height)
     MaxHeight = property(get_MaxHeight, put_MaxHeight)
     MinHeight = property(get_MinHeight, put_MinHeight)
-    ActualHeight = property(get_ActualHeight, None)
 class IRowDefinitionStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IRowDefinitionStatics'
@@ -14274,15 +14702,15 @@ class IScrollContentPresenter(ComPtr):
     def SetVerticalOffset(self, offset: Double) -> Void: ...
     @winrt_commethod(32)
     def MakeVisible(self, visual: win32more.Windows.UI.Xaml.UIElement, rectangle: win32more.Windows.Foundation.Rect) -> win32more.Windows.Foundation.Rect: ...
-    CanVerticallyScroll = property(get_CanVerticallyScroll, put_CanVerticallyScroll)
     CanHorizontallyScroll = property(get_CanHorizontallyScroll, put_CanHorizontallyScroll)
-    ExtentWidth = property(get_ExtentWidth, None)
+    CanVerticallyScroll = property(get_CanVerticallyScroll, put_CanVerticallyScroll)
     ExtentHeight = property(get_ExtentHeight, None)
-    ViewportWidth = property(get_ViewportWidth, None)
-    ViewportHeight = property(get_ViewportHeight, None)
+    ExtentWidth = property(get_ExtentWidth, None)
     HorizontalOffset = property(get_HorizontalOffset, None)
-    VerticalOffset = property(get_VerticalOffset, None)
     ScrollOwner = property(get_ScrollOwner, put_ScrollOwner)
+    VerticalOffset = property(get_VerticalOffset, None)
+    ViewportHeight = property(get_ViewportHeight, None)
+    ViewportWidth = property(get_ViewportWidth, None)
 class IScrollContentPresenter2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollContentPresenter2'
@@ -14431,39 +14859,39 @@ class IScrollViewer(ComPtr):
     def get_BringIntoViewOnFocusChange(self) -> Boolean: ...
     @winrt_commethod(65)
     def put_BringIntoViewOnFocusChange(self, value: Boolean) -> Void: ...
-    HorizontalScrollBarVisibility = property(get_HorizontalScrollBarVisibility, put_HorizontalScrollBarVisibility)
-    VerticalScrollBarVisibility = property(get_VerticalScrollBarVisibility, put_VerticalScrollBarVisibility)
-    IsHorizontalRailEnabled = property(get_IsHorizontalRailEnabled, put_IsHorizontalRailEnabled)
-    IsVerticalRailEnabled = property(get_IsVerticalRailEnabled, put_IsVerticalRailEnabled)
-    IsHorizontalScrollChainingEnabled = property(get_IsHorizontalScrollChainingEnabled, put_IsHorizontalScrollChainingEnabled)
-    IsVerticalScrollChainingEnabled = property(get_IsVerticalScrollChainingEnabled, put_IsVerticalScrollChainingEnabled)
-    IsZoomChainingEnabled = property(get_IsZoomChainingEnabled, put_IsZoomChainingEnabled)
-    IsScrollInertiaEnabled = property(get_IsScrollInertiaEnabled, put_IsScrollInertiaEnabled)
-    IsZoomInertiaEnabled = property(get_IsZoomInertiaEnabled, put_IsZoomInertiaEnabled)
-    HorizontalScrollMode = property(get_HorizontalScrollMode, put_HorizontalScrollMode)
-    VerticalScrollMode = property(get_VerticalScrollMode, put_VerticalScrollMode)
-    ZoomMode = property(get_ZoomMode, put_ZoomMode)
-    HorizontalSnapPointsAlignment = property(get_HorizontalSnapPointsAlignment, put_HorizontalSnapPointsAlignment)
-    VerticalSnapPointsAlignment = property(get_VerticalSnapPointsAlignment, put_VerticalSnapPointsAlignment)
-    HorizontalSnapPointsType = property(get_HorizontalSnapPointsType, put_HorizontalSnapPointsType)
-    VerticalSnapPointsType = property(get_VerticalSnapPointsType, put_VerticalSnapPointsType)
-    ZoomSnapPointsType = property(get_ZoomSnapPointsType, put_ZoomSnapPointsType)
-    HorizontalOffset = property(get_HorizontalOffset, None)
-    ViewportWidth = property(get_ViewportWidth, None)
-    ScrollableWidth = property(get_ScrollableWidth, None)
+    BringIntoViewOnFocusChange = property(get_BringIntoViewOnFocusChange, put_BringIntoViewOnFocusChange)
     ComputedHorizontalScrollBarVisibility = property(get_ComputedHorizontalScrollBarVisibility, None)
-    ExtentWidth = property(get_ExtentWidth, None)
-    VerticalOffset = property(get_VerticalOffset, None)
-    ViewportHeight = property(get_ViewportHeight, None)
-    ScrollableHeight = property(get_ScrollableHeight, None)
     ComputedVerticalScrollBarVisibility = property(get_ComputedVerticalScrollBarVisibility, None)
     ExtentHeight = property(get_ExtentHeight, None)
-    MinZoomFactor = property(get_MinZoomFactor, put_MinZoomFactor)
-    MaxZoomFactor = property(get_MaxZoomFactor, put_MaxZoomFactor)
-    ZoomFactor = property(get_ZoomFactor, None)
-    ZoomSnapPoints = property(get_ZoomSnapPoints, None)
+    ExtentWidth = property(get_ExtentWidth, None)
+    HorizontalOffset = property(get_HorizontalOffset, None)
+    HorizontalScrollBarVisibility = property(get_HorizontalScrollBarVisibility, put_HorizontalScrollBarVisibility)
+    HorizontalScrollMode = property(get_HorizontalScrollMode, put_HorizontalScrollMode)
+    HorizontalSnapPointsAlignment = property(get_HorizontalSnapPointsAlignment, put_HorizontalSnapPointsAlignment)
+    HorizontalSnapPointsType = property(get_HorizontalSnapPointsType, put_HorizontalSnapPointsType)
     IsDeferredScrollingEnabled = property(get_IsDeferredScrollingEnabled, put_IsDeferredScrollingEnabled)
-    BringIntoViewOnFocusChange = property(get_BringIntoViewOnFocusChange, put_BringIntoViewOnFocusChange)
+    IsHorizontalRailEnabled = property(get_IsHorizontalRailEnabled, put_IsHorizontalRailEnabled)
+    IsHorizontalScrollChainingEnabled = property(get_IsHorizontalScrollChainingEnabled, put_IsHorizontalScrollChainingEnabled)
+    IsScrollInertiaEnabled = property(get_IsScrollInertiaEnabled, put_IsScrollInertiaEnabled)
+    IsVerticalRailEnabled = property(get_IsVerticalRailEnabled, put_IsVerticalRailEnabled)
+    IsVerticalScrollChainingEnabled = property(get_IsVerticalScrollChainingEnabled, put_IsVerticalScrollChainingEnabled)
+    IsZoomChainingEnabled = property(get_IsZoomChainingEnabled, put_IsZoomChainingEnabled)
+    IsZoomInertiaEnabled = property(get_IsZoomInertiaEnabled, put_IsZoomInertiaEnabled)
+    MaxZoomFactor = property(get_MaxZoomFactor, put_MaxZoomFactor)
+    MinZoomFactor = property(get_MinZoomFactor, put_MinZoomFactor)
+    ScrollableHeight = property(get_ScrollableHeight, None)
+    ScrollableWidth = property(get_ScrollableWidth, None)
+    VerticalOffset = property(get_VerticalOffset, None)
+    VerticalScrollBarVisibility = property(get_VerticalScrollBarVisibility, put_VerticalScrollBarVisibility)
+    VerticalScrollMode = property(get_VerticalScrollMode, put_VerticalScrollMode)
+    VerticalSnapPointsAlignment = property(get_VerticalSnapPointsAlignment, put_VerticalSnapPointsAlignment)
+    VerticalSnapPointsType = property(get_VerticalSnapPointsType, put_VerticalSnapPointsType)
+    ViewportHeight = property(get_ViewportHeight, None)
+    ViewportWidth = property(get_ViewportWidth, None)
+    ZoomFactor = property(get_ZoomFactor, None)
+    ZoomMode = property(get_ZoomMode, put_ZoomMode)
+    ZoomSnapPoints = property(get_ZoomSnapPoints, None)
+    ZoomSnapPointsType = property(get_ZoomSnapPointsType, put_ZoomSnapPointsType)
 class IScrollViewer2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewer2'
@@ -14488,9 +14916,9 @@ class IScrollViewer2(ComPtr):
     def ChangeView(self, horizontalOffset: win32more.Windows.Foundation.IReference[Double], verticalOffset: win32more.Windows.Foundation.IReference[Double], zoomFactor: win32more.Windows.Foundation.IReference[Single]) -> Boolean: ...
     @winrt_commethod(15)
     def ChangeViewWithOptionalAnimation(self, horizontalOffset: win32more.Windows.Foundation.IReference[Double], verticalOffset: win32more.Windows.Foundation.IReference[Double], zoomFactor: win32more.Windows.Foundation.IReference[Single], disableAnimation: Boolean) -> Boolean: ...
-    TopLeftHeader = property(get_TopLeftHeader, put_TopLeftHeader)
     LeftHeader = property(get_LeftHeader, put_LeftHeader)
     TopHeader = property(get_TopHeader, put_TopHeader)
+    TopLeftHeader = property(get_TopLeftHeader, put_TopLeftHeader)
 class IScrollViewer3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewer3'
@@ -14527,10 +14955,10 @@ class IScrollViewer4(ComPtr):
     def add_AnchorRequested(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.ScrollViewer, win32more.Windows.UI.Xaml.Controls.AnchorRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(15)
     def remove_AnchorRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ReduceViewportForCoreInputViewOcclusions = property(get_ReduceViewportForCoreInputViewOcclusions, put_ReduceViewportForCoreInputViewOcclusions)
-    HorizontalAnchorRatio = property(get_HorizontalAnchorRatio, put_HorizontalAnchorRatio)
-    VerticalAnchorRatio = property(get_VerticalAnchorRatio, put_VerticalAnchorRatio)
     CanContentRenderOutsideBounds = property(get_CanContentRenderOutsideBounds, put_CanContentRenderOutsideBounds)
+    HorizontalAnchorRatio = property(get_HorizontalAnchorRatio, put_HorizontalAnchorRatio)
+    ReduceViewportForCoreInputViewOcclusions = property(get_ReduceViewportForCoreInputViewOcclusions, put_ReduceViewportForCoreInputViewOcclusions)
+    VerticalAnchorRatio = property(get_VerticalAnchorRatio, put_VerticalAnchorRatio)
 class IScrollViewerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewerStatics'
@@ -14657,39 +15085,39 @@ class IScrollViewerStatics(ComPtr):
     def GetBringIntoViewOnFocusChange(self, element: win32more.Windows.UI.Xaml.DependencyObject) -> Boolean: ...
     @winrt_commethod(66)
     def SetBringIntoViewOnFocusChange(self, element: win32more.Windows.UI.Xaml.DependencyObject, bringIntoViewOnFocusChange: Boolean) -> Void: ...
-    HorizontalSnapPointsAlignmentProperty = property(get_HorizontalSnapPointsAlignmentProperty, None)
-    VerticalSnapPointsAlignmentProperty = property(get_VerticalSnapPointsAlignmentProperty, None)
-    HorizontalSnapPointsTypeProperty = property(get_HorizontalSnapPointsTypeProperty, None)
-    VerticalSnapPointsTypeProperty = property(get_VerticalSnapPointsTypeProperty, None)
-    ZoomSnapPointsTypeProperty = property(get_ZoomSnapPointsTypeProperty, None)
-    HorizontalOffsetProperty = property(get_HorizontalOffsetProperty, None)
-    ViewportWidthProperty = property(get_ViewportWidthProperty, None)
-    ScrollableWidthProperty = property(get_ScrollableWidthProperty, None)
+    BringIntoViewOnFocusChangeProperty = property(get_BringIntoViewOnFocusChangeProperty, None)
     ComputedHorizontalScrollBarVisibilityProperty = property(get_ComputedHorizontalScrollBarVisibilityProperty, None)
-    ExtentWidthProperty = property(get_ExtentWidthProperty, None)
-    VerticalOffsetProperty = property(get_VerticalOffsetProperty, None)
-    ViewportHeightProperty = property(get_ViewportHeightProperty, None)
-    ScrollableHeightProperty = property(get_ScrollableHeightProperty, None)
     ComputedVerticalScrollBarVisibilityProperty = property(get_ComputedVerticalScrollBarVisibilityProperty, None)
     ExtentHeightProperty = property(get_ExtentHeightProperty, None)
-    MinZoomFactorProperty = property(get_MinZoomFactorProperty, None)
-    MaxZoomFactorProperty = property(get_MaxZoomFactorProperty, None)
-    ZoomFactorProperty = property(get_ZoomFactorProperty, None)
-    ZoomSnapPointsProperty = property(get_ZoomSnapPointsProperty, None)
+    ExtentWidthProperty = property(get_ExtentWidthProperty, None)
+    HorizontalOffsetProperty = property(get_HorizontalOffsetProperty, None)
     HorizontalScrollBarVisibilityProperty = property(get_HorizontalScrollBarVisibilityProperty, None)
-    VerticalScrollBarVisibilityProperty = property(get_VerticalScrollBarVisibilityProperty, None)
+    HorizontalScrollModeProperty = property(get_HorizontalScrollModeProperty, None)
+    HorizontalSnapPointsAlignmentProperty = property(get_HorizontalSnapPointsAlignmentProperty, None)
+    HorizontalSnapPointsTypeProperty = property(get_HorizontalSnapPointsTypeProperty, None)
+    IsDeferredScrollingEnabledProperty = property(get_IsDeferredScrollingEnabledProperty, None)
     IsHorizontalRailEnabledProperty = property(get_IsHorizontalRailEnabledProperty, None)
-    IsVerticalRailEnabledProperty = property(get_IsVerticalRailEnabledProperty, None)
     IsHorizontalScrollChainingEnabledProperty = property(get_IsHorizontalScrollChainingEnabledProperty, None)
+    IsScrollInertiaEnabledProperty = property(get_IsScrollInertiaEnabledProperty, None)
+    IsVerticalRailEnabledProperty = property(get_IsVerticalRailEnabledProperty, None)
     IsVerticalScrollChainingEnabledProperty = property(get_IsVerticalScrollChainingEnabledProperty, None)
     IsZoomChainingEnabledProperty = property(get_IsZoomChainingEnabledProperty, None)
-    IsScrollInertiaEnabledProperty = property(get_IsScrollInertiaEnabledProperty, None)
     IsZoomInertiaEnabledProperty = property(get_IsZoomInertiaEnabledProperty, None)
-    HorizontalScrollModeProperty = property(get_HorizontalScrollModeProperty, None)
+    MaxZoomFactorProperty = property(get_MaxZoomFactorProperty, None)
+    MinZoomFactorProperty = property(get_MinZoomFactorProperty, None)
+    ScrollableHeightProperty = property(get_ScrollableHeightProperty, None)
+    ScrollableWidthProperty = property(get_ScrollableWidthProperty, None)
+    VerticalOffsetProperty = property(get_VerticalOffsetProperty, None)
+    VerticalScrollBarVisibilityProperty = property(get_VerticalScrollBarVisibilityProperty, None)
     VerticalScrollModeProperty = property(get_VerticalScrollModeProperty, None)
+    VerticalSnapPointsAlignmentProperty = property(get_VerticalSnapPointsAlignmentProperty, None)
+    VerticalSnapPointsTypeProperty = property(get_VerticalSnapPointsTypeProperty, None)
+    ViewportHeightProperty = property(get_ViewportHeightProperty, None)
+    ViewportWidthProperty = property(get_ViewportWidthProperty, None)
+    ZoomFactorProperty = property(get_ZoomFactorProperty, None)
     ZoomModeProperty = property(get_ZoomModeProperty, None)
-    IsDeferredScrollingEnabledProperty = property(get_IsDeferredScrollingEnabledProperty, None)
-    BringIntoViewOnFocusChangeProperty = property(get_BringIntoViewOnFocusChangeProperty, None)
+    ZoomSnapPointsProperty = property(get_ZoomSnapPointsProperty, None)
+    ZoomSnapPointsTypeProperty = property(get_ZoomSnapPointsTypeProperty, None)
 class IScrollViewerStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewerStatics2'
@@ -14700,9 +15128,9 @@ class IScrollViewerStatics2(ComPtr):
     def get_LeftHeaderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_TopHeaderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TopLeftHeaderProperty = property(get_TopLeftHeaderProperty, None)
     LeftHeaderProperty = property(get_LeftHeaderProperty, None)
     TopHeaderProperty = property(get_TopHeaderProperty, None)
+    TopLeftHeaderProperty = property(get_TopLeftHeaderProperty, None)
 class IScrollViewerStatics4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewerStatics4'
@@ -14719,10 +15147,10 @@ class IScrollViewerStatics4(ComPtr):
     def GetCanContentRenderOutsideBounds(self, element: win32more.Windows.UI.Xaml.DependencyObject) -> Boolean: ...
     @winrt_commethod(11)
     def SetCanContentRenderOutsideBounds(self, element: win32more.Windows.UI.Xaml.DependencyObject, canContentRenderOutsideBounds: Boolean) -> Void: ...
-    ReduceViewportForCoreInputViewOcclusionsProperty = property(get_ReduceViewportForCoreInputViewOcclusionsProperty, None)
-    HorizontalAnchorRatioProperty = property(get_HorizontalAnchorRatioProperty, None)
-    VerticalAnchorRatioProperty = property(get_VerticalAnchorRatioProperty, None)
     CanContentRenderOutsideBoundsProperty = property(get_CanContentRenderOutsideBoundsProperty, None)
+    HorizontalAnchorRatioProperty = property(get_HorizontalAnchorRatioProperty, None)
+    ReduceViewportForCoreInputViewOcclusionsProperty = property(get_ReduceViewportForCoreInputViewOcclusionsProperty, None)
+    VerticalAnchorRatioProperty = property(get_VerticalAnchorRatioProperty, None)
 class IScrollViewerView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IScrollViewerView'
@@ -14753,9 +15181,9 @@ class IScrollViewerViewChangingEventArgs(ComPtr):
     def get_FinalView(self) -> win32more.Windows.UI.Xaml.Controls.ScrollViewerView: ...
     @winrt_commethod(8)
     def get_IsInertial(self) -> Boolean: ...
-    NextView = property(get_NextView, None)
     FinalView = property(get_FinalView, None)
     IsInertial = property(get_IsInertial, None)
+    NextView = property(get_NextView, None)
 class ISearchBox(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBox'
@@ -14806,12 +15234,12 @@ class ISearchBox(ComPtr):
     def remove_PrepareForFocusOnKeyboardInput(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(28)
     def SetLocalContentSuggestionSettings(self, settings: win32more.Windows.ApplicationModel.Search.LocalContentSuggestionSettings) -> Void: ...
-    SearchHistoryEnabled = property(get_SearchHistoryEnabled, put_SearchHistoryEnabled)
-    SearchHistoryContext = property(get_SearchHistoryContext, put_SearchHistoryContext)
+    ChooseSuggestionOnEnter = property(get_ChooseSuggestionOnEnter, put_ChooseSuggestionOnEnter)
+    FocusOnKeyboardInput = property(get_FocusOnKeyboardInput, put_FocusOnKeyboardInput)
     PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
     QueryText = property(get_QueryText, put_QueryText)
-    FocusOnKeyboardInput = property(get_FocusOnKeyboardInput, put_FocusOnKeyboardInput)
-    ChooseSuggestionOnEnter = property(get_ChooseSuggestionOnEnter, put_ChooseSuggestionOnEnter)
+    SearchHistoryContext = property(get_SearchHistoryContext, put_SearchHistoryContext)
+    SearchHistoryEnabled = property(get_SearchHistoryEnabled, put_SearchHistoryEnabled)
 class ISearchBoxFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBoxFactory'
@@ -14828,9 +15256,9 @@ class ISearchBoxQueryChangedEventArgs(ComPtr):
     def get_Language(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_LinguisticDetails(self) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
-    QueryText = property(get_QueryText, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
+    QueryText = property(get_QueryText, None)
 class ISearchBoxQuerySubmittedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBoxQuerySubmittedEventArgs'
@@ -14843,10 +15271,10 @@ class ISearchBoxQuerySubmittedEventArgs(ComPtr):
     def get_LinguisticDetails(self) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
     @winrt_commethod(9)
     def get_KeyModifiers(self) -> win32more.Windows.System.VirtualKeyModifiers: ...
-    QueryText = property(get_QueryText, None)
+    KeyModifiers = property(get_KeyModifiers, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
-    KeyModifiers = property(get_KeyModifiers, None)
+    QueryText = property(get_QueryText, None)
 class ISearchBoxResultSuggestionChosenEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBoxResultSuggestionChosenEventArgs'
@@ -14855,8 +15283,8 @@ class ISearchBoxResultSuggestionChosenEventArgs(ComPtr):
     def get_Tag(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_KeyModifiers(self) -> win32more.Windows.System.VirtualKeyModifiers: ...
-    Tag = property(get_Tag, None)
     KeyModifiers = property(get_KeyModifiers, None)
+    Tag = property(get_Tag, None)
 class ISearchBoxStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBoxStatics'
@@ -14873,12 +15301,12 @@ class ISearchBoxStatics(ComPtr):
     def get_FocusOnKeyboardInputProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_ChooseSuggestionOnEnterProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SearchHistoryEnabledProperty = property(get_SearchHistoryEnabledProperty, None)
-    SearchHistoryContextProperty = property(get_SearchHistoryContextProperty, None)
+    ChooseSuggestionOnEnterProperty = property(get_ChooseSuggestionOnEnterProperty, None)
+    FocusOnKeyboardInputProperty = property(get_FocusOnKeyboardInputProperty, None)
     PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
     QueryTextProperty = property(get_QueryTextProperty, None)
-    FocusOnKeyboardInputProperty = property(get_FocusOnKeyboardInputProperty, None)
-    ChooseSuggestionOnEnterProperty = property(get_ChooseSuggestionOnEnterProperty, None)
+    SearchHistoryContextProperty = property(get_SearchHistoryContextProperty, None)
+    SearchHistoryEnabledProperty = property(get_SearchHistoryEnabledProperty, None)
 class ISearchBoxSuggestionsRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISearchBoxSuggestionsRequestedEventArgs'
@@ -14891,9 +15319,9 @@ class ISearchBoxSuggestionsRequestedEventArgs(ComPtr):
     def get_LinguisticDetails(self) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
     @winrt_commethod(9)
     def get_Request(self) -> win32more.Windows.ApplicationModel.Search.SearchSuggestionsRequest: ...
-    QueryText = property(get_QueryText, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
+    QueryText = property(get_QueryText, None)
     Request = property(get_Request, None)
 class ISectionsInViewChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -14959,11 +15387,11 @@ class ISemanticZoom(ComPtr):
     def get_IsZoomOutButtonEnabled(self) -> Boolean: ...
     @winrt_commethod(20)
     def put_IsZoomOutButtonEnabled(self, value: Boolean) -> Void: ...
-    ZoomedInView = property(get_ZoomedInView, put_ZoomedInView)
-    ZoomedOutView = property(get_ZoomedOutView, put_ZoomedOutView)
-    IsZoomedInViewActive = property(get_IsZoomedInViewActive, put_IsZoomedInViewActive)
     CanChangeViews = property(get_CanChangeViews, put_CanChangeViews)
     IsZoomOutButtonEnabled = property(get_IsZoomOutButtonEnabled, put_IsZoomOutButtonEnabled)
+    IsZoomedInViewActive = property(get_IsZoomedInViewActive, put_IsZoomedInViewActive)
+    ZoomedInView = property(get_ZoomedInView, put_ZoomedInView)
+    ZoomedOutView = property(get_ZoomedOutView, put_ZoomedOutView)
 class ISemanticZoomInformation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISemanticZoomInformation'
@@ -14994,9 +15422,9 @@ class ISemanticZoomInformation(ComPtr):
     def CompleteViewChangeFrom(self, source: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation, destination: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation) -> Void: ...
     @winrt_commethod(18)
     def CompleteViewChangeTo(self, source: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation, destination: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation) -> Void: ...
-    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
     IsActiveView = property(get_IsActiveView, put_IsActiveView)
     IsZoomedInView = property(get_IsZoomedInView, put_IsZoomedInView)
+    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
 class ISemanticZoomLocation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISemanticZoomLocation'
@@ -15009,8 +15437,8 @@ class ISemanticZoomLocation(ComPtr):
     def get_Bounds(self) -> win32more.Windows.Foundation.Rect: ...
     @winrt_commethod(9)
     def put_Bounds(self, value: win32more.Windows.Foundation.Rect) -> Void: ...
-    Item = property(get_Item, put_Item)
     Bounds = property(get_Bounds, put_Bounds)
+    Item = property(get_Item, put_Item)
 class ISemanticZoomStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISemanticZoomStatics'
@@ -15025,11 +15453,11 @@ class ISemanticZoomStatics(ComPtr):
     def get_CanChangeViewsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_IsZoomOutButtonEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ZoomedInViewProperty = property(get_ZoomedInViewProperty, None)
-    ZoomedOutViewProperty = property(get_ZoomedOutViewProperty, None)
-    IsZoomedInViewActiveProperty = property(get_IsZoomedInViewActiveProperty, None)
     CanChangeViewsProperty = property(get_CanChangeViewsProperty, None)
     IsZoomOutButtonEnabledProperty = property(get_IsZoomOutButtonEnabledProperty, None)
+    IsZoomedInViewActiveProperty = property(get_IsZoomedInViewActiveProperty, None)
+    ZoomedInViewProperty = property(get_ZoomedInViewProperty, None)
+    ZoomedOutViewProperty = property(get_ZoomedOutViewProperty, None)
 class ISemanticZoomViewChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISemanticZoomViewChangedEventArgs'
@@ -15046,9 +15474,9 @@ class ISemanticZoomViewChangedEventArgs(ComPtr):
     def get_DestinationItem(self) -> win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation: ...
     @winrt_commethod(11)
     def put_DestinationItem(self, value: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation) -> Void: ...
+    DestinationItem = property(get_DestinationItem, put_DestinationItem)
     IsSourceZoomedInView = property(get_IsSourceZoomedInView, put_IsSourceZoomedInView)
     SourceItem = property(get_SourceItem, put_SourceItem)
-    DestinationItem = property(get_DestinationItem, put_DestinationItem)
 class ISettingsFlyout(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISettingsFlyout'
@@ -15081,11 +15509,11 @@ class ISettingsFlyout(ComPtr):
     def ShowIndependent(self) -> Void: ...
     @winrt_commethod(19)
     def Hide(self) -> Void: ...
-    Title = property(get_Title, put_Title)
     HeaderBackground = property(get_HeaderBackground, put_HeaderBackground)
     HeaderForeground = property(get_HeaderForeground, put_HeaderForeground)
     IconSource = property(get_IconSource, put_IconSource)
     TemplateSettings = property(get_TemplateSettings, None)
+    Title = property(get_Title, put_Title)
 class ISettingsFlyoutFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISettingsFlyoutFactory'
@@ -15104,10 +15532,10 @@ class ISettingsFlyoutStatics(ComPtr):
     def get_HeaderForegroundProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_IconSourceProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TitleProperty = property(get_TitleProperty, None)
     HeaderBackgroundProperty = property(get_HeaderBackgroundProperty, None)
     HeaderForegroundProperty = property(get_HeaderForegroundProperty, None)
     IconSourceProperty = property(get_IconSourceProperty, None)
+    TitleProperty = property(get_TitleProperty, None)
 class ISlider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISlider'
@@ -15149,14 +15577,14 @@ class ISlider(ComPtr):
     @winrt_commethod(23)
     def put_ThumbToolTipValueConverter(self, value: win32more.Windows.UI.Xaml.Data.IValueConverter) -> Void: ...
     IntermediateValue = property(get_IntermediateValue, put_IntermediateValue)
-    StepFrequency = property(get_StepFrequency, put_StepFrequency)
-    SnapsTo = property(get_SnapsTo, put_SnapsTo)
-    TickFrequency = property(get_TickFrequency, put_TickFrequency)
-    TickPlacement = property(get_TickPlacement, put_TickPlacement)
-    Orientation = property(get_Orientation, put_Orientation)
     IsDirectionReversed = property(get_IsDirectionReversed, put_IsDirectionReversed)
     IsThumbToolTipEnabled = property(get_IsThumbToolTipEnabled, put_IsThumbToolTipEnabled)
+    Orientation = property(get_Orientation, put_Orientation)
+    SnapsTo = property(get_SnapsTo, put_SnapsTo)
+    StepFrequency = property(get_StepFrequency, put_StepFrequency)
     ThumbToolTipValueConverter = property(get_ThumbToolTipValueConverter, put_ThumbToolTipValueConverter)
+    TickFrequency = property(get_TickFrequency, put_TickFrequency)
+    TickPlacement = property(get_TickPlacement, put_TickPlacement)
 class ISlider2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISlider2'
@@ -15200,14 +15628,14 @@ class ISliderStatics(ComPtr):
     @winrt_commethod(14)
     def get_ThumbToolTipValueConverterProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     IntermediateValueProperty = property(get_IntermediateValueProperty, None)
-    StepFrequencyProperty = property(get_StepFrequencyProperty, None)
-    SnapsToProperty = property(get_SnapsToProperty, None)
-    TickFrequencyProperty = property(get_TickFrequencyProperty, None)
-    TickPlacementProperty = property(get_TickPlacementProperty, None)
-    OrientationProperty = property(get_OrientationProperty, None)
     IsDirectionReversedProperty = property(get_IsDirectionReversedProperty, None)
     IsThumbToolTipEnabledProperty = property(get_IsThumbToolTipEnabledProperty, None)
+    OrientationProperty = property(get_OrientationProperty, None)
+    SnapsToProperty = property(get_SnapsToProperty, None)
+    StepFrequencyProperty = property(get_StepFrequencyProperty, None)
     ThumbToolTipValueConverterProperty = property(get_ThumbToolTipValueConverterProperty, None)
+    TickFrequencyProperty = property(get_TickFrequencyProperty, None)
+    TickPlacementProperty = property(get_TickPlacementProperty, None)
 class ISliderStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISliderStatics2'
@@ -15238,9 +15666,9 @@ class ISplitButton(ComPtr):
     def add_Click(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.SplitButton, win32more.Windows.UI.Xaml.Controls.SplitButtonClickEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_Click(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Flyout = property(get_Flyout, put_Flyout)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
+    Flyout = property(get_Flyout, put_Flyout)
 class ISplitButtonAutomationPeer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISplitButtonAutomationPeer'
@@ -15271,9 +15699,9 @@ class ISplitButtonStatics(ComPtr):
     def get_CommandProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_CommandParameterProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FlyoutProperty = property(get_FlyoutProperty, None)
-    CommandProperty = property(get_CommandProperty, None)
     CommandParameterProperty = property(get_CommandParameterProperty, None)
+    CommandProperty = property(get_CommandProperty, None)
+    FlyoutProperty = property(get_FlyoutProperty, None)
 class ISplitView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISplitView'
@@ -15320,15 +15748,15 @@ class ISplitView(ComPtr):
     def add_PaneClosed(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.SplitView, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(26)
     def remove_PaneClosed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
     Content = property(get_Content, put_Content)
-    Pane = property(get_Pane, put_Pane)
+    DisplayMode = property(get_DisplayMode, put_DisplayMode)
     IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
     OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
-    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
-    PanePlacement = property(get_PanePlacement, put_PanePlacement)
-    DisplayMode = property(get_DisplayMode, put_DisplayMode)
-    TemplateSettings = property(get_TemplateSettings, None)
+    Pane = property(get_Pane, put_Pane)
     PaneBackground = property(get_PaneBackground, put_PaneBackground)
+    PanePlacement = property(get_PanePlacement, put_PanePlacement)
+    TemplateSettings = property(get_TemplateSettings, None)
 class ISplitView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISplitView2'
@@ -15387,15 +15815,15 @@ class ISplitViewStatics(ComPtr):
     def get_TemplateSettingsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(14)
     def get_PaneBackgroundProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    CompactPaneLengthProperty = property(get_CompactPaneLengthProperty, None)
     ContentProperty = property(get_ContentProperty, None)
-    PaneProperty = property(get_PaneProperty, None)
+    DisplayModeProperty = property(get_DisplayModeProperty, None)
     IsPaneOpenProperty = property(get_IsPaneOpenProperty, None)
     OpenPaneLengthProperty = property(get_OpenPaneLengthProperty, None)
-    CompactPaneLengthProperty = property(get_CompactPaneLengthProperty, None)
-    PanePlacementProperty = property(get_PanePlacementProperty, None)
-    DisplayModeProperty = property(get_DisplayModeProperty, None)
-    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
     PaneBackgroundProperty = property(get_PaneBackgroundProperty, None)
+    PanePlacementProperty = property(get_PanePlacementProperty, None)
+    PaneProperty = property(get_PaneProperty, None)
+    TemplateSettingsProperty = property(get_TemplateSettingsProperty, None)
 class ISplitViewStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISplitViewStatics2'
@@ -15593,10 +16021,10 @@ class ISwipeControl(ComPtr):
     def put_BottomItems(self, value: win32more.Windows.UI.Xaml.Controls.SwipeItems) -> Void: ...
     @winrt_commethod(14)
     def Close(self) -> Void: ...
+    BottomItems = property(get_BottomItems, put_BottomItems)
     LeftItems = property(get_LeftItems, put_LeftItems)
     RightItems = property(get_RightItems, put_RightItems)
     TopItems = property(get_TopItems, put_TopItems)
-    BottomItems = property(get_BottomItems, put_BottomItems)
 class ISwipeControlFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISwipeControlFactory'
@@ -15615,10 +16043,10 @@ class ISwipeControlStatics(ComPtr):
     def get_TopItemsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_BottomItemsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BottomItemsProperty = property(get_BottomItemsProperty, None)
     LeftItemsProperty = property(get_LeftItemsProperty, None)
     RightItemsProperty = property(get_RightItemsProperty, None)
     TopItemsProperty = property(get_TopItemsProperty, None)
-    BottomItemsProperty = property(get_BottomItemsProperty, None)
 class ISwipeItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISwipeItem'
@@ -15655,13 +16083,13 @@ class ISwipeItem(ComPtr):
     def add_Invoked(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.SwipeItem, win32more.Windows.UI.Xaml.Controls.SwipeItemInvokedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(21)
     def remove_Invoked(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Text = property(get_Text, put_Text)
-    IconSource = property(get_IconSource, put_IconSource)
     Background = property(get_Background, put_Background)
-    Foreground = property(get_Foreground, put_Foreground)
+    BehaviorOnInvoked = property(get_BehaviorOnInvoked, put_BehaviorOnInvoked)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
-    BehaviorOnInvoked = property(get_BehaviorOnInvoked, put_BehaviorOnInvoked)
+    Foreground = property(get_Foreground, put_Foreground)
+    IconSource = property(get_IconSource, put_IconSource)
+    Text = property(get_Text, put_Text)
 class ISwipeItemFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISwipeItemFactory'
@@ -15693,13 +16121,13 @@ class ISwipeItemStatics(ComPtr):
     def get_CommandParameterProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_BehaviorOnInvokedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BackgroundProperty = property(get_BackgroundProperty, None)
+    BehaviorOnInvokedProperty = property(get_BehaviorOnInvokedProperty, None)
+    CommandParameterProperty = property(get_CommandParameterProperty, None)
+    CommandProperty = property(get_CommandProperty, None)
+    ForegroundProperty = property(get_ForegroundProperty, None)
     IconSourceProperty = property(get_IconSourceProperty, None)
     TextProperty = property(get_TextProperty, None)
-    BackgroundProperty = property(get_BackgroundProperty, None)
-    ForegroundProperty = property(get_ForegroundProperty, None)
-    CommandProperty = property(get_CommandProperty, None)
-    CommandParameterProperty = property(get_CommandParameterProperty, None)
-    BehaviorOnInvokedProperty = property(get_BehaviorOnInvokedProperty, None)
 class ISwipeItems(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ISwipeItems'
@@ -15858,28 +16286,28 @@ class ITextBlock(ComPtr):
     def Select(self, start: win32more.Windows.UI.Xaml.Documents.TextPointer, end: win32more.Windows.UI.Xaml.Documents.TextPointer) -> Void: ...
     @winrt_commethod(49)
     def Focus(self, value: win32more.Windows.UI.Xaml.FocusState) -> Boolean: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
+    BaselineOffset = property(get_BaselineOffset, None)
     CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentStart = property(get_ContentStart, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
     Foreground = property(get_Foreground, put_Foreground)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    TextTrimming = property(get_TextTrimming, put_TextTrimming)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
-    Text = property(get_Text, put_Text)
     Inlines = property(get_Inlines, None)
-    Padding = property(get_Padding, put_Padding)
+    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
     LineHeight = property(get_LineHeight, put_LineHeight)
     LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
+    Padding = property(get_Padding, put_Padding)
     SelectedText = property(get_SelectedText, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    SelectionStart = property(get_SelectionStart, None)
     SelectionEnd = property(get_SelectionEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
+    SelectionStart = property(get_SelectionStart, None)
+    Text = property(get_Text, put_Text)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextTrimming = property(get_TextTrimming, put_TextTrimming)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
 class ITextBlock2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBlock2'
@@ -15908,11 +16336,11 @@ class ITextBlock2(ComPtr):
     def get_TextReadingOrder(self) -> win32more.Windows.UI.Xaml.TextReadingOrder: ...
     @winrt_commethod(17)
     def put_TextReadingOrder(self, value: win32more.Windows.UI.Xaml.TextReadingOrder) -> Void: ...
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    MaxLines = property(get_MaxLines, put_MaxLines)
-    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
-    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
     IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    MaxLines = property(get_MaxLines, put_MaxLines)
+    OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
     TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
 class ITextBlock3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -15954,8 +16382,8 @@ class ITextBlock6(ComPtr):
     def add_IsTextTrimmedChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.TextBlock, win32more.Windows.UI.Xaml.Controls.IsTextTrimmedChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_IsTextTrimmedChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsTextTrimmed = property(get_IsTextTrimmed, None)
     HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
+    IsTextTrimmed = property(get_IsTextTrimmed, None)
     TextHighlighters = property(get_TextHighlighters, None)
 class ITextBlock7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -16004,22 +16432,22 @@ class ITextBlockStatics(ComPtr):
     def get_IsTextSelectionEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(21)
     def get_SelectedTextProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSizeProperty = property(get_FontSizeProperty, None)
-    FontFamilyProperty = property(get_FontFamilyProperty, None)
-    FontWeightProperty = property(get_FontWeightProperty, None)
-    FontStyleProperty = property(get_FontStyleProperty, None)
-    FontStretchProperty = property(get_FontStretchProperty, None)
     CharacterSpacingProperty = property(get_CharacterSpacingProperty, None)
+    FontFamilyProperty = property(get_FontFamilyProperty, None)
+    FontSizeProperty = property(get_FontSizeProperty, None)
+    FontStretchProperty = property(get_FontStretchProperty, None)
+    FontStyleProperty = property(get_FontStyleProperty, None)
+    FontWeightProperty = property(get_FontWeightProperty, None)
     ForegroundProperty = property(get_ForegroundProperty, None)
-    TextWrappingProperty = property(get_TextWrappingProperty, None)
-    TextTrimmingProperty = property(get_TextTrimmingProperty, None)
-    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
-    TextProperty = property(get_TextProperty, None)
-    PaddingProperty = property(get_PaddingProperty, None)
+    IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty, None)
     LineHeightProperty = property(get_LineHeightProperty, None)
     LineStackingStrategyProperty = property(get_LineStackingStrategyProperty, None)
-    IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty, None)
+    PaddingProperty = property(get_PaddingProperty, None)
     SelectedTextProperty = property(get_SelectedTextProperty, None)
+    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
+    TextProperty = property(get_TextProperty, None)
+    TextTrimmingProperty = property(get_TextTrimmingProperty, None)
+    TextWrappingProperty = property(get_TextWrappingProperty, None)
 class ITextBlockStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBlockStatics2'
@@ -16036,11 +16464,11 @@ class ITextBlockStatics2(ComPtr):
     def get_IsColorFontEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_TextReadingOrderProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
-    MaxLinesProperty = property(get_MaxLinesProperty, None)
-    TextLineBoundsProperty = property(get_TextLineBoundsProperty, None)
-    OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty, None)
     IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty, None)
+    MaxLinesProperty = property(get_MaxLinesProperty, None)
+    OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty, None)
+    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
+    TextLineBoundsProperty = property(get_TextLineBoundsProperty, None)
     TextReadingOrderProperty = property(get_TextReadingOrderProperty, None)
 class ITextBlockStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -16064,8 +16492,8 @@ class ITextBlockStatics6(ComPtr):
     def get_IsTextTrimmedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_HorizontalTextAlignmentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsTextTrimmedProperty = property(get_IsTextTrimmedProperty, None)
     HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
+    IsTextTrimmedProperty = property(get_IsTextTrimmedProperty, None)
 class ITextBlockStatics7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBlockStatics7'
@@ -16143,18 +16571,18 @@ class ITextBox(ComPtr):
     def SelectAll(self) -> Void: ...
     @winrt_commethod(38)
     def GetRectFromCharacterIndex(self, charIndex: Int32, trailingEdge: Boolean) -> win32more.Windows.Foundation.Rect: ...
-    Text = property(get_Text, put_Text)
+    AcceptsReturn = property(get_AcceptsReturn, put_AcceptsReturn)
+    InputScope = property(get_InputScope, put_InputScope)
+    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
+    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
+    MaxLength = property(get_MaxLength, put_MaxLength)
     SelectedText = property(get_SelectedText, put_SelectedText)
     SelectionLength = property(get_SelectionLength, put_SelectionLength)
     SelectionStart = property(get_SelectionStart, put_SelectionStart)
-    MaxLength = property(get_MaxLength, put_MaxLength)
-    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
-    AcceptsReturn = property(get_AcceptsReturn, put_AcceptsReturn)
+    Text = property(get_Text, put_Text)
     TextAlignment = property(get_TextAlignment, put_TextAlignment)
     TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
-    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
-    InputScope = property(get_InputScope, put_InputScope)
 class ITextBox2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBox2'
@@ -16189,10 +16617,10 @@ class ITextBox2(ComPtr):
     def remove_Paste(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
     IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
 class ITextBox3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBox3'
@@ -16225,8 +16653,8 @@ class ITextBox3(ComPtr):
     def add_TextChanging(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.TextBox, win32more.Windows.UI.Xaml.Controls.TextBoxTextChangingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_TextChanging(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
     DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
 class ITextBox4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBox4'
@@ -16270,8 +16698,8 @@ class ITextBox6(ComPtr):
     def add_BeforeTextChanging(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.TextBox, win32more.Windows.UI.Xaml.Controls.TextBoxBeforeTextChangingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(17)
     def remove_BeforeTextChanging(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
     CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
+    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
     PlaceholderForeground = property(get_PlaceholderForeground, put_PlaceholderForeground)
 class ITextBox7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -16324,11 +16752,11 @@ class ITextBox8(ComPtr):
     @winrt_commethod(21)
     def ClearUndoRedoHistory(self) -> Void: ...
     CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
-    CanUndo = property(get_CanUndo, None)
     CanRedo = property(get_CanRedo, None)
-    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
-    ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
+    CanUndo = property(get_CanUndo, None)
     Description = property(get_Description, put_Description)
+    ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
+    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
 class ITextBoxBeforeTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxBeforeTextChangingEventArgs'
@@ -16339,8 +16767,8 @@ class ITextBoxBeforeTextChangingEventArgs(ComPtr):
     def get_Cancel(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_Cancel(self, value: Boolean) -> Void: ...
-    NewText = property(get_NewText, None)
     Cancel = property(get_Cancel, put_Cancel)
+    NewText = property(get_NewText, None)
 class ITextBoxFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxFactory'
@@ -16359,9 +16787,9 @@ class ITextBoxSelectionChangingEventArgs(ComPtr):
     def get_Cancel(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_Cancel(self, value: Boolean) -> Void: ...
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionLength = property(get_SelectionLength, None)
     Cancel = property(get_Cancel, put_Cancel)
+    SelectionLength = property(get_SelectionLength, None)
+    SelectionStart = property(get_SelectionStart, None)
 class ITextBoxStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxStatics'
@@ -16384,15 +16812,15 @@ class ITextBoxStatics(ComPtr):
     def get_IsTextPredictionEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(14)
     def get_InputScopeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TextProperty = property(get_TextProperty, None)
-    MaxLengthProperty = property(get_MaxLengthProperty, None)
-    IsReadOnlyProperty = property(get_IsReadOnlyProperty, None)
     AcceptsReturnProperty = property(get_AcceptsReturnProperty, None)
-    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
-    TextWrappingProperty = property(get_TextWrappingProperty, None)
+    InputScopeProperty = property(get_InputScopeProperty, None)
+    IsReadOnlyProperty = property(get_IsReadOnlyProperty, None)
     IsSpellCheckEnabledProperty = property(get_IsSpellCheckEnabledProperty, None)
     IsTextPredictionEnabledProperty = property(get_IsTextPredictionEnabledProperty, None)
-    InputScopeProperty = property(get_InputScopeProperty, None)
+    MaxLengthProperty = property(get_MaxLengthProperty, None)
+    TextAlignmentProperty = property(get_TextAlignmentProperty, None)
+    TextProperty = property(get_TextProperty, None)
+    TextWrappingProperty = property(get_TextWrappingProperty, None)
 class ITextBoxStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxStatics2'
@@ -16411,10 +16839,10 @@ class ITextBoxStatics2(ComPtr):
     def get_IsColorFontEnabledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
-    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
-    PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty, None)
     IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty, None)
+    PlaceholderTextProperty = property(get_PlaceholderTextProperty, None)
+    PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty, None)
+    SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty, None)
 class ITextBoxStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxStatics3'
@@ -16442,8 +16870,8 @@ class ITextBoxStatics6(ComPtr):
     def get_CharacterCasingProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_PlaceholderForegroundProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
     CharacterCasingProperty = property(get_CharacterCasingProperty, None)
+    HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty, None)
     PlaceholderForegroundProperty = property(get_PlaceholderForegroundProperty, None)
 class ITextBoxStatics7(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -16472,11 +16900,11 @@ class ITextBoxStatics8(ComPtr):
     @winrt_commethod(11)
     def get_DescriptionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CanPasteClipboardContentProperty = property(get_CanPasteClipboardContentProperty, None)
-    CanUndoProperty = property(get_CanUndoProperty, None)
     CanRedoProperty = property(get_CanRedoProperty, None)
-    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
-    ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty, None)
+    CanUndoProperty = property(get_CanUndoProperty, None)
     DescriptionProperty = property(get_DescriptionProperty, None)
+    ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty, None)
+    SelectionFlyoutProperty = property(get_SelectionFlyoutProperty, None)
 class ITextBoxTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextBoxTextChangingEventArgs'
@@ -16510,8 +16938,8 @@ class ITextCompositionChangedEventArgs(ComPtr):
     def get_StartIndex(self) -> Int32: ...
     @winrt_commethod(7)
     def get_Length(self) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class ITextCompositionEndedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextCompositionEndedEventArgs'
@@ -16520,8 +16948,8 @@ class ITextCompositionEndedEventArgs(ComPtr):
     def get_StartIndex(self) -> Int32: ...
     @winrt_commethod(7)
     def get_Length(self) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class ITextCompositionStartedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextCompositionStartedEventArgs'
@@ -16530,8 +16958,8 @@ class ITextCompositionStartedEventArgs(ComPtr):
     def get_StartIndex(self) -> Int32: ...
     @winrt_commethod(7)
     def get_Length(self) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class ITextControlCopyingToClipboardEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITextControlCopyingToClipboardEventArgs'
@@ -16567,8 +16995,8 @@ class ITimePickedEventArgs(ComPtr):
     def get_OldTime(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(7)
     def get_NewTime(self) -> win32more.Windows.Foundation.TimeSpan: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class ITimePicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITimePicker'
@@ -16597,9 +17025,9 @@ class ITimePicker(ComPtr):
     def add_TimeChanged(self, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.UI.Xaml.Controls.TimePickerValueChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(17)
     def remove_TimeChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
     MinuteIncrement = property(get_MinuteIncrement, put_MinuteIncrement)
     Time = property(get_Time, put_Time)
 class ITimePicker2(ComPtr):
@@ -16653,8 +17081,8 @@ class ITimePickerFlyout(ComPtr):
     @winrt_commethod(14)
     def ShowAtAsync(self, target: win32more.Windows.UI.Xaml.FrameworkElement) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]]: ...
     ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
-    Time = property(get_Time, put_Time)
     MinuteIncrement = property(get_MinuteIncrement, put_MinuteIncrement)
+    Time = property(get_Time, put_Time)
 class ITimePickerFlyoutPresenter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITimePickerFlyoutPresenter'
@@ -16686,8 +17114,8 @@ class ITimePickerFlyoutStatics(ComPtr):
     @winrt_commethod(8)
     def get_MinuteIncrementProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     ClockIdentifierProperty = property(get_ClockIdentifierProperty, None)
-    TimeProperty = property(get_TimeProperty, None)
     MinuteIncrementProperty = property(get_MinuteIncrementProperty, None)
+    TimeProperty = property(get_TimeProperty, None)
 class ITimePickerSelectedValueChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITimePickerSelectedValueChangedEventArgs'
@@ -16696,8 +17124,8 @@ class ITimePickerSelectedValueChangedEventArgs(ComPtr):
     def get_OldTime(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_commethod(7)
     def get_NewTime(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class ITimePickerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITimePickerStatics'
@@ -16712,9 +17140,9 @@ class ITimePickerStatics(ComPtr):
     def get_MinuteIncrementProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_TimeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ClockIdentifierProperty = property(get_ClockIdentifierProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    ClockIdentifierProperty = property(get_ClockIdentifierProperty, None)
     MinuteIncrementProperty = property(get_MinuteIncrementProperty, None)
     TimeProperty = property(get_TimeProperty, None)
 class ITimePickerStatics2(ComPtr):
@@ -16739,8 +17167,8 @@ class ITimePickerValueChangedEventArgs(ComPtr):
     def get_OldTime(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(7)
     def get_NewTime(self) -> win32more.Windows.Foundation.TimeSpan: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class IToggleMenuFlyoutItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IToggleMenuFlyoutItem'
@@ -16834,13 +17262,13 @@ class IToggleSwitch(ComPtr):
     def add_Toggled(self, handler: win32more.Windows.UI.Xaml.RoutedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(22)
     def remove_Toggled(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsOn = property(get_IsOn, put_IsOn)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    OnContent = property(get_OnContent, put_OnContent)
-    OnContentTemplate = property(get_OnContentTemplate, put_OnContentTemplate)
+    IsOn = property(get_IsOn, put_IsOn)
     OffContent = property(get_OffContent, put_OffContent)
     OffContentTemplate = property(get_OffContentTemplate, put_OffContentTemplate)
+    OnContent = property(get_OnContent, put_OnContent)
+    OnContentTemplate = property(get_OnContentTemplate, put_OnContentTemplate)
     TemplateSettings = property(get_TemplateSettings, None)
 class IToggleSwitchOverrides(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -16872,13 +17300,13 @@ class IToggleSwitchStatics(ComPtr):
     def get_OffContentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_OffContentTemplateProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsOnProperty = property(get_IsOnProperty, None)
     HeaderProperty = property(get_HeaderProperty, None)
     HeaderTemplateProperty = property(get_HeaderTemplateProperty, None)
-    OnContentProperty = property(get_OnContentProperty, None)
-    OnContentTemplateProperty = property(get_OnContentTemplateProperty, None)
+    IsOnProperty = property(get_IsOnProperty, None)
     OffContentProperty = property(get_OffContentProperty, None)
     OffContentTemplateProperty = property(get_OffContentTemplateProperty, None)
+    OnContentProperty = property(get_OnContentProperty, None)
+    OnContentTemplateProperty = property(get_OnContentTemplateProperty, None)
 class IToolTip(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IToolTip'
@@ -16917,8 +17345,8 @@ class IToolTip(ComPtr):
     IsOpen = property(get_IsOpen, put_IsOpen)
     Placement = property(get_Placement, put_Placement)
     PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
-    VerticalOffset = property(get_VerticalOffset, put_VerticalOffset)
     TemplateSettings = property(get_TemplateSettings, None)
+    VerticalOffset = property(get_VerticalOffset, put_VerticalOffset)
 class IToolTip2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IToolTip2'
@@ -17020,8 +17448,8 @@ class ITreeView(ComPtr):
     @winrt_commethod(18)
     def remove_Collapsed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     RootNodes = property(get_RootNodes, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     SelectedNodes = property(get_SelectedNodes, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
 class ITreeView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeView2'
@@ -17076,11 +17504,11 @@ class ITreeView2(ComPtr):
     def remove_DragItemsCompleted(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     CanDragItems = property(get_CanDragItems, put_CanDragItems)
     CanReorderItems = property(get_CanReorderItems, put_CanReorderItems)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
-    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
     ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
     ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
     ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
     ItemsSource = property(get_ItemsSource, put_ItemsSource)
 class ITreeViewCollapsedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -17171,10 +17599,10 @@ class ITreeViewItem(ComPtr):
     def put_IsExpanded(self, value: Boolean) -> Void: ...
     @winrt_commethod(18)
     def get_TreeViewItemTemplateSettings(self) -> win32more.Windows.UI.Xaml.Controls.TreeViewItemTemplateSettings: ...
-    GlyphOpacity = property(get_GlyphOpacity, put_GlyphOpacity)
-    GlyphBrush = property(get_GlyphBrush, put_GlyphBrush)
-    ExpandedGlyph = property(get_ExpandedGlyph, put_ExpandedGlyph)
     CollapsedGlyph = property(get_CollapsedGlyph, put_CollapsedGlyph)
+    ExpandedGlyph = property(get_ExpandedGlyph, put_ExpandedGlyph)
+    GlyphBrush = property(get_GlyphBrush, put_GlyphBrush)
+    GlyphOpacity = property(get_GlyphOpacity, put_GlyphOpacity)
     GlyphSize = property(get_GlyphSize, put_GlyphSize)
     IsExpanded = property(get_IsExpanded, put_IsExpanded)
     TreeViewItemTemplateSettings = property(get_TreeViewItemTemplateSettings, None)
@@ -17208,8 +17636,8 @@ class ITreeViewItemInvokedEventArgs(ComPtr):
     def put_Handled(self, value: Boolean) -> Void: ...
     @winrt_commethod(8)
     def get_Handled(self) -> Boolean: ...
-    InvokedItem = property(get_InvokedItem, None)
     Handled = property(get_Handled, put_Handled)
+    InvokedItem = property(get_InvokedItem, None)
 class ITreeViewItemStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeViewItemStatics'
@@ -17228,10 +17656,10 @@ class ITreeViewItemStatics(ComPtr):
     def get_IsExpandedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(12)
     def get_TreeViewItemTemplateSettingsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GlyphOpacityProperty = property(get_GlyphOpacityProperty, None)
-    GlyphBrushProperty = property(get_GlyphBrushProperty, None)
-    ExpandedGlyphProperty = property(get_ExpandedGlyphProperty, None)
     CollapsedGlyphProperty = property(get_CollapsedGlyphProperty, None)
+    ExpandedGlyphProperty = property(get_ExpandedGlyphProperty, None)
+    GlyphBrushProperty = property(get_GlyphBrushProperty, None)
+    GlyphOpacityProperty = property(get_GlyphOpacityProperty, None)
     GlyphSizeProperty = property(get_GlyphSizeProperty, None)
     IsExpandedProperty = property(get_IsExpandedProperty, None)
     TreeViewItemTemplateSettingsProperty = property(get_TreeViewItemTemplateSettingsProperty, None)
@@ -17257,10 +17685,10 @@ class ITreeViewItemTemplateSettings(ComPtr):
     def get_Indentation(self) -> win32more.Windows.UI.Xaml.Thickness: ...
     @winrt_commethod(9)
     def get_DragItemsCount(self) -> Int32: ...
-    ExpandedGlyphVisibility = property(get_ExpandedGlyphVisibility, None)
     CollapsedGlyphVisibility = property(get_CollapsedGlyphVisibility, None)
-    Indentation = property(get_Indentation, None)
     DragItemsCount = property(get_DragItemsCount, None)
+    ExpandedGlyphVisibility = property(get_ExpandedGlyphVisibility, None)
+    Indentation = property(get_Indentation, None)
 class ITreeViewItemTemplateSettingsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeViewItemTemplateSettingsFactory'
@@ -17279,10 +17707,10 @@ class ITreeViewItemTemplateSettingsStatics(ComPtr):
     def get_IndentationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_DragItemsCountProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ExpandedGlyphVisibilityProperty = property(get_ExpandedGlyphVisibilityProperty, None)
     CollapsedGlyphVisibilityProperty = property(get_CollapsedGlyphVisibilityProperty, None)
-    IndentationProperty = property(get_IndentationProperty, None)
     DragItemsCountProperty = property(get_DragItemsCountProperty, None)
+    ExpandedGlyphVisibilityProperty = property(get_ExpandedGlyphVisibilityProperty, None)
+    IndentationProperty = property(get_IndentationProperty, None)
 class ITreeViewList(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeViewList'
@@ -17317,13 +17745,13 @@ class ITreeViewNode(ComPtr):
     def put_HasUnrealizedChildren(self, value: Boolean) -> Void: ...
     @winrt_commethod(15)
     def get_Children(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Controls.TreeViewNode]: ...
-    Content = property(get_Content, put_Content)
-    Parent = property(get_Parent, None)
-    IsExpanded = property(get_IsExpanded, put_IsExpanded)
-    HasChildren = property(get_HasChildren, None)
-    Depth = property(get_Depth, None)
-    HasUnrealizedChildren = property(get_HasUnrealizedChildren, put_HasUnrealizedChildren)
     Children = property(get_Children, None)
+    Content = property(get_Content, put_Content)
+    Depth = property(get_Depth, None)
+    HasChildren = property(get_HasChildren, None)
+    HasUnrealizedChildren = property(get_HasUnrealizedChildren, put_HasUnrealizedChildren)
+    IsExpanded = property(get_IsExpanded, put_IsExpanded)
+    Parent = property(get_Parent, None)
 class ITreeViewNodeFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeViewNodeFactory'
@@ -17344,8 +17772,8 @@ class ITreeViewNodeStatics(ComPtr):
     def get_HasChildrenProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     ContentProperty = property(get_ContentProperty, None)
     DepthProperty = property(get_DepthProperty, None)
-    IsExpandedProperty = property(get_IsExpandedProperty, None)
     HasChildrenProperty = property(get_HasChildrenProperty, None)
+    IsExpandedProperty = property(get_IsExpandedProperty, None)
 class ITreeViewStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITreeViewStatics'
@@ -17375,11 +17803,11 @@ class ITreeViewStatics2(ComPtr):
     def get_ItemsSourceProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CanDragItemsProperty = property(get_CanDragItemsProperty, None)
     CanReorderItemsProperty = property(get_CanReorderItemsProperty, None)
-    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
-    ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty, None)
     ItemContainerStyleProperty = property(get_ItemContainerStyleProperty, None)
     ItemContainerStyleSelectorProperty = property(get_ItemContainerStyleSelectorProperty, None)
     ItemContainerTransitionsProperty = property(get_ItemContainerTransitionsProperty, None)
+    ItemTemplateProperty = property(get_ItemTemplateProperty, None)
+    ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty, None)
     ItemsSourceProperty = property(get_ItemsSourceProperty, None)
 class ITwoPaneView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -17427,16 +17855,16 @@ class ITwoPaneView(ComPtr):
     def add_ModeChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.UI.Xaml.Controls.TwoPaneView, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(26)
     def remove_ModeChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    MinTallModeHeight = property(get_MinTallModeHeight, put_MinTallModeHeight)
+    MinWideModeWidth = property(get_MinWideModeWidth, put_MinWideModeWidth)
+    Mode = property(get_Mode, None)
     Pane1 = property(get_Pane1, put_Pane1)
-    Pane2 = property(get_Pane2, put_Pane2)
     Pane1Length = property(get_Pane1Length, put_Pane1Length)
+    Pane2 = property(get_Pane2, put_Pane2)
     Pane2Length = property(get_Pane2Length, put_Pane2Length)
     PanePriority = property(get_PanePriority, put_PanePriority)
-    Mode = property(get_Mode, None)
-    WideModeConfiguration = property(get_WideModeConfiguration, put_WideModeConfiguration)
     TallModeConfiguration = property(get_TallModeConfiguration, put_TallModeConfiguration)
-    MinWideModeWidth = property(get_MinWideModeWidth, put_MinWideModeWidth)
-    MinTallModeHeight = property(get_MinTallModeHeight, put_MinTallModeHeight)
+    WideModeConfiguration = property(get_WideModeConfiguration, put_WideModeConfiguration)
 class ITwoPaneViewFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.ITwoPaneViewFactory'
@@ -17467,16 +17895,16 @@ class ITwoPaneViewStatics(ComPtr):
     def get_MinWideModeWidthProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(15)
     def get_MinTallModeHeightProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Pane1Property = property(get_Pane1Property, None)
-    Pane2Property = property(get_Pane2Property, None)
-    Pane1LengthProperty = property(get_Pane1LengthProperty, None)
-    Pane2LengthProperty = property(get_Pane2LengthProperty, None)
-    PanePriorityProperty = property(get_PanePriorityProperty, None)
-    ModeProperty = property(get_ModeProperty, None)
-    WideModeConfigurationProperty = property(get_WideModeConfigurationProperty, None)
-    TallModeConfigurationProperty = property(get_TallModeConfigurationProperty, None)
-    MinWideModeWidthProperty = property(get_MinWideModeWidthProperty, None)
     MinTallModeHeightProperty = property(get_MinTallModeHeightProperty, None)
+    MinWideModeWidthProperty = property(get_MinWideModeWidthProperty, None)
+    ModeProperty = property(get_ModeProperty, None)
+    Pane1LengthProperty = property(get_Pane1LengthProperty, None)
+    Pane1Property = property(get_Pane1Property, None)
+    Pane2LengthProperty = property(get_Pane2LengthProperty, None)
+    Pane2Property = property(get_Pane2Property, None)
+    PanePriorityProperty = property(get_PanePriorityProperty, None)
+    TallModeConfigurationProperty = property(get_TallModeConfigurationProperty, None)
+    WideModeConfigurationProperty = property(get_WideModeConfigurationProperty, None)
 class IUIElementCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IUIElementCollection'
@@ -17533,12 +17961,12 @@ class IVariableSizedWrapGrid(ComPtr):
     def get_MaximumRowsOrColumns(self) -> Int32: ...
     @winrt_commethod(17)
     def put_MaximumRowsOrColumns(self, value: Int32) -> Void: ...
+    HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
     ItemHeight = property(get_ItemHeight, put_ItemHeight)
     ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    Orientation = property(get_Orientation, put_Orientation)
-    HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
-    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
     MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
+    Orientation = property(get_Orientation, put_Orientation)
+    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
 class IVariableSizedWrapGridStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IVariableSizedWrapGridStatics'
@@ -17567,14 +17995,14 @@ class IVariableSizedWrapGridStatics(ComPtr):
     def GetColumnSpan(self, element: win32more.Windows.UI.Xaml.UIElement) -> Int32: ...
     @winrt_commethod(17)
     def SetColumnSpan(self, element: win32more.Windows.UI.Xaml.UIElement, value: Int32) -> Void: ...
+    ColumnSpanProperty = property(get_ColumnSpanProperty, None)
+    HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty, None)
     ItemHeightProperty = property(get_ItemHeightProperty, None)
     ItemWidthProperty = property(get_ItemWidthProperty, None)
-    OrientationProperty = property(get_OrientationProperty, None)
-    HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty, None)
-    VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty, None)
     MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty, None)
+    OrientationProperty = property(get_OrientationProperty, None)
     RowSpanProperty = property(get_RowSpanProperty, None)
-    ColumnSpanProperty = property(get_ColumnSpanProperty, None)
+    VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty, None)
 class IViewbox(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IViewbox'
@@ -17602,8 +18030,8 @@ class IViewboxStatics(ComPtr):
     def get_StretchProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_StretchDirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    StretchProperty = property(get_StretchProperty, None)
     StretchDirectionProperty = property(get_StretchDirectionProperty, None)
+    StretchProperty = property(get_StretchProperty, None)
 class IVirtualizingPanel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IVirtualizingPanel'
@@ -17678,9 +18106,9 @@ class IVirtualizingStackPanelStatics(ComPtr):
     @winrt_commethod(12)
     def GetIsVirtualizing(self, o: win32more.Windows.UI.Xaml.DependencyObject) -> Boolean: ...
     AreScrollSnapPointsRegularProperty = property(get_AreScrollSnapPointsRegularProperty, None)
+    IsVirtualizingProperty = property(get_IsVirtualizingProperty, None)
     OrientationProperty = property(get_OrientationProperty, None)
     VirtualizationModeProperty = property(get_VirtualizationModeProperty, None)
-    IsVirtualizingProperty = property(get_IsVirtualizingProperty, None)
 class IWebView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebView'
@@ -17713,9 +18141,9 @@ class IWebView(ComPtr):
     def Navigate(self, source: win32more.Windows.Foundation.Uri) -> Void: ...
     @winrt_commethod(19)
     def NavigateToString(self, text: WinRT_String) -> Void: ...
-    Source = property(get_Source, put_Source)
     AllowedScriptNotifyUris = property(get_AllowedScriptNotifyUris, put_AllowedScriptNotifyUris)
     DataTransferPackage = property(get_DataTransferPackage, None)
+    Source = property(get_Source, put_Source)
 class IWebView2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebView2'
@@ -17798,8 +18226,8 @@ class IWebView2(ComPtr):
     def Focus(self, value: win32more.Windows.UI.Xaml.FocusState) -> Boolean: ...
     CanGoBack = property(get_CanGoBack, None)
     CanGoForward = property(get_CanGoForward, None)
-    DocumentTitle = property(get_DocumentTitle, None)
     DefaultBackgroundColor = property(get_DefaultBackgroundColor, put_DefaultBackgroundColor)
+    DocumentTitle = property(get_DocumentTitle, None)
 class IWebView3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebView3'
@@ -17837,8 +18265,8 @@ class IWebView4(ComPtr):
     def AddWebAllowedObject(self, name: WinRT_String, pObject: win32more.Windows.Win32.System.WinRT.IInspectable) -> Void: ...
     @winrt_commethod(16)
     def DeferredPermissionRequestById(self, id: UInt32) -> win32more.Windows.UI.Xaml.Controls.WebViewDeferredPermissionRequest: ...
-    ExecutionMode = property(get_ExecutionMode, None)
     DeferredPermissionRequests = property(get_DeferredPermissionRequests, None)
+    ExecutionMode = property(get_ExecutionMode, None)
     Settings = property(get_Settings, None)
 class IWebView5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -17860,10 +18288,10 @@ class IWebView5(ComPtr):
     def get_XYFocusDown(self) -> win32more.Windows.UI.Xaml.DependencyObject: ...
     @winrt_commethod(13)
     def put_XYFocusDown(self, value: win32more.Windows.UI.Xaml.DependencyObject) -> Void: ...
+    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
     XYFocusLeft = property(get_XYFocusLeft, put_XYFocusLeft)
     XYFocusRight = property(get_XYFocusRight, put_XYFocusRight)
     XYFocusUp = property(get_XYFocusUp, put_XYFocusUp)
-    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
 class IWebView6(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebView6'
@@ -17928,9 +18356,9 @@ class IWebViewDeferredPermissionRequest(ComPtr):
     def Allow(self) -> Void: ...
     @winrt_commethod(10)
     def Deny(self) -> Void: ...
-    Uri = property(get_Uri, None)
-    PermissionType = property(get_PermissionType, None)
     Id = property(get_Id, None)
+    PermissionType = property(get_PermissionType, None)
+    Uri = property(get_Uri, None)
 class IWebViewFactory4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewFactory4'
@@ -17959,8 +18387,8 @@ class IWebViewNavigationCompletedEventArgs(ComPtr):
     def get_IsSuccess(self) -> Boolean: ...
     @winrt_commethod(8)
     def get_WebErrorStatus(self) -> win32more.Windows.Web.WebErrorStatus: ...
-    Uri = property(get_Uri, None)
     IsSuccess = property(get_IsSuccess, None)
+    Uri = property(get_Uri, None)
     WebErrorStatus = property(get_WebErrorStatus, None)
 class IWebViewNavigationFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -17982,8 +18410,8 @@ class IWebViewNavigationStartingEventArgs(ComPtr):
     def get_Cancel(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_Cancel(self, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
     Cancel = property(get_Cancel, put_Cancel)
+    Uri = property(get_Uri, None)
 class IWebViewNewWindowRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewNewWindowRequestedEventArgs'
@@ -17996,9 +18424,9 @@ class IWebViewNewWindowRequestedEventArgs(ComPtr):
     def get_Handled(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_Handled(self, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
-    Referrer = property(get_Referrer, None)
     Handled = property(get_Handled, put_Handled)
+    Referrer = property(get_Referrer, None)
+    Uri = property(get_Uri, None)
 class IWebViewPermissionRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewPermissionRequest'
@@ -18017,10 +18445,10 @@ class IWebViewPermissionRequest(ComPtr):
     def Allow(self) -> Void: ...
     @winrt_commethod(12)
     def Deny(self) -> Void: ...
-    Uri = property(get_Uri, None)
-    PermissionType = property(get_PermissionType, None)
     Id = property(get_Id, None)
+    PermissionType = property(get_PermissionType, None)
     State = property(get_State, None)
+    Uri = property(get_Uri, None)
 class IWebViewPermissionRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewPermissionRequestedEventArgs'
@@ -18044,8 +18472,8 @@ class IWebViewSettings(ComPtr):
     def get_IsIndexedDBEnabled(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_IsIndexedDBEnabled(self, value: Boolean) -> Void: ...
-    IsJavaScriptEnabled = property(get_IsJavaScriptEnabled, put_IsJavaScriptEnabled)
     IsIndexedDBEnabled = property(get_IsIndexedDBEnabled, put_IsIndexedDBEnabled)
+    IsJavaScriptEnabled = property(get_IsJavaScriptEnabled, put_IsJavaScriptEnabled)
 class IWebViewStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewStatics'
@@ -18058,10 +18486,10 @@ class IWebViewStatics(ComPtr):
     def get_AllowedScriptNotifyUrisProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_DataTransferPackageProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    AnyScriptNotifyUri = property(get_AnyScriptNotifyUri, None)
-    SourceProperty = property(get_SourceProperty, None)
     AllowedScriptNotifyUrisProperty = property(get_AllowedScriptNotifyUrisProperty, None)
+    AnyScriptNotifyUri = property(get_AnyScriptNotifyUri, None)
     DataTransferPackageProperty = property(get_DataTransferPackageProperty, None)
+    SourceProperty = property(get_SourceProperty, None)
 class IWebViewStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewStatics2'
@@ -18076,8 +18504,8 @@ class IWebViewStatics2(ComPtr):
     def get_DefaultBackgroundColorProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CanGoBackProperty = property(get_CanGoBackProperty, None)
     CanGoForwardProperty = property(get_CanGoForwardProperty, None)
-    DocumentTitleProperty = property(get_DocumentTitleProperty, None)
     DefaultBackgroundColorProperty = property(get_DefaultBackgroundColorProperty, None)
+    DocumentTitleProperty = property(get_DocumentTitleProperty, None)
 class IWebViewStatics3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewStatics3'
@@ -18106,10 +18534,10 @@ class IWebViewStatics5(ComPtr):
     def get_XYFocusUpProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_XYFocusDownProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    XYFocusDownProperty = property(get_XYFocusDownProperty, None)
     XYFocusLeftProperty = property(get_XYFocusLeftProperty, None)
     XYFocusRightProperty = property(get_XYFocusRightProperty, None)
     XYFocusUpProperty = property(get_XYFocusUpProperty, None)
-    XYFocusDownProperty = property(get_XYFocusDownProperty, None)
 class IWebViewUnsupportedUriSchemeIdentifiedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewUnsupportedUriSchemeIdentifiedEventArgs'
@@ -18120,8 +18548,8 @@ class IWebViewUnsupportedUriSchemeIdentifiedEventArgs(ComPtr):
     def get_Handled(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_Handled(self, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
     Handled = property(get_Handled, put_Handled)
+    Uri = property(get_Uri, None)
 class IWebViewUnviewableContentIdentifiedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewUnviewableContentIdentifiedEventArgs'
@@ -18130,8 +18558,8 @@ class IWebViewUnviewableContentIdentifiedEventArgs(ComPtr):
     def get_Uri(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(7)
     def get_Referrer(self) -> win32more.Windows.Foundation.Uri: ...
-    Uri = property(get_Uri, None)
     Referrer = property(get_Referrer, None)
+    Uri = property(get_Uri, None)
 class IWebViewUnviewableContentIdentifiedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWebViewUnviewableContentIdentifiedEventArgs2'
@@ -18181,12 +18609,12 @@ class IWrapGrid(ComPtr):
     def get_MaximumRowsOrColumns(self) -> Int32: ...
     @winrt_commethod(17)
     def put_MaximumRowsOrColumns(self, value: Int32) -> Void: ...
-    ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    ItemHeight = property(get_ItemHeight, put_ItemHeight)
-    Orientation = property(get_Orientation, put_Orientation)
     HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
-    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
+    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    ItemWidth = property(get_ItemWidth, put_ItemWidth)
     MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
+    Orientation = property(get_Orientation, put_Orientation)
+    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
 class IWrapGridStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Controls.IWrapGridStatics'
@@ -18203,12 +18631,12 @@ class IWrapGridStatics(ComPtr):
     def get_VerticalChildrenAlignmentProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(11)
     def get_MaximumRowsOrColumnsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ItemWidthProperty = property(get_ItemWidthProperty, None)
-    ItemHeightProperty = property(get_ItemHeightProperty, None)
-    OrientationProperty = property(get_OrientationProperty, None)
     HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty, None)
-    VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty, None)
+    ItemHeightProperty = property(get_ItemHeightProperty, None)
+    ItemWidthProperty = property(get_ItemWidthProperty, None)
     MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty, None)
+    OrientationProperty = property(get_OrientationProperty, None)
+    VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty, None)
 class _IconElement_Meta_(ComPtr.__class__):
     pass
 class IconElement(ComPtr, metaclass=_IconElement_Meta_):
@@ -18243,6 +18671,13 @@ class IconSourceElement(ComPtr, metaclass=_IconSourceElement_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IIconSourceElement
     _classid_ = 'Windows.UI.Xaml.Controls.IconSourceElement'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.IconSourceElement.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IIconSourceElementFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.IconSourceElement: ...
     @winrt_mixinmethod
@@ -18259,6 +18694,13 @@ class Image(ComPtr, metaclass=_Image_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IImage
     _classid_ = 'Windows.UI.Xaml.Controls.Image'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Image.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.Image: ...
     @winrt_mixinmethod
@@ -18295,21 +18737,28 @@ class Image(ComPtr, metaclass=_Image_Meta_):
     def get_NineGridProperty(cls: win32more.Windows.UI.Xaml.Controls.IImageStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_PlayToSourceProperty(cls: win32more.Windows.UI.Xaml.Controls.IImageStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Source = property(get_Source, put_Source)
-    Stretch = property(get_Stretch, put_Stretch)
     NineGrid = property(get_NineGrid, put_NineGrid)
     PlayToSource = property(get_PlayToSource, None)
-    _Image_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
-    _Image_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
+    Source = property(get_Source, put_Source)
+    Stretch = property(get_Stretch, put_Stretch)
     _Image_Meta_.NineGridProperty = property(get_NineGridProperty.__wrapped__, None)
     _Image_Meta_.PlayToSourceProperty = property(get_PlayToSourceProperty.__wrapped__, None)
-IncrementalLoadingTrigger = Int32
-IncrementalLoadingTrigger_None: IncrementalLoadingTrigger = 0
-IncrementalLoadingTrigger_Edge: IncrementalLoadingTrigger = 1
+    _Image_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    _Image_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
+class IncrementalLoadingTrigger(Int32):  # enum
+    None_ = 0
+    Edge = 1
 class InkCanvas(ComPtr):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkCanvas
     _classid_ = 'Windows.UI.Xaml.Controls.InkCanvas'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkCanvas.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkCanvasFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkCanvas: ...
     @winrt_mixinmethod
@@ -18321,6 +18770,13 @@ class InkToolbar(ComPtr, metaclass=_InkToolbar_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbar
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbar'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbar.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbar: ...
     @winrt_mixinmethod
@@ -18405,42 +18861,56 @@ class InkToolbar(ComPtr, metaclass=_InkToolbar_Meta_):
     def get_IsRulerButtonCheckedProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TargetInkCanvasProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    InitialControls = property(get_InitialControls, put_InitialControls)
-    Children = property(get_Children, None)
     ActiveTool = property(get_ActiveTool, put_ActiveTool)
+    ButtonFlyoutPlacement = property(get_ButtonFlyoutPlacement, put_ButtonFlyoutPlacement)
+    Children = property(get_Children, None)
+    InitialControls = property(get_InitialControls, put_InitialControls)
     InkDrawingAttributes = property(get_InkDrawingAttributes, None)
     IsRulerButtonChecked = property(get_IsRulerButtonChecked, put_IsRulerButtonChecked)
-    TargetInkCanvas = property(get_TargetInkCanvas, put_TargetInkCanvas)
     IsStencilButtonChecked = property(get_IsStencilButtonChecked, put_IsStencilButtonChecked)
-    ButtonFlyoutPlacement = property(get_ButtonFlyoutPlacement, put_ButtonFlyoutPlacement)
     Orientation = property(get_Orientation, put_Orientation)
+    TargetInkCanvas = property(get_TargetInkCanvas, put_TargetInkCanvas)
     TargetInkPresenter = property(get_TargetInkPresenter, put_TargetInkPresenter)
-    _InkToolbar_Meta_.TargetInkPresenterProperty = property(get_TargetInkPresenterProperty.__wrapped__, None)
-    _InkToolbar_Meta_.IsStencilButtonCheckedProperty = property(get_IsStencilButtonCheckedProperty.__wrapped__, None)
-    _InkToolbar_Meta_.ButtonFlyoutPlacementProperty = property(get_ButtonFlyoutPlacementProperty.__wrapped__, None)
-    _InkToolbar_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _InkToolbar_Meta_.InitialControlsProperty = property(get_InitialControlsProperty.__wrapped__, None)
-    _InkToolbar_Meta_.ChildrenProperty = property(get_ChildrenProperty.__wrapped__, None)
     _InkToolbar_Meta_.ActiveToolProperty = property(get_ActiveToolProperty.__wrapped__, None)
+    _InkToolbar_Meta_.ButtonFlyoutPlacementProperty = property(get_ButtonFlyoutPlacementProperty.__wrapped__, None)
+    _InkToolbar_Meta_.ChildrenProperty = property(get_ChildrenProperty.__wrapped__, None)
+    _InkToolbar_Meta_.InitialControlsProperty = property(get_InitialControlsProperty.__wrapped__, None)
     _InkToolbar_Meta_.InkDrawingAttributesProperty = property(get_InkDrawingAttributesProperty.__wrapped__, None)
     _InkToolbar_Meta_.IsRulerButtonCheckedProperty = property(get_IsRulerButtonCheckedProperty.__wrapped__, None)
+    _InkToolbar_Meta_.IsStencilButtonCheckedProperty = property(get_IsStencilButtonCheckedProperty.__wrapped__, None)
+    _InkToolbar_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
     _InkToolbar_Meta_.TargetInkCanvasProperty = property(get_TargetInkCanvasProperty.__wrapped__, None)
+    _InkToolbar_Meta_.TargetInkPresenterProperty = property(get_TargetInkPresenterProperty.__wrapped__, None)
 class InkToolbarBallpointPenButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarPenButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarBallpointPenButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarBallpointPenButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarBallpointPenButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarBallpointPenButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarBallpointPenButton: ...
-InkToolbarButtonFlyoutPlacement = Int32
-InkToolbarButtonFlyoutPlacement_Auto: InkToolbarButtonFlyoutPlacement = 0
-InkToolbarButtonFlyoutPlacement_Top: InkToolbarButtonFlyoutPlacement = 1
-InkToolbarButtonFlyoutPlacement_Bottom: InkToolbarButtonFlyoutPlacement = 2
-InkToolbarButtonFlyoutPlacement_Left: InkToolbarButtonFlyoutPlacement = 3
-InkToolbarButtonFlyoutPlacement_Right: InkToolbarButtonFlyoutPlacement = 4
+class InkToolbarButtonFlyoutPlacement(Int32):  # enum
+    Auto = 0
+    Top = 1
+    Bottom = 2
+    Left = 3
+    Right = 4
 class InkToolbarCustomPen(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPen
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarCustomPen'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarCustomPen.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPenFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarCustomPen: ...
     @winrt_mixinmethod
@@ -18453,6 +18923,13 @@ class InkToolbarCustomPenButton(ComPtr, metaclass=_InkToolbarCustomPenButton_Met
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarPenButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPenButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarCustomPenButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarCustomPenButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPenButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarCustomPenButton: ...
     @winrt_mixinmethod
@@ -18467,14 +18944,21 @@ class InkToolbarCustomPenButton(ComPtr, metaclass=_InkToolbarCustomPenButton_Met
     def get_CustomPenProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPenButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ConfigurationContentProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomPenButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CustomPen = property(get_CustomPen, put_CustomPen)
     ConfigurationContent = property(get_ConfigurationContent, put_ConfigurationContent)
-    _InkToolbarCustomPenButton_Meta_.CustomPenProperty = property(get_CustomPenProperty.__wrapped__, None)
+    CustomPen = property(get_CustomPen, put_CustomPen)
     _InkToolbarCustomPenButton_Meta_.ConfigurationContentProperty = property(get_ConfigurationContentProperty.__wrapped__, None)
+    _InkToolbarCustomPenButton_Meta_.CustomPenProperty = property(get_CustomPenProperty.__wrapped__, None)
 class InkToolbarCustomToggleButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarToggleButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomToggleButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarCustomToggleButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarCustomToggleButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomToggleButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarCustomToggleButton: ...
 class _InkToolbarCustomToolButton_Meta_(ComPtr.__class__):
@@ -18483,6 +18967,13 @@ class InkToolbarCustomToolButton(ComPtr, metaclass=_InkToolbarCustomToolButton_M
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarToolButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomToolButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarCustomToolButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarCustomToolButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarCustomToolButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarCustomToolButton: ...
     @winrt_mixinmethod
@@ -18499,6 +18990,13 @@ class InkToolbarEraserButton(ComPtr, metaclass=_InkToolbarEraserButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarToolButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarEraserButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarEraserButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarEraserButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarEraserButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarEraserButton: ...
     @winrt_mixinmethod
@@ -18515,6 +19013,13 @@ class InkToolbarFlyoutItem(ComPtr, metaclass=_InkToolbarFlyoutItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ButtonBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarFlyoutItem
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarFlyoutItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarFlyoutItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarFlyoutItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarFlyoutItem: ...
     @winrt_mixinmethod
@@ -18537,30 +19042,44 @@ class InkToolbarFlyoutItem(ComPtr, metaclass=_InkToolbarFlyoutItem_Meta_):
     def get_KindProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarFlyoutItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsCheckedProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarFlyoutItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Kind = property(get_Kind, put_Kind)
     IsChecked = property(get_IsChecked, put_IsChecked)
-    _InkToolbarFlyoutItem_Meta_.KindProperty = property(get_KindProperty.__wrapped__, None)
+    Kind = property(get_Kind, put_Kind)
     _InkToolbarFlyoutItem_Meta_.IsCheckedProperty = property(get_IsCheckedProperty.__wrapped__, None)
-InkToolbarFlyoutItemKind = Int32
-InkToolbarFlyoutItemKind_Simple: InkToolbarFlyoutItemKind = 0
-InkToolbarFlyoutItemKind_Radio: InkToolbarFlyoutItemKind = 1
-InkToolbarFlyoutItemKind_Check: InkToolbarFlyoutItemKind = 2
-InkToolbarFlyoutItemKind_RadioCheck: InkToolbarFlyoutItemKind = 3
+    _InkToolbarFlyoutItem_Meta_.KindProperty = property(get_KindProperty.__wrapped__, None)
+class InkToolbarFlyoutItemKind(Int32):  # enum
+    Simple = 0
+    Radio = 1
+    Check = 2
+    RadioCheck = 3
 class InkToolbarHighlighterButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarPenButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarHighlighterButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarHighlighterButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarHighlighterButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarHighlighterButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarHighlighterButton: ...
-InkToolbarInitialControls = Int32
-InkToolbarInitialControls_All: InkToolbarInitialControls = 0
-InkToolbarInitialControls_None: InkToolbarInitialControls = 1
-InkToolbarInitialControls_PensOnly: InkToolbarInitialControls = 2
-InkToolbarInitialControls_AllExceptPens: InkToolbarInitialControls = 3
+class InkToolbarInitialControls(Int32):  # enum
+    All = 0
+    None_ = 1
+    PensOnly = 2
+    AllExceptPens = 3
 class InkToolbarIsStencilButtonCheckedChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarIsStencilButtonCheckedChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarIsStencilButtonCheckedChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarIsStencilButtonCheckedChangedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.InkToolbarIsStencilButtonCheckedChangedEventArgs: ...
     @winrt_mixinmethod
@@ -18583,11 +19102,11 @@ class InkToolbarMenuButton(ComPtr, metaclass=_InkToolbarMenuButton_Meta_):
     def put_IsExtensionGlyphShown(self: win32more.Windows.UI.Xaml.Controls.IInkToolbarMenuButton, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_IsExtensionGlyphShownProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarMenuButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    MenuKind = property(get_MenuKind, None)
     IsExtensionGlyphShown = property(get_IsExtensionGlyphShown, put_IsExtensionGlyphShown)
+    MenuKind = property(get_MenuKind, None)
     _InkToolbarMenuButton_Meta_.IsExtensionGlyphShownProperty = property(get_IsExtensionGlyphShownProperty.__wrapped__, None)
-InkToolbarMenuKind = Int32
-InkToolbarMenuKind_Stencil: InkToolbarMenuKind = 0
+class InkToolbarMenuKind(Int32):  # enum
+    Stencil = 0
 class _InkToolbarPenButton_Meta_(ComPtr.__class__):
     pass
 class InkToolbarPenButton(ComPtr, metaclass=_InkToolbarPenButton_Meta_):
@@ -18628,17 +19147,17 @@ class InkToolbarPenButton(ComPtr, metaclass=_InkToolbarPenButton_Meta_):
     def get_SelectedBrushIndexProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarPenButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SelectedStrokeWidthProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarPenButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Palette = property(get_Palette, put_Palette)
-    MinStrokeWidth = property(get_MinStrokeWidth, put_MinStrokeWidth)
     MaxStrokeWidth = property(get_MaxStrokeWidth, put_MaxStrokeWidth)
+    MinStrokeWidth = property(get_MinStrokeWidth, put_MinStrokeWidth)
+    Palette = property(get_Palette, put_Palette)
     SelectedBrush = property(get_SelectedBrush, None)
     SelectedBrushIndex = property(get_SelectedBrushIndex, put_SelectedBrushIndex)
     SelectedStrokeWidth = property(get_SelectedStrokeWidth, put_SelectedStrokeWidth)
-    _InkToolbarPenButton_Meta_.PaletteProperty = property(get_PaletteProperty.__wrapped__, None)
-    _InkToolbarPenButton_Meta_.MinStrokeWidthProperty = property(get_MinStrokeWidthProperty.__wrapped__, None)
     _InkToolbarPenButton_Meta_.MaxStrokeWidthProperty = property(get_MaxStrokeWidthProperty.__wrapped__, None)
-    _InkToolbarPenButton_Meta_.SelectedBrushProperty = property(get_SelectedBrushProperty.__wrapped__, None)
+    _InkToolbarPenButton_Meta_.MinStrokeWidthProperty = property(get_MinStrokeWidthProperty.__wrapped__, None)
+    _InkToolbarPenButton_Meta_.PaletteProperty = property(get_PaletteProperty.__wrapped__, None)
     _InkToolbarPenButton_Meta_.SelectedBrushIndexProperty = property(get_SelectedBrushIndexProperty.__wrapped__, None)
+    _InkToolbarPenButton_Meta_.SelectedBrushProperty = property(get_SelectedBrushProperty.__wrapped__, None)
     _InkToolbarPenButton_Meta_.SelectedStrokeWidthProperty = property(get_SelectedStrokeWidthProperty.__wrapped__, None)
 class _InkToolbarPenConfigurationControl_Meta_(ComPtr.__class__):
     pass
@@ -18646,6 +19165,13 @@ class InkToolbarPenConfigurationControl(ComPtr, metaclass=_InkToolbarPenConfigur
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarPenConfigurationControl
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarPenConfigurationControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarPenConfigurationControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarPenConfigurationControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarPenConfigurationControl: ...
     @winrt_mixinmethod
@@ -18658,6 +19184,13 @@ class InkToolbarPencilButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarPenButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarPencilButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarPencilButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarPencilButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarPencilButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarPencilButton: ...
 class _InkToolbarRulerButton_Meta_(ComPtr.__class__):
@@ -18666,6 +19199,13 @@ class InkToolbarRulerButton(ComPtr, metaclass=_InkToolbarRulerButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarToggleButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarRulerButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarRulerButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarRulerButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarRulerButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarRulerButton: ...
     @winrt_mixinmethod
@@ -18680,6 +19220,13 @@ class InkToolbarStencilButton(ComPtr, metaclass=_InkToolbarStencilButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.InkToolbarMenuButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarStencilButton
     _classid_ = 'Windows.UI.Xaml.Controls.InkToolbarStencilButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.InkToolbarStencilButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarStencilButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.InkToolbarStencilButton: ...
     @winrt_mixinmethod
@@ -18708,22 +19255,22 @@ class InkToolbarStencilButton(ComPtr, metaclass=_InkToolbarStencilButton_Meta_):
     def get_IsRulerItemVisibleProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarStencilButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsProtractorItemVisibleProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarStencilButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Ruler = property(get_Ruler, None)
-    Protractor = property(get_Protractor, None)
-    SelectedStencil = property(get_SelectedStencil, put_SelectedStencil)
-    IsRulerItemVisible = property(get_IsRulerItemVisible, put_IsRulerItemVisible)
     IsProtractorItemVisible = property(get_IsProtractorItemVisible, put_IsProtractorItemVisible)
-    _InkToolbarStencilButton_Meta_.RulerProperty = property(get_RulerProperty.__wrapped__, None)
-    _InkToolbarStencilButton_Meta_.ProtractorProperty = property(get_ProtractorProperty.__wrapped__, None)
-    _InkToolbarStencilButton_Meta_.SelectedStencilProperty = property(get_SelectedStencilProperty.__wrapped__, None)
-    _InkToolbarStencilButton_Meta_.IsRulerItemVisibleProperty = property(get_IsRulerItemVisibleProperty.__wrapped__, None)
+    IsRulerItemVisible = property(get_IsRulerItemVisible, put_IsRulerItemVisible)
+    Protractor = property(get_Protractor, None)
+    Ruler = property(get_Ruler, None)
+    SelectedStencil = property(get_SelectedStencil, put_SelectedStencil)
     _InkToolbarStencilButton_Meta_.IsProtractorItemVisibleProperty = property(get_IsProtractorItemVisibleProperty.__wrapped__, None)
-InkToolbarStencilKind = Int32
-InkToolbarStencilKind_Ruler: InkToolbarStencilKind = 0
-InkToolbarStencilKind_Protractor: InkToolbarStencilKind = 1
-InkToolbarToggle = Int32
-InkToolbarToggle_Ruler: InkToolbarToggle = 0
-InkToolbarToggle_Custom: InkToolbarToggle = 1
+    _InkToolbarStencilButton_Meta_.IsRulerItemVisibleProperty = property(get_IsRulerItemVisibleProperty.__wrapped__, None)
+    _InkToolbarStencilButton_Meta_.ProtractorProperty = property(get_ProtractorProperty.__wrapped__, None)
+    _InkToolbarStencilButton_Meta_.RulerProperty = property(get_RulerProperty.__wrapped__, None)
+    _InkToolbarStencilButton_Meta_.SelectedStencilProperty = property(get_SelectedStencilProperty.__wrapped__, None)
+class InkToolbarStencilKind(Int32):  # enum
+    Ruler = 0
+    Protractor = 1
+class InkToolbarToggle(Int32):  # enum
+    Ruler = 0
+    Custom = 1
 class InkToolbarToggleButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.CheckBox
     default_interface: win32more.Windows.UI.Xaml.Controls.IInkToolbarToggleButton
@@ -18731,13 +19278,13 @@ class InkToolbarToggleButton(ComPtr):
     @winrt_mixinmethod
     def get_ToggleKind(self: win32more.Windows.UI.Xaml.Controls.IInkToolbarToggleButton) -> win32more.Windows.UI.Xaml.Controls.InkToolbarToggle: ...
     ToggleKind = property(get_ToggleKind, None)
-InkToolbarTool = Int32
-InkToolbarTool_BallpointPen: InkToolbarTool = 0
-InkToolbarTool_Pencil: InkToolbarTool = 1
-InkToolbarTool_Highlighter: InkToolbarTool = 2
-InkToolbarTool_Eraser: InkToolbarTool = 3
-InkToolbarTool_CustomPen: InkToolbarTool = 4
-InkToolbarTool_CustomTool: InkToolbarTool = 5
+class InkToolbarTool(Int32):  # enum
+    BallpointPen = 0
+    Pencil = 1
+    Highlighter = 2
+    Eraser = 3
+    CustomPen = 4
+    CustomTool = 5
 class _InkToolbarToolButton_Meta_(ComPtr.__class__):
     pass
 class InkToolbarToolButton(ComPtr, metaclass=_InkToolbarToolButton_Meta_):
@@ -18752,8 +19299,8 @@ class InkToolbarToolButton(ComPtr, metaclass=_InkToolbarToolButton_Meta_):
     def put_IsExtensionGlyphShown(self: win32more.Windows.UI.Xaml.Controls.IInkToolbarToolButton, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_IsExtensionGlyphShownProperty(cls: win32more.Windows.UI.Xaml.Controls.IInkToolbarToolButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ToolKind = property(get_ToolKind, None)
     IsExtensionGlyphShown = property(get_IsExtensionGlyphShown, put_IsExtensionGlyphShown)
+    ToolKind = property(get_ToolKind, None)
     _InkToolbarToolButton_Meta_.IsExtensionGlyphShownProperty = property(get_IsExtensionGlyphShownProperty.__wrapped__, None)
 class IsTextTrimmedChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -18763,6 +19310,13 @@ class ItemClickEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemClickEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ItemClickEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemClickEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemClickEventArgs: ...
     @winrt_mixinmethod
@@ -18849,6 +19403,13 @@ class ItemsControl(ComPtr, metaclass=_ItemsControl_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsControl
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IItemsControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ItemsControl: ...
     @winrt_mixinmethod
@@ -18951,40 +19512,54 @@ class ItemsControl(ComPtr, metaclass=_ItemsControl_Meta_):
     def GetItemsOwner(cls: win32more.Windows.UI.Xaml.Controls.IItemsControlStatics, element: win32more.Windows.UI.Xaml.DependencyObject) -> win32more.Windows.UI.Xaml.Controls.ItemsControl: ...
     @winrt_classmethod
     def ItemsControlFromItemContainer(cls: win32more.Windows.UI.Xaml.Controls.IItemsControlStatics, container: win32more.Windows.UI.Xaml.DependencyObject) -> win32more.Windows.UI.Xaml.Controls.ItemsControl: ...
-    ItemsSource = property(get_ItemsSource, put_ItemsSource)
-    Items = property(get_Items, None)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
-    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
-    ItemsPanel = property(get_ItemsPanel, put_ItemsPanel)
     DisplayMemberPath = property(get_DisplayMemberPath, put_DisplayMemberPath)
-    ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
-    ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
-    ItemContainerGenerator = property(get_ItemContainerGenerator, None)
-    ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
     GroupStyle = property(get_GroupStyle, None)
     GroupStyleSelector = property(get_GroupStyleSelector, put_GroupStyleSelector)
     IsGrouping = property(get_IsGrouping, None)
+    ItemContainerGenerator = property(get_ItemContainerGenerator, None)
+    ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
+    ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
+    ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
+    Items = property(get_Items, None)
+    ItemsPanel = property(get_ItemsPanel, put_ItemsPanel)
     ItemsPanelRoot = property(get_ItemsPanelRoot, None)
-    _ItemsControl_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
-    _ItemsControl_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
-    _ItemsControl_Meta_.ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty.__wrapped__, None)
-    _ItemsControl_Meta_.ItemsPanelProperty = property(get_ItemsPanelProperty.__wrapped__, None)
+    ItemsSource = property(get_ItemsSource, put_ItemsSource)
     _ItemsControl_Meta_.DisplayMemberPathProperty = property(get_DisplayMemberPathProperty.__wrapped__, None)
+    _ItemsControl_Meta_.GroupStyleSelectorProperty = property(get_GroupStyleSelectorProperty.__wrapped__, None)
+    _ItemsControl_Meta_.IsGroupingProperty = property(get_IsGroupingProperty.__wrapped__, None)
     _ItemsControl_Meta_.ItemContainerStyleProperty = property(get_ItemContainerStyleProperty.__wrapped__, None)
     _ItemsControl_Meta_.ItemContainerStyleSelectorProperty = property(get_ItemContainerStyleSelectorProperty.__wrapped__, None)
     _ItemsControl_Meta_.ItemContainerTransitionsProperty = property(get_ItemContainerTransitionsProperty.__wrapped__, None)
-    _ItemsControl_Meta_.GroupStyleSelectorProperty = property(get_GroupStyleSelectorProperty.__wrapped__, None)
-    _ItemsControl_Meta_.IsGroupingProperty = property(get_IsGroupingProperty.__wrapped__, None)
+    _ItemsControl_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
+    _ItemsControl_Meta_.ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty.__wrapped__, None)
+    _ItemsControl_Meta_.ItemsPanelProperty = property(get_ItemsPanelProperty.__wrapped__, None)
+    _ItemsControl_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
 class ItemsPanelTemplate(ComPtr):
     extends: win32more.Windows.UI.Xaml.FrameworkTemplate
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsPanelTemplate
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsPanelTemplate'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsPanelTemplate.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemsPanelTemplate: ...
 class ItemsPickedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsPickedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsPickedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsPickedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemsPickedEventArgs: ...
     @winrt_mixinmethod
@@ -18999,6 +19574,13 @@ class ItemsPresenter(ComPtr, metaclass=_ItemsPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsPresenter.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemsPresenter: ...
     @winrt_mixinmethod
@@ -19059,15 +19641,15 @@ class ItemsPresenter(ComPtr, metaclass=_ItemsPresenter_Meta_):
     def get_HeaderTransitionsProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_PaddingProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    AreHorizontalSnapPointsRegular = property(get_AreHorizontalSnapPointsRegular, None)
+    AreVerticalSnapPointsRegular = property(get_AreVerticalSnapPointsRegular, None)
+    Footer = property(get_Footer, put_Footer)
+    FooterTemplate = property(get_FooterTemplate, put_FooterTemplate)
+    FooterTransitions = property(get_FooterTransitions, put_FooterTransitions)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
     HeaderTransitions = property(get_HeaderTransitions, put_HeaderTransitions)
     Padding = property(get_Padding, put_Padding)
-    Footer = property(get_Footer, put_Footer)
-    FooterTemplate = property(get_FooterTemplate, put_FooterTemplate)
-    FooterTransitions = property(get_FooterTransitions, put_FooterTransitions)
-    AreHorizontalSnapPointsRegular = property(get_AreHorizontalSnapPointsRegular, None)
-    AreVerticalSnapPointsRegular = property(get_AreVerticalSnapPointsRegular, None)
     _ItemsPresenter_Meta_.FooterProperty = property(get_FooterProperty.__wrapped__, None)
     _ItemsPresenter_Meta_.FooterTemplateProperty = property(get_FooterTemplateProperty.__wrapped__, None)
     _ItemsPresenter_Meta_.FooterTransitionsProperty = property(get_FooterTransitionsProperty.__wrapped__, None)
@@ -19081,6 +19663,13 @@ class ItemsStackPanel(ComPtr, metaclass=_ItemsStackPanel_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsStackPanel
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsStackPanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsStackPanel.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemsStackPanel: ...
     @winrt_mixinmethod
@@ -19127,32 +19716,39 @@ class ItemsStackPanel(ComPtr, metaclass=_ItemsStackPanel_Meta_):
     def get_GroupHeaderPlacementProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsStackPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CacheLengthProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsStackPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GroupPadding = property(get_GroupPadding, put_GroupPadding)
-    Orientation = property(get_Orientation, put_Orientation)
+    AreStickyGroupHeadersEnabled = property(get_AreStickyGroupHeadersEnabled, put_AreStickyGroupHeadersEnabled)
+    CacheLength = property(get_CacheLength, put_CacheLength)
     FirstCacheIndex = property(get_FirstCacheIndex, None)
     FirstVisibleIndex = property(get_FirstVisibleIndex, None)
-    LastVisibleIndex = property(get_LastVisibleIndex, None)
-    LastCacheIndex = property(get_LastCacheIndex, None)
-    ScrollingDirection = property(get_ScrollingDirection, None)
     GroupHeaderPlacement = property(get_GroupHeaderPlacement, put_GroupHeaderPlacement)
+    GroupPadding = property(get_GroupPadding, put_GroupPadding)
     ItemsUpdatingScrollMode = property(get_ItemsUpdatingScrollMode, put_ItemsUpdatingScrollMode)
-    CacheLength = property(get_CacheLength, put_CacheLength)
-    AreStickyGroupHeadersEnabled = property(get_AreStickyGroupHeadersEnabled, put_AreStickyGroupHeadersEnabled)
+    LastCacheIndex = property(get_LastCacheIndex, None)
+    LastVisibleIndex = property(get_LastVisibleIndex, None)
+    Orientation = property(get_Orientation, put_Orientation)
+    ScrollingDirection = property(get_ScrollingDirection, None)
     _ItemsStackPanel_Meta_.AreStickyGroupHeadersEnabledProperty = property(get_AreStickyGroupHeadersEnabledProperty.__wrapped__, None)
+    _ItemsStackPanel_Meta_.CacheLengthProperty = property(get_CacheLengthProperty.__wrapped__, None)
+    _ItemsStackPanel_Meta_.GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty.__wrapped__, None)
     _ItemsStackPanel_Meta_.GroupPaddingProperty = property(get_GroupPaddingProperty.__wrapped__, None)
     _ItemsStackPanel_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _ItemsStackPanel_Meta_.GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty.__wrapped__, None)
-    _ItemsStackPanel_Meta_.CacheLengthProperty = property(get_CacheLengthProperty.__wrapped__, None)
-ItemsUpdatingScrollMode = Int32
-ItemsUpdatingScrollMode_KeepItemsInView: ItemsUpdatingScrollMode = 0
-ItemsUpdatingScrollMode_KeepScrollOffset: ItemsUpdatingScrollMode = 1
-ItemsUpdatingScrollMode_KeepLastItemInView: ItemsUpdatingScrollMode = 2
+class ItemsUpdatingScrollMode(Int32):  # enum
+    KeepItemsInView = 0
+    KeepScrollOffset = 1
+    KeepLastItemInView = 2
 class _ItemsWrapGrid_Meta_(ComPtr.__class__):
     pass
 class ItemsWrapGrid(ComPtr, metaclass=_ItemsWrapGrid_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IItemsWrapGrid
     _classid_ = 'Windows.UI.Xaml.Controls.ItemsWrapGrid'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ItemsWrapGrid.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ItemsWrapGrid: ...
     @winrt_mixinmethod
@@ -19213,37 +19809,44 @@ class ItemsWrapGrid(ComPtr, metaclass=_ItemsWrapGrid_Meta_):
     def get_GroupHeaderPlacementProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsWrapGridStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CacheLengthProperty(cls: win32more.Windows.UI.Xaml.Controls.IItemsWrapGridStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GroupPadding = property(get_GroupPadding, put_GroupPadding)
-    Orientation = property(get_Orientation, put_Orientation)
-    MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
-    ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    AreStickyGroupHeadersEnabled = property(get_AreStickyGroupHeadersEnabled, put_AreStickyGroupHeadersEnabled)
+    CacheLength = property(get_CacheLength, put_CacheLength)
     FirstCacheIndex = property(get_FirstCacheIndex, None)
     FirstVisibleIndex = property(get_FirstVisibleIndex, None)
-    LastVisibleIndex = property(get_LastVisibleIndex, None)
-    LastCacheIndex = property(get_LastCacheIndex, None)
-    ScrollingDirection = property(get_ScrollingDirection, None)
     GroupHeaderPlacement = property(get_GroupHeaderPlacement, put_GroupHeaderPlacement)
-    CacheLength = property(get_CacheLength, put_CacheLength)
-    AreStickyGroupHeadersEnabled = property(get_AreStickyGroupHeadersEnabled, put_AreStickyGroupHeadersEnabled)
+    GroupPadding = property(get_GroupPadding, put_GroupPadding)
+    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    ItemWidth = property(get_ItemWidth, put_ItemWidth)
+    LastCacheIndex = property(get_LastCacheIndex, None)
+    LastVisibleIndex = property(get_LastVisibleIndex, None)
+    MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
+    Orientation = property(get_Orientation, put_Orientation)
+    ScrollingDirection = property(get_ScrollingDirection, None)
     _ItemsWrapGrid_Meta_.AreStickyGroupHeadersEnabledProperty = property(get_AreStickyGroupHeadersEnabledProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.GroupPaddingProperty = property(get_GroupPaddingProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.ItemWidthProperty = property(get_ItemWidthProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.ItemHeightProperty = property(get_ItemHeightProperty.__wrapped__, None)
-    _ItemsWrapGrid_Meta_.GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty.__wrapped__, None)
     _ItemsWrapGrid_Meta_.CacheLengthProperty = property(get_CacheLengthProperty.__wrapped__, None)
-LightDismissOverlayMode = Int32
-LightDismissOverlayMode_Auto: LightDismissOverlayMode = 0
-LightDismissOverlayMode_On: LightDismissOverlayMode = 1
-LightDismissOverlayMode_Off: LightDismissOverlayMode = 2
+    _ItemsWrapGrid_Meta_.GroupHeaderPlacementProperty = property(get_GroupHeaderPlacementProperty.__wrapped__, None)
+    _ItemsWrapGrid_Meta_.GroupPaddingProperty = property(get_GroupPaddingProperty.__wrapped__, None)
+    _ItemsWrapGrid_Meta_.ItemHeightProperty = property(get_ItemHeightProperty.__wrapped__, None)
+    _ItemsWrapGrid_Meta_.ItemWidthProperty = property(get_ItemWidthProperty.__wrapped__, None)
+    _ItemsWrapGrid_Meta_.MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty.__wrapped__, None)
+    _ItemsWrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+class LightDismissOverlayMode(Int32):  # enum
+    Auto = 0
+    On = 1
+    Off = 2
 class _ListBox_Meta_(ComPtr.__class__):
     pass
 class ListBox(ComPtr, metaclass=_ListBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.Selector
     default_interface: win32more.Windows.UI.Xaml.Controls.IListBox
     _classid_ = 'Windows.UI.Xaml.Controls.ListBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListBox: ...
     @winrt_mixinmethod
@@ -19267,12 +19870,19 @@ class ListBox(ComPtr, metaclass=_ListBox_Meta_):
     SelectedItems = property(get_SelectedItems, None)
     SelectionMode = property(get_SelectionMode, put_SelectionMode)
     SingleSelectionFollowsFocus = property(get_SingleSelectionFollowsFocus, put_SingleSelectionFollowsFocus)
-    _ListBox_Meta_.SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty.__wrapped__, None)
     _ListBox_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
+    _ListBox_Meta_.SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty.__wrapped__, None)
 class ListBoxItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.SelectorItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IListBoxItem
     _classid_ = 'Windows.UI.Xaml.Controls.ListBoxItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListBoxItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListBoxItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListBoxItem: ...
 class _ListPickerFlyout_Meta_(ComPtr.__class__):
@@ -19281,6 +19891,13 @@ class ListPickerFlyout(ComPtr, metaclass=_ListPickerFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.PickerFlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IListPickerFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.ListPickerFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListPickerFlyout.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ListPickerFlyout: ...
     @winrt_mixinmethod
@@ -19339,34 +19956,41 @@ class ListPickerFlyout(ComPtr, metaclass=_ListPickerFlyout_Meta_):
     def get_SelectedValueProperty(cls: win32more.Windows.UI.Xaml.Controls.IListPickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SelectedValuePathProperty(cls: win32more.Windows.UI.Xaml.Controls.IListPickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ItemsSource = property(get_ItemsSource, put_ItemsSource)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
     DisplayMemberPath = property(get_DisplayMemberPath, put_DisplayMemberPath)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemsSource = property(get_ItemsSource, put_ItemsSource)
     SelectedIndex = property(get_SelectedIndex, put_SelectedIndex)
     SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    SelectedItems = property(get_SelectedItems, None)
     SelectedValue = property(get_SelectedValue, put_SelectedValue)
     SelectedValuePath = property(get_SelectedValuePath, put_SelectedValuePath)
-    SelectedItems = property(get_SelectedItems, None)
-    _ListPickerFlyout_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
-    _ListPickerFlyout_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     _ListPickerFlyout_Meta_.DisplayMemberPathProperty = property(get_DisplayMemberPathProperty.__wrapped__, None)
-    _ListPickerFlyout_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
+    _ListPickerFlyout_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
+    _ListPickerFlyout_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
     _ListPickerFlyout_Meta_.SelectedIndexProperty = property(get_SelectedIndexProperty.__wrapped__, None)
     _ListPickerFlyout_Meta_.SelectedItemProperty = property(get_SelectedItemProperty.__wrapped__, None)
-    _ListPickerFlyout_Meta_.SelectedValueProperty = property(get_SelectedValueProperty.__wrapped__, None)
     _ListPickerFlyout_Meta_.SelectedValuePathProperty = property(get_SelectedValuePathProperty.__wrapped__, None)
+    _ListPickerFlyout_Meta_.SelectedValueProperty = property(get_SelectedValueProperty.__wrapped__, None)
+    _ListPickerFlyout_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
 class ListPickerFlyoutPresenter(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IListPickerFlyoutPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.ListPickerFlyoutPresenter'
-ListPickerFlyoutSelectionMode = Int32
-ListPickerFlyoutSelectionMode_Single: ListPickerFlyoutSelectionMode = 0
-ListPickerFlyoutSelectionMode_Multiple: ListPickerFlyoutSelectionMode = 1
+class ListPickerFlyoutSelectionMode(Int32):  # enum
+    Single = 0
+    Multiple = 1
 class ListView(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IListView
     _classid_ = 'Windows.UI.Xaml.Controls.ListView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListView: ...
 class _ListViewBase_Meta_(ComPtr.__class__):
@@ -19375,6 +19999,13 @@ class ListViewBase(ComPtr, metaclass=_ListViewBase_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.Selector
     default_interface: win32more.Windows.UI.Xaml.Controls.IListViewBase
     _classid_ = 'Windows.UI.Xaml.Controls.ListViewBase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListViewBase.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListViewBaseFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListViewBase: ...
     @winrt_mixinmethod
@@ -19565,50 +20196,50 @@ class ListViewBase(ComPtr, metaclass=_ListViewBase_Meta_):
     def get_HeaderTemplateProperty(cls: win32more.Windows.UI.Xaml.Controls.IListViewBaseStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_HeaderTransitionsProperty(cls: win32more.Windows.UI.Xaml.Controls.IListViewBaseStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SelectedItems = property(get_SelectedItems, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
-    IsSwipeEnabled = property(get_IsSwipeEnabled, put_IsSwipeEnabled)
     CanDragItems = property(get_CanDragItems, put_CanDragItems)
     CanReorderItems = property(get_CanReorderItems, put_CanReorderItems)
-    IsItemClickEnabled = property(get_IsItemClickEnabled, put_IsItemClickEnabled)
     DataFetchSize = property(get_DataFetchSize, put_DataFetchSize)
-    IncrementalLoadingThreshold = property(get_IncrementalLoadingThreshold, put_IncrementalLoadingThreshold)
-    IncrementalLoadingTrigger = property(get_IncrementalLoadingTrigger, put_IncrementalLoadingTrigger)
-    Header = property(get_Header, put_Header)
-    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    HeaderTransitions = property(get_HeaderTransitions, put_HeaderTransitions)
-    ShowsScrollingPlaceholders = property(get_ShowsScrollingPlaceholders, put_ShowsScrollingPlaceholders)
     Footer = property(get_Footer, put_Footer)
     FooterTemplate = property(get_FooterTemplate, put_FooterTemplate)
     FooterTransitions = property(get_FooterTransitions, put_FooterTransitions)
-    ReorderMode = property(get_ReorderMode, put_ReorderMode)
-    SelectedRanges = property(get_SelectedRanges, None)
-    IsMultiSelectCheckBoxEnabled = property(get_IsMultiSelectCheckBoxEnabled, put_IsMultiSelectCheckBoxEnabled)
-    SingleSelectionFollowsFocus = property(get_SingleSelectionFollowsFocus, put_SingleSelectionFollowsFocus)
-    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
+    Header = property(get_Header, put_Header)
+    HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    HeaderTransitions = property(get_HeaderTransitions, put_HeaderTransitions)
+    IncrementalLoadingThreshold = property(get_IncrementalLoadingThreshold, put_IncrementalLoadingThreshold)
+    IncrementalLoadingTrigger = property(get_IncrementalLoadingTrigger, put_IncrementalLoadingTrigger)
     IsActiveView = property(get_IsActiveView, put_IsActiveView)
+    IsItemClickEnabled = property(get_IsItemClickEnabled, put_IsItemClickEnabled)
+    IsMultiSelectCheckBoxEnabled = property(get_IsMultiSelectCheckBoxEnabled, put_IsMultiSelectCheckBoxEnabled)
+    IsSwipeEnabled = property(get_IsSwipeEnabled, put_IsSwipeEnabled)
     IsZoomedInView = property(get_IsZoomedInView, put_IsZoomedInView)
-    _ListViewBase_Meta_.SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IsMultiSelectCheckBoxEnabledProperty = property(get_IsMultiSelectCheckBoxEnabledProperty.__wrapped__, None)
-    _ListViewBase_Meta_.ReorderModeProperty = property(get_ReorderModeProperty.__wrapped__, None)
-    _ListViewBase_Meta_.ShowsScrollingPlaceholdersProperty = property(get_ShowsScrollingPlaceholdersProperty.__wrapped__, None)
+    ReorderMode = property(get_ReorderMode, put_ReorderMode)
+    SelectedItems = property(get_SelectedItems, None)
+    SelectedRanges = property(get_SelectedRanges, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
+    SemanticZoomOwner = property(get_SemanticZoomOwner, put_SemanticZoomOwner)
+    ShowsScrollingPlaceholders = property(get_ShowsScrollingPlaceholders, put_ShowsScrollingPlaceholders)
+    SingleSelectionFollowsFocus = property(get_SingleSelectionFollowsFocus, put_SingleSelectionFollowsFocus)
+    _ListViewBase_Meta_.CanDragItemsProperty = property(get_CanDragItemsProperty.__wrapped__, None)
+    _ListViewBase_Meta_.CanReorderItemsProperty = property(get_CanReorderItemsProperty.__wrapped__, None)
+    _ListViewBase_Meta_.DataFetchSizeProperty = property(get_DataFetchSizeProperty.__wrapped__, None)
     _ListViewBase_Meta_.FooterProperty = property(get_FooterProperty.__wrapped__, None)
     _ListViewBase_Meta_.FooterTemplateProperty = property(get_FooterTemplateProperty.__wrapped__, None)
     _ListViewBase_Meta_.FooterTransitionsProperty = property(get_FooterTransitionsProperty.__wrapped__, None)
-    _ListViewBase_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IsSwipeEnabledProperty = property(get_IsSwipeEnabledProperty.__wrapped__, None)
-    _ListViewBase_Meta_.CanDragItemsProperty = property(get_CanDragItemsProperty.__wrapped__, None)
-    _ListViewBase_Meta_.CanReorderItemsProperty = property(get_CanReorderItemsProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IsItemClickEnabledProperty = property(get_IsItemClickEnabledProperty.__wrapped__, None)
-    _ListViewBase_Meta_.DataFetchSizeProperty = property(get_DataFetchSizeProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IncrementalLoadingThresholdProperty = property(get_IncrementalLoadingThresholdProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IncrementalLoadingTriggerProperty = property(get_IncrementalLoadingTriggerProperty.__wrapped__, None)
-    _ListViewBase_Meta_.SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IsActiveViewProperty = property(get_IsActiveViewProperty.__wrapped__, None)
-    _ListViewBase_Meta_.IsZoomedInViewProperty = property(get_IsZoomedInViewProperty.__wrapped__, None)
     _ListViewBase_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _ListViewBase_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
     _ListViewBase_Meta_.HeaderTransitionsProperty = property(get_HeaderTransitionsProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IncrementalLoadingThresholdProperty = property(get_IncrementalLoadingThresholdProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IncrementalLoadingTriggerProperty = property(get_IncrementalLoadingTriggerProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IsActiveViewProperty = property(get_IsActiveViewProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IsItemClickEnabledProperty = property(get_IsItemClickEnabledProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IsMultiSelectCheckBoxEnabledProperty = property(get_IsMultiSelectCheckBoxEnabledProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IsSwipeEnabledProperty = property(get_IsSwipeEnabledProperty.__wrapped__, None)
+    _ListViewBase_Meta_.IsZoomedInViewProperty = property(get_IsZoomedInViewProperty.__wrapped__, None)
+    _ListViewBase_Meta_.ReorderModeProperty = property(get_ReorderModeProperty.__wrapped__, None)
+    _ListViewBase_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
+    _ListViewBase_Meta_.SemanticZoomOwnerProperty = property(get_SemanticZoomOwnerProperty.__wrapped__, None)
+    _ListViewBase_Meta_.ShowsScrollingPlaceholdersProperty = property(get_ShowsScrollingPlaceholdersProperty.__wrapped__, None)
+    _ListViewBase_Meta_.SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty.__wrapped__, None)
 class ListViewBaseHeaderItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IListViewBaseHeaderItem
@@ -19617,12 +20248,26 @@ class ListViewHeaderItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewBaseHeaderItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IListViewHeaderItem
     _classid_ = 'Windows.UI.Xaml.Controls.ListViewHeaderItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListViewHeaderItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListViewHeaderItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListViewHeaderItem: ...
 class ListViewItem(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.SelectorItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IListViewItem
     _classid_ = 'Windows.UI.Xaml.Controls.ListViewItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ListViewItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IListViewItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ListViewItem: ...
     @winrt_mixinmethod
@@ -19644,20 +20289,27 @@ class ListViewPersistenceHelper(ComPtr):
     def GetRelativeScrollPosition(cls: win32more.Windows.UI.Xaml.Controls.IListViewPersistenceHelperStatics, listViewBase: win32more.Windows.UI.Xaml.Controls.ListViewBase, itemToKeyHandler: win32more.Windows.UI.Xaml.Controls.ListViewItemToKeyHandler) -> WinRT_String: ...
     @winrt_classmethod
     def SetRelativeScrollPositionAsync(cls: win32more.Windows.UI.Xaml.Controls.IListViewPersistenceHelperStatics, listViewBase: win32more.Windows.UI.Xaml.Controls.ListViewBase, relativeScrollPosition: WinRT_String, keyToItemHandler: win32more.Windows.UI.Xaml.Controls.ListViewKeyToItemHandler) -> win32more.Windows.Foundation.IAsyncAction: ...
-ListViewReorderMode = Int32
-ListViewReorderMode_Disabled: ListViewReorderMode = 0
-ListViewReorderMode_Enabled: ListViewReorderMode = 1
-ListViewSelectionMode = Int32
-ListViewSelectionMode_None: ListViewSelectionMode = 0
-ListViewSelectionMode_Single: ListViewSelectionMode = 1
-ListViewSelectionMode_Multiple: ListViewSelectionMode = 2
-ListViewSelectionMode_Extended: ListViewSelectionMode = 3
+class ListViewReorderMode(Int32):  # enum
+    Disabled = 0
+    Enabled = 1
+class ListViewSelectionMode(Int32):  # enum
+    None_ = 0
+    Single = 1
+    Multiple = 2
+    Extended = 3
 class _MediaElement_Meta_(ComPtr.__class__):
     pass
 class MediaElement(ComPtr, metaclass=_MediaElement_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IMediaElement
     _classid_ = 'Windows.UI.Xaml.Controls.MediaElement'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MediaElement.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.MediaElement: ...
     @winrt_mixinmethod
@@ -19924,88 +20576,95 @@ class MediaElement(ComPtr, metaclass=_MediaElement_Meta_):
     def get_IsStereo3DVideoProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaElementStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ActualStereo3DVideoPackingModeProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaElementStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PosterSource = property(get_PosterSource, put_PosterSource)
-    Source = property(get_Source, put_Source)
-    IsMuted = property(get_IsMuted, put_IsMuted)
-    IsAudioOnly = property(get_IsAudioOnly, None)
-    AutoPlay = property(get_AutoPlay, put_AutoPlay)
-    Volume = property(get_Volume, put_Volume)
-    Balance = property(get_Balance, put_Balance)
-    NaturalVideoHeight = property(get_NaturalVideoHeight, None)
-    NaturalVideoWidth = property(get_NaturalVideoWidth, None)
-    NaturalDuration = property(get_NaturalDuration, None)
-    Position = property(get_Position, put_Position)
-    DownloadProgress = property(get_DownloadProgress, None)
-    BufferingProgress = property(get_BufferingProgress, None)
-    DownloadProgressOffset = property(get_DownloadProgressOffset, None)
-    CurrentState = property(get_CurrentState, None)
-    Markers = property(get_Markers, None)
-    CanSeek = property(get_CanSeek, None)
-    CanPause = property(get_CanPause, None)
-    AudioStreamCount = property(get_AudioStreamCount, None)
-    AudioStreamIndex = property(get_AudioStreamIndex, put_AudioStreamIndex)
-    PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
-    IsLooping = property(get_IsLooping, put_IsLooping)
-    PlayToSource = property(get_PlayToSource, None)
-    DefaultPlaybackRate = property(get_DefaultPlaybackRate, put_DefaultPlaybackRate)
-    AspectRatioWidth = property(get_AspectRatioWidth, None)
-    AspectRatioHeight = property(get_AspectRatioHeight, None)
-    RealTimePlayback = property(get_RealTimePlayback, put_RealTimePlayback)
-    AudioCategory = property(get_AudioCategory, put_AudioCategory)
-    AudioDeviceType = property(get_AudioDeviceType, put_AudioDeviceType)
-    ProtectionManager = property(get_ProtectionManager, put_ProtectionManager)
-    Stereo3DVideoPackingMode = property(get_Stereo3DVideoPackingMode, put_Stereo3DVideoPackingMode)
-    Stereo3DVideoRenderMode = property(get_Stereo3DVideoRenderMode, put_Stereo3DVideoRenderMode)
-    IsStereo3DVideo = property(get_IsStereo3DVideo, None)
     ActualStereo3DVideoPackingMode = property(get_ActualStereo3DVideoPackingMode, None)
     AreTransportControlsEnabled = property(get_AreTransportControlsEnabled, put_AreTransportControlsEnabled)
-    Stretch = property(get_Stretch, put_Stretch)
+    AspectRatioHeight = property(get_AspectRatioHeight, None)
+    AspectRatioWidth = property(get_AspectRatioWidth, None)
+    AudioCategory = property(get_AudioCategory, put_AudioCategory)
+    AudioDeviceType = property(get_AudioDeviceType, put_AudioDeviceType)
+    AudioStreamCount = property(get_AudioStreamCount, None)
+    AudioStreamIndex = property(get_AudioStreamIndex, put_AudioStreamIndex)
+    AutoPlay = property(get_AutoPlay, put_AutoPlay)
+    Balance = property(get_Balance, put_Balance)
+    BufferingProgress = property(get_BufferingProgress, None)
+    CanPause = property(get_CanPause, None)
+    CanSeek = property(get_CanSeek, None)
+    CurrentState = property(get_CurrentState, None)
+    DefaultPlaybackRate = property(get_DefaultPlaybackRate, put_DefaultPlaybackRate)
+    DownloadProgress = property(get_DownloadProgress, None)
+    DownloadProgressOffset = property(get_DownloadProgressOffset, None)
+    IsAudioOnly = property(get_IsAudioOnly, None)
     IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
+    IsLooping = property(get_IsLooping, put_IsLooping)
+    IsMuted = property(get_IsMuted, put_IsMuted)
+    IsStereo3DVideo = property(get_IsStereo3DVideo, None)
+    Markers = property(get_Markers, None)
+    NaturalDuration = property(get_NaturalDuration, None)
+    NaturalVideoHeight = property(get_NaturalVideoHeight, None)
+    NaturalVideoWidth = property(get_NaturalVideoWidth, None)
     PlayToPreferredSourceUri = property(get_PlayToPreferredSourceUri, put_PlayToPreferredSourceUri)
+    PlayToSource = property(get_PlayToSource, None)
+    PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
+    Position = property(get_Position, put_Position)
+    PosterSource = property(get_PosterSource, put_PosterSource)
+    ProtectionManager = property(get_ProtectionManager, put_ProtectionManager)
+    RealTimePlayback = property(get_RealTimePlayback, put_RealTimePlayback)
+    Source = property(get_Source, put_Source)
+    Stereo3DVideoPackingMode = property(get_Stereo3DVideoPackingMode, put_Stereo3DVideoPackingMode)
+    Stereo3DVideoRenderMode = property(get_Stereo3DVideoRenderMode, put_Stereo3DVideoRenderMode)
+    Stretch = property(get_Stretch, put_Stretch)
     TransportControls = property(get_TransportControls, put_TransportControls)
+    Volume = property(get_Volume, put_Volume)
+    _MediaElement_Meta_.ActualStereo3DVideoPackingModeProperty = property(get_ActualStereo3DVideoPackingModeProperty.__wrapped__, None)
     _MediaElement_Meta_.AreTransportControlsEnabledProperty = property(get_AreTransportControlsEnabledProperty.__wrapped__, None)
-    _MediaElement_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
-    _MediaElement_Meta_.IsFullWindowProperty = property(get_IsFullWindowProperty.__wrapped__, None)
-    _MediaElement_Meta_.PlayToPreferredSourceUriProperty = property(get_PlayToPreferredSourceUriProperty.__wrapped__, None)
-    _MediaElement_Meta_.PosterSourceProperty = property(get_PosterSourceProperty.__wrapped__, None)
-    _MediaElement_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
-    _MediaElement_Meta_.IsMutedProperty = property(get_IsMutedProperty.__wrapped__, None)
-    _MediaElement_Meta_.IsAudioOnlyProperty = property(get_IsAudioOnlyProperty.__wrapped__, None)
-    _MediaElement_Meta_.AutoPlayProperty = property(get_AutoPlayProperty.__wrapped__, None)
-    _MediaElement_Meta_.VolumeProperty = property(get_VolumeProperty.__wrapped__, None)
-    _MediaElement_Meta_.BalanceProperty = property(get_BalanceProperty.__wrapped__, None)
-    _MediaElement_Meta_.NaturalVideoHeightProperty = property(get_NaturalVideoHeightProperty.__wrapped__, None)
-    _MediaElement_Meta_.NaturalVideoWidthProperty = property(get_NaturalVideoWidthProperty.__wrapped__, None)
-    _MediaElement_Meta_.NaturalDurationProperty = property(get_NaturalDurationProperty.__wrapped__, None)
-    _MediaElement_Meta_.PositionProperty = property(get_PositionProperty.__wrapped__, None)
-    _MediaElement_Meta_.DownloadProgressProperty = property(get_DownloadProgressProperty.__wrapped__, None)
-    _MediaElement_Meta_.BufferingProgressProperty = property(get_BufferingProgressProperty.__wrapped__, None)
-    _MediaElement_Meta_.DownloadProgressOffsetProperty = property(get_DownloadProgressOffsetProperty.__wrapped__, None)
-    _MediaElement_Meta_.CurrentStateProperty = property(get_CurrentStateProperty.__wrapped__, None)
-    _MediaElement_Meta_.CanSeekProperty = property(get_CanSeekProperty.__wrapped__, None)
-    _MediaElement_Meta_.CanPauseProperty = property(get_CanPauseProperty.__wrapped__, None)
-    _MediaElement_Meta_.AudioStreamCountProperty = property(get_AudioStreamCountProperty.__wrapped__, None)
-    _MediaElement_Meta_.AudioStreamIndexProperty = property(get_AudioStreamIndexProperty.__wrapped__, None)
-    _MediaElement_Meta_.PlaybackRateProperty = property(get_PlaybackRateProperty.__wrapped__, None)
-    _MediaElement_Meta_.IsLoopingProperty = property(get_IsLoopingProperty.__wrapped__, None)
-    _MediaElement_Meta_.PlayToSourceProperty = property(get_PlayToSourceProperty.__wrapped__, None)
-    _MediaElement_Meta_.DefaultPlaybackRateProperty = property(get_DefaultPlaybackRateProperty.__wrapped__, None)
-    _MediaElement_Meta_.AspectRatioWidthProperty = property(get_AspectRatioWidthProperty.__wrapped__, None)
     _MediaElement_Meta_.AspectRatioHeightProperty = property(get_AspectRatioHeightProperty.__wrapped__, None)
-    _MediaElement_Meta_.RealTimePlaybackProperty = property(get_RealTimePlaybackProperty.__wrapped__, None)
+    _MediaElement_Meta_.AspectRatioWidthProperty = property(get_AspectRatioWidthProperty.__wrapped__, None)
     _MediaElement_Meta_.AudioCategoryProperty = property(get_AudioCategoryProperty.__wrapped__, None)
     _MediaElement_Meta_.AudioDeviceTypeProperty = property(get_AudioDeviceTypeProperty.__wrapped__, None)
+    _MediaElement_Meta_.AudioStreamCountProperty = property(get_AudioStreamCountProperty.__wrapped__, None)
+    _MediaElement_Meta_.AudioStreamIndexProperty = property(get_AudioStreamIndexProperty.__wrapped__, None)
+    _MediaElement_Meta_.AutoPlayProperty = property(get_AutoPlayProperty.__wrapped__, None)
+    _MediaElement_Meta_.BalanceProperty = property(get_BalanceProperty.__wrapped__, None)
+    _MediaElement_Meta_.BufferingProgressProperty = property(get_BufferingProgressProperty.__wrapped__, None)
+    _MediaElement_Meta_.CanPauseProperty = property(get_CanPauseProperty.__wrapped__, None)
+    _MediaElement_Meta_.CanSeekProperty = property(get_CanSeekProperty.__wrapped__, None)
+    _MediaElement_Meta_.CurrentStateProperty = property(get_CurrentStateProperty.__wrapped__, None)
+    _MediaElement_Meta_.DefaultPlaybackRateProperty = property(get_DefaultPlaybackRateProperty.__wrapped__, None)
+    _MediaElement_Meta_.DownloadProgressOffsetProperty = property(get_DownloadProgressOffsetProperty.__wrapped__, None)
+    _MediaElement_Meta_.DownloadProgressProperty = property(get_DownloadProgressProperty.__wrapped__, None)
+    _MediaElement_Meta_.IsAudioOnlyProperty = property(get_IsAudioOnlyProperty.__wrapped__, None)
+    _MediaElement_Meta_.IsFullWindowProperty = property(get_IsFullWindowProperty.__wrapped__, None)
+    _MediaElement_Meta_.IsLoopingProperty = property(get_IsLoopingProperty.__wrapped__, None)
+    _MediaElement_Meta_.IsMutedProperty = property(get_IsMutedProperty.__wrapped__, None)
+    _MediaElement_Meta_.IsStereo3DVideoProperty = property(get_IsStereo3DVideoProperty.__wrapped__, None)
+    _MediaElement_Meta_.NaturalDurationProperty = property(get_NaturalDurationProperty.__wrapped__, None)
+    _MediaElement_Meta_.NaturalVideoHeightProperty = property(get_NaturalVideoHeightProperty.__wrapped__, None)
+    _MediaElement_Meta_.NaturalVideoWidthProperty = property(get_NaturalVideoWidthProperty.__wrapped__, None)
+    _MediaElement_Meta_.PlayToPreferredSourceUriProperty = property(get_PlayToPreferredSourceUriProperty.__wrapped__, None)
+    _MediaElement_Meta_.PlayToSourceProperty = property(get_PlayToSourceProperty.__wrapped__, None)
+    _MediaElement_Meta_.PlaybackRateProperty = property(get_PlaybackRateProperty.__wrapped__, None)
+    _MediaElement_Meta_.PositionProperty = property(get_PositionProperty.__wrapped__, None)
+    _MediaElement_Meta_.PosterSourceProperty = property(get_PosterSourceProperty.__wrapped__, None)
     _MediaElement_Meta_.ProtectionManagerProperty = property(get_ProtectionManagerProperty.__wrapped__, None)
+    _MediaElement_Meta_.RealTimePlaybackProperty = property(get_RealTimePlaybackProperty.__wrapped__, None)
+    _MediaElement_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
     _MediaElement_Meta_.Stereo3DVideoPackingModeProperty = property(get_Stereo3DVideoPackingModeProperty.__wrapped__, None)
     _MediaElement_Meta_.Stereo3DVideoRenderModeProperty = property(get_Stereo3DVideoRenderModeProperty.__wrapped__, None)
-    _MediaElement_Meta_.IsStereo3DVideoProperty = property(get_IsStereo3DVideoProperty.__wrapped__, None)
-    _MediaElement_Meta_.ActualStereo3DVideoPackingModeProperty = property(get_ActualStereo3DVideoPackingModeProperty.__wrapped__, None)
+    _MediaElement_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
+    _MediaElement_Meta_.VolumeProperty = property(get_VolumeProperty.__wrapped__, None)
 class _MediaPlayerElement_Meta_(ComPtr.__class__):
     pass
 class MediaPlayerElement(ComPtr, metaclass=_MediaPlayerElement_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IMediaPlayerElement
     _classid_ = 'Windows.UI.Xaml.Controls.MediaPlayerElement'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MediaPlayerElement.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerElementFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MediaPlayerElement: ...
     @winrt_mixinmethod
@@ -20054,27 +20713,34 @@ class MediaPlayerElement(ComPtr, metaclass=_MediaPlayerElement_Meta_):
     def get_IsFullWindowProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerElementStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MediaPlayerProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerElementStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Source = property(get_Source, put_Source)
-    TransportControls = property(get_TransportControls, put_TransportControls)
     AreTransportControlsEnabled = property(get_AreTransportControlsEnabled, put_AreTransportControlsEnabled)
-    PosterSource = property(get_PosterSource, put_PosterSource)
-    Stretch = property(get_Stretch, put_Stretch)
     AutoPlay = property(get_AutoPlay, put_AutoPlay)
     IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
     MediaPlayer = property(get_MediaPlayer, None)
-    _MediaPlayerElement_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    PosterSource = property(get_PosterSource, put_PosterSource)
+    Source = property(get_Source, put_Source)
+    Stretch = property(get_Stretch, put_Stretch)
+    TransportControls = property(get_TransportControls, put_TransportControls)
     _MediaPlayerElement_Meta_.AreTransportControlsEnabledProperty = property(get_AreTransportControlsEnabledProperty.__wrapped__, None)
-    _MediaPlayerElement_Meta_.PosterSourceProperty = property(get_PosterSourceProperty.__wrapped__, None)
-    _MediaPlayerElement_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
     _MediaPlayerElement_Meta_.AutoPlayProperty = property(get_AutoPlayProperty.__wrapped__, None)
     _MediaPlayerElement_Meta_.IsFullWindowProperty = property(get_IsFullWindowProperty.__wrapped__, None)
     _MediaPlayerElement_Meta_.MediaPlayerProperty = property(get_MediaPlayerProperty.__wrapped__, None)
+    _MediaPlayerElement_Meta_.PosterSourceProperty = property(get_PosterSourceProperty.__wrapped__, None)
+    _MediaPlayerElement_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    _MediaPlayerElement_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
 class _MediaPlayerPresenter_Meta_(ComPtr.__class__):
     pass
 class MediaPlayerPresenter(ComPtr, metaclass=_MediaPlayerPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IMediaPlayerPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.MediaPlayerPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MediaPlayerPresenter.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerPresenterFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MediaPlayerPresenter: ...
     @winrt_mixinmethod
@@ -20095,18 +20761,25 @@ class MediaPlayerPresenter(ComPtr, metaclass=_MediaPlayerPresenter_Meta_):
     def get_StretchProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsFullWindowProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaPlayerPresenterStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
     MediaPlayer = property(get_MediaPlayer, put_MediaPlayer)
     Stretch = property(get_Stretch, put_Stretch)
-    IsFullWindow = property(get_IsFullWindow, put_IsFullWindow)
+    _MediaPlayerPresenter_Meta_.IsFullWindowProperty = property(get_IsFullWindowProperty.__wrapped__, None)
     _MediaPlayerPresenter_Meta_.MediaPlayerProperty = property(get_MediaPlayerProperty.__wrapped__, None)
     _MediaPlayerPresenter_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
-    _MediaPlayerPresenter_Meta_.IsFullWindowProperty = property(get_IsFullWindowProperty.__wrapped__, None)
 class _MediaTransportControls_Meta_(ComPtr.__class__):
     pass
 class MediaTransportControls(ComPtr, metaclass=_MediaTransportControls_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IMediaTransportControls
     _classid_ = 'Windows.UI.Xaml.Controls.MediaTransportControls'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MediaTransportControls.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMediaTransportControlsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MediaTransportControls: ...
     @winrt_mixinmethod
@@ -20291,64 +20964,64 @@ class MediaTransportControls(ComPtr, metaclass=_MediaTransportControls_Meta_):
     def get_IsSeekEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaTransportControlsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsCompactProperty(cls: win32more.Windows.UI.Xaml.Controls.IMediaTransportControlsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsFullWindowButtonVisible = property(get_IsFullWindowButtonVisible, put_IsFullWindowButtonVisible)
-    IsFullWindowEnabled = property(get_IsFullWindowEnabled, put_IsFullWindowEnabled)
-    IsZoomButtonVisible = property(get_IsZoomButtonVisible, put_IsZoomButtonVisible)
-    IsZoomEnabled = property(get_IsZoomEnabled, put_IsZoomEnabled)
+    FastPlayFallbackBehaviour = property(get_FastPlayFallbackBehaviour, put_FastPlayFallbackBehaviour)
+    IsCompact = property(get_IsCompact, put_IsCompact)
+    IsCompactOverlayButtonVisible = property(get_IsCompactOverlayButtonVisible, put_IsCompactOverlayButtonVisible)
+    IsCompactOverlayEnabled = property(get_IsCompactOverlayEnabled, put_IsCompactOverlayEnabled)
     IsFastForwardButtonVisible = property(get_IsFastForwardButtonVisible, put_IsFastForwardButtonVisible)
     IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
     IsFastRewindButtonVisible = property(get_IsFastRewindButtonVisible, put_IsFastRewindButtonVisible)
     IsFastRewindEnabled = property(get_IsFastRewindEnabled, put_IsFastRewindEnabled)
+    IsFullWindowButtonVisible = property(get_IsFullWindowButtonVisible, put_IsFullWindowButtonVisible)
+    IsFullWindowEnabled = property(get_IsFullWindowEnabled, put_IsFullWindowEnabled)
+    IsNextTrackButtonVisible = property(get_IsNextTrackButtonVisible, put_IsNextTrackButtonVisible)
+    IsPlaybackRateButtonVisible = property(get_IsPlaybackRateButtonVisible, put_IsPlaybackRateButtonVisible)
+    IsPlaybackRateEnabled = property(get_IsPlaybackRateEnabled, put_IsPlaybackRateEnabled)
+    IsPreviousTrackButtonVisible = property(get_IsPreviousTrackButtonVisible, put_IsPreviousTrackButtonVisible)
+    IsRepeatButtonVisible = property(get_IsRepeatButtonVisible, put_IsRepeatButtonVisible)
+    IsRepeatEnabled = property(get_IsRepeatEnabled, put_IsRepeatEnabled)
+    IsSeekBarVisible = property(get_IsSeekBarVisible, put_IsSeekBarVisible)
+    IsSeekEnabled = property(get_IsSeekEnabled, put_IsSeekEnabled)
+    IsSkipBackwardButtonVisible = property(get_IsSkipBackwardButtonVisible, put_IsSkipBackwardButtonVisible)
+    IsSkipBackwardEnabled = property(get_IsSkipBackwardEnabled, put_IsSkipBackwardEnabled)
+    IsSkipForwardButtonVisible = property(get_IsSkipForwardButtonVisible, put_IsSkipForwardButtonVisible)
+    IsSkipForwardEnabled = property(get_IsSkipForwardEnabled, put_IsSkipForwardEnabled)
     IsStopButtonVisible = property(get_IsStopButtonVisible, put_IsStopButtonVisible)
     IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
     IsVolumeButtonVisible = property(get_IsVolumeButtonVisible, put_IsVolumeButtonVisible)
     IsVolumeEnabled = property(get_IsVolumeEnabled, put_IsVolumeEnabled)
-    IsPlaybackRateButtonVisible = property(get_IsPlaybackRateButtonVisible, put_IsPlaybackRateButtonVisible)
-    IsPlaybackRateEnabled = property(get_IsPlaybackRateEnabled, put_IsPlaybackRateEnabled)
-    IsSeekBarVisible = property(get_IsSeekBarVisible, put_IsSeekBarVisible)
-    IsSeekEnabled = property(get_IsSeekEnabled, put_IsSeekEnabled)
-    IsCompact = property(get_IsCompact, put_IsCompact)
-    IsSkipForwardButtonVisible = property(get_IsSkipForwardButtonVisible, put_IsSkipForwardButtonVisible)
-    IsSkipForwardEnabled = property(get_IsSkipForwardEnabled, put_IsSkipForwardEnabled)
-    IsSkipBackwardButtonVisible = property(get_IsSkipBackwardButtonVisible, put_IsSkipBackwardButtonVisible)
-    IsSkipBackwardEnabled = property(get_IsSkipBackwardEnabled, put_IsSkipBackwardEnabled)
-    IsNextTrackButtonVisible = property(get_IsNextTrackButtonVisible, put_IsNextTrackButtonVisible)
-    IsPreviousTrackButtonVisible = property(get_IsPreviousTrackButtonVisible, put_IsPreviousTrackButtonVisible)
-    FastPlayFallbackBehaviour = property(get_FastPlayFallbackBehaviour, put_FastPlayFallbackBehaviour)
+    IsZoomButtonVisible = property(get_IsZoomButtonVisible, put_IsZoomButtonVisible)
+    IsZoomEnabled = property(get_IsZoomEnabled, put_IsZoomEnabled)
     ShowAndHideAutomatically = property(get_ShowAndHideAutomatically, put_ShowAndHideAutomatically)
-    IsRepeatEnabled = property(get_IsRepeatEnabled, put_IsRepeatEnabled)
-    IsRepeatButtonVisible = property(get_IsRepeatButtonVisible, put_IsRepeatButtonVisible)
-    IsCompactOverlayButtonVisible = property(get_IsCompactOverlayButtonVisible, put_IsCompactOverlayButtonVisible)
-    IsCompactOverlayEnabled = property(get_IsCompactOverlayEnabled, put_IsCompactOverlayEnabled)
+    _MediaTransportControls_Meta_.FastPlayFallbackBehaviourProperty = property(get_FastPlayFallbackBehaviourProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsCompactOverlayButtonVisibleProperty = property(get_IsCompactOverlayButtonVisibleProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsCompactOverlayEnabledProperty = property(get_IsCompactOverlayEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.ShowAndHideAutomaticallyProperty = property(get_ShowAndHideAutomaticallyProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsRepeatEnabledProperty = property(get_IsRepeatEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsRepeatButtonVisibleProperty = property(get_IsRepeatButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSkipForwardButtonVisibleProperty = property(get_IsSkipForwardButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSkipForwardEnabledProperty = property(get_IsSkipForwardEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSkipBackwardButtonVisibleProperty = property(get_IsSkipBackwardButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSkipBackwardEnabledProperty = property(get_IsSkipBackwardEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsNextTrackButtonVisibleProperty = property(get_IsNextTrackButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsPreviousTrackButtonVisibleProperty = property(get_IsPreviousTrackButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.FastPlayFallbackBehaviourProperty = property(get_FastPlayFallbackBehaviourProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsFullWindowButtonVisibleProperty = property(get_IsFullWindowButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsFullWindowEnabledProperty = property(get_IsFullWindowEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsZoomButtonVisibleProperty = property(get_IsZoomButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsZoomEnabledProperty = property(get_IsZoomEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsFastForwardButtonVisibleProperty = property(get_IsFastForwardButtonVisibleProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsFastForwardEnabledProperty = property(get_IsFastForwardEnabledProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsFastRewindButtonVisibleProperty = property(get_IsFastRewindButtonVisibleProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsFastRewindEnabledProperty = property(get_IsFastRewindEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsFullWindowButtonVisibleProperty = property(get_IsFullWindowButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsFullWindowEnabledProperty = property(get_IsFullWindowEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsNextTrackButtonVisibleProperty = property(get_IsNextTrackButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsPlaybackRateButtonVisibleProperty = property(get_IsPlaybackRateButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsPlaybackRateEnabledProperty = property(get_IsPlaybackRateEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsPreviousTrackButtonVisibleProperty = property(get_IsPreviousTrackButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsRepeatButtonVisibleProperty = property(get_IsRepeatButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsRepeatEnabledProperty = property(get_IsRepeatEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSeekBarVisibleProperty = property(get_IsSeekBarVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSeekEnabledProperty = property(get_IsSeekEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSkipBackwardButtonVisibleProperty = property(get_IsSkipBackwardButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSkipBackwardEnabledProperty = property(get_IsSkipBackwardEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSkipForwardButtonVisibleProperty = property(get_IsSkipForwardButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsSkipForwardEnabledProperty = property(get_IsSkipForwardEnabledProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsStopButtonVisibleProperty = property(get_IsStopButtonVisibleProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsStopEnabledProperty = property(get_IsStopEnabledProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsVolumeButtonVisibleProperty = property(get_IsVolumeButtonVisibleProperty.__wrapped__, None)
     _MediaTransportControls_Meta_.IsVolumeEnabledProperty = property(get_IsVolumeEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsPlaybackRateButtonVisibleProperty = property(get_IsPlaybackRateButtonVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsPlaybackRateEnabledProperty = property(get_IsPlaybackRateEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSeekBarVisibleProperty = property(get_IsSeekBarVisibleProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsSeekEnabledProperty = property(get_IsSeekEnabledProperty.__wrapped__, None)
-    _MediaTransportControls_Meta_.IsCompactProperty = property(get_IsCompactProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsZoomButtonVisibleProperty = property(get_IsZoomButtonVisibleProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.IsZoomEnabledProperty = property(get_IsZoomEnabledProperty.__wrapped__, None)
+    _MediaTransportControls_Meta_.ShowAndHideAutomaticallyProperty = property(get_ShowAndHideAutomaticallyProperty.__wrapped__, None)
 class _MediaTransportControlsHelper_Meta_(ComPtr.__class__):
     pass
 class MediaTransportControlsHelper(ComPtr, metaclass=_MediaTransportControlsHelper_Meta_):
@@ -20368,6 +21041,13 @@ class MenuBar(ComPtr, metaclass=_MenuBar_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuBar
     _classid_ = 'Windows.UI.Xaml.Controls.MenuBar'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuBar.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuBarFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuBar: ...
     @winrt_mixinmethod
@@ -20382,6 +21062,13 @@ class MenuBarItem(ComPtr, metaclass=_MenuBarItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuBarItem
     _classid_ = 'Windows.UI.Xaml.Controls.MenuBarItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuBarItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuBarItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuBarItem: ...
     @winrt_mixinmethod
@@ -20394,14 +21081,21 @@ class MenuBarItem(ComPtr, metaclass=_MenuBarItem_Meta_):
     def get_TitleProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuBarItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ItemsProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuBarItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Title = property(get_Title, put_Title)
     Items = property(get_Items, None)
-    _MenuBarItem_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
+    Title = property(get_Title, put_Title)
     _MenuBarItem_Meta_.ItemsProperty = property(get_ItemsProperty.__wrapped__, None)
+    _MenuBarItem_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
 class MenuBarItemFlyout(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.MenuFlyout
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuBarItemFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.MenuBarItemFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuBarItemFlyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuBarItemFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuBarItemFlyout: ...
 class _MenuFlyout_Meta_(ComPtr.__class__):
@@ -20410,6 +21104,13 @@ class MenuFlyout(ComPtr, metaclass=_MenuFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.FlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.MenuFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuFlyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuFlyout: ...
     @winrt_mixinmethod
@@ -20431,6 +21132,13 @@ class MenuFlyoutItem(ComPtr, metaclass=_MenuFlyoutItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.MenuFlyoutItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutItem
     _classid_ = 'Windows.UI.Xaml.Controls.MenuFlyoutItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuFlyoutItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuFlyoutItem: ...
     @winrt_mixinmethod
@@ -20469,17 +21177,17 @@ class MenuFlyoutItem(ComPtr, metaclass=_MenuFlyoutItem_Meta_):
     def get_CommandProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CommandParameterProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Text = property(get_Text, put_Text)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
     Icon = property(get_Icon, put_Icon)
     KeyboardAcceleratorTextOverride = property(get_KeyboardAcceleratorTextOverride, put_KeyboardAcceleratorTextOverride)
     TemplateSettings = property(get_TemplateSettings, None)
-    _MenuFlyoutItem_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
-    _MenuFlyoutItem_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
-    _MenuFlyoutItem_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
-    _MenuFlyoutItem_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
+    Text = property(get_Text, put_Text)
     _MenuFlyoutItem_Meta_.CommandParameterProperty = property(get_CommandParameterProperty.__wrapped__, None)
+    _MenuFlyoutItem_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
+    _MenuFlyoutItem_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
+    _MenuFlyoutItem_Meta_.KeyboardAcceleratorTextOverrideProperty = property(get_KeyboardAcceleratorTextOverrideProperty.__wrapped__, None)
+    _MenuFlyoutItem_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
 class MenuFlyoutItemBase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutItemBase
@@ -20490,6 +21198,13 @@ class MenuFlyoutPresenter(ComPtr, metaclass=_MenuFlyoutPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ItemsControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.MenuFlyoutPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuFlyoutPresenter.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutPresenterFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuFlyoutPresenter: ...
     @winrt_mixinmethod
@@ -20500,13 +21215,20 @@ class MenuFlyoutPresenter(ComPtr, metaclass=_MenuFlyoutPresenter_Meta_):
     def put_IsDefaultShadowEnabled(self: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutPresenter3, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_IsDefaultShadowEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutPresenterStatics3) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TemplateSettings = property(get_TemplateSettings, None)
     IsDefaultShadowEnabled = property(get_IsDefaultShadowEnabled, put_IsDefaultShadowEnabled)
+    TemplateSettings = property(get_TemplateSettings, None)
     _MenuFlyoutPresenter_Meta_.IsDefaultShadowEnabledProperty = property(get_IsDefaultShadowEnabledProperty.__wrapped__, None)
 class MenuFlyoutSeparator(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.MenuFlyoutItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutSeparator
     _classid_ = 'Windows.UI.Xaml.Controls.MenuFlyoutSeparator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuFlyoutSeparator.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutSeparatorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.MenuFlyoutSeparator: ...
 class _MenuFlyoutSubItem_Meta_(ComPtr.__class__):
@@ -20515,6 +21237,13 @@ class MenuFlyoutSubItem(ComPtr, metaclass=_MenuFlyoutSubItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.MenuFlyoutItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutSubItem
     _classid_ = 'Windows.UI.Xaml.Controls.MenuFlyoutSubItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.MenuFlyoutSubItem.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.MenuFlyoutSubItem: ...
     @winrt_mixinmethod
@@ -20531,9 +21260,9 @@ class MenuFlyoutSubItem(ComPtr, metaclass=_MenuFlyoutSubItem_Meta_):
     def get_IconProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutSubItemStatics2) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TextProperty(cls: win32more.Windows.UI.Xaml.Controls.IMenuFlyoutSubItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Icon = property(get_Icon, put_Icon)
     Items = property(get_Items, None)
     Text = property(get_Text, put_Text)
-    Icon = property(get_Icon, put_Icon)
     _MenuFlyoutSubItem_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
     _MenuFlyoutSubItem_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
 class _NavigationView_Meta_(ComPtr.__class__):
@@ -20542,6 +21271,13 @@ class NavigationView(ComPtr, metaclass=_NavigationView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationView
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationView: ...
     @winrt_mixinmethod
@@ -20776,86 +21512,86 @@ class NavigationView(ComPtr, metaclass=_NavigationView_Meta_):
     def get_MenuItemContainerStyleProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MenuItemContainerStyleSelectorProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
+    AlwaysShowHeader = property(get_AlwaysShowHeader, put_AlwaysShowHeader)
+    AutoSuggestBox = property(get_AutoSuggestBox, put_AutoSuggestBox)
     CompactModeThresholdWidth = property(get_CompactModeThresholdWidth, put_CompactModeThresholdWidth)
+    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
+    ContentOverlay = property(get_ContentOverlay, put_ContentOverlay)
+    DisplayMode = property(get_DisplayMode, None)
     ExpandedModeThresholdWidth = property(get_ExpandedModeThresholdWidth, put_ExpandedModeThresholdWidth)
-    PaneFooter = property(get_PaneFooter, put_PaneFooter)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    DisplayMode = property(get_DisplayMode, None)
-    IsSettingsVisible = property(get_IsSettingsVisible, put_IsSettingsVisible)
-    IsPaneToggleButtonVisible = property(get_IsPaneToggleButtonVisible, put_IsPaneToggleButtonVisible)
-    AlwaysShowHeader = property(get_AlwaysShowHeader, put_AlwaysShowHeader)
-    CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
-    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
-    PaneToggleButtonStyle = property(get_PaneToggleButtonStyle, put_PaneToggleButtonStyle)
-    SelectedItem = property(get_SelectedItem, put_SelectedItem)
-    MenuItems = property(get_MenuItems, None)
-    MenuItemsSource = property(get_MenuItemsSource, put_MenuItemsSource)
-    SettingsItem = property(get_SettingsItem, None)
-    AutoSuggestBox = property(get_AutoSuggestBox, put_AutoSuggestBox)
-    MenuItemTemplate = property(get_MenuItemTemplate, put_MenuItemTemplate)
-    MenuItemTemplateSelector = property(get_MenuItemTemplateSelector, put_MenuItemTemplateSelector)
-    MenuItemContainerStyle = property(get_MenuItemContainerStyle, put_MenuItemContainerStyle)
-    MenuItemContainerStyleSelector = property(get_MenuItemContainerStyleSelector, put_MenuItemContainerStyleSelector)
     IsBackButtonVisible = property(get_IsBackButtonVisible, put_IsBackButtonVisible)
     IsBackEnabled = property(get_IsBackEnabled, put_IsBackEnabled)
-    PaneTitle = property(get_PaneTitle, put_PaneTitle)
-    PaneDisplayMode = property(get_PaneDisplayMode, put_PaneDisplayMode)
-    PaneHeader = property(get_PaneHeader, put_PaneHeader)
-    PaneCustomContent = property(get_PaneCustomContent, put_PaneCustomContent)
-    ContentOverlay = property(get_ContentOverlay, put_ContentOverlay)
+    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
+    IsPaneToggleButtonVisible = property(get_IsPaneToggleButtonVisible, put_IsPaneToggleButtonVisible)
     IsPaneVisible = property(get_IsPaneVisible, put_IsPaneVisible)
-    SelectionFollowsFocus = property(get_SelectionFollowsFocus, put_SelectionFollowsFocus)
-    TemplateSettings = property(get_TemplateSettings, None)
-    ShoulderNavigationEnabled = property(get_ShoulderNavigationEnabled, put_ShoulderNavigationEnabled)
+    IsSettingsVisible = property(get_IsSettingsVisible, put_IsSettingsVisible)
+    MenuItemContainerStyle = property(get_MenuItemContainerStyle, put_MenuItemContainerStyle)
+    MenuItemContainerStyleSelector = property(get_MenuItemContainerStyleSelector, put_MenuItemContainerStyleSelector)
+    MenuItemTemplate = property(get_MenuItemTemplate, put_MenuItemTemplate)
+    MenuItemTemplateSelector = property(get_MenuItemTemplateSelector, put_MenuItemTemplateSelector)
+    MenuItems = property(get_MenuItems, None)
+    MenuItemsSource = property(get_MenuItemsSource, put_MenuItemsSource)
+    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
     OverflowLabelMode = property(get_OverflowLabelMode, put_OverflowLabelMode)
-    _NavigationView_Meta_.PaneDisplayModeProperty = property(get_PaneDisplayModeProperty.__wrapped__, None)
-    _NavigationView_Meta_.PaneHeaderProperty = property(get_PaneHeaderProperty.__wrapped__, None)
-    _NavigationView_Meta_.PaneCustomContentProperty = property(get_PaneCustomContentProperty.__wrapped__, None)
-    _NavigationView_Meta_.ContentOverlayProperty = property(get_ContentOverlayProperty.__wrapped__, None)
-    _NavigationView_Meta_.IsPaneVisibleProperty = property(get_IsPaneVisibleProperty.__wrapped__, None)
-    _NavigationView_Meta_.SelectionFollowsFocusProperty = property(get_SelectionFollowsFocusProperty.__wrapped__, None)
-    _NavigationView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
-    _NavigationView_Meta_.ShoulderNavigationEnabledProperty = property(get_ShoulderNavigationEnabledProperty.__wrapped__, None)
-    _NavigationView_Meta_.OverflowLabelModeProperty = property(get_OverflowLabelModeProperty.__wrapped__, None)
-    _NavigationView_Meta_.IsBackButtonVisibleProperty = property(get_IsBackButtonVisibleProperty.__wrapped__, None)
-    _NavigationView_Meta_.IsBackEnabledProperty = property(get_IsBackEnabledProperty.__wrapped__, None)
-    _NavigationView_Meta_.PaneTitleProperty = property(get_PaneTitleProperty.__wrapped__, None)
-    _NavigationView_Meta_.IsPaneOpenProperty = property(get_IsPaneOpenProperty.__wrapped__, None)
+    PaneCustomContent = property(get_PaneCustomContent, put_PaneCustomContent)
+    PaneDisplayMode = property(get_PaneDisplayMode, put_PaneDisplayMode)
+    PaneFooter = property(get_PaneFooter, put_PaneFooter)
+    PaneHeader = property(get_PaneHeader, put_PaneHeader)
+    PaneTitle = property(get_PaneTitle, put_PaneTitle)
+    PaneToggleButtonStyle = property(get_PaneToggleButtonStyle, put_PaneToggleButtonStyle)
+    SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    SelectionFollowsFocus = property(get_SelectionFollowsFocus, put_SelectionFollowsFocus)
+    SettingsItem = property(get_SettingsItem, None)
+    ShoulderNavigationEnabled = property(get_ShoulderNavigationEnabled, put_ShoulderNavigationEnabled)
+    TemplateSettings = property(get_TemplateSettings, None)
+    _NavigationView_Meta_.AlwaysShowHeaderProperty = property(get_AlwaysShowHeaderProperty.__wrapped__, None)
+    _NavigationView_Meta_.AutoSuggestBoxProperty = property(get_AutoSuggestBoxProperty.__wrapped__, None)
     _NavigationView_Meta_.CompactModeThresholdWidthProperty = property(get_CompactModeThresholdWidthProperty.__wrapped__, None)
+    _NavigationView_Meta_.CompactPaneLengthProperty = property(get_CompactPaneLengthProperty.__wrapped__, None)
+    _NavigationView_Meta_.ContentOverlayProperty = property(get_ContentOverlayProperty.__wrapped__, None)
+    _NavigationView_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
     _NavigationView_Meta_.ExpandedModeThresholdWidthProperty = property(get_ExpandedModeThresholdWidthProperty.__wrapped__, None)
-    _NavigationView_Meta_.PaneFooterProperty = property(get_PaneFooterProperty.__wrapped__, None)
     _NavigationView_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _NavigationView_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _NavigationView_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
-    _NavigationView_Meta_.IsSettingsVisibleProperty = property(get_IsSettingsVisibleProperty.__wrapped__, None)
+    _NavigationView_Meta_.IsBackButtonVisibleProperty = property(get_IsBackButtonVisibleProperty.__wrapped__, None)
+    _NavigationView_Meta_.IsBackEnabledProperty = property(get_IsBackEnabledProperty.__wrapped__, None)
+    _NavigationView_Meta_.IsPaneOpenProperty = property(get_IsPaneOpenProperty.__wrapped__, None)
     _NavigationView_Meta_.IsPaneToggleButtonVisibleProperty = property(get_IsPaneToggleButtonVisibleProperty.__wrapped__, None)
-    _NavigationView_Meta_.AlwaysShowHeaderProperty = property(get_AlwaysShowHeaderProperty.__wrapped__, None)
-    _NavigationView_Meta_.CompactPaneLengthProperty = property(get_CompactPaneLengthProperty.__wrapped__, None)
-    _NavigationView_Meta_.OpenPaneLengthProperty = property(get_OpenPaneLengthProperty.__wrapped__, None)
-    _NavigationView_Meta_.PaneToggleButtonStyleProperty = property(get_PaneToggleButtonStyleProperty.__wrapped__, None)
-    _NavigationView_Meta_.MenuItemsProperty = property(get_MenuItemsProperty.__wrapped__, None)
-    _NavigationView_Meta_.MenuItemsSourceProperty = property(get_MenuItemsSourceProperty.__wrapped__, None)
-    _NavigationView_Meta_.SelectedItemProperty = property(get_SelectedItemProperty.__wrapped__, None)
-    _NavigationView_Meta_.SettingsItemProperty = property(get_SettingsItemProperty.__wrapped__, None)
-    _NavigationView_Meta_.AutoSuggestBoxProperty = property(get_AutoSuggestBoxProperty.__wrapped__, None)
-    _NavigationView_Meta_.MenuItemTemplateProperty = property(get_MenuItemTemplateProperty.__wrapped__, None)
-    _NavigationView_Meta_.MenuItemTemplateSelectorProperty = property(get_MenuItemTemplateSelectorProperty.__wrapped__, None)
+    _NavigationView_Meta_.IsPaneVisibleProperty = property(get_IsPaneVisibleProperty.__wrapped__, None)
+    _NavigationView_Meta_.IsSettingsVisibleProperty = property(get_IsSettingsVisibleProperty.__wrapped__, None)
     _NavigationView_Meta_.MenuItemContainerStyleProperty = property(get_MenuItemContainerStyleProperty.__wrapped__, None)
     _NavigationView_Meta_.MenuItemContainerStyleSelectorProperty = property(get_MenuItemContainerStyleSelectorProperty.__wrapped__, None)
-NavigationViewBackButtonVisible = Int32
-NavigationViewBackButtonVisible_Collapsed: NavigationViewBackButtonVisible = 0
-NavigationViewBackButtonVisible_Visible: NavigationViewBackButtonVisible = 1
-NavigationViewBackButtonVisible_Auto: NavigationViewBackButtonVisible = 2
+    _NavigationView_Meta_.MenuItemTemplateProperty = property(get_MenuItemTemplateProperty.__wrapped__, None)
+    _NavigationView_Meta_.MenuItemTemplateSelectorProperty = property(get_MenuItemTemplateSelectorProperty.__wrapped__, None)
+    _NavigationView_Meta_.MenuItemsProperty = property(get_MenuItemsProperty.__wrapped__, None)
+    _NavigationView_Meta_.MenuItemsSourceProperty = property(get_MenuItemsSourceProperty.__wrapped__, None)
+    _NavigationView_Meta_.OpenPaneLengthProperty = property(get_OpenPaneLengthProperty.__wrapped__, None)
+    _NavigationView_Meta_.OverflowLabelModeProperty = property(get_OverflowLabelModeProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneCustomContentProperty = property(get_PaneCustomContentProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneDisplayModeProperty = property(get_PaneDisplayModeProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneFooterProperty = property(get_PaneFooterProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneHeaderProperty = property(get_PaneHeaderProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneTitleProperty = property(get_PaneTitleProperty.__wrapped__, None)
+    _NavigationView_Meta_.PaneToggleButtonStyleProperty = property(get_PaneToggleButtonStyleProperty.__wrapped__, None)
+    _NavigationView_Meta_.SelectedItemProperty = property(get_SelectedItemProperty.__wrapped__, None)
+    _NavigationView_Meta_.SelectionFollowsFocusProperty = property(get_SelectionFollowsFocusProperty.__wrapped__, None)
+    _NavigationView_Meta_.SettingsItemProperty = property(get_SettingsItemProperty.__wrapped__, None)
+    _NavigationView_Meta_.ShoulderNavigationEnabledProperty = property(get_ShoulderNavigationEnabledProperty.__wrapped__, None)
+    _NavigationView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
+class NavigationViewBackButtonVisible(Int32):  # enum
+    Collapsed = 0
+    Visible = 1
+    Auto = 2
 class NavigationViewBackRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewBackRequestedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs'
-NavigationViewDisplayMode = Int32
-NavigationViewDisplayMode_Minimal: NavigationViewDisplayMode = 0
-NavigationViewDisplayMode_Compact: NavigationViewDisplayMode = 1
-NavigationViewDisplayMode_Expanded: NavigationViewDisplayMode = 2
+class NavigationViewDisplayMode(Int32):  # enum
+    Minimal = 0
+    Compact = 1
+    Expanded = 2
 class NavigationViewDisplayModeChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewDisplayModeChangedEventArgs
@@ -20869,6 +21605,13 @@ class NavigationViewItem(ComPtr, metaclass=_NavigationViewItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.NavigationViewItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewItem
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItem: ...
     @winrt_mixinmethod
@@ -20887,12 +21630,12 @@ class NavigationViewItem(ComPtr, metaclass=_NavigationViewItem_Meta_):
     def get_IconProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CompactPaneLengthProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Icon = property(get_Icon, put_Icon)
     CompactPaneLength = property(get_CompactPaneLength, None)
+    Icon = property(get_Icon, put_Icon)
     SelectsOnInvoked = property(get_SelectsOnInvoked, put_SelectsOnInvoked)
-    _NavigationViewItem_Meta_.SelectsOnInvokedProperty = property(get_SelectsOnInvokedProperty.__wrapped__, None)
-    _NavigationViewItem_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
     _NavigationViewItem_Meta_.CompactPaneLengthProperty = property(get_CompactPaneLengthProperty.__wrapped__, None)
+    _NavigationViewItem_Meta_.IconProperty = property(get_IconProperty.__wrapped__, None)
+    _NavigationViewItem_Meta_.SelectsOnInvokedProperty = property(get_SelectsOnInvokedProperty.__wrapped__, None)
 class NavigationViewItemBase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewItem
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewItemBase
@@ -20901,12 +21644,26 @@ class NavigationViewItemHeader(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.NavigationViewItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewItemHeader
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewItemHeader'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewItemHeader.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewItemHeaderFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItemHeader: ...
 class NavigationViewItemInvokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewItemInvokedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs: ...
     @winrt_mixinmethod
@@ -20918,24 +21675,38 @@ class NavigationViewItemInvokedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_RecommendedNavigationTransitionInfo(self: win32more.Windows.UI.Xaml.Controls.INavigationViewItemInvokedEventArgs2) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
     InvokedItem = property(get_InvokedItem, None)
-    IsSettingsInvoked = property(get_IsSettingsInvoked, None)
     InvokedItemContainer = property(get_InvokedItemContainer, None)
+    IsSettingsInvoked = property(get_IsSettingsInvoked, None)
     RecommendedNavigationTransitionInfo = property(get_RecommendedNavigationTransitionInfo, None)
 class NavigationViewItemSeparator(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.NavigationViewItemBase
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewItemSeparator
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewItemSeparator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewItemSeparator.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewItemSeparatorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItemSeparator: ...
 class NavigationViewList(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListView
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewList
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewList'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewList.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewListFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationViewList: ...
-NavigationViewOverflowLabelMode = Int32
-NavigationViewOverflowLabelMode_MoreLabel: NavigationViewOverflowLabelMode = 0
-NavigationViewOverflowLabelMode_NoLabel: NavigationViewOverflowLabelMode = 1
+class NavigationViewOverflowLabelMode(Int32):  # enum
+    MoreLabel = 0
+    NoLabel = 1
 class NavigationViewPaneClosingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewPaneClosingEventArgs
@@ -20945,12 +21716,12 @@ class NavigationViewPaneClosingEventArgs(ComPtr):
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.INavigationViewPaneClosingEventArgs, value: Boolean) -> Void: ...
     Cancel = property(get_Cancel, put_Cancel)
-NavigationViewPaneDisplayMode = Int32
-NavigationViewPaneDisplayMode_Auto: NavigationViewPaneDisplayMode = 0
-NavigationViewPaneDisplayMode_Left: NavigationViewPaneDisplayMode = 1
-NavigationViewPaneDisplayMode_Top: NavigationViewPaneDisplayMode = 2
-NavigationViewPaneDisplayMode_LeftCompact: NavigationViewPaneDisplayMode = 3
-NavigationViewPaneDisplayMode_LeftMinimal: NavigationViewPaneDisplayMode = 4
+class NavigationViewPaneDisplayMode(Int32):  # enum
+    Auto = 0
+    Left = 1
+    Top = 2
+    LeftCompact = 3
+    LeftMinimal = 4
 class NavigationViewSelectionChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewSelectionChangedEventArgs
@@ -20963,23 +21734,30 @@ class NavigationViewSelectionChangedEventArgs(ComPtr):
     def get_SelectedItemContainer(self: win32more.Windows.UI.Xaml.Controls.INavigationViewSelectionChangedEventArgs2) -> win32more.Windows.UI.Xaml.Controls.NavigationViewItemBase: ...
     @winrt_mixinmethod
     def get_RecommendedNavigationTransitionInfo(self: win32more.Windows.UI.Xaml.Controls.INavigationViewSelectionChangedEventArgs2) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
-    SelectedItem = property(get_SelectedItem, None)
     IsSettingsSelected = property(get_IsSettingsSelected, None)
-    SelectedItemContainer = property(get_SelectedItemContainer, None)
     RecommendedNavigationTransitionInfo = property(get_RecommendedNavigationTransitionInfo, None)
-NavigationViewSelectionFollowsFocus = Int32
-NavigationViewSelectionFollowsFocus_Disabled: NavigationViewSelectionFollowsFocus = 0
-NavigationViewSelectionFollowsFocus_Enabled: NavigationViewSelectionFollowsFocus = 1
-NavigationViewShoulderNavigationEnabled = Int32
-NavigationViewShoulderNavigationEnabled_WhenSelectionFollowsFocus: NavigationViewShoulderNavigationEnabled = 0
-NavigationViewShoulderNavigationEnabled_Always: NavigationViewShoulderNavigationEnabled = 1
-NavigationViewShoulderNavigationEnabled_Never: NavigationViewShoulderNavigationEnabled = 2
+    SelectedItem = property(get_SelectedItem, None)
+    SelectedItemContainer = property(get_SelectedItemContainer, None)
+class NavigationViewSelectionFollowsFocus(Int32):  # enum
+    Disabled = 0
+    Enabled = 1
+class NavigationViewShoulderNavigationEnabled(Int32):  # enum
+    WhenSelectionFollowsFocus = 0
+    Always = 1
+    Never = 2
 class _NavigationViewTemplateSettings_Meta_(ComPtr.__class__):
     pass
 class NavigationViewTemplateSettings(ComPtr, metaclass=_NavigationViewTemplateSettings_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.INavigationViewTemplateSettings
     _classid_ = 'Windows.UI.Xaml.Controls.NavigationViewTemplateSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.NavigationViewTemplateSettings.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewTemplateSettingsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.NavigationViewTemplateSettings: ...
     @winrt_mixinmethod
@@ -21010,20 +21788,20 @@ class NavigationViewTemplateSettings(ComPtr, metaclass=_NavigationViewTemplateSe
     def get_LeftPaneVisibilityProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewTemplateSettingsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SingleSelectionFollowsFocusProperty(cls: win32more.Windows.UI.Xaml.Controls.INavigationViewTemplateSettingsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TopPadding = property(get_TopPadding, None)
+    BackButtonVisibility = property(get_BackButtonVisibility, None)
+    LeftPaneVisibility = property(get_LeftPaneVisibility, None)
     OverflowButtonVisibility = property(get_OverflowButtonVisibility, None)
     PaneToggleButtonVisibility = property(get_PaneToggleButtonVisibility, None)
-    BackButtonVisibility = property(get_BackButtonVisibility, None)
-    TopPaneVisibility = property(get_TopPaneVisibility, None)
-    LeftPaneVisibility = property(get_LeftPaneVisibility, None)
     SingleSelectionFollowsFocus = property(get_SingleSelectionFollowsFocus, None)
-    _NavigationViewTemplateSettings_Meta_.TopPaddingProperty = property(get_TopPaddingProperty.__wrapped__, None)
+    TopPadding = property(get_TopPadding, None)
+    TopPaneVisibility = property(get_TopPaneVisibility, None)
+    _NavigationViewTemplateSettings_Meta_.BackButtonVisibilityProperty = property(get_BackButtonVisibilityProperty.__wrapped__, None)
+    _NavigationViewTemplateSettings_Meta_.LeftPaneVisibilityProperty = property(get_LeftPaneVisibilityProperty.__wrapped__, None)
     _NavigationViewTemplateSettings_Meta_.OverflowButtonVisibilityProperty = property(get_OverflowButtonVisibilityProperty.__wrapped__, None)
     _NavigationViewTemplateSettings_Meta_.PaneToggleButtonVisibilityProperty = property(get_PaneToggleButtonVisibilityProperty.__wrapped__, None)
-    _NavigationViewTemplateSettings_Meta_.BackButtonVisibilityProperty = property(get_BackButtonVisibilityProperty.__wrapped__, None)
-    _NavigationViewTemplateSettings_Meta_.TopPaneVisibilityProperty = property(get_TopPaneVisibilityProperty.__wrapped__, None)
-    _NavigationViewTemplateSettings_Meta_.LeftPaneVisibilityProperty = property(get_LeftPaneVisibilityProperty.__wrapped__, None)
     _NavigationViewTemplateSettings_Meta_.SingleSelectionFollowsFocusProperty = property(get_SingleSelectionFollowsFocusProperty.__wrapped__, None)
+    _NavigationViewTemplateSettings_Meta_.TopPaddingProperty = property(get_TopPaddingProperty.__wrapped__, None)
+    _NavigationViewTemplateSettings_Meta_.TopPaneVisibilityProperty = property(get_TopPaneVisibilityProperty.__wrapped__, None)
 class NotifyEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.INotifyEventArgs
@@ -21032,21 +21810,28 @@ class NotifyEventArgs(ComPtr):
     def get_Value(self: win32more.Windows.UI.Xaml.Controls.INotifyEventArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_CallingUri(self: win32more.Windows.UI.Xaml.Controls.INotifyEventArgs2) -> win32more.Windows.Foundation.Uri: ...
-    Value = property(get_Value, None)
     CallingUri = property(get_CallingUri, None)
+    Value = property(get_Value, None)
 class NotifyEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{c2fdd1f8-7105-4a74-a109-de29dff56b98}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Controls.NotifyEventArgs) -> Void: ...
-Orientation = Int32
-Orientation_Vertical: Orientation = 0
-Orientation_Horizontal: Orientation = 1
+class Orientation(Int32):  # enum
+    Vertical = 0
+    Horizontal = 1
 class _Page_Meta_(ComPtr.__class__):
     pass
 class Page(ComPtr, metaclass=_Page_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.UserControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IPage
     _classid_ = 'Windows.UI.Xaml.Controls.Page'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Page.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPageFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Page: ...
     @winrt_mixinmethod
@@ -21075,19 +21860,26 @@ class Page(ComPtr, metaclass=_Page_Meta_):
     def get_TopAppBarProperty(cls: win32more.Windows.UI.Xaml.Controls.IPageStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_BottomAppBarProperty(cls: win32more.Windows.UI.Xaml.Controls.IPageStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BottomAppBar = property(get_BottomAppBar, put_BottomAppBar)
     Frame = property(get_Frame, None)
     NavigationCacheMode = property(get_NavigationCacheMode, put_NavigationCacheMode)
     TopAppBar = property(get_TopAppBar, put_TopAppBar)
-    BottomAppBar = property(get_BottomAppBar, put_BottomAppBar)
+    _Page_Meta_.BottomAppBarProperty = property(get_BottomAppBarProperty.__wrapped__, None)
     _Page_Meta_.FrameProperty = property(get_FrameProperty.__wrapped__, None)
     _Page_Meta_.TopAppBarProperty = property(get_TopAppBarProperty.__wrapped__, None)
-    _Page_Meta_.BottomAppBarProperty = property(get_BottomAppBarProperty.__wrapped__, None)
 class _Panel_Meta_(ComPtr.__class__):
     pass
 class Panel(ComPtr, metaclass=_Panel_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IPanel
     _classid_ = 'Windows.UI.Xaml.Controls.Panel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Panel.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPanelFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Panel: ...
     @winrt_mixinmethod
@@ -21112,27 +21904,34 @@ class Panel(ComPtr, metaclass=_Panel_Meta_):
     def get_IsItemsHostProperty(cls: win32more.Windows.UI.Xaml.Controls.IPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ChildrenTransitionsProperty(cls: win32more.Windows.UI.Xaml.Controls.IPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Children = property(get_Children, None)
     Background = property(get_Background, put_Background)
-    IsItemsHost = property(get_IsItemsHost, None)
-    ChildrenTransitions = property(get_ChildrenTransitions, put_ChildrenTransitions)
     BackgroundTransition = property(get_BackgroundTransition, put_BackgroundTransition)
+    Children = property(get_Children, None)
+    ChildrenTransitions = property(get_ChildrenTransitions, put_ChildrenTransitions)
+    IsItemsHost = property(get_IsItemsHost, None)
     _Panel_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
-    _Panel_Meta_.IsItemsHostProperty = property(get_IsItemsHostProperty.__wrapped__, None)
     _Panel_Meta_.ChildrenTransitionsProperty = property(get_ChildrenTransitionsProperty.__wrapped__, None)
-PanelScrollingDirection = Int32
-PanelScrollingDirection_None: PanelScrollingDirection = 0
-PanelScrollingDirection_Forward: PanelScrollingDirection = 1
-PanelScrollingDirection_Backward: PanelScrollingDirection = 2
-ParallaxSourceOffsetKind = Int32
-ParallaxSourceOffsetKind_Absolute: ParallaxSourceOffsetKind = 0
-ParallaxSourceOffsetKind_Relative: ParallaxSourceOffsetKind = 1
+    _Panel_Meta_.IsItemsHostProperty = property(get_IsItemsHostProperty.__wrapped__, None)
+class PanelScrollingDirection(Int32):  # enum
+    None_ = 0
+    Forward = 1
+    Backward = 2
+class ParallaxSourceOffsetKind(Int32):  # enum
+    Absolute = 0
+    Relative = 1
 class _ParallaxView_Meta_(ComPtr.__class__):
     pass
 class ParallaxView(ComPtr, metaclass=_ParallaxView_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IParallaxView
     _classid_ = 'Windows.UI.Xaml.Controls.ParallaxView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ParallaxView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IParallaxViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ParallaxView: ...
     @winrt_mixinmethod
@@ -21238,25 +22037,32 @@ class ParallaxView(ComPtr, metaclass=_ParallaxView_Meta_):
     VerticalSourceOffsetKind = property(get_VerticalSourceOffsetKind, put_VerticalSourceOffsetKind)
     VerticalSourceStartOffset = property(get_VerticalSourceStartOffset, put_VerticalSourceStartOffset)
     _ParallaxView_Meta_.ChildProperty = property(get_ChildProperty.__wrapped__, None)
+    _ParallaxView_Meta_.HorizontalShiftProperty = property(get_HorizontalShiftProperty.__wrapped__, None)
     _ParallaxView_Meta_.HorizontalSourceEndOffsetProperty = property(get_HorizontalSourceEndOffsetProperty.__wrapped__, None)
     _ParallaxView_Meta_.HorizontalSourceOffsetKindProperty = property(get_HorizontalSourceOffsetKindProperty.__wrapped__, None)
     _ParallaxView_Meta_.HorizontalSourceStartOffsetProperty = property(get_HorizontalSourceStartOffsetProperty.__wrapped__, None)
-    _ParallaxView_Meta_.MaxHorizontalShiftRatioProperty = property(get_MaxHorizontalShiftRatioProperty.__wrapped__, None)
-    _ParallaxView_Meta_.HorizontalShiftProperty = property(get_HorizontalShiftProperty.__wrapped__, None)
     _ParallaxView_Meta_.IsHorizontalShiftClampedProperty = property(get_IsHorizontalShiftClampedProperty.__wrapped__, None)
     _ParallaxView_Meta_.IsVerticalShiftClampedProperty = property(get_IsVerticalShiftClampedProperty.__wrapped__, None)
+    _ParallaxView_Meta_.MaxHorizontalShiftRatioProperty = property(get_MaxHorizontalShiftRatioProperty.__wrapped__, None)
+    _ParallaxView_Meta_.MaxVerticalShiftRatioProperty = property(get_MaxVerticalShiftRatioProperty.__wrapped__, None)
     _ParallaxView_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    _ParallaxView_Meta_.VerticalShiftProperty = property(get_VerticalShiftProperty.__wrapped__, None)
     _ParallaxView_Meta_.VerticalSourceEndOffsetProperty = property(get_VerticalSourceEndOffsetProperty.__wrapped__, None)
     _ParallaxView_Meta_.VerticalSourceOffsetKindProperty = property(get_VerticalSourceOffsetKindProperty.__wrapped__, None)
     _ParallaxView_Meta_.VerticalSourceStartOffsetProperty = property(get_VerticalSourceStartOffsetProperty.__wrapped__, None)
-    _ParallaxView_Meta_.MaxVerticalShiftRatioProperty = property(get_MaxVerticalShiftRatioProperty.__wrapped__, None)
-    _ParallaxView_Meta_.VerticalShiftProperty = property(get_VerticalShiftProperty.__wrapped__, None)
 class _PasswordBox_Meta_(ComPtr.__class__):
     pass
 class PasswordBox(ComPtr, metaclass=_PasswordBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IPasswordBox
     _classid_ = 'Windows.UI.Xaml.Controls.PasswordBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PasswordBox.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.PasswordBox: ...
     @winrt_mixinmethod
@@ -21367,36 +22173,36 @@ class PasswordBox(ComPtr, metaclass=_PasswordBox_Meta_):
     def get_IsPasswordRevealButtonEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IPasswordBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MaxLengthProperty(cls: win32more.Windows.UI.Xaml.Controls.IPasswordBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Password = property(get_Password, put_Password)
-    PasswordChar = property(get_PasswordChar, put_PasswordChar)
-    IsPasswordRevealButtonEnabled = property(get_IsPasswordRevealButtonEnabled, put_IsPasswordRevealButtonEnabled)
-    MaxLength = property(get_MaxLength, put_MaxLength)
+    CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
+    Description = property(get_Description, put_Description)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
-    PasswordRevealMode = property(get_PasswordRevealMode, put_PasswordRevealMode)
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
     InputScope = property(get_InputScope, put_InputScope)
-    CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
+    IsPasswordRevealButtonEnabled = property(get_IsPasswordRevealButtonEnabled, put_IsPasswordRevealButtonEnabled)
+    MaxLength = property(get_MaxLength, put_MaxLength)
+    Password = property(get_Password, put_Password)
+    PasswordChar = property(get_PasswordChar, put_PasswordChar)
+    PasswordRevealMode = property(get_PasswordRevealMode, put_PasswordRevealMode)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
     SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
-    Description = property(get_Description, put_Description)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
     _PasswordBox_Meta_.CanPasteClipboardContentProperty = property(get_CanPasteClipboardContentProperty.__wrapped__, None)
-    _PasswordBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
     _PasswordBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _PasswordBox_Meta_.PasswordRevealModeProperty = property(get_PasswordRevealModeProperty.__wrapped__, None)
-    _PasswordBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
-    _PasswordBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
     _PasswordBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _PasswordBox_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _PasswordBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
-    _PasswordBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
-    _PasswordBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
-    _PasswordBox_Meta_.PasswordProperty = property(get_PasswordProperty.__wrapped__, None)
-    _PasswordBox_Meta_.PasswordCharProperty = property(get_PasswordCharProperty.__wrapped__, None)
+    _PasswordBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
     _PasswordBox_Meta_.IsPasswordRevealButtonEnabledProperty = property(get_IsPasswordRevealButtonEnabledProperty.__wrapped__, None)
     _PasswordBox_Meta_.MaxLengthProperty = property(get_MaxLengthProperty.__wrapped__, None)
+    _PasswordBox_Meta_.PasswordCharProperty = property(get_PasswordCharProperty.__wrapped__, None)
+    _PasswordBox_Meta_.PasswordProperty = property(get_PasswordProperty.__wrapped__, None)
+    _PasswordBox_Meta_.PasswordRevealModeProperty = property(get_PasswordRevealModeProperty.__wrapped__, None)
+    _PasswordBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
+    _PasswordBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
+    _PasswordBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
+    _PasswordBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
+    _PasswordBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
 class PasswordBoxPasswordChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IPasswordBoxPasswordChangingEventArgs
@@ -21404,16 +22210,23 @@ class PasswordBoxPasswordChangingEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_IsContentChanging(self: win32more.Windows.UI.Xaml.Controls.IPasswordBoxPasswordChangingEventArgs) -> Boolean: ...
     IsContentChanging = property(get_IsContentChanging, None)
-PasswordRevealMode = Int32
-PasswordRevealMode_Peek: PasswordRevealMode = 0
-PasswordRevealMode_Hidden: PasswordRevealMode = 1
-PasswordRevealMode_Visible: PasswordRevealMode = 2
+class PasswordRevealMode(Int32):  # enum
+    Peek = 0
+    Hidden = 1
+    Visible = 2
 class _PathIcon_Meta_(ComPtr.__class__):
     pass
 class PathIcon(ComPtr, metaclass=_PathIcon_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IPathIcon
     _classid_ = 'Windows.UI.Xaml.Controls.PathIcon'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PathIcon.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPathIconFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.PathIcon: ...
     @winrt_mixinmethod
@@ -21430,6 +22243,13 @@ class PathIconSource(ComPtr, metaclass=_PathIconSource_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconSource
     default_interface: win32more.Windows.UI.Xaml.Controls.IPathIconSource
     _classid_ = 'Windows.UI.Xaml.Controls.PathIconSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PathIconSource.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPathIconSourceFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.PathIconSource: ...
     @winrt_mixinmethod
@@ -21446,6 +22266,13 @@ class PersonPicture(ComPtr, metaclass=_PersonPicture_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IPersonPicture
     _classid_ = 'Windows.UI.Xaml.Controls.PersonPicture'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PersonPicture.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPersonPictureFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.PersonPicture: ...
     @winrt_mixinmethod
@@ -21508,30 +22335,37 @@ class PersonPicture(ComPtr, metaclass=_PersonPicture_Meta_):
     def get_PreferSmallImageProperty(cls: win32more.Windows.UI.Xaml.Controls.IPersonPictureStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ProfilePictureProperty(cls: win32more.Windows.UI.Xaml.Controls.IPersonPictureStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    BadgeNumber = property(get_BadgeNumber, put_BadgeNumber)
     BadgeGlyph = property(get_BadgeGlyph, put_BadgeGlyph)
     BadgeImageSource = property(get_BadgeImageSource, put_BadgeImageSource)
+    BadgeNumber = property(get_BadgeNumber, put_BadgeNumber)
     BadgeText = property(get_BadgeText, put_BadgeText)
-    IsGroup = property(get_IsGroup, put_IsGroup)
     Contact = property(get_Contact, put_Contact)
     DisplayName = property(get_DisplayName, put_DisplayName)
     Initials = property(get_Initials, put_Initials)
+    IsGroup = property(get_IsGroup, put_IsGroup)
     PreferSmallImage = property(get_PreferSmallImage, put_PreferSmallImage)
     ProfilePicture = property(get_ProfilePicture, put_ProfilePicture)
-    _PersonPicture_Meta_.BadgeNumberProperty = property(get_BadgeNumberProperty.__wrapped__, None)
     _PersonPicture_Meta_.BadgeGlyphProperty = property(get_BadgeGlyphProperty.__wrapped__, None)
     _PersonPicture_Meta_.BadgeImageSourceProperty = property(get_BadgeImageSourceProperty.__wrapped__, None)
+    _PersonPicture_Meta_.BadgeNumberProperty = property(get_BadgeNumberProperty.__wrapped__, None)
     _PersonPicture_Meta_.BadgeTextProperty = property(get_BadgeTextProperty.__wrapped__, None)
-    _PersonPicture_Meta_.IsGroupProperty = property(get_IsGroupProperty.__wrapped__, None)
     _PersonPicture_Meta_.ContactProperty = property(get_ContactProperty.__wrapped__, None)
     _PersonPicture_Meta_.DisplayNameProperty = property(get_DisplayNameProperty.__wrapped__, None)
     _PersonPicture_Meta_.InitialsProperty = property(get_InitialsProperty.__wrapped__, None)
+    _PersonPicture_Meta_.IsGroupProperty = property(get_IsGroupProperty.__wrapped__, None)
     _PersonPicture_Meta_.PreferSmallImageProperty = property(get_PreferSmallImageProperty.__wrapped__, None)
     _PersonPicture_Meta_.ProfilePictureProperty = property(get_ProfilePictureProperty.__wrapped__, None)
 class PickerConfirmedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IPickerConfirmedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.PickerConfirmedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PickerConfirmedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.PickerConfirmedEventArgs: ...
 class _PickerFlyout_Meta_(ComPtr.__class__):
@@ -21540,6 +22374,13 @@ class PickerFlyout(ComPtr, metaclass=_PickerFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.PickerFlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IPickerFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.PickerFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PickerFlyout.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.PickerFlyout: ...
     @winrt_mixinmethod
@@ -21560,10 +22401,10 @@ class PickerFlyout(ComPtr, metaclass=_PickerFlyout_Meta_):
     def get_ContentProperty(cls: win32more.Windows.UI.Xaml.Controls.IPickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ConfirmationButtonsVisibleProperty(cls: win32more.Windows.UI.Xaml.Controls.IPickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Content = property(get_Content, put_Content)
     ConfirmationButtonsVisible = property(get_ConfirmationButtonsVisible, put_ConfirmationButtonsVisible)
-    _PickerFlyout_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
+    Content = property(get_Content, put_Content)
     _PickerFlyout_Meta_.ConfirmationButtonsVisibleProperty = property(get_ConfirmationButtonsVisibleProperty.__wrapped__, None)
+    _PickerFlyout_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
 class PickerFlyoutPresenter(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IPickerFlyoutPresenter
@@ -21574,6 +22415,13 @@ class Pivot(ComPtr, metaclass=_Pivot_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ItemsControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IPivot
     _classid_ = 'Windows.UI.Xaml.Controls.Pivot'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Pivot.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPivotFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Pivot: ...
     @winrt_mixinmethod
@@ -21674,40 +22522,47 @@ class Pivot(ComPtr, metaclass=_Pivot_Meta_):
     def GetSlideInAnimationGroup(cls: win32more.Windows.UI.Xaml.Controls.IPivotStatics, element: win32more.Windows.UI.Xaml.FrameworkElement) -> win32more.Windows.UI.Xaml.Controls.PivotSlideInAnimationGroup: ...
     @winrt_classmethod
     def SetSlideInAnimationGroup(cls: win32more.Windows.UI.Xaml.Controls.IPivotStatics, element: win32more.Windows.UI.Xaml.FrameworkElement, value: win32more.Windows.UI.Xaml.Controls.PivotSlideInAnimationGroup) -> Void: ...
-    Title = property(get_Title, put_Title)
-    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
+    HeaderFocusVisualPlacement = property(get_HeaderFocusVisualPlacement, put_HeaderFocusVisualPlacement)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    SelectedIndex = property(get_SelectedIndex, put_SelectedIndex)
-    SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    IsHeaderItemsCarouselEnabled = property(get_IsHeaderItemsCarouselEnabled, put_IsHeaderItemsCarouselEnabled)
     IsLocked = property(get_IsLocked, put_IsLocked)
     LeftHeader = property(get_LeftHeader, put_LeftHeader)
     LeftHeaderTemplate = property(get_LeftHeaderTemplate, put_LeftHeaderTemplate)
     RightHeader = property(get_RightHeader, put_RightHeader)
     RightHeaderTemplate = property(get_RightHeaderTemplate, put_RightHeaderTemplate)
-    HeaderFocusVisualPlacement = property(get_HeaderFocusVisualPlacement, put_HeaderFocusVisualPlacement)
-    IsHeaderItemsCarouselEnabled = property(get_IsHeaderItemsCarouselEnabled, put_IsHeaderItemsCarouselEnabled)
+    SelectedIndex = property(get_SelectedIndex, put_SelectedIndex)
+    SelectedItem = property(get_SelectedItem, put_SelectedItem)
+    Title = property(get_Title, put_Title)
+    TitleTemplate = property(get_TitleTemplate, put_TitleTemplate)
     _Pivot_Meta_.HeaderFocusVisualPlacementProperty = property(get_HeaderFocusVisualPlacementProperty.__wrapped__, None)
+    _Pivot_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
     _Pivot_Meta_.IsHeaderItemsCarouselEnabledProperty = property(get_IsHeaderItemsCarouselEnabledProperty.__wrapped__, None)
+    _Pivot_Meta_.IsLockedProperty = property(get_IsLockedProperty.__wrapped__, None)
     _Pivot_Meta_.LeftHeaderProperty = property(get_LeftHeaderProperty.__wrapped__, None)
     _Pivot_Meta_.LeftHeaderTemplateProperty = property(get_LeftHeaderTemplateProperty.__wrapped__, None)
     _Pivot_Meta_.RightHeaderProperty = property(get_RightHeaderProperty.__wrapped__, None)
     _Pivot_Meta_.RightHeaderTemplateProperty = property(get_RightHeaderTemplateProperty.__wrapped__, None)
-    _Pivot_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
-    _Pivot_Meta_.TitleTemplateProperty = property(get_TitleTemplateProperty.__wrapped__, None)
-    _Pivot_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
     _Pivot_Meta_.SelectedIndexProperty = property(get_SelectedIndexProperty.__wrapped__, None)
     _Pivot_Meta_.SelectedItemProperty = property(get_SelectedItemProperty.__wrapped__, None)
-    _Pivot_Meta_.IsLockedProperty = property(get_IsLockedProperty.__wrapped__, None)
     _Pivot_Meta_.SlideInAnimationGroupProperty = property(get_SlideInAnimationGroupProperty.__wrapped__, None)
-PivotHeaderFocusVisualPlacement = Int32
-PivotHeaderFocusVisualPlacement_ItemHeaders: PivotHeaderFocusVisualPlacement = 0
-PivotHeaderFocusVisualPlacement_SelectedItemHeader: PivotHeaderFocusVisualPlacement = 1
+    _Pivot_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
+    _Pivot_Meta_.TitleTemplateProperty = property(get_TitleTemplateProperty.__wrapped__, None)
+class PivotHeaderFocusVisualPlacement(Int32):  # enum
+    ItemHeaders = 0
+    SelectedItemHeader = 1
 class _PivotItem_Meta_(ComPtr.__class__):
     pass
 class PivotItem(ComPtr, metaclass=_PivotItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IPivotItem
     _classid_ = 'Windows.UI.Xaml.Controls.PivotItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PivotItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IPivotItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.PivotItem: ...
     @winrt_mixinmethod
@@ -21722,6 +22577,13 @@ class PivotItemEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IPivotItemEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.PivotItemEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.PivotItemEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.PivotItemEventArgs: ...
     @winrt_mixinmethod
@@ -21729,17 +22591,24 @@ class PivotItemEventArgs(ComPtr):
     @winrt_mixinmethod
     def put_Item(self: win32more.Windows.UI.Xaml.Controls.IPivotItemEventArgs, value: win32more.Windows.UI.Xaml.Controls.PivotItem) -> Void: ...
     Item = property(get_Item, put_Item)
-PivotSlideInAnimationGroup = Int32
-PivotSlideInAnimationGroup_Default: PivotSlideInAnimationGroup = 0
-PivotSlideInAnimationGroup_GroupOne: PivotSlideInAnimationGroup = 1
-PivotSlideInAnimationGroup_GroupTwo: PivotSlideInAnimationGroup = 2
-PivotSlideInAnimationGroup_GroupThree: PivotSlideInAnimationGroup = 3
+class PivotSlideInAnimationGroup(Int32):  # enum
+    Default = 0
+    GroupOne = 1
+    GroupTwo = 2
+    GroupThree = 3
 class _ProgressBar_Meta_(ComPtr.__class__):
     pass
 class ProgressBar(ComPtr, metaclass=_ProgressBar_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.RangeBase
     default_interface: win32more.Windows.UI.Xaml.Controls.IProgressBar
     _classid_ = 'Windows.UI.Xaml.Controls.ProgressBar'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ProgressBar.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IProgressBarFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ProgressBar: ...
     @winrt_mixinmethod
@@ -21775,6 +22644,13 @@ class ProgressRing(ComPtr, metaclass=_ProgressRing_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IProgressRing
     _classid_ = 'Windows.UI.Xaml.Controls.ProgressRing'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ProgressRing.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ProgressRing: ...
     @winrt_mixinmethod
@@ -21794,6 +22670,13 @@ class RadioButton(ComPtr, metaclass=_RadioButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.ToggleButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IRadioButton
     _classid_ = 'Windows.UI.Xaml.Controls.RadioButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RadioButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRadioButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RadioButton: ...
     @winrt_mixinmethod
@@ -21810,6 +22693,13 @@ class RatingControl(ComPtr, metaclass=_RatingControl_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IRatingControl
     _classid_ = 'Windows.UI.Xaml.Controls.RatingControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RatingControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRatingControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RatingControl: ...
     @winrt_mixinmethod
@@ -21868,17 +22758,17 @@ class RatingControl(ComPtr, metaclass=_RatingControl_Meta_):
     InitialSetValue = property(get_InitialSetValue, put_InitialSetValue)
     IsClearEnabled = property(get_IsClearEnabled, put_IsClearEnabled)
     IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    ItemInfo = property(get_ItemInfo, put_ItemInfo)
     MaxRating = property(get_MaxRating, put_MaxRating)
     PlaceholderValue = property(get_PlaceholderValue, put_PlaceholderValue)
-    ItemInfo = property(get_ItemInfo, put_ItemInfo)
     Value = property(get_Value, put_Value)
     _RatingControl_Meta_.CaptionProperty = property(get_CaptionProperty.__wrapped__, None)
     _RatingControl_Meta_.InitialSetValueProperty = property(get_InitialSetValueProperty.__wrapped__, None)
     _RatingControl_Meta_.IsClearEnabledProperty = property(get_IsClearEnabledProperty.__wrapped__, None)
     _RatingControl_Meta_.IsReadOnlyProperty = property(get_IsReadOnlyProperty.__wrapped__, None)
+    _RatingControl_Meta_.ItemInfoProperty = property(get_ItemInfoProperty.__wrapped__, None)
     _RatingControl_Meta_.MaxRatingProperty = property(get_MaxRatingProperty.__wrapped__, None)
     _RatingControl_Meta_.PlaceholderValueProperty = property(get_PlaceholderValueProperty.__wrapped__, None)
-    _RatingControl_Meta_.ItemInfoProperty = property(get_ItemInfoProperty.__wrapped__, None)
     _RatingControl_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
 class _RatingItemFontInfo_Meta_(ComPtr.__class__):
     pass
@@ -21886,6 +22776,13 @@ class RatingItemFontInfo(ComPtr, metaclass=_RatingItemFontInfo_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.RatingItemInfo
     default_interface: win32more.Windows.UI.Xaml.Controls.IRatingItemFontInfo
     _classid_ = 'Windows.UI.Xaml.Controls.RatingItemFontInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RatingItemFontInfo.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRatingItemFontInfoFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RatingItemFontInfo: ...
     @winrt_mixinmethod
@@ -21926,9 +22823,9 @@ class RatingItemFontInfo(ComPtr, metaclass=_RatingItemFontInfo_Meta_):
     def get_UnsetGlyphProperty(cls: win32more.Windows.UI.Xaml.Controls.IRatingItemFontInfoStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     DisabledGlyph = property(get_DisabledGlyph, put_DisabledGlyph)
     Glyph = property(get_Glyph, put_Glyph)
+    PlaceholderGlyph = property(get_PlaceholderGlyph, put_PlaceholderGlyph)
     PointerOverGlyph = property(get_PointerOverGlyph, put_PointerOverGlyph)
     PointerOverPlaceholderGlyph = property(get_PointerOverPlaceholderGlyph, put_PointerOverPlaceholderGlyph)
-    PlaceholderGlyph = property(get_PlaceholderGlyph, put_PlaceholderGlyph)
     UnsetGlyph = property(get_UnsetGlyph, put_UnsetGlyph)
     _RatingItemFontInfo_Meta_.DisabledGlyphProperty = property(get_DisabledGlyphProperty.__wrapped__, None)
     _RatingItemFontInfo_Meta_.GlyphProperty = property(get_GlyphProperty.__wrapped__, None)
@@ -21942,6 +22839,13 @@ class RatingItemImageInfo(ComPtr, metaclass=_RatingItemImageInfo_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.RatingItemInfo
     default_interface: win32more.Windows.UI.Xaml.Controls.IRatingItemImageInfo
     _classid_ = 'Windows.UI.Xaml.Controls.RatingItemImageInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RatingItemImageInfo.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRatingItemImageInfoFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RatingItemImageInfo: ...
     @winrt_mixinmethod
@@ -21996,6 +22900,13 @@ class RatingItemInfo(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IRatingItemInfo
     _classid_ = 'Windows.UI.Xaml.Controls.RatingItemInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RatingItemInfo.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRatingItemInfoFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RatingItemInfo: ...
 class _RefreshContainer_Meta_(ComPtr.__class__):
@@ -22004,6 +22915,13 @@ class RefreshContainer(ComPtr, metaclass=_RefreshContainer_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IRefreshContainer
     _classid_ = 'Windows.UI.Xaml.Controls.RefreshContainer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RefreshContainer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRefreshContainerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RefreshContainer: ...
     @winrt_mixinmethod
@@ -22024,10 +22942,10 @@ class RefreshContainer(ComPtr, metaclass=_RefreshContainer_Meta_):
     def get_VisualizerProperty(cls: win32more.Windows.UI.Xaml.Controls.IRefreshContainerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_PullDirectionProperty(cls: win32more.Windows.UI.Xaml.Controls.IRefreshContainerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Visualizer = property(get_Visualizer, put_Visualizer)
     PullDirection = property(get_PullDirection, put_PullDirection)
-    _RefreshContainer_Meta_.VisualizerProperty = property(get_VisualizerProperty.__wrapped__, None)
+    Visualizer = property(get_Visualizer, put_Visualizer)
     _RefreshContainer_Meta_.PullDirectionProperty = property(get_PullDirectionProperty.__wrapped__, None)
+    _RefreshContainer_Meta_.VisualizerProperty = property(get_VisualizerProperty.__wrapped__, None)
 class RefreshInteractionRatioChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IRefreshInteractionRatioChangedEventArgs
@@ -22035,11 +22953,11 @@ class RefreshInteractionRatioChangedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_InteractionRatio(self: win32more.Windows.UI.Xaml.Controls.IRefreshInteractionRatioChangedEventArgs) -> Double: ...
     InteractionRatio = property(get_InteractionRatio, None)
-RefreshPullDirection = Int32
-RefreshPullDirection_LeftToRight: RefreshPullDirection = 0
-RefreshPullDirection_TopToBottom: RefreshPullDirection = 1
-RefreshPullDirection_RightToLeft: RefreshPullDirection = 2
-RefreshPullDirection_BottomToTop: RefreshPullDirection = 3
+class RefreshPullDirection(Int32):  # enum
+    LeftToRight = 0
+    TopToBottom = 1
+    RightToLeft = 2
+    BottomToTop = 3
 class RefreshRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IRefreshRequestedEventArgs
@@ -22054,14 +22972,21 @@ class RefreshStateChangedEventArgs(ComPtr):
     def get_OldState(self: win32more.Windows.UI.Xaml.Controls.IRefreshStateChangedEventArgs) -> win32more.Windows.UI.Xaml.Controls.RefreshVisualizerState: ...
     @winrt_mixinmethod
     def get_NewState(self: win32more.Windows.UI.Xaml.Controls.IRefreshStateChangedEventArgs) -> win32more.Windows.UI.Xaml.Controls.RefreshVisualizerState: ...
-    OldState = property(get_OldState, None)
     NewState = property(get_NewState, None)
+    OldState = property(get_OldState, None)
 class _RefreshVisualizer_Meta_(ComPtr.__class__):
     pass
 class RefreshVisualizer(ComPtr, metaclass=_RefreshVisualizer_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IRefreshVisualizer
     _classid_ = 'Windows.UI.Xaml.Controls.RefreshVisualizer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RefreshVisualizer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRefreshVisualizerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RefreshVisualizer: ...
     @winrt_mixinmethod
@@ -22092,30 +23017,37 @@ class RefreshVisualizer(ComPtr, metaclass=_RefreshVisualizer_Meta_):
     def get_ContentProperty(cls: win32more.Windows.UI.Xaml.Controls.IRefreshVisualizerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_StateProperty(cls: win32more.Windows.UI.Xaml.Controls.IRefreshVisualizerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Orientation = property(get_Orientation, put_Orientation)
     Content = property(get_Content, put_Content)
+    Orientation = property(get_Orientation, put_Orientation)
     State = property(get_State, None)
+    _RefreshVisualizer_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _RefreshVisualizer_Meta_.InfoProviderProperty = property(get_InfoProviderProperty.__wrapped__, None)
     _RefreshVisualizer_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _RefreshVisualizer_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _RefreshVisualizer_Meta_.StateProperty = property(get_StateProperty.__wrapped__, None)
-RefreshVisualizerOrientation = Int32
-RefreshVisualizerOrientation_Auto: RefreshVisualizerOrientation = 0
-RefreshVisualizerOrientation_Normal: RefreshVisualizerOrientation = 1
-RefreshVisualizerOrientation_Rotate90DegreesCounterclockwise: RefreshVisualizerOrientation = 2
-RefreshVisualizerOrientation_Rotate270DegreesCounterclockwise: RefreshVisualizerOrientation = 3
-RefreshVisualizerState = Int32
-RefreshVisualizerState_Idle: RefreshVisualizerState = 0
-RefreshVisualizerState_Peeking: RefreshVisualizerState = 1
-RefreshVisualizerState_Interacting: RefreshVisualizerState = 2
-RefreshVisualizerState_Pending: RefreshVisualizerState = 3
-RefreshVisualizerState_Refreshing: RefreshVisualizerState = 4
+class RefreshVisualizerOrientation(Int32):  # enum
+    Auto = 0
+    Normal = 1
+    Rotate90DegreesCounterclockwise = 2
+    Rotate270DegreesCounterclockwise = 3
+class RefreshVisualizerState(Int32):  # enum
+    Idle = 0
+    Peeking = 1
+    Interacting = 2
+    Pending = 3
+    Refreshing = 4
 class _RelativePanel_Meta_(ComPtr.__class__):
     pass
 class RelativePanel(ComPtr, metaclass=_RelativePanel_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IRelativePanel
     _classid_ = 'Windows.UI.Xaml.Controls.RelativePanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RelativePanel.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRelativePanelFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RelativePanel: ...
     @winrt_mixinmethod
@@ -22244,42 +23176,49 @@ class RelativePanel(ComPtr, metaclass=_RelativePanel_Meta_):
     def get_CornerRadiusProperty(cls: win32more.Windows.UI.Xaml.Controls.IRelativePanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_PaddingProperty(cls: win32more.Windows.UI.Xaml.Controls.IRelativePanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
     BorderBrush = property(get_BorderBrush, put_BorderBrush)
     BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CornerRadius = property(get_CornerRadius, put_CornerRadius)
     Padding = property(get_Padding, put_Padding)
-    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
-    _RelativePanel_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
-    _RelativePanel_Meta_.LeftOfProperty = property(get_LeftOfProperty.__wrapped__, None)
     _RelativePanel_Meta_.AboveProperty = property(get_AboveProperty.__wrapped__, None)
-    _RelativePanel_Meta_.RightOfProperty = property(get_RightOfProperty.__wrapped__, None)
-    _RelativePanel_Meta_.BelowProperty = property(get_BelowProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignHorizontalCenterWithProperty = property(get_AlignHorizontalCenterWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignVerticalCenterWithProperty = property(get_AlignVerticalCenterWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignLeftWithProperty = property(get_AlignLeftWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignTopWithProperty = property(get_AlignTopWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignRightWithProperty = property(get_AlignRightWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignBottomWithProperty = property(get_AlignBottomWithProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignLeftWithPanelProperty = property(get_AlignLeftWithPanelProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignTopWithPanelProperty = property(get_AlignTopWithPanelProperty.__wrapped__, None)
-    _RelativePanel_Meta_.AlignRightWithPanelProperty = property(get_AlignRightWithPanelProperty.__wrapped__, None)
     _RelativePanel_Meta_.AlignBottomWithPanelProperty = property(get_AlignBottomWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignBottomWithProperty = property(get_AlignBottomWithProperty.__wrapped__, None)
     _RelativePanel_Meta_.AlignHorizontalCenterWithPanelProperty = property(get_AlignHorizontalCenterWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignHorizontalCenterWithProperty = property(get_AlignHorizontalCenterWithProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignLeftWithPanelProperty = property(get_AlignLeftWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignLeftWithProperty = property(get_AlignLeftWithProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignRightWithPanelProperty = property(get_AlignRightWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignRightWithProperty = property(get_AlignRightWithProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignTopWithPanelProperty = property(get_AlignTopWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignTopWithProperty = property(get_AlignTopWithProperty.__wrapped__, None)
     _RelativePanel_Meta_.AlignVerticalCenterWithPanelProperty = property(get_AlignVerticalCenterWithPanelProperty.__wrapped__, None)
+    _RelativePanel_Meta_.AlignVerticalCenterWithProperty = property(get_AlignVerticalCenterWithProperty.__wrapped__, None)
+    _RelativePanel_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
+    _RelativePanel_Meta_.BelowProperty = property(get_BelowProperty.__wrapped__, None)
     _RelativePanel_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
     _RelativePanel_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
     _RelativePanel_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
+    _RelativePanel_Meta_.LeftOfProperty = property(get_LeftOfProperty.__wrapped__, None)
     _RelativePanel_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-RequiresPointer = Int32
-RequiresPointer_Never: RequiresPointer = 0
-RequiresPointer_WhenEngaged: RequiresPointer = 1
-RequiresPointer_WhenFocused: RequiresPointer = 2
+    _RelativePanel_Meta_.RightOfProperty = property(get_RightOfProperty.__wrapped__, None)
+class RequiresPointer(Int32):  # enum
+    Never = 0
+    WhenEngaged = 1
+    WhenFocused = 2
 class _RichEditBox_Meta_(ComPtr.__class__):
     pass
 class RichEditBox(ComPtr, metaclass=_RichEditBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IRichEditBox
     _classid_ = 'Windows.UI.Xaml.Controls.RichEditBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RichEditBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IRichEditBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.RichEditBox: ...
     @winrt_mixinmethod
@@ -22516,66 +23455,66 @@ class RichEditBox(ComPtr, metaclass=_RichEditBox_Meta_):
     def get_IsTextPredictionEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichEditBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_InputScopeProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichEditBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
     AcceptsReturn = property(get_AcceptsReturn, put_AcceptsReturn)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
-    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
+    CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
+    ClipboardCopyFormat = property(get_ClipboardCopyFormat, put_ClipboardCopyFormat)
+    ContentLinkBackgroundColor = property(get_ContentLinkBackgroundColor, put_ContentLinkBackgroundColor)
+    ContentLinkForegroundColor = property(get_ContentLinkForegroundColor, put_ContentLinkForegroundColor)
+    ContentLinkProviders = property(get_ContentLinkProviders, put_ContentLinkProviders)
+    Description = property(get_Description, put_Description)
+    DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
+    DisabledFormattingAccelerators = property(get_DisabledFormattingAccelerators, put_DisabledFormattingAccelerators)
     Document = property(get_Document, None)
-    InputScope = property(get_InputScope, put_InputScope)
+    HandwritingView = property(get_HandwritingView, put_HandwritingView)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
-    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
-    DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
-    ClipboardCopyFormat = property(get_ClipboardCopyFormat, put_ClipboardCopyFormat)
-    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
-    MaxLength = property(get_MaxLength, put_MaxLength)
     HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
-    CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
-    DisabledFormattingAccelerators = property(get_DisabledFormattingAccelerators, put_DisabledFormattingAccelerators)
-    ContentLinkForegroundColor = property(get_ContentLinkForegroundColor, put_ContentLinkForegroundColor)
-    ContentLinkBackgroundColor = property(get_ContentLinkBackgroundColor, put_ContentLinkBackgroundColor)
-    ContentLinkProviders = property(get_ContentLinkProviders, put_ContentLinkProviders)
-    HandwritingView = property(get_HandwritingView, put_HandwritingView)
+    InputScope = property(get_InputScope, put_InputScope)
+    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
     IsHandwritingViewEnabled = property(get_IsHandwritingViewEnabled, put_IsHandwritingViewEnabled)
-    TextDocument = property(get_TextDocument, None)
-    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
+    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
+    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
+    MaxLength = property(get_MaxLength, put_MaxLength)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
     ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
-    Description = property(get_Description, put_Description)
-    _RichEditBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
-    _RichEditBox_Meta_.ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty.__wrapped__, None)
-    _RichEditBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _RichEditBox_Meta_.ContentLinkForegroundColorProperty = property(get_ContentLinkForegroundColorProperty.__wrapped__, None)
-    _RichEditBox_Meta_.ContentLinkBackgroundColorProperty = property(get_ContentLinkBackgroundColorProperty.__wrapped__, None)
-    _RichEditBox_Meta_.ContentLinkProvidersProperty = property(get_ContentLinkProvidersProperty.__wrapped__, None)
-    _RichEditBox_Meta_.HandwritingViewProperty = property(get_HandwritingViewProperty.__wrapped__, None)
-    _RichEditBox_Meta_.IsHandwritingViewEnabledProperty = property(get_IsHandwritingViewEnabledProperty.__wrapped__, None)
-    _RichEditBox_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextDocument = property(get_TextDocument, None)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
+    _RichEditBox_Meta_.AcceptsReturnProperty = property(get_AcceptsReturnProperty.__wrapped__, None)
     _RichEditBox_Meta_.CharacterCasingProperty = property(get_CharacterCasingProperty.__wrapped__, None)
-    _RichEditBox_Meta_.DisabledFormattingAcceleratorsProperty = property(get_DisabledFormattingAcceleratorsProperty.__wrapped__, None)
-    _RichEditBox_Meta_.SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty.__wrapped__, None)
-    _RichEditBox_Meta_.MaxLengthProperty = property(get_MaxLengthProperty.__wrapped__, None)
     _RichEditBox_Meta_.ClipboardCopyFormatProperty = property(get_ClipboardCopyFormatProperty.__wrapped__, None)
+    _RichEditBox_Meta_.ContentLinkBackgroundColorProperty = property(get_ContentLinkBackgroundColorProperty.__wrapped__, None)
+    _RichEditBox_Meta_.ContentLinkForegroundColorProperty = property(get_ContentLinkForegroundColorProperty.__wrapped__, None)
+    _RichEditBox_Meta_.ContentLinkProvidersProperty = property(get_ContentLinkProvidersProperty.__wrapped__, None)
+    _RichEditBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
     _RichEditBox_Meta_.DesiredCandidateWindowAlignmentProperty = property(get_DesiredCandidateWindowAlignmentProperty.__wrapped__, None)
-    _RichEditBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _RichEditBox_Meta_.DisabledFormattingAcceleratorsProperty = property(get_DisabledFormattingAcceleratorsProperty.__wrapped__, None)
+    _RichEditBox_Meta_.HandwritingViewProperty = property(get_HandwritingViewProperty.__wrapped__, None)
     _RichEditBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _RichEditBox_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _RichEditBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
-    _RichEditBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
-    _RichEditBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
+    _RichEditBox_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    _RichEditBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
     _RichEditBox_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
+    _RichEditBox_Meta_.IsHandwritingViewEnabledProperty = property(get_IsHandwritingViewEnabledProperty.__wrapped__, None)
     _RichEditBox_Meta_.IsReadOnlyProperty = property(get_IsReadOnlyProperty.__wrapped__, None)
-    _RichEditBox_Meta_.AcceptsReturnProperty = property(get_AcceptsReturnProperty.__wrapped__, None)
-    _RichEditBox_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
-    _RichEditBox_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
     _RichEditBox_Meta_.IsSpellCheckEnabledProperty = property(get_IsSpellCheckEnabledProperty.__wrapped__, None)
     _RichEditBox_Meta_.IsTextPredictionEnabledProperty = property(get_IsTextPredictionEnabledProperty.__wrapped__, None)
-    _RichEditBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
+    _RichEditBox_Meta_.MaxLengthProperty = property(get_MaxLengthProperty.__wrapped__, None)
+    _RichEditBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
+    _RichEditBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
+    _RichEditBox_Meta_.ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty.__wrapped__, None)
+    _RichEditBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
+    _RichEditBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
+    _RichEditBox_Meta_.SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty.__wrapped__, None)
+    _RichEditBox_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
+    _RichEditBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _RichEditBox_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
 class RichEditBoxSelectionChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IRichEditBoxSelectionChangingEventArgs
@@ -22588,9 +23527,9 @@ class RichEditBoxSelectionChangingEventArgs(ComPtr):
     def get_Cancel(self: win32more.Windows.UI.Xaml.Controls.IRichEditBoxSelectionChangingEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.IRichEditBoxSelectionChangingEventArgs, value: Boolean) -> Void: ...
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionLength = property(get_SelectionLength, None)
     Cancel = property(get_Cancel, put_Cancel)
+    SelectionLength = property(get_SelectionLength, None)
+    SelectionStart = property(get_SelectionStart, None)
 class RichEditBoxTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IRichEditBoxTextChangingEventArgs
@@ -22598,15 +23537,22 @@ class RichEditBoxTextChangingEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_IsContentChanging(self: win32more.Windows.UI.Xaml.Controls.IRichEditBoxTextChangingEventArgs2) -> Boolean: ...
     IsContentChanging = property(get_IsContentChanging, None)
-RichEditClipboardFormat = Int32
-RichEditClipboardFormat_AllFormats: RichEditClipboardFormat = 0
-RichEditClipboardFormat_PlainText: RichEditClipboardFormat = 1
+class RichEditClipboardFormat(Int32):  # enum
+    AllFormats = 0
+    PlainText = 1
 class _RichTextBlock_Meta_(ComPtr.__class__):
     pass
 class RichTextBlock(ComPtr, metaclass=_RichTextBlock_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IRichTextBlock
     _classid_ = 'Windows.UI.Xaml.Controls.RichTextBlock'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RichTextBlock.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.RichTextBlock: ...
     @winrt_mixinmethod
@@ -22813,77 +23759,84 @@ class RichTextBlock(ComPtr, metaclass=_RichTextBlock_Meta_):
     def get_SelectedTextProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichTextBlockStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TextIndentProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichTextBlockStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
-    Foreground = property(get_Foreground, put_Foreground)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    TextTrimming = property(get_TextTrimming, put_TextTrimming)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    BaselineOffset = property(get_BaselineOffset, None)
     Blocks = property(get_Blocks, None)
-    Padding = property(get_Padding, put_Padding)
+    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentStart = property(get_ContentStart, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
+    Foreground = property(get_Foreground, put_Foreground)
+    HasOverflowContent = property(get_HasOverflowContent, None)
+    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
+    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
+    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
+    IsTextTrimmed = property(get_IsTextTrimmed, None)
     LineHeight = property(get_LineHeight, put_LineHeight)
     LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
-    OverflowContentTarget = property(get_OverflowContentTarget, put_OverflowContentTarget)
-    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
-    HasOverflowContent = property(get_HasOverflowContent, None)
-    SelectedText = property(get_SelectedText, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionEnd = property(get_SelectionEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
-    TextIndent = property(get_TextIndent, put_TextIndent)
     MaxLines = property(get_MaxLines, put_MaxLines)
-    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
     OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
-    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
-    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
-    TextDecorations = property(get_TextDecorations, put_TextDecorations)
-    IsTextTrimmed = property(get_IsTextTrimmed, None)
-    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
-    TextHighlighters = property(get_TextHighlighters, None)
+    OverflowContentTarget = property(get_OverflowContentTarget, put_OverflowContentTarget)
+    Padding = property(get_Padding, put_Padding)
+    SelectedText = property(get_SelectedText, None)
+    SelectionEnd = property(get_SelectionEnd, None)
     SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
-    _RichTextBlock_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.IsTextTrimmedProperty = property(get_IsTextTrimmedProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextDecorationsProperty = property(get_TextDecorationsProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    SelectionStart = property(get_SelectionStart, None)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextDecorations = property(get_TextDecorations, put_TextDecorations)
+    TextHighlighters = property(get_TextHighlighters, None)
+    TextIndent = property(get_TextIndent, put_TextIndent)
+    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
+    TextTrimming = property(get_TextTrimming, put_TextTrimming)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
+    _RichTextBlock_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
     _RichTextBlock_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
     _RichTextBlock_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
     _RichTextBlock_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextTrimmingProperty = property(get_TextTrimmingProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.HasOverflowContentProperty = property(get_HasOverflowContentProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.IsTextTrimmedProperty = property(get_IsTextTrimmedProperty.__wrapped__, None)
     _RichTextBlock_Meta_.LineHeightProperty = property(get_LineHeightProperty.__wrapped__, None)
     _RichTextBlock_Meta_.LineStackingStrategyProperty = property(get_LineStackingStrategyProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
     _RichTextBlock_Meta_.OverflowContentTargetProperty = property(get_OverflowContentTargetProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty.__wrapped__, None)
-    _RichTextBlock_Meta_.HasOverflowContentProperty = property(get_HasOverflowContentProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
     _RichTextBlock_Meta_.SelectedTextProperty = property(get_SelectedTextProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextDecorationsProperty = property(get_TextDecorationsProperty.__wrapped__, None)
     _RichTextBlock_Meta_.TextIndentProperty = property(get_TextIndentProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextTrimmingProperty = property(get_TextTrimmingProperty.__wrapped__, None)
+    _RichTextBlock_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
 class _RichTextBlockOverflow_Meta_(ComPtr.__class__):
     pass
 class RichTextBlockOverflow(ComPtr, metaclass=_RichTextBlockOverflow_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IRichTextBlockOverflow
     _classid_ = 'Windows.UI.Xaml.Controls.RichTextBlockOverflow'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RichTextBlockOverflow.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.RichTextBlockOverflow: ...
     @winrt_mixinmethod
@@ -22928,26 +23881,33 @@ class RichTextBlockOverflow(ComPtr, metaclass=_RichTextBlockOverflow_Meta_):
     def get_PaddingProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichTextBlockOverflowStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_HasOverflowContentProperty(cls: win32more.Windows.UI.Xaml.Controls.IRichTextBlockOverflowStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BaselineOffset = property(get_BaselineOffset, None)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentSource = property(get_ContentSource, None)
+    ContentStart = property(get_ContentStart, None)
+    HasOverflowContent = property(get_HasOverflowContent, None)
+    IsTextTrimmed = property(get_IsTextTrimmed, None)
+    MaxLines = property(get_MaxLines, put_MaxLines)
     OverflowContentTarget = property(get_OverflowContentTarget, put_OverflowContentTarget)
     Padding = property(get_Padding, put_Padding)
-    ContentSource = property(get_ContentSource, None)
-    HasOverflowContent = property(get_HasOverflowContent, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
-    MaxLines = property(get_MaxLines, put_MaxLines)
-    IsTextTrimmed = property(get_IsTextTrimmed, None)
+    _RichTextBlockOverflow_Meta_.HasOverflowContentProperty = property(get_HasOverflowContentProperty.__wrapped__, None)
     _RichTextBlockOverflow_Meta_.IsTextTrimmedProperty = property(get_IsTextTrimmedProperty.__wrapped__, None)
     _RichTextBlockOverflow_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
     _RichTextBlockOverflow_Meta_.OverflowContentTargetProperty = property(get_OverflowContentTargetProperty.__wrapped__, None)
     _RichTextBlockOverflow_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-    _RichTextBlockOverflow_Meta_.HasOverflowContentProperty = property(get_HasOverflowContentProperty.__wrapped__, None)
 class _RowDefinition_Meta_(ComPtr.__class__):
     pass
 class RowDefinition(ComPtr, metaclass=_RowDefinition_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.IRowDefinition
     _classid_ = 'Windows.UI.Xaml.Controls.RowDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.RowDefinition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.RowDefinition: ...
     @winrt_mixinmethod
@@ -22970,10 +23930,10 @@ class RowDefinition(ComPtr, metaclass=_RowDefinition_Meta_):
     def get_MaxHeightProperty(cls: win32more.Windows.UI.Xaml.Controls.IRowDefinitionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MinHeightProperty(cls: win32more.Windows.UI.Xaml.Controls.IRowDefinitionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ActualHeight = property(get_ActualHeight, None)
     Height = property(get_Height, put_Height)
     MaxHeight = property(get_MaxHeight, put_MaxHeight)
     MinHeight = property(get_MinHeight, put_MinHeight)
-    ActualHeight = property(get_ActualHeight, None)
     _RowDefinition_Meta_.HeightProperty = property(get_HeightProperty.__wrapped__, None)
     _RowDefinition_Meta_.MaxHeightProperty = property(get_MaxHeightProperty.__wrapped__, None)
     _RowDefinition_Meta_.MinHeightProperty = property(get_MinHeightProperty.__wrapped__, None)
@@ -23008,17 +23968,24 @@ class RowDefinitionCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Xaml.Controls.RowDefinition]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.UI.Xaml.Controls.RowDefinition]: ...
     Size = property(get_Size, None)
-ScrollBarVisibility = Int32
-ScrollBarVisibility_Disabled: ScrollBarVisibility = 0
-ScrollBarVisibility_Auto: ScrollBarVisibility = 1
-ScrollBarVisibility_Hidden: ScrollBarVisibility = 2
-ScrollBarVisibility_Visible: ScrollBarVisibility = 3
+class ScrollBarVisibility(Int32):  # enum
+    Disabled = 0
+    Auto = 1
+    Hidden = 2
+    Visible = 3
 class _ScrollContentPresenter_Meta_(ComPtr.__class__):
     pass
 class ScrollContentPresenter(ComPtr, metaclass=_ScrollContentPresenter_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentPresenter
     default_interface: win32more.Windows.UI.Xaml.Controls.IScrollContentPresenter
     _classid_ = 'Windows.UI.Xaml.Controls.ScrollContentPresenter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ScrollContentPresenter.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ScrollContentPresenter: ...
     @winrt_mixinmethod
@@ -23087,32 +24054,39 @@ class ScrollContentPresenter(ComPtr, metaclass=_ScrollContentPresenter_Meta_):
     def get_CanContentRenderOutsideBoundsProperty(cls: win32more.Windows.UI.Xaml.Controls.IScrollContentPresenterStatics2) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SizesContentToTemplatedParentProperty(cls: win32more.Windows.UI.Xaml.Controls.IScrollContentPresenterStatics2) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CanVerticallyScroll = property(get_CanVerticallyScroll, put_CanVerticallyScroll)
-    CanHorizontallyScroll = property(get_CanHorizontallyScroll, put_CanHorizontallyScroll)
-    ExtentWidth = property(get_ExtentWidth, None)
-    ExtentHeight = property(get_ExtentHeight, None)
-    ViewportWidth = property(get_ViewportWidth, None)
-    ViewportHeight = property(get_ViewportHeight, None)
-    HorizontalOffset = property(get_HorizontalOffset, None)
-    VerticalOffset = property(get_VerticalOffset, None)
-    ScrollOwner = property(get_ScrollOwner, put_ScrollOwner)
     CanContentRenderOutsideBounds = property(get_CanContentRenderOutsideBounds, put_CanContentRenderOutsideBounds)
+    CanHorizontallyScroll = property(get_CanHorizontallyScroll, put_CanHorizontallyScroll)
+    CanVerticallyScroll = property(get_CanVerticallyScroll, put_CanVerticallyScroll)
+    ExtentHeight = property(get_ExtentHeight, None)
+    ExtentWidth = property(get_ExtentWidth, None)
+    HorizontalOffset = property(get_HorizontalOffset, None)
+    ScrollOwner = property(get_ScrollOwner, put_ScrollOwner)
     SizesContentToTemplatedParent = property(get_SizesContentToTemplatedParent, put_SizesContentToTemplatedParent)
+    VerticalOffset = property(get_VerticalOffset, None)
+    ViewportHeight = property(get_ViewportHeight, None)
+    ViewportWidth = property(get_ViewportWidth, None)
     _ScrollContentPresenter_Meta_.CanContentRenderOutsideBoundsProperty = property(get_CanContentRenderOutsideBoundsProperty.__wrapped__, None)
     _ScrollContentPresenter_Meta_.SizesContentToTemplatedParentProperty = property(get_SizesContentToTemplatedParentProperty.__wrapped__, None)
-ScrollIntoViewAlignment = Int32
-ScrollIntoViewAlignment_Default: ScrollIntoViewAlignment = 0
-ScrollIntoViewAlignment_Leading: ScrollIntoViewAlignment = 1
-ScrollMode = Int32
-ScrollMode_Disabled: ScrollMode = 0
-ScrollMode_Enabled: ScrollMode = 1
-ScrollMode_Auto: ScrollMode = 2
+class ScrollIntoViewAlignment(Int32):  # enum
+    Default = 0
+    Leading = 1
+class ScrollMode(Int32):  # enum
+    Disabled = 0
+    Enabled = 1
+    Auto = 2
 class _ScrollViewer_Meta_(ComPtr.__class__):
     pass
 class ScrollViewer(ComPtr, metaclass=_ScrollViewer_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IScrollViewer
     _classid_ = 'Windows.UI.Xaml.Controls.ScrollViewer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ScrollViewer.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ScrollViewer: ...
     @winrt_mixinmethod
@@ -23429,87 +24403,87 @@ class ScrollViewer(ComPtr, metaclass=_ScrollViewer_Meta_):
     def GetBringIntoViewOnFocusChange(cls: win32more.Windows.UI.Xaml.Controls.IScrollViewerStatics, element: win32more.Windows.UI.Xaml.DependencyObject) -> Boolean: ...
     @winrt_classmethod
     def SetBringIntoViewOnFocusChange(cls: win32more.Windows.UI.Xaml.Controls.IScrollViewerStatics, element: win32more.Windows.UI.Xaml.DependencyObject, bringIntoViewOnFocusChange: Boolean) -> Void: ...
+    BringIntoViewOnFocusChange = property(get_BringIntoViewOnFocusChange, put_BringIntoViewOnFocusChange)
+    CanContentRenderOutsideBounds = property(get_CanContentRenderOutsideBounds, put_CanContentRenderOutsideBounds)
+    ComputedHorizontalScrollBarVisibility = property(get_ComputedHorizontalScrollBarVisibility, None)
+    ComputedVerticalScrollBarVisibility = property(get_ComputedVerticalScrollBarVisibility, None)
+    CurrentAnchor = property(get_CurrentAnchor, None)
+    ExtentHeight = property(get_ExtentHeight, None)
+    ExtentWidth = property(get_ExtentWidth, None)
+    HorizontalAnchorRatio = property(get_HorizontalAnchorRatio, put_HorizontalAnchorRatio)
+    HorizontalOffset = property(get_HorizontalOffset, None)
     HorizontalScrollBarVisibility = property(get_HorizontalScrollBarVisibility, put_HorizontalScrollBarVisibility)
-    VerticalScrollBarVisibility = property(get_VerticalScrollBarVisibility, put_VerticalScrollBarVisibility)
+    HorizontalScrollMode = property(get_HorizontalScrollMode, put_HorizontalScrollMode)
+    HorizontalSnapPointsAlignment = property(get_HorizontalSnapPointsAlignment, put_HorizontalSnapPointsAlignment)
+    HorizontalSnapPointsType = property(get_HorizontalSnapPointsType, put_HorizontalSnapPointsType)
+    IsDeferredScrollingEnabled = property(get_IsDeferredScrollingEnabled, put_IsDeferredScrollingEnabled)
     IsHorizontalRailEnabled = property(get_IsHorizontalRailEnabled, put_IsHorizontalRailEnabled)
-    IsVerticalRailEnabled = property(get_IsVerticalRailEnabled, put_IsVerticalRailEnabled)
     IsHorizontalScrollChainingEnabled = property(get_IsHorizontalScrollChainingEnabled, put_IsHorizontalScrollChainingEnabled)
+    IsScrollInertiaEnabled = property(get_IsScrollInertiaEnabled, put_IsScrollInertiaEnabled)
+    IsVerticalRailEnabled = property(get_IsVerticalRailEnabled, put_IsVerticalRailEnabled)
     IsVerticalScrollChainingEnabled = property(get_IsVerticalScrollChainingEnabled, put_IsVerticalScrollChainingEnabled)
     IsZoomChainingEnabled = property(get_IsZoomChainingEnabled, put_IsZoomChainingEnabled)
-    IsScrollInertiaEnabled = property(get_IsScrollInertiaEnabled, put_IsScrollInertiaEnabled)
     IsZoomInertiaEnabled = property(get_IsZoomInertiaEnabled, put_IsZoomInertiaEnabled)
-    HorizontalScrollMode = property(get_HorizontalScrollMode, put_HorizontalScrollMode)
-    VerticalScrollMode = property(get_VerticalScrollMode, put_VerticalScrollMode)
-    ZoomMode = property(get_ZoomMode, put_ZoomMode)
-    HorizontalSnapPointsAlignment = property(get_HorizontalSnapPointsAlignment, put_HorizontalSnapPointsAlignment)
-    VerticalSnapPointsAlignment = property(get_VerticalSnapPointsAlignment, put_VerticalSnapPointsAlignment)
-    HorizontalSnapPointsType = property(get_HorizontalSnapPointsType, put_HorizontalSnapPointsType)
-    VerticalSnapPointsType = property(get_VerticalSnapPointsType, put_VerticalSnapPointsType)
-    ZoomSnapPointsType = property(get_ZoomSnapPointsType, put_ZoomSnapPointsType)
-    HorizontalOffset = property(get_HorizontalOffset, None)
-    ViewportWidth = property(get_ViewportWidth, None)
-    ScrollableWidth = property(get_ScrollableWidth, None)
-    ComputedHorizontalScrollBarVisibility = property(get_ComputedHorizontalScrollBarVisibility, None)
-    ExtentWidth = property(get_ExtentWidth, None)
-    VerticalOffset = property(get_VerticalOffset, None)
-    ViewportHeight = property(get_ViewportHeight, None)
-    ScrollableHeight = property(get_ScrollableHeight, None)
-    ComputedVerticalScrollBarVisibility = property(get_ComputedVerticalScrollBarVisibility, None)
-    ExtentHeight = property(get_ExtentHeight, None)
-    MinZoomFactor = property(get_MinZoomFactor, put_MinZoomFactor)
-    MaxZoomFactor = property(get_MaxZoomFactor, put_MaxZoomFactor)
-    ZoomFactor = property(get_ZoomFactor, None)
-    ZoomSnapPoints = property(get_ZoomSnapPoints, None)
-    IsDeferredScrollingEnabled = property(get_IsDeferredScrollingEnabled, put_IsDeferredScrollingEnabled)
-    BringIntoViewOnFocusChange = property(get_BringIntoViewOnFocusChange, put_BringIntoViewOnFocusChange)
-    TopLeftHeader = property(get_TopLeftHeader, put_TopLeftHeader)
     LeftHeader = property(get_LeftHeader, put_LeftHeader)
-    TopHeader = property(get_TopHeader, put_TopHeader)
+    MaxZoomFactor = property(get_MaxZoomFactor, put_MaxZoomFactor)
+    MinZoomFactor = property(get_MinZoomFactor, put_MinZoomFactor)
     ReduceViewportForCoreInputViewOcclusions = property(get_ReduceViewportForCoreInputViewOcclusions, put_ReduceViewportForCoreInputViewOcclusions)
-    HorizontalAnchorRatio = property(get_HorizontalAnchorRatio, put_HorizontalAnchorRatio)
+    ScrollableHeight = property(get_ScrollableHeight, None)
+    ScrollableWidth = property(get_ScrollableWidth, None)
+    TopHeader = property(get_TopHeader, put_TopHeader)
+    TopLeftHeader = property(get_TopLeftHeader, put_TopLeftHeader)
     VerticalAnchorRatio = property(get_VerticalAnchorRatio, put_VerticalAnchorRatio)
-    CanContentRenderOutsideBounds = property(get_CanContentRenderOutsideBounds, put_CanContentRenderOutsideBounds)
-    CurrentAnchor = property(get_CurrentAnchor, None)
-    _ScrollViewer_Meta_.ReduceViewportForCoreInputViewOcclusionsProperty = property(get_ReduceViewportForCoreInputViewOcclusionsProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.HorizontalAnchorRatioProperty = property(get_HorizontalAnchorRatioProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.VerticalAnchorRatioProperty = property(get_VerticalAnchorRatioProperty.__wrapped__, None)
+    VerticalOffset = property(get_VerticalOffset, None)
+    VerticalScrollBarVisibility = property(get_VerticalScrollBarVisibility, put_VerticalScrollBarVisibility)
+    VerticalScrollMode = property(get_VerticalScrollMode, put_VerticalScrollMode)
+    VerticalSnapPointsAlignment = property(get_VerticalSnapPointsAlignment, put_VerticalSnapPointsAlignment)
+    VerticalSnapPointsType = property(get_VerticalSnapPointsType, put_VerticalSnapPointsType)
+    ViewportHeight = property(get_ViewportHeight, None)
+    ViewportWidth = property(get_ViewportWidth, None)
+    ZoomFactor = property(get_ZoomFactor, None)
+    ZoomMode = property(get_ZoomMode, put_ZoomMode)
+    ZoomSnapPoints = property(get_ZoomSnapPoints, None)
+    ZoomSnapPointsType = property(get_ZoomSnapPointsType, put_ZoomSnapPointsType)
+    _ScrollViewer_Meta_.BringIntoViewOnFocusChangeProperty = property(get_BringIntoViewOnFocusChangeProperty.__wrapped__, None)
     _ScrollViewer_Meta_.CanContentRenderOutsideBoundsProperty = property(get_CanContentRenderOutsideBoundsProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.TopLeftHeaderProperty = property(get_TopLeftHeaderProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.LeftHeaderProperty = property(get_LeftHeaderProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.TopHeaderProperty = property(get_TopHeaderProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.HorizontalSnapPointsAlignmentProperty = property(get_HorizontalSnapPointsAlignmentProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.VerticalSnapPointsAlignmentProperty = property(get_VerticalSnapPointsAlignmentProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.HorizontalSnapPointsTypeProperty = property(get_HorizontalSnapPointsTypeProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.VerticalSnapPointsTypeProperty = property(get_VerticalSnapPointsTypeProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ZoomSnapPointsTypeProperty = property(get_ZoomSnapPointsTypeProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.HorizontalOffsetProperty = property(get_HorizontalOffsetProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ViewportWidthProperty = property(get_ViewportWidthProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ScrollableWidthProperty = property(get_ScrollableWidthProperty.__wrapped__, None)
     _ScrollViewer_Meta_.ComputedHorizontalScrollBarVisibilityProperty = property(get_ComputedHorizontalScrollBarVisibilityProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ExtentWidthProperty = property(get_ExtentWidthProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.VerticalOffsetProperty = property(get_VerticalOffsetProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ViewportHeightProperty = property(get_ViewportHeightProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ScrollableHeightProperty = property(get_ScrollableHeightProperty.__wrapped__, None)
     _ScrollViewer_Meta_.ComputedVerticalScrollBarVisibilityProperty = property(get_ComputedVerticalScrollBarVisibilityProperty.__wrapped__, None)
     _ScrollViewer_Meta_.ExtentHeightProperty = property(get_ExtentHeightProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.MinZoomFactorProperty = property(get_MinZoomFactorProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.MaxZoomFactorProperty = property(get_MaxZoomFactorProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ZoomFactorProperty = property(get_ZoomFactorProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.ZoomSnapPointsProperty = property(get_ZoomSnapPointsProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ExtentWidthProperty = property(get_ExtentWidthProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.HorizontalAnchorRatioProperty = property(get_HorizontalAnchorRatioProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.HorizontalOffsetProperty = property(get_HorizontalOffsetProperty.__wrapped__, None)
     _ScrollViewer_Meta_.HorizontalScrollBarVisibilityProperty = property(get_HorizontalScrollBarVisibilityProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.VerticalScrollBarVisibilityProperty = property(get_VerticalScrollBarVisibilityProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.HorizontalScrollModeProperty = property(get_HorizontalScrollModeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.HorizontalSnapPointsAlignmentProperty = property(get_HorizontalSnapPointsAlignmentProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.HorizontalSnapPointsTypeProperty = property(get_HorizontalSnapPointsTypeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.IsDeferredScrollingEnabledProperty = property(get_IsDeferredScrollingEnabledProperty.__wrapped__, None)
     _ScrollViewer_Meta_.IsHorizontalRailEnabledProperty = property(get_IsHorizontalRailEnabledProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.IsVerticalRailEnabledProperty = property(get_IsVerticalRailEnabledProperty.__wrapped__, None)
     _ScrollViewer_Meta_.IsHorizontalScrollChainingEnabledProperty = property(get_IsHorizontalScrollChainingEnabledProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.IsScrollInertiaEnabledProperty = property(get_IsScrollInertiaEnabledProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.IsVerticalRailEnabledProperty = property(get_IsVerticalRailEnabledProperty.__wrapped__, None)
     _ScrollViewer_Meta_.IsVerticalScrollChainingEnabledProperty = property(get_IsVerticalScrollChainingEnabledProperty.__wrapped__, None)
     _ScrollViewer_Meta_.IsZoomChainingEnabledProperty = property(get_IsZoomChainingEnabledProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.IsScrollInertiaEnabledProperty = property(get_IsScrollInertiaEnabledProperty.__wrapped__, None)
     _ScrollViewer_Meta_.IsZoomInertiaEnabledProperty = property(get_IsZoomInertiaEnabledProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.HorizontalScrollModeProperty = property(get_HorizontalScrollModeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.LeftHeaderProperty = property(get_LeftHeaderProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.MaxZoomFactorProperty = property(get_MaxZoomFactorProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.MinZoomFactorProperty = property(get_MinZoomFactorProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ReduceViewportForCoreInputViewOcclusionsProperty = property(get_ReduceViewportForCoreInputViewOcclusionsProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ScrollableHeightProperty = property(get_ScrollableHeightProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ScrollableWidthProperty = property(get_ScrollableWidthProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.TopHeaderProperty = property(get_TopHeaderProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.TopLeftHeaderProperty = property(get_TopLeftHeaderProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.VerticalAnchorRatioProperty = property(get_VerticalAnchorRatioProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.VerticalOffsetProperty = property(get_VerticalOffsetProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.VerticalScrollBarVisibilityProperty = property(get_VerticalScrollBarVisibilityProperty.__wrapped__, None)
     _ScrollViewer_Meta_.VerticalScrollModeProperty = property(get_VerticalScrollModeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.VerticalSnapPointsAlignmentProperty = property(get_VerticalSnapPointsAlignmentProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.VerticalSnapPointsTypeProperty = property(get_VerticalSnapPointsTypeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ViewportHeightProperty = property(get_ViewportHeightProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ViewportWidthProperty = property(get_ViewportWidthProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ZoomFactorProperty = property(get_ZoomFactorProperty.__wrapped__, None)
     _ScrollViewer_Meta_.ZoomModeProperty = property(get_ZoomModeProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.IsDeferredScrollingEnabledProperty = property(get_IsDeferredScrollingEnabledProperty.__wrapped__, None)
-    _ScrollViewer_Meta_.BringIntoViewOnFocusChangeProperty = property(get_BringIntoViewOnFocusChangeProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ZoomSnapPointsProperty = property(get_ZoomSnapPointsProperty.__wrapped__, None)
+    _ScrollViewer_Meta_.ZoomSnapPointsTypeProperty = property(get_ZoomSnapPointsTypeProperty.__wrapped__, None)
 class ScrollViewerView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IScrollViewerView
@@ -23527,6 +24501,13 @@ class ScrollViewerViewChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IScrollViewerViewChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs: ...
     @winrt_mixinmethod
@@ -23542,15 +24523,22 @@ class ScrollViewerViewChangingEventArgs(ComPtr):
     def get_FinalView(self: win32more.Windows.UI.Xaml.Controls.IScrollViewerViewChangingEventArgs) -> win32more.Windows.UI.Xaml.Controls.ScrollViewerView: ...
     @winrt_mixinmethod
     def get_IsInertial(self: win32more.Windows.UI.Xaml.Controls.IScrollViewerViewChangingEventArgs) -> Boolean: ...
-    NextView = property(get_NextView, None)
     FinalView = property(get_FinalView, None)
     IsInertial = property(get_IsInertial, None)
+    NextView = property(get_NextView, None)
 class _SearchBox_Meta_(ComPtr.__class__):
     pass
 class SearchBox(ComPtr, metaclass=_SearchBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ISearchBox
     _classid_ = 'Windows.UI.Xaml.Controls.SearchBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SearchBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISearchBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SearchBox: ...
     @winrt_mixinmethod
@@ -23611,18 +24599,18 @@ class SearchBox(ComPtr, metaclass=_SearchBox_Meta_):
     def get_FocusOnKeyboardInputProperty(cls: win32more.Windows.UI.Xaml.Controls.ISearchBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ChooseSuggestionOnEnterProperty(cls: win32more.Windows.UI.Xaml.Controls.ISearchBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SearchHistoryEnabled = property(get_SearchHistoryEnabled, put_SearchHistoryEnabled)
-    SearchHistoryContext = property(get_SearchHistoryContext, put_SearchHistoryContext)
+    ChooseSuggestionOnEnter = property(get_ChooseSuggestionOnEnter, put_ChooseSuggestionOnEnter)
+    FocusOnKeyboardInput = property(get_FocusOnKeyboardInput, put_FocusOnKeyboardInput)
     PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
     QueryText = property(get_QueryText, put_QueryText)
-    FocusOnKeyboardInput = property(get_FocusOnKeyboardInput, put_FocusOnKeyboardInput)
-    ChooseSuggestionOnEnter = property(get_ChooseSuggestionOnEnter, put_ChooseSuggestionOnEnter)
-    _SearchBox_Meta_.SearchHistoryEnabledProperty = property(get_SearchHistoryEnabledProperty.__wrapped__, None)
-    _SearchBox_Meta_.SearchHistoryContextProperty = property(get_SearchHistoryContextProperty.__wrapped__, None)
+    SearchHistoryContext = property(get_SearchHistoryContext, put_SearchHistoryContext)
+    SearchHistoryEnabled = property(get_SearchHistoryEnabled, put_SearchHistoryEnabled)
+    _SearchBox_Meta_.ChooseSuggestionOnEnterProperty = property(get_ChooseSuggestionOnEnterProperty.__wrapped__, None)
+    _SearchBox_Meta_.FocusOnKeyboardInputProperty = property(get_FocusOnKeyboardInputProperty.__wrapped__, None)
     _SearchBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
     _SearchBox_Meta_.QueryTextProperty = property(get_QueryTextProperty.__wrapped__, None)
-    _SearchBox_Meta_.FocusOnKeyboardInputProperty = property(get_FocusOnKeyboardInputProperty.__wrapped__, None)
-    _SearchBox_Meta_.ChooseSuggestionOnEnterProperty = property(get_ChooseSuggestionOnEnterProperty.__wrapped__, None)
+    _SearchBox_Meta_.SearchHistoryContextProperty = property(get_SearchHistoryContextProperty.__wrapped__, None)
+    _SearchBox_Meta_.SearchHistoryEnabledProperty = property(get_SearchHistoryEnabledProperty.__wrapped__, None)
 class SearchBoxQueryChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISearchBoxQueryChangedEventArgs
@@ -23633,9 +24621,9 @@ class SearchBoxQueryChangedEventArgs(ComPtr):
     def get_Language(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxQueryChangedEventArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_LinguisticDetails(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxQueryChangedEventArgs) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
-    QueryText = property(get_QueryText, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
+    QueryText = property(get_QueryText, None)
 class SearchBoxQuerySubmittedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISearchBoxQuerySubmittedEventArgs
@@ -23648,22 +24636,29 @@ class SearchBoxQuerySubmittedEventArgs(ComPtr):
     def get_LinguisticDetails(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxQuerySubmittedEventArgs) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
     @winrt_mixinmethod
     def get_KeyModifiers(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxQuerySubmittedEventArgs) -> win32more.Windows.System.VirtualKeyModifiers: ...
-    QueryText = property(get_QueryText, None)
+    KeyModifiers = property(get_KeyModifiers, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
-    KeyModifiers = property(get_KeyModifiers, None)
+    QueryText = property(get_QueryText, None)
 class SearchBoxResultSuggestionChosenEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISearchBoxResultSuggestionChosenEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.SearchBoxResultSuggestionChosenEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SearchBoxResultSuggestionChosenEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.SearchBoxResultSuggestionChosenEventArgs: ...
     @winrt_mixinmethod
     def get_Tag(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxResultSuggestionChosenEventArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_KeyModifiers(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxResultSuggestionChosenEventArgs) -> win32more.Windows.System.VirtualKeyModifiers: ...
-    Tag = property(get_Tag, None)
     KeyModifiers = property(get_KeyModifiers, None)
+    Tag = property(get_Tag, None)
 class SearchBoxSuggestionsRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISearchBoxSuggestionsRequestedEventArgs
@@ -23676,9 +24671,9 @@ class SearchBoxSuggestionsRequestedEventArgs(ComPtr):
     def get_LinguisticDetails(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxSuggestionsRequestedEventArgs) -> win32more.Windows.ApplicationModel.Search.SearchQueryLinguisticDetails: ...
     @winrt_mixinmethod
     def get_Request(self: win32more.Windows.UI.Xaml.Controls.ISearchBoxSuggestionsRequestedEventArgs) -> win32more.Windows.ApplicationModel.Search.SearchSuggestionsRequest: ...
-    QueryText = property(get_QueryText, None)
     Language = property(get_Language, None)
     LinguisticDetails = property(get_LinguisticDetails, None)
+    QueryText = property(get_QueryText, None)
     Request = property(get_Request, None)
 class SectionsInViewChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -23698,6 +24693,13 @@ class SelectionChangedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Controls.ISelectionChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.SelectionChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Xaml.Controls.SelectionChangedEventArgs.CreateInstanceWithRemovedItemsAndAddedItems(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstanceWithRemovedItemsAndAddedItems(cls: win32more.Windows.UI.Xaml.Controls.ISelectionChangedEventArgsFactory, removedItems: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Win32.System.WinRT.IInspectable], addedItems: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Win32.System.WinRT.IInspectable], baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SelectionChangedEventArgs: ...
     @winrt_mixinmethod
@@ -23710,16 +24712,23 @@ class SelectionChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{e1a05352-5aa0-42ca-9cd9-068a14db6e68}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Controls.SelectionChangedEventArgs) -> Void: ...
-SelectionMode = Int32
-SelectionMode_Single: SelectionMode = 0
-SelectionMode_Multiple: SelectionMode = 1
-SelectionMode_Extended: SelectionMode = 2
+class SelectionMode(Int32):  # enum
+    Single = 0
+    Multiple = 1
+    Extended = 2
 class _SemanticZoom_Meta_(ComPtr.__class__):
     pass
 class SemanticZoom(ComPtr, metaclass=_SemanticZoom_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ISemanticZoom
     _classid_ = 'Windows.UI.Xaml.Controls.SemanticZoom'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SemanticZoom.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.SemanticZoom: ...
     @winrt_mixinmethod
@@ -23762,20 +24771,27 @@ class SemanticZoom(ComPtr, metaclass=_SemanticZoom_Meta_):
     def get_CanChangeViewsProperty(cls: win32more.Windows.UI.Xaml.Controls.ISemanticZoomStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsZoomOutButtonEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.ISemanticZoomStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ZoomedInView = property(get_ZoomedInView, put_ZoomedInView)
-    ZoomedOutView = property(get_ZoomedOutView, put_ZoomedOutView)
-    IsZoomedInViewActive = property(get_IsZoomedInViewActive, put_IsZoomedInViewActive)
     CanChangeViews = property(get_CanChangeViews, put_CanChangeViews)
     IsZoomOutButtonEnabled = property(get_IsZoomOutButtonEnabled, put_IsZoomOutButtonEnabled)
-    _SemanticZoom_Meta_.ZoomedInViewProperty = property(get_ZoomedInViewProperty.__wrapped__, None)
-    _SemanticZoom_Meta_.ZoomedOutViewProperty = property(get_ZoomedOutViewProperty.__wrapped__, None)
-    _SemanticZoom_Meta_.IsZoomedInViewActiveProperty = property(get_IsZoomedInViewActiveProperty.__wrapped__, None)
+    IsZoomedInViewActive = property(get_IsZoomedInViewActive, put_IsZoomedInViewActive)
+    ZoomedInView = property(get_ZoomedInView, put_ZoomedInView)
+    ZoomedOutView = property(get_ZoomedOutView, put_ZoomedOutView)
     _SemanticZoom_Meta_.CanChangeViewsProperty = property(get_CanChangeViewsProperty.__wrapped__, None)
     _SemanticZoom_Meta_.IsZoomOutButtonEnabledProperty = property(get_IsZoomOutButtonEnabledProperty.__wrapped__, None)
+    _SemanticZoom_Meta_.IsZoomedInViewActiveProperty = property(get_IsZoomedInViewActiveProperty.__wrapped__, None)
+    _SemanticZoom_Meta_.ZoomedInViewProperty = property(get_ZoomedInViewProperty.__wrapped__, None)
+    _SemanticZoom_Meta_.ZoomedOutViewProperty = property(get_ZoomedOutViewProperty.__wrapped__, None)
 class SemanticZoomLocation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISemanticZoomLocation
     _classid_ = 'Windows.UI.Xaml.Controls.SemanticZoomLocation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation: ...
     @winrt_mixinmethod
@@ -23786,12 +24802,19 @@ class SemanticZoomLocation(ComPtr):
     def get_Bounds(self: win32more.Windows.UI.Xaml.Controls.ISemanticZoomLocation) -> win32more.Windows.Foundation.Rect: ...
     @winrt_mixinmethod
     def put_Bounds(self: win32more.Windows.UI.Xaml.Controls.ISemanticZoomLocation, value: win32more.Windows.Foundation.Rect) -> Void: ...
-    Item = property(get_Item, put_Item)
     Bounds = property(get_Bounds, put_Bounds)
+    Item = property(get_Item, put_Item)
 class SemanticZoomViewChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISemanticZoomViewChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.SemanticZoomViewChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SemanticZoomViewChangedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.SemanticZoomViewChangedEventArgs: ...
     @winrt_mixinmethod
@@ -23806,9 +24829,9 @@ class SemanticZoomViewChangedEventArgs(ComPtr):
     def get_DestinationItem(self: win32more.Windows.UI.Xaml.Controls.ISemanticZoomViewChangedEventArgs) -> win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation: ...
     @winrt_mixinmethod
     def put_DestinationItem(self: win32more.Windows.UI.Xaml.Controls.ISemanticZoomViewChangedEventArgs, value: win32more.Windows.UI.Xaml.Controls.SemanticZoomLocation) -> Void: ...
+    DestinationItem = property(get_DestinationItem, put_DestinationItem)
     IsSourceZoomedInView = property(get_IsSourceZoomedInView, put_IsSourceZoomedInView)
     SourceItem = property(get_SourceItem, put_SourceItem)
-    DestinationItem = property(get_DestinationItem, put_DestinationItem)
 class SemanticZoomViewChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{1fa9161d-5d73-44fb-81ac-d1c9384919d4}')
@@ -23819,6 +24842,13 @@ class SettingsFlyout(ComPtr, metaclass=_SettingsFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.ISettingsFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.SettingsFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SettingsFlyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISettingsFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SettingsFlyout: ...
     @winrt_mixinmethod
@@ -23857,21 +24887,28 @@ class SettingsFlyout(ComPtr, metaclass=_SettingsFlyout_Meta_):
     def get_HeaderForegroundProperty(cls: win32more.Windows.UI.Xaml.Controls.ISettingsFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IconSourceProperty(cls: win32more.Windows.UI.Xaml.Controls.ISettingsFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Title = property(get_Title, put_Title)
     HeaderBackground = property(get_HeaderBackground, put_HeaderBackground)
     HeaderForeground = property(get_HeaderForeground, put_HeaderForeground)
     IconSource = property(get_IconSource, put_IconSource)
     TemplateSettings = property(get_TemplateSettings, None)
-    _SettingsFlyout_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
+    Title = property(get_Title, put_Title)
     _SettingsFlyout_Meta_.HeaderBackgroundProperty = property(get_HeaderBackgroundProperty.__wrapped__, None)
     _SettingsFlyout_Meta_.HeaderForegroundProperty = property(get_HeaderForegroundProperty.__wrapped__, None)
     _SettingsFlyout_Meta_.IconSourceProperty = property(get_IconSourceProperty.__wrapped__, None)
+    _SettingsFlyout_Meta_.TitleProperty = property(get_TitleProperty.__wrapped__, None)
 class _Slider_Meta_(ComPtr.__class__):
     pass
 class Slider(ComPtr, metaclass=_Slider_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.RangeBase
     default_interface: win32more.Windows.UI.Xaml.Controls.ISlider
     _classid_ = 'Windows.UI.Xaml.Controls.Slider'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Slider.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISliderFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.Slider: ...
     @winrt_mixinmethod
@@ -23940,40 +24977,47 @@ class Slider(ComPtr, metaclass=_Slider_Meta_):
     def get_IsThumbToolTipEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.ISliderStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ThumbToolTipValueConverterProperty(cls: win32more.Windows.UI.Xaml.Controls.ISliderStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IntermediateValue = property(get_IntermediateValue, put_IntermediateValue)
-    StepFrequency = property(get_StepFrequency, put_StepFrequency)
-    SnapsTo = property(get_SnapsTo, put_SnapsTo)
-    TickFrequency = property(get_TickFrequency, put_TickFrequency)
-    TickPlacement = property(get_TickPlacement, put_TickPlacement)
-    Orientation = property(get_Orientation, put_Orientation)
-    IsDirectionReversed = property(get_IsDirectionReversed, put_IsDirectionReversed)
-    IsThumbToolTipEnabled = property(get_IsThumbToolTipEnabled, put_IsThumbToolTipEnabled)
-    ThumbToolTipValueConverter = property(get_ThumbToolTipValueConverter, put_ThumbToolTipValueConverter)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
+    IntermediateValue = property(get_IntermediateValue, put_IntermediateValue)
+    IsDirectionReversed = property(get_IsDirectionReversed, put_IsDirectionReversed)
+    IsThumbToolTipEnabled = property(get_IsThumbToolTipEnabled, put_IsThumbToolTipEnabled)
+    Orientation = property(get_Orientation, put_Orientation)
+    SnapsTo = property(get_SnapsTo, put_SnapsTo)
+    StepFrequency = property(get_StepFrequency, put_StepFrequency)
+    ThumbToolTipValueConverter = property(get_ThumbToolTipValueConverter, put_ThumbToolTipValueConverter)
+    TickFrequency = property(get_TickFrequency, put_TickFrequency)
+    TickPlacement = property(get_TickPlacement, put_TickPlacement)
     _Slider_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _Slider_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
     _Slider_Meta_.IntermediateValueProperty = property(get_IntermediateValueProperty.__wrapped__, None)
-    _Slider_Meta_.StepFrequencyProperty = property(get_StepFrequencyProperty.__wrapped__, None)
-    _Slider_Meta_.SnapsToProperty = property(get_SnapsToProperty.__wrapped__, None)
-    _Slider_Meta_.TickFrequencyProperty = property(get_TickFrequencyProperty.__wrapped__, None)
-    _Slider_Meta_.TickPlacementProperty = property(get_TickPlacementProperty.__wrapped__, None)
-    _Slider_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
     _Slider_Meta_.IsDirectionReversedProperty = property(get_IsDirectionReversedProperty.__wrapped__, None)
     _Slider_Meta_.IsThumbToolTipEnabledProperty = property(get_IsThumbToolTipEnabledProperty.__wrapped__, None)
+    _Slider_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+    _Slider_Meta_.SnapsToProperty = property(get_SnapsToProperty.__wrapped__, None)
+    _Slider_Meta_.StepFrequencyProperty = property(get_StepFrequencyProperty.__wrapped__, None)
     _Slider_Meta_.ThumbToolTipValueConverterProperty = property(get_ThumbToolTipValueConverterProperty.__wrapped__, None)
-SnapPointsType = Int32
-SnapPointsType_None: SnapPointsType = 0
-SnapPointsType_Optional: SnapPointsType = 1
-SnapPointsType_Mandatory: SnapPointsType = 2
-SnapPointsType_OptionalSingle: SnapPointsType = 3
-SnapPointsType_MandatorySingle: SnapPointsType = 4
+    _Slider_Meta_.TickFrequencyProperty = property(get_TickFrequencyProperty.__wrapped__, None)
+    _Slider_Meta_.TickPlacementProperty = property(get_TickPlacementProperty.__wrapped__, None)
+class SnapPointsType(Int32):  # enum
+    None_ = 0
+    Optional = 1
+    Mandatory = 2
+    OptionalSingle = 3
+    MandatorySingle = 4
 class _SplitButton_Meta_(ComPtr.__class__):
     pass
 class SplitButton(ComPtr, metaclass=_SplitButton_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.ISplitButton
     _classid_ = 'Windows.UI.Xaml.Controls.SplitButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SplitButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISplitButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SplitButton: ...
     @winrt_mixinmethod
@@ -23998,16 +25042,23 @@ class SplitButton(ComPtr, metaclass=_SplitButton_Meta_):
     def get_CommandProperty(cls: win32more.Windows.UI.Xaml.Controls.ISplitButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_CommandParameterProperty(cls: win32more.Windows.UI.Xaml.Controls.ISplitButtonStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Flyout = property(get_Flyout, put_Flyout)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
-    _SplitButton_Meta_.FlyoutProperty = property(get_FlyoutProperty.__wrapped__, None)
-    _SplitButton_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
+    Flyout = property(get_Flyout, put_Flyout)
     _SplitButton_Meta_.CommandParameterProperty = property(get_CommandParameterProperty.__wrapped__, None)
+    _SplitButton_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
+    _SplitButton_Meta_.FlyoutProperty = property(get_FlyoutProperty.__wrapped__, None)
 class SplitButtonAutomationPeer(ComPtr):
     extends: win32more.Windows.UI.Xaml.Automation.Peers.FrameworkElementAutomationPeer
     default_interface: win32more.Windows.UI.Xaml.Controls.ISplitButtonAutomationPeer
     _classid_ = 'Windows.UI.Xaml.Controls.SplitButtonAutomationPeer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Controls.SplitButtonAutomationPeer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISplitButtonAutomationPeerFactory, owner: win32more.Windows.UI.Xaml.Controls.SplitButton, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SplitButtonAutomationPeer: ...
     @winrt_mixinmethod
@@ -24029,6 +25080,13 @@ class SplitView(ComPtr, metaclass=_SplitView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ISplitView
     _classid_ = 'Windows.UI.Xaml.Controls.SplitView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SplitView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISplitViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SplitView: ...
     @winrt_mixinmethod
@@ -24105,31 +25163,31 @@ class SplitView(ComPtr, metaclass=_SplitView_Meta_):
     def get_TemplateSettingsProperty(cls: win32more.Windows.UI.Xaml.Controls.ISplitViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_PaneBackgroundProperty(cls: win32more.Windows.UI.Xaml.Controls.ISplitViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Content = property(get_Content, put_Content)
-    Pane = property(get_Pane, put_Pane)
-    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
-    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
     CompactPaneLength = property(get_CompactPaneLength, put_CompactPaneLength)
-    PanePlacement = property(get_PanePlacement, put_PanePlacement)
+    Content = property(get_Content, put_Content)
     DisplayMode = property(get_DisplayMode, put_DisplayMode)
-    TemplateSettings = property(get_TemplateSettings, None)
-    PaneBackground = property(get_PaneBackground, put_PaneBackground)
+    IsPaneOpen = property(get_IsPaneOpen, put_IsPaneOpen)
     LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
-    _SplitView_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
-    _SplitView_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
-    _SplitView_Meta_.PaneProperty = property(get_PaneProperty.__wrapped__, None)
-    _SplitView_Meta_.IsPaneOpenProperty = property(get_IsPaneOpenProperty.__wrapped__, None)
-    _SplitView_Meta_.OpenPaneLengthProperty = property(get_OpenPaneLengthProperty.__wrapped__, None)
+    OpenPaneLength = property(get_OpenPaneLength, put_OpenPaneLength)
+    Pane = property(get_Pane, put_Pane)
+    PaneBackground = property(get_PaneBackground, put_PaneBackground)
+    PanePlacement = property(get_PanePlacement, put_PanePlacement)
+    TemplateSettings = property(get_TemplateSettings, None)
     _SplitView_Meta_.CompactPaneLengthProperty = property(get_CompactPaneLengthProperty.__wrapped__, None)
-    _SplitView_Meta_.PanePlacementProperty = property(get_PanePlacementProperty.__wrapped__, None)
+    _SplitView_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _SplitView_Meta_.DisplayModeProperty = property(get_DisplayModeProperty.__wrapped__, None)
-    _SplitView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
+    _SplitView_Meta_.IsPaneOpenProperty = property(get_IsPaneOpenProperty.__wrapped__, None)
+    _SplitView_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
+    _SplitView_Meta_.OpenPaneLengthProperty = property(get_OpenPaneLengthProperty.__wrapped__, None)
     _SplitView_Meta_.PaneBackgroundProperty = property(get_PaneBackgroundProperty.__wrapped__, None)
-SplitViewDisplayMode = Int32
-SplitViewDisplayMode_Overlay: SplitViewDisplayMode = 0
-SplitViewDisplayMode_Inline: SplitViewDisplayMode = 1
-SplitViewDisplayMode_CompactOverlay: SplitViewDisplayMode = 2
-SplitViewDisplayMode_CompactInline: SplitViewDisplayMode = 3
+    _SplitView_Meta_.PanePlacementProperty = property(get_PanePlacementProperty.__wrapped__, None)
+    _SplitView_Meta_.PaneProperty = property(get_PaneProperty.__wrapped__, None)
+    _SplitView_Meta_.TemplateSettingsProperty = property(get_TemplateSettingsProperty.__wrapped__, None)
+class SplitViewDisplayMode(Int32):  # enum
+    Overlay = 0
+    Inline = 1
+    CompactOverlay = 2
+    CompactInline = 3
 class SplitViewPaneClosingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISplitViewPaneClosingEventArgs
@@ -24139,15 +25197,22 @@ class SplitViewPaneClosingEventArgs(ComPtr):
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.ISplitViewPaneClosingEventArgs, value: Boolean) -> Void: ...
     Cancel = property(get_Cancel, put_Cancel)
-SplitViewPanePlacement = Int32
-SplitViewPanePlacement_Left: SplitViewPanePlacement = 0
-SplitViewPanePlacement_Right: SplitViewPanePlacement = 1
+class SplitViewPanePlacement(Int32):  # enum
+    Left = 0
+    Right = 1
 class _StackPanel_Meta_(ComPtr.__class__):
     pass
 class StackPanel(ComPtr, metaclass=_StackPanel_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IStackPanel
     _classid_ = 'Windows.UI.Xaml.Controls.StackPanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.StackPanel.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IStackPanelFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.StackPanel: ...
     @winrt_mixinmethod
@@ -24216,32 +25281,39 @@ class StackPanel(ComPtr, metaclass=_StackPanel_Meta_):
     def get_AreScrollSnapPointsRegularProperty(cls: win32more.Windows.UI.Xaml.Controls.IStackPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_OrientationProperty(cls: win32more.Windows.UI.Xaml.Controls.IStackPanelStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    AreHorizontalSnapPointsRegular = property(get_AreHorizontalSnapPointsRegular, None)
     AreScrollSnapPointsRegular = property(get_AreScrollSnapPointsRegular, put_AreScrollSnapPointsRegular)
-    Orientation = property(get_Orientation, put_Orientation)
+    AreVerticalSnapPointsRegular = property(get_AreVerticalSnapPointsRegular, None)
+    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
     BorderBrush = property(get_BorderBrush, put_BorderBrush)
     BorderThickness = property(get_BorderThickness, put_BorderThickness)
     CornerRadius = property(get_CornerRadius, put_CornerRadius)
+    Orientation = property(get_Orientation, put_Orientation)
     Padding = property(get_Padding, put_Padding)
     Spacing = property(get_Spacing, put_Spacing)
-    BackgroundSizing = property(get_BackgroundSizing, put_BackgroundSizing)
-    AreHorizontalSnapPointsRegular = property(get_AreHorizontalSnapPointsRegular, None)
-    AreVerticalSnapPointsRegular = property(get_AreVerticalSnapPointsRegular, None)
+    _StackPanel_Meta_.AreScrollSnapPointsRegularProperty = property(get_AreScrollSnapPointsRegularProperty.__wrapped__, None)
     _StackPanel_Meta_.BackgroundSizingProperty = property(get_BackgroundSizingProperty.__wrapped__, None)
-    _StackPanel_Meta_.SpacingProperty = property(get_SpacingProperty.__wrapped__, None)
     _StackPanel_Meta_.BorderBrushProperty = property(get_BorderBrushProperty.__wrapped__, None)
     _StackPanel_Meta_.BorderThicknessProperty = property(get_BorderThicknessProperty.__wrapped__, None)
     _StackPanel_Meta_.CornerRadiusProperty = property(get_CornerRadiusProperty.__wrapped__, None)
-    _StackPanel_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
-    _StackPanel_Meta_.AreScrollSnapPointsRegularProperty = property(get_AreScrollSnapPointsRegularProperty.__wrapped__, None)
     _StackPanel_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-StretchDirection = Int32
-StretchDirection_UpOnly: StretchDirection = 0
-StretchDirection_DownOnly: StretchDirection = 1
-StretchDirection_Both: StretchDirection = 2
+    _StackPanel_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
+    _StackPanel_Meta_.SpacingProperty = property(get_SpacingProperty.__wrapped__, None)
+class StretchDirection(Int32):  # enum
+    UpOnly = 0
+    DownOnly = 1
+    Both = 2
 class StyleSelector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IStyleSelector
     _classid_ = 'Windows.UI.Xaml.Controls.StyleSelector'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.StyleSelector.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IStyleSelectorFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.StyleSelector: ...
     @winrt_mixinmethod
@@ -24252,6 +25324,13 @@ class SwapChainBackgroundPanel(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Grid
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwapChainBackgroundPanel
     _classid_ = 'Windows.UI.Xaml.Controls.SwapChainBackgroundPanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SwapChainBackgroundPanel.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISwapChainBackgroundPanelFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SwapChainBackgroundPanel: ...
     @winrt_mixinmethod
@@ -24262,6 +25341,13 @@ class SwapChainPanel(ComPtr, metaclass=_SwapChainPanel_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Grid
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwapChainPanel
     _classid_ = 'Windows.UI.Xaml.Controls.SwapChainPanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SwapChainPanel.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISwapChainPanelFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SwapChainPanel: ...
     @winrt_mixinmethod
@@ -24282,16 +25368,23 @@ class SwapChainPanel(ComPtr, metaclass=_SwapChainPanel_Meta_):
     CompositionScaleY = property(get_CompositionScaleY, None)
     _SwapChainPanel_Meta_.CompositionScaleXProperty = property(get_CompositionScaleXProperty.__wrapped__, None)
     _SwapChainPanel_Meta_.CompositionScaleYProperty = property(get_CompositionScaleYProperty.__wrapped__, None)
-SwipeBehaviorOnInvoked = Int32
-SwipeBehaviorOnInvoked_Auto: SwipeBehaviorOnInvoked = 0
-SwipeBehaviorOnInvoked_Close: SwipeBehaviorOnInvoked = 1
-SwipeBehaviorOnInvoked_RemainOpen: SwipeBehaviorOnInvoked = 2
+class SwipeBehaviorOnInvoked(Int32):  # enum
+    Auto = 0
+    Close = 1
+    RemainOpen = 2
 class _SwipeControl_Meta_(ComPtr.__class__):
     pass
 class SwipeControl(ComPtr, metaclass=_SwipeControl_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwipeControl
     _classid_ = 'Windows.UI.Xaml.Controls.SwipeControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SwipeControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISwipeControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SwipeControl: ...
     @winrt_mixinmethod
@@ -24320,20 +25413,27 @@ class SwipeControl(ComPtr, metaclass=_SwipeControl_Meta_):
     def get_TopItemsProperty(cls: win32more.Windows.UI.Xaml.Controls.ISwipeControlStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_BottomItemsProperty(cls: win32more.Windows.UI.Xaml.Controls.ISwipeControlStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    BottomItems = property(get_BottomItems, put_BottomItems)
     LeftItems = property(get_LeftItems, put_LeftItems)
     RightItems = property(get_RightItems, put_RightItems)
     TopItems = property(get_TopItems, put_TopItems)
-    BottomItems = property(get_BottomItems, put_BottomItems)
+    _SwipeControl_Meta_.BottomItemsProperty = property(get_BottomItemsProperty.__wrapped__, None)
     _SwipeControl_Meta_.LeftItemsProperty = property(get_LeftItemsProperty.__wrapped__, None)
     _SwipeControl_Meta_.RightItemsProperty = property(get_RightItemsProperty.__wrapped__, None)
     _SwipeControl_Meta_.TopItemsProperty = property(get_TopItemsProperty.__wrapped__, None)
-    _SwipeControl_Meta_.BottomItemsProperty = property(get_BottomItemsProperty.__wrapped__, None)
 class _SwipeItem_Meta_(ComPtr.__class__):
     pass
 class SwipeItem(ComPtr, metaclass=_SwipeItem_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwipeItem
     _classid_ = 'Windows.UI.Xaml.Controls.SwipeItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SwipeItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISwipeItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SwipeItem: ...
     @winrt_mixinmethod
@@ -24382,20 +25482,20 @@ class SwipeItem(ComPtr, metaclass=_SwipeItem_Meta_):
     def get_CommandParameterProperty(cls: win32more.Windows.UI.Xaml.Controls.ISwipeItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_BehaviorOnInvokedProperty(cls: win32more.Windows.UI.Xaml.Controls.ISwipeItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Text = property(get_Text, put_Text)
-    IconSource = property(get_IconSource, put_IconSource)
     Background = property(get_Background, put_Background)
-    Foreground = property(get_Foreground, put_Foreground)
+    BehaviorOnInvoked = property(get_BehaviorOnInvoked, put_BehaviorOnInvoked)
     Command = property(get_Command, put_Command)
     CommandParameter = property(get_CommandParameter, put_CommandParameter)
-    BehaviorOnInvoked = property(get_BehaviorOnInvoked, put_BehaviorOnInvoked)
+    Foreground = property(get_Foreground, put_Foreground)
+    IconSource = property(get_IconSource, put_IconSource)
+    Text = property(get_Text, put_Text)
+    _SwipeItem_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
+    _SwipeItem_Meta_.BehaviorOnInvokedProperty = property(get_BehaviorOnInvokedProperty.__wrapped__, None)
+    _SwipeItem_Meta_.CommandParameterProperty = property(get_CommandParameterProperty.__wrapped__, None)
+    _SwipeItem_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
+    _SwipeItem_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
     _SwipeItem_Meta_.IconSourceProperty = property(get_IconSourceProperty.__wrapped__, None)
     _SwipeItem_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
-    _SwipeItem_Meta_.BackgroundProperty = property(get_BackgroundProperty.__wrapped__, None)
-    _SwipeItem_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
-    _SwipeItem_Meta_.CommandProperty = property(get_CommandProperty.__wrapped__, None)
-    _SwipeItem_Meta_.CommandParameterProperty = property(get_CommandParameterProperty.__wrapped__, None)
-    _SwipeItem_Meta_.BehaviorOnInvokedProperty = property(get_BehaviorOnInvokedProperty.__wrapped__, None)
 class SwipeItemInvokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwipeItemInvokedEventArgs
@@ -24409,6 +25509,13 @@ class SwipeItems(ComPtr, metaclass=_SwipeItems_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.ISwipeItems
     _classid_ = 'Windows.UI.Xaml.Controls.SwipeItems'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SwipeItems.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISwipeItemsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SwipeItems: ...
     @winrt_mixinmethod
@@ -24446,213 +25553,222 @@ class SwipeItems(ComPtr, metaclass=_SwipeItems_Meta_):
     Mode = property(get_Mode, put_Mode)
     Size = property(get_Size, None)
     _SwipeItems_Meta_.ModeProperty = property(get_ModeProperty.__wrapped__, None)
-SwipeMode = Int32
-SwipeMode_Reveal: SwipeMode = 0
-SwipeMode_Execute: SwipeMode = 1
-Symbol = Int32
-Symbol_Previous: Symbol = 57600
-Symbol_Next: Symbol = 57601
-Symbol_Play: Symbol = 57602
-Symbol_Pause: Symbol = 57603
-Symbol_Edit: Symbol = 57604
-Symbol_Save: Symbol = 57605
-Symbol_Clear: Symbol = 57606
-Symbol_Delete: Symbol = 57607
-Symbol_Remove: Symbol = 57608
-Symbol_Add: Symbol = 57609
-Symbol_Cancel: Symbol = 57610
-Symbol_Accept: Symbol = 57611
-Symbol_More: Symbol = 57612
-Symbol_Redo: Symbol = 57613
-Symbol_Undo: Symbol = 57614
-Symbol_Home: Symbol = 57615
-Symbol_Up: Symbol = 57616
-Symbol_Forward: Symbol = 57617
-Symbol_Back: Symbol = 57618
-Symbol_Favorite: Symbol = 57619
-Symbol_Camera: Symbol = 57620
-Symbol_Setting: Symbol = 57621
-Symbol_Video: Symbol = 57622
-Symbol_Sync: Symbol = 57623
-Symbol_Download: Symbol = 57624
-Symbol_Mail: Symbol = 57625
-Symbol_Find: Symbol = 57626
-Symbol_Help: Symbol = 57627
-Symbol_Upload: Symbol = 57628
-Symbol_Emoji: Symbol = 57629
-Symbol_TwoPage: Symbol = 57630
-Symbol_LeaveChat: Symbol = 57631
-Symbol_MailForward: Symbol = 57632
-Symbol_Clock: Symbol = 57633
-Symbol_Send: Symbol = 57634
-Symbol_Crop: Symbol = 57635
-Symbol_RotateCamera: Symbol = 57636
-Symbol_People: Symbol = 57637
-Symbol_OpenPane: Symbol = 57638
-Symbol_ClosePane: Symbol = 57639
-Symbol_World: Symbol = 57640
-Symbol_Flag: Symbol = 57641
-Symbol_PreviewLink: Symbol = 57642
-Symbol_Globe: Symbol = 57643
-Symbol_Trim: Symbol = 57644
-Symbol_AttachCamera: Symbol = 57645
-Symbol_ZoomIn: Symbol = 57646
-Symbol_Bookmarks: Symbol = 57647
-Symbol_Document: Symbol = 57648
-Symbol_ProtectedDocument: Symbol = 57649
-Symbol_Page: Symbol = 57650
-Symbol_Bullets: Symbol = 57651
-Symbol_Comment: Symbol = 57652
-Symbol_MailFilled: Symbol = 57653
-Symbol_ContactInfo: Symbol = 57654
-Symbol_HangUp: Symbol = 57655
-Symbol_ViewAll: Symbol = 57656
-Symbol_MapPin: Symbol = 57657
-Symbol_Phone: Symbol = 57658
-Symbol_VideoChat: Symbol = 57659
-Symbol_Switch: Symbol = 57660
-Symbol_Contact: Symbol = 57661
-Symbol_Rename: Symbol = 57662
-Symbol_Pin: Symbol = 57665
-Symbol_MusicInfo: Symbol = 57666
-Symbol_Go: Symbol = 57667
-Symbol_Keyboard: Symbol = 57668
-Symbol_DockLeft: Symbol = 57669
-Symbol_DockRight: Symbol = 57670
-Symbol_DockBottom: Symbol = 57671
-Symbol_Remote: Symbol = 57672
-Symbol_Refresh: Symbol = 57673
-Symbol_Rotate: Symbol = 57674
-Symbol_Shuffle: Symbol = 57675
-Symbol_List: Symbol = 57676
-Symbol_Shop: Symbol = 57677
-Symbol_SelectAll: Symbol = 57678
-Symbol_Orientation: Symbol = 57679
-Symbol_Import: Symbol = 57680
-Symbol_ImportAll: Symbol = 57681
-Symbol_BrowsePhotos: Symbol = 57685
-Symbol_WebCam: Symbol = 57686
-Symbol_Pictures: Symbol = 57688
-Symbol_SaveLocal: Symbol = 57689
-Symbol_Caption: Symbol = 57690
-Symbol_Stop: Symbol = 57691
-Symbol_ShowResults: Symbol = 57692
-Symbol_Volume: Symbol = 57693
-Symbol_Repair: Symbol = 57694
-Symbol_Message: Symbol = 57695
-Symbol_Page2: Symbol = 57696
-Symbol_CalendarDay: Symbol = 57697
-Symbol_CalendarWeek: Symbol = 57698
-Symbol_Calendar: Symbol = 57699
-Symbol_Character: Symbol = 57700
-Symbol_MailReplyAll: Symbol = 57701
-Symbol_Read: Symbol = 57702
-Symbol_Link: Symbol = 57703
-Symbol_Account: Symbol = 57704
-Symbol_ShowBcc: Symbol = 57705
-Symbol_HideBcc: Symbol = 57706
-Symbol_Cut: Symbol = 57707
-Symbol_Attach: Symbol = 57708
-Symbol_Paste: Symbol = 57709
-Symbol_Filter: Symbol = 57710
-Symbol_Copy: Symbol = 57711
-Symbol_Emoji2: Symbol = 57712
-Symbol_Important: Symbol = 57713
-Symbol_MailReply: Symbol = 57714
-Symbol_SlideShow: Symbol = 57715
-Symbol_Sort: Symbol = 57716
-Symbol_Manage: Symbol = 57720
-Symbol_AllApps: Symbol = 57721
-Symbol_DisconnectDrive: Symbol = 57722
-Symbol_MapDrive: Symbol = 57723
-Symbol_NewWindow: Symbol = 57724
-Symbol_OpenWith: Symbol = 57725
-Symbol_ContactPresence: Symbol = 57729
-Symbol_Priority: Symbol = 57730
-Symbol_GoToToday: Symbol = 57732
-Symbol_Font: Symbol = 57733
-Symbol_FontColor: Symbol = 57734
-Symbol_Contact2: Symbol = 57735
-Symbol_Folder: Symbol = 57736
-Symbol_Audio: Symbol = 57737
-Symbol_Placeholder: Symbol = 57738
-Symbol_View: Symbol = 57739
-Symbol_SetLockScreen: Symbol = 57740
-Symbol_SetTile: Symbol = 57741
-Symbol_ClosedCaption: Symbol = 57744
-Symbol_StopSlideShow: Symbol = 57745
-Symbol_Permissions: Symbol = 57746
-Symbol_Highlight: Symbol = 57747
-Symbol_DisableUpdates: Symbol = 57748
-Symbol_UnFavorite: Symbol = 57749
-Symbol_UnPin: Symbol = 57750
-Symbol_OpenLocal: Symbol = 57751
-Symbol_Mute: Symbol = 57752
-Symbol_Italic: Symbol = 57753
-Symbol_Underline: Symbol = 57754
-Symbol_Bold: Symbol = 57755
-Symbol_MoveToFolder: Symbol = 57756
-Symbol_LikeDislike: Symbol = 57757
-Symbol_Dislike: Symbol = 57758
-Symbol_Like: Symbol = 57759
-Symbol_AlignRight: Symbol = 57760
-Symbol_AlignCenter: Symbol = 57761
-Symbol_AlignLeft: Symbol = 57762
-Symbol_Zoom: Symbol = 57763
-Symbol_ZoomOut: Symbol = 57764
-Symbol_OpenFile: Symbol = 57765
-Symbol_OtherUser: Symbol = 57766
-Symbol_Admin: Symbol = 57767
-Symbol_Street: Symbol = 57795
-Symbol_Map: Symbol = 57796
-Symbol_ClearSelection: Symbol = 57797
-Symbol_FontDecrease: Symbol = 57798
-Symbol_FontIncrease: Symbol = 57799
-Symbol_FontSize: Symbol = 57800
-Symbol_CellPhone: Symbol = 57801
-Symbol_ReShare: Symbol = 57802
-Symbol_Tag: Symbol = 57803
-Symbol_RepeatOne: Symbol = 57804
-Symbol_RepeatAll: Symbol = 57805
-Symbol_OutlineStar: Symbol = 57806
-Symbol_SolidStar: Symbol = 57807
-Symbol_Calculator: Symbol = 57808
-Symbol_Directions: Symbol = 57809
-Symbol_Target: Symbol = 57810
-Symbol_Library: Symbol = 57811
-Symbol_PhoneBook: Symbol = 57812
-Symbol_Memo: Symbol = 57813
-Symbol_Microphone: Symbol = 57814
-Symbol_PostUpdate: Symbol = 57815
-Symbol_BackToWindow: Symbol = 57816
-Symbol_FullScreen: Symbol = 57817
-Symbol_NewFolder: Symbol = 57818
-Symbol_CalendarReply: Symbol = 57819
-Symbol_UnSyncFolder: Symbol = 57821
-Symbol_ReportHacked: Symbol = 57822
-Symbol_SyncFolder: Symbol = 57823
-Symbol_BlockContact: Symbol = 57824
-Symbol_SwitchApps: Symbol = 57825
-Symbol_AddFriend: Symbol = 57826
-Symbol_TouchPointer: Symbol = 57827
-Symbol_GoToStart: Symbol = 57828
-Symbol_ZeroBars: Symbol = 57829
-Symbol_OneBar: Symbol = 57830
-Symbol_TwoBars: Symbol = 57831
-Symbol_ThreeBars: Symbol = 57832
-Symbol_FourBars: Symbol = 57833
-Symbol_Scan: Symbol = 58004
-Symbol_Preview: Symbol = 58005
-Symbol_GlobalNavigationButton: Symbol = 59136
-Symbol_Share: Symbol = 59181
-Symbol_Print: Symbol = 59209
-Symbol_XboxOneConsole: Symbol = 59792
+class SwipeMode(Int32):  # enum
+    Reveal = 0
+    Execute = 1
+class Symbol(Int32):  # enum
+    Previous = 57600
+    Next = 57601
+    Play = 57602
+    Pause = 57603
+    Edit = 57604
+    Save = 57605
+    Clear = 57606
+    Delete = 57607
+    Remove = 57608
+    Add = 57609
+    Cancel = 57610
+    Accept = 57611
+    More = 57612
+    Redo = 57613
+    Undo = 57614
+    Home = 57615
+    Up = 57616
+    Forward = 57617
+    Back = 57618
+    Favorite = 57619
+    Camera = 57620
+    Setting = 57621
+    Video = 57622
+    Sync = 57623
+    Download = 57624
+    Mail = 57625
+    Find = 57626
+    Help = 57627
+    Upload = 57628
+    Emoji = 57629
+    TwoPage = 57630
+    LeaveChat = 57631
+    MailForward = 57632
+    Clock = 57633
+    Send = 57634
+    Crop = 57635
+    RotateCamera = 57636
+    People = 57637
+    OpenPane = 57638
+    ClosePane = 57639
+    World = 57640
+    Flag = 57641
+    PreviewLink = 57642
+    Globe = 57643
+    Trim = 57644
+    AttachCamera = 57645
+    ZoomIn = 57646
+    Bookmarks = 57647
+    Document = 57648
+    ProtectedDocument = 57649
+    Page = 57650
+    Bullets = 57651
+    Comment = 57652
+    MailFilled = 57653
+    ContactInfo = 57654
+    HangUp = 57655
+    ViewAll = 57656
+    MapPin = 57657
+    Phone = 57658
+    VideoChat = 57659
+    Switch = 57660
+    Contact = 57661
+    Rename = 57662
+    Pin = 57665
+    MusicInfo = 57666
+    Go = 57667
+    Keyboard = 57668
+    DockLeft = 57669
+    DockRight = 57670
+    DockBottom = 57671
+    Remote = 57672
+    Refresh = 57673
+    Rotate = 57674
+    Shuffle = 57675
+    List = 57676
+    Shop = 57677
+    SelectAll = 57678
+    Orientation = 57679
+    Import = 57680
+    ImportAll = 57681
+    BrowsePhotos = 57685
+    WebCam = 57686
+    Pictures = 57688
+    SaveLocal = 57689
+    Caption = 57690
+    Stop = 57691
+    ShowResults = 57692
+    Volume = 57693
+    Repair = 57694
+    Message = 57695
+    Page2 = 57696
+    CalendarDay = 57697
+    CalendarWeek = 57698
+    Calendar = 57699
+    Character = 57700
+    MailReplyAll = 57701
+    Read = 57702
+    Link = 57703
+    Account = 57704
+    ShowBcc = 57705
+    HideBcc = 57706
+    Cut = 57707
+    Attach = 57708
+    Paste = 57709
+    Filter = 57710
+    Copy = 57711
+    Emoji2 = 57712
+    Important = 57713
+    MailReply = 57714
+    SlideShow = 57715
+    Sort = 57716
+    Manage = 57720
+    AllApps = 57721
+    DisconnectDrive = 57722
+    MapDrive = 57723
+    NewWindow = 57724
+    OpenWith = 57725
+    ContactPresence = 57729
+    Priority = 57730
+    GoToToday = 57732
+    Font = 57733
+    FontColor = 57734
+    Contact2 = 57735
+    Folder = 57736
+    Audio = 57737
+    Placeholder = 57738
+    View = 57739
+    SetLockScreen = 57740
+    SetTile = 57741
+    ClosedCaption = 57744
+    StopSlideShow = 57745
+    Permissions = 57746
+    Highlight = 57747
+    DisableUpdates = 57748
+    UnFavorite = 57749
+    UnPin = 57750
+    OpenLocal = 57751
+    Mute = 57752
+    Italic = 57753
+    Underline = 57754
+    Bold = 57755
+    MoveToFolder = 57756
+    LikeDislike = 57757
+    Dislike = 57758
+    Like = 57759
+    AlignRight = 57760
+    AlignCenter = 57761
+    AlignLeft = 57762
+    Zoom = 57763
+    ZoomOut = 57764
+    OpenFile = 57765
+    OtherUser = 57766
+    Admin = 57767
+    Street = 57795
+    Map = 57796
+    ClearSelection = 57797
+    FontDecrease = 57798
+    FontIncrease = 57799
+    FontSize = 57800
+    CellPhone = 57801
+    ReShare = 57802
+    Tag = 57803
+    RepeatOne = 57804
+    RepeatAll = 57805
+    OutlineStar = 57806
+    SolidStar = 57807
+    Calculator = 57808
+    Directions = 57809
+    Target = 57810
+    Library = 57811
+    PhoneBook = 57812
+    Memo = 57813
+    Microphone = 57814
+    PostUpdate = 57815
+    BackToWindow = 57816
+    FullScreen = 57817
+    NewFolder = 57818
+    CalendarReply = 57819
+    UnSyncFolder = 57821
+    ReportHacked = 57822
+    SyncFolder = 57823
+    BlockContact = 57824
+    SwitchApps = 57825
+    AddFriend = 57826
+    TouchPointer = 57827
+    GoToStart = 57828
+    ZeroBars = 57829
+    OneBar = 57830
+    TwoBars = 57831
+    ThreeBars = 57832
+    FourBars = 57833
+    Scan = 58004
+    Preview = 58005
+    GlobalNavigationButton = 59136
+    Share = 59181
+    Print = 59209
+    XboxOneConsole = 59792
 class _SymbolIcon_Meta_(ComPtr.__class__):
     pass
 class SymbolIcon(ComPtr, metaclass=_SymbolIcon_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconElement
     default_interface: win32more.Windows.UI.Xaml.Controls.ISymbolIcon
     _classid_ = 'Windows.UI.Xaml.Controls.SymbolIcon'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SymbolIcon.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Controls.SymbolIcon.CreateInstanceWithSymbol(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.SymbolIcon: ...
     @winrt_factorymethod
@@ -24671,6 +25787,13 @@ class SymbolIconSource(ComPtr, metaclass=_SymbolIconSource_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.IconSource
     default_interface: win32more.Windows.UI.Xaml.Controls.ISymbolIconSource
     _classid_ = 'Windows.UI.Xaml.Controls.SymbolIconSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.SymbolIconSource.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ISymbolIconSourceFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.SymbolIconSource: ...
     @winrt_mixinmethod
@@ -24687,6 +25810,13 @@ class TextBlock(ComPtr, metaclass=_TextBlock_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextBlock
     _classid_ = 'Windows.UI.Xaml.Controls.TextBlock'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TextBlock.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.TextBlock: ...
     @winrt_mixinmethod
@@ -24883,73 +26013,80 @@ class TextBlock(ComPtr, metaclass=_TextBlock_Meta_):
     def get_IsTextSelectionEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.ITextBlockStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SelectedTextProperty(cls: win32more.Windows.UI.Xaml.Controls.ITextBlockStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FontSize = property(get_FontSize, put_FontSize)
-    FontFamily = property(get_FontFamily, put_FontFamily)
-    FontWeight = property(get_FontWeight, put_FontWeight)
-    FontStyle = property(get_FontStyle, put_FontStyle)
-    FontStretch = property(get_FontStretch, put_FontStretch)
+    BaselineOffset = property(get_BaselineOffset, None)
     CharacterSpacing = property(get_CharacterSpacing, put_CharacterSpacing)
+    ContentEnd = property(get_ContentEnd, None)
+    ContentStart = property(get_ContentStart, None)
+    FontFamily = property(get_FontFamily, put_FontFamily)
+    FontSize = property(get_FontSize, put_FontSize)
+    FontStretch = property(get_FontStretch, put_FontStretch)
+    FontStyle = property(get_FontStyle, put_FontStyle)
+    FontWeight = property(get_FontWeight, put_FontWeight)
     Foreground = property(get_Foreground, put_Foreground)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    TextTrimming = property(get_TextTrimming, put_TextTrimming)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
-    Text = property(get_Text, put_Text)
+    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
     Inlines = property(get_Inlines, None)
-    Padding = property(get_Padding, put_Padding)
+    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
+    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
+    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
+    IsTextTrimmed = property(get_IsTextTrimmed, None)
     LineHeight = property(get_LineHeight, put_LineHeight)
     LineStackingStrategy = property(get_LineStackingStrategy, put_LineStackingStrategy)
-    IsTextSelectionEnabled = property(get_IsTextSelectionEnabled, put_IsTextSelectionEnabled)
-    SelectedText = property(get_SelectedText, None)
-    ContentStart = property(get_ContentStart, None)
-    ContentEnd = property(get_ContentEnd, None)
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionEnd = property(get_SelectionEnd, None)
-    BaselineOffset = property(get_BaselineOffset, None)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
     MaxLines = property(get_MaxLines, put_MaxLines)
-    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
     OpticalMarginAlignment = property(get_OpticalMarginAlignment, put_OpticalMarginAlignment)
-    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
-    IsTextScaleFactorEnabled = property(get_IsTextScaleFactorEnabled, put_IsTextScaleFactorEnabled)
-    TextDecorations = property(get_TextDecorations, put_TextDecorations)
-    IsTextTrimmed = property(get_IsTextTrimmed, None)
-    HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
-    TextHighlighters = property(get_TextHighlighters, None)
+    Padding = property(get_Padding, put_Padding)
+    SelectedText = property(get_SelectedText, None)
+    SelectionEnd = property(get_SelectionEnd, None)
     SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
-    _TextBlock_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
-    _TextBlock_Meta_.IsTextTrimmedProperty = property(get_IsTextTrimmedProperty.__wrapped__, None)
-    _TextBlock_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextDecorationsProperty = property(get_TextDecorationsProperty.__wrapped__, None)
-    _TextBlock_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
-    _TextBlock_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
-    _TextBlock_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
-    _TextBlock_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
-    _TextBlock_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
-    _TextBlock_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
-    _TextBlock_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
-    _TextBlock_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
-    _TextBlock_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
-    _TextBlock_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    SelectionStart = property(get_SelectionStart, None)
+    Text = property(get_Text, put_Text)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextDecorations = property(get_TextDecorations, put_TextDecorations)
+    TextHighlighters = property(get_TextHighlighters, None)
+    TextLineBounds = property(get_TextLineBounds, put_TextLineBounds)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
+    TextTrimming = property(get_TextTrimming, put_TextTrimming)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
     _TextBlock_Meta_.CharacterSpacingProperty = property(get_CharacterSpacingProperty.__wrapped__, None)
+    _TextBlock_Meta_.FontFamilyProperty = property(get_FontFamilyProperty.__wrapped__, None)
+    _TextBlock_Meta_.FontSizeProperty = property(get_FontSizeProperty.__wrapped__, None)
+    _TextBlock_Meta_.FontStretchProperty = property(get_FontStretchProperty.__wrapped__, None)
+    _TextBlock_Meta_.FontStyleProperty = property(get_FontStyleProperty.__wrapped__, None)
+    _TextBlock_Meta_.FontWeightProperty = property(get_FontWeightProperty.__wrapped__, None)
     _TextBlock_Meta_.ForegroundProperty = property(get_ForegroundProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextTrimmingProperty = property(get_TextTrimmingProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
-    _TextBlock_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
-    _TextBlock_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
+    _TextBlock_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    _TextBlock_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
+    _TextBlock_Meta_.IsTextScaleFactorEnabledProperty = property(get_IsTextScaleFactorEnabledProperty.__wrapped__, None)
+    _TextBlock_Meta_.IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty.__wrapped__, None)
+    _TextBlock_Meta_.IsTextTrimmedProperty = property(get_IsTextTrimmedProperty.__wrapped__, None)
     _TextBlock_Meta_.LineHeightProperty = property(get_LineHeightProperty.__wrapped__, None)
     _TextBlock_Meta_.LineStackingStrategyProperty = property(get_LineStackingStrategyProperty.__wrapped__, None)
-    _TextBlock_Meta_.IsTextSelectionEnabledProperty = property(get_IsTextSelectionEnabledProperty.__wrapped__, None)
+    _TextBlock_Meta_.MaxLinesProperty = property(get_MaxLinesProperty.__wrapped__, None)
+    _TextBlock_Meta_.OpticalMarginAlignmentProperty = property(get_OpticalMarginAlignmentProperty.__wrapped__, None)
+    _TextBlock_Meta_.PaddingProperty = property(get_PaddingProperty.__wrapped__, None)
     _TextBlock_Meta_.SelectedTextProperty = property(get_SelectedTextProperty.__wrapped__, None)
+    _TextBlock_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
+    _TextBlock_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextDecorationsProperty = property(get_TextDecorationsProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextLineBoundsProperty = property(get_TextLineBoundsProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextTrimmingProperty = property(get_TextTrimmingProperty.__wrapped__, None)
+    _TextBlock_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
 class _TextBox_Meta_(ComPtr.__class__):
     pass
 class TextBox(ComPtr, metaclass=_TextBox_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextBox
     _classid_ = 'Windows.UI.Xaml.Controls.TextBox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TextBox.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITextBoxFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TextBox: ...
     @winrt_mixinmethod
@@ -25202,67 +26339,67 @@ class TextBox(ComPtr, metaclass=_TextBox_Meta_):
     def get_IsTextPredictionEnabledProperty(cls: win32more.Windows.UI.Xaml.Controls.ITextBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_InputScopeProperty(cls: win32more.Windows.UI.Xaml.Controls.ITextBoxStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Text = property(get_Text, put_Text)
-    SelectedText = property(get_SelectedText, put_SelectedText)
-    SelectionLength = property(get_SelectionLength, put_SelectionLength)
-    SelectionStart = property(get_SelectionStart, put_SelectionStart)
-    MaxLength = property(get_MaxLength, put_MaxLength)
-    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
     AcceptsReturn = property(get_AcceptsReturn, put_AcceptsReturn)
-    TextAlignment = property(get_TextAlignment, put_TextAlignment)
-    TextWrapping = property(get_TextWrapping, put_TextWrapping)
-    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
-    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
-    InputScope = property(get_InputScope, put_InputScope)
+    CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
+    CanRedo = property(get_CanRedo, None)
+    CanUndo = property(get_CanUndo, None)
+    CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
+    Description = property(get_Description, put_Description)
+    DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
+    HandwritingView = property(get_HandwritingView, put_HandwritingView)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
-    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
-    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
-    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
-    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
-    DesiredCandidateWindowAlignment = property(get_DesiredCandidateWindowAlignment, put_DesiredCandidateWindowAlignment)
-    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
     HorizontalTextAlignment = property(get_HorizontalTextAlignment, put_HorizontalTextAlignment)
-    CharacterCasing = property(get_CharacterCasing, put_CharacterCasing)
-    PlaceholderForeground = property(get_PlaceholderForeground, put_PlaceholderForeground)
-    HandwritingView = property(get_HandwritingView, put_HandwritingView)
+    InputScope = property(get_InputScope, put_InputScope)
+    IsColorFontEnabled = property(get_IsColorFontEnabled, put_IsColorFontEnabled)
     IsHandwritingViewEnabled = property(get_IsHandwritingViewEnabled, put_IsHandwritingViewEnabled)
-    CanPasteClipboardContent = property(get_CanPasteClipboardContent, None)
-    CanUndo = property(get_CanUndo, None)
-    CanRedo = property(get_CanRedo, None)
-    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
+    IsReadOnly = property(get_IsReadOnly, put_IsReadOnly)
+    IsSpellCheckEnabled = property(get_IsSpellCheckEnabled, put_IsSpellCheckEnabled)
+    IsTextPredictionEnabled = property(get_IsTextPredictionEnabled, put_IsTextPredictionEnabled)
+    MaxLength = property(get_MaxLength, put_MaxLength)
+    PlaceholderForeground = property(get_PlaceholderForeground, put_PlaceholderForeground)
+    PlaceholderText = property(get_PlaceholderText, put_PlaceholderText)
+    PreventKeyboardDisplayOnProgrammaticFocus = property(get_PreventKeyboardDisplayOnProgrammaticFocus, put_PreventKeyboardDisplayOnProgrammaticFocus)
     ProofingMenuFlyout = property(get_ProofingMenuFlyout, None)
-    Description = property(get_Description, put_Description)
+    SelectedText = property(get_SelectedText, put_SelectedText)
+    SelectionFlyout = property(get_SelectionFlyout, put_SelectionFlyout)
+    SelectionHighlightColor = property(get_SelectionHighlightColor, put_SelectionHighlightColor)
+    SelectionHighlightColorWhenNotFocused = property(get_SelectionHighlightColorWhenNotFocused, put_SelectionHighlightColorWhenNotFocused)
+    SelectionLength = property(get_SelectionLength, put_SelectionLength)
+    SelectionStart = property(get_SelectionStart, put_SelectionStart)
+    Text = property(get_Text, put_Text)
+    TextAlignment = property(get_TextAlignment, put_TextAlignment)
+    TextReadingOrder = property(get_TextReadingOrder, put_TextReadingOrder)
+    TextWrapping = property(get_TextWrapping, put_TextWrapping)
+    _TextBox_Meta_.AcceptsReturnProperty = property(get_AcceptsReturnProperty.__wrapped__, None)
     _TextBox_Meta_.CanPasteClipboardContentProperty = property(get_CanPasteClipboardContentProperty.__wrapped__, None)
-    _TextBox_Meta_.CanUndoProperty = property(get_CanUndoProperty.__wrapped__, None)
     _TextBox_Meta_.CanRedoProperty = property(get_CanRedoProperty.__wrapped__, None)
-    _TextBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
-    _TextBox_Meta_.ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty.__wrapped__, None)
-    _TextBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
-    _TextBox_Meta_.HandwritingViewProperty = property(get_HandwritingViewProperty.__wrapped__, None)
-    _TextBox_Meta_.IsHandwritingViewEnabledProperty = property(get_IsHandwritingViewEnabledProperty.__wrapped__, None)
-    _TextBox_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    _TextBox_Meta_.CanUndoProperty = property(get_CanUndoProperty.__wrapped__, None)
     _TextBox_Meta_.CharacterCasingProperty = property(get_CharacterCasingProperty.__wrapped__, None)
-    _TextBox_Meta_.PlaceholderForegroundProperty = property(get_PlaceholderForegroundProperty.__wrapped__, None)
-    _TextBox_Meta_.SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty.__wrapped__, None)
+    _TextBox_Meta_.DescriptionProperty = property(get_DescriptionProperty.__wrapped__, None)
     _TextBox_Meta_.DesiredCandidateWindowAlignmentProperty = property(get_DesiredCandidateWindowAlignmentProperty.__wrapped__, None)
-    _TextBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _TextBox_Meta_.HandwritingViewProperty = property(get_HandwritingViewProperty.__wrapped__, None)
     _TextBox_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _TextBox_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _TextBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
-    _TextBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
-    _TextBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
+    _TextBox_Meta_.HorizontalTextAlignmentProperty = property(get_HorizontalTextAlignmentProperty.__wrapped__, None)
+    _TextBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
     _TextBox_Meta_.IsColorFontEnabledProperty = property(get_IsColorFontEnabledProperty.__wrapped__, None)
-    _TextBox_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
-    _TextBox_Meta_.MaxLengthProperty = property(get_MaxLengthProperty.__wrapped__, None)
+    _TextBox_Meta_.IsHandwritingViewEnabledProperty = property(get_IsHandwritingViewEnabledProperty.__wrapped__, None)
     _TextBox_Meta_.IsReadOnlyProperty = property(get_IsReadOnlyProperty.__wrapped__, None)
-    _TextBox_Meta_.AcceptsReturnProperty = property(get_AcceptsReturnProperty.__wrapped__, None)
-    _TextBox_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
-    _TextBox_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
     _TextBox_Meta_.IsSpellCheckEnabledProperty = property(get_IsSpellCheckEnabledProperty.__wrapped__, None)
     _TextBox_Meta_.IsTextPredictionEnabledProperty = property(get_IsTextPredictionEnabledProperty.__wrapped__, None)
-    _TextBox_Meta_.InputScopeProperty = property(get_InputScopeProperty.__wrapped__, None)
+    _TextBox_Meta_.MaxLengthProperty = property(get_MaxLengthProperty.__wrapped__, None)
+    _TextBox_Meta_.PlaceholderForegroundProperty = property(get_PlaceholderForegroundProperty.__wrapped__, None)
+    _TextBox_Meta_.PlaceholderTextProperty = property(get_PlaceholderTextProperty.__wrapped__, None)
+    _TextBox_Meta_.PreventKeyboardDisplayOnProgrammaticFocusProperty = property(get_PreventKeyboardDisplayOnProgrammaticFocusProperty.__wrapped__, None)
+    _TextBox_Meta_.ProofingMenuFlyoutProperty = property(get_ProofingMenuFlyoutProperty.__wrapped__, None)
+    _TextBox_Meta_.SelectionFlyoutProperty = property(get_SelectionFlyoutProperty.__wrapped__, None)
+    _TextBox_Meta_.SelectionHighlightColorProperty = property(get_SelectionHighlightColorProperty.__wrapped__, None)
+    _TextBox_Meta_.SelectionHighlightColorWhenNotFocusedProperty = property(get_SelectionHighlightColorWhenNotFocusedProperty.__wrapped__, None)
+    _TextBox_Meta_.TextAlignmentProperty = property(get_TextAlignmentProperty.__wrapped__, None)
+    _TextBox_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
+    _TextBox_Meta_.TextReadingOrderProperty = property(get_TextReadingOrderProperty.__wrapped__, None)
+    _TextBox_Meta_.TextWrappingProperty = property(get_TextWrappingProperty.__wrapped__, None)
 class TextBoxBeforeTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextBoxBeforeTextChangingEventArgs
@@ -25273,8 +26410,8 @@ class TextBoxBeforeTextChangingEventArgs(ComPtr):
     def get_Cancel(self: win32more.Windows.UI.Xaml.Controls.ITextBoxBeforeTextChangingEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.ITextBoxBeforeTextChangingEventArgs, value: Boolean) -> Void: ...
-    NewText = property(get_NewText, None)
     Cancel = property(get_Cancel, put_Cancel)
+    NewText = property(get_NewText, None)
 class TextBoxSelectionChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextBoxSelectionChangingEventArgs
@@ -25287,9 +26424,9 @@ class TextBoxSelectionChangingEventArgs(ComPtr):
     def get_Cancel(self: win32more.Windows.UI.Xaml.Controls.ITextBoxSelectionChangingEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.ITextBoxSelectionChangingEventArgs, value: Boolean) -> Void: ...
-    SelectionStart = property(get_SelectionStart, None)
-    SelectionLength = property(get_SelectionLength, None)
     Cancel = property(get_Cancel, put_Cancel)
+    SelectionLength = property(get_SelectionLength, None)
+    SelectionStart = property(get_SelectionStart, None)
 class TextBoxTextChangingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextBoxTextChangingEventArgs
@@ -25309,6 +26446,13 @@ class TextCommandBarFlyout(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.CommandBarFlyout
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextCommandBarFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.TextCommandBarFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TextCommandBarFlyout.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITextCommandBarFlyoutFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TextCommandBarFlyout: ...
 class TextCompositionChangedEventArgs(ComPtr):
@@ -25319,8 +26463,8 @@ class TextCompositionChangedEventArgs(ComPtr):
     def get_StartIndex(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionChangedEventArgs) -> Int32: ...
     @winrt_mixinmethod
     def get_Length(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionChangedEventArgs) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class TextCompositionEndedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextCompositionEndedEventArgs
@@ -25329,8 +26473,8 @@ class TextCompositionEndedEventArgs(ComPtr):
     def get_StartIndex(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionEndedEventArgs) -> Int32: ...
     @winrt_mixinmethod
     def get_Length(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionEndedEventArgs) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class TextCompositionStartedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextCompositionStartedEventArgs
@@ -25339,8 +26483,8 @@ class TextCompositionStartedEventArgs(ComPtr):
     def get_StartIndex(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionStartedEventArgs) -> Int32: ...
     @winrt_mixinmethod
     def get_Length(self: win32more.Windows.UI.Xaml.Controls.ITextCompositionStartedEventArgs) -> Int32: ...
-    StartIndex = property(get_StartIndex, None)
     Length = property(get_Length, None)
+    StartIndex = property(get_StartIndex, None)
 class TextControlCopyingToClipboardEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITextControlCopyingToClipboardEventArgs
@@ -25376,20 +26520,34 @@ class TimePickedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.ITimePickedEventArgs
     _classid_ = 'Windows.UI.Xaml.Controls.TimePickedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TimePickedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.TimePickedEventArgs: ...
     @winrt_mixinmethod
     def get_OldTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickedEventArgs) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def get_NewTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickedEventArgs) -> win32more.Windows.Foundation.TimeSpan: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class _TimePicker_Meta_(ComPtr.__class__):
     pass
 class TimePicker(ComPtr, metaclass=_TimePicker_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ITimePicker
     _classid_ = 'Windows.UI.Xaml.Controls.TimePicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TimePicker.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITimePickerFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TimePicker: ...
     @winrt_mixinmethod
@@ -25442,19 +26600,19 @@ class TimePicker(ComPtr, metaclass=_TimePicker_Meta_):
     def get_MinuteIncrementProperty(cls: win32more.Windows.UI.Xaml.Controls.ITimePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TimeProperty(cls: win32more.Windows.UI.Xaml.Controls.ITimePickerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
-    MinuteIncrement = property(get_MinuteIncrement, put_MinuteIncrement)
-    Time = property(get_Time, put_Time)
     LightDismissOverlayMode = property(get_LightDismissOverlayMode, put_LightDismissOverlayMode)
+    MinuteIncrement = property(get_MinuteIncrement, put_MinuteIncrement)
     SelectedTime = property(get_SelectedTime, put_SelectedTime)
-    _TimePicker_Meta_.SelectedTimeProperty = property(get_SelectedTimeProperty.__wrapped__, None)
-    _TimePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
+    Time = property(get_Time, put_Time)
+    _TimePicker_Meta_.ClockIdentifierProperty = property(get_ClockIdentifierProperty.__wrapped__, None)
     _TimePicker_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _TimePicker_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _TimePicker_Meta_.ClockIdentifierProperty = property(get_ClockIdentifierProperty.__wrapped__, None)
+    _TimePicker_Meta_.LightDismissOverlayModeProperty = property(get_LightDismissOverlayModeProperty.__wrapped__, None)
     _TimePicker_Meta_.MinuteIncrementProperty = property(get_MinuteIncrementProperty.__wrapped__, None)
+    _TimePicker_Meta_.SelectedTimeProperty = property(get_SelectedTimeProperty.__wrapped__, None)
     _TimePicker_Meta_.TimeProperty = property(get_TimeProperty.__wrapped__, None)
 class _TimePickerFlyout_Meta_(ComPtr.__class__):
     pass
@@ -25462,6 +26620,13 @@ class TimePickerFlyout(ComPtr, metaclass=_TimePickerFlyout_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.PickerFlyoutBase
     default_interface: win32more.Windows.UI.Xaml.Controls.ITimePickerFlyout
     _classid_ = 'Windows.UI.Xaml.Controls.TimePickerFlyout'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TimePickerFlyout.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.TimePickerFlyout: ...
     @winrt_mixinmethod
@@ -25489,11 +26654,11 @@ class TimePickerFlyout(ComPtr, metaclass=_TimePickerFlyout_Meta_):
     @winrt_classmethod
     def get_MinuteIncrementProperty(cls: win32more.Windows.UI.Xaml.Controls.ITimePickerFlyoutStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     ClockIdentifier = property(get_ClockIdentifier, put_ClockIdentifier)
-    Time = property(get_Time, put_Time)
     MinuteIncrement = property(get_MinuteIncrement, put_MinuteIncrement)
+    Time = property(get_Time, put_Time)
     _TimePickerFlyout_Meta_.ClockIdentifierProperty = property(get_ClockIdentifierProperty.__wrapped__, None)
-    _TimePickerFlyout_Meta_.TimeProperty = property(get_TimeProperty.__wrapped__, None)
     _TimePickerFlyout_Meta_.MinuteIncrementProperty = property(get_MinuteIncrementProperty.__wrapped__, None)
+    _TimePickerFlyout_Meta_.TimeProperty = property(get_TimeProperty.__wrapped__, None)
 class _TimePickerFlyoutPresenter_Meta_(ComPtr.__class__):
     pass
 class TimePickerFlyoutPresenter(ComPtr, metaclass=_TimePickerFlyoutPresenter_Meta_):
@@ -25516,8 +26681,8 @@ class TimePickerSelectedValueChangedEventArgs(ComPtr):
     def get_OldTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickerSelectedValueChangedEventArgs) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_mixinmethod
     def get_NewTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickerSelectedValueChangedEventArgs) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class TimePickerValueChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITimePickerValueChangedEventArgs
@@ -25526,14 +26691,21 @@ class TimePickerValueChangedEventArgs(ComPtr):
     def get_OldTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickerValueChangedEventArgs) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def get_NewTime(self: win32more.Windows.UI.Xaml.Controls.ITimePickerValueChangedEventArgs) -> win32more.Windows.Foundation.TimeSpan: ...
-    OldTime = property(get_OldTime, None)
     NewTime = property(get_NewTime, None)
+    OldTime = property(get_OldTime, None)
 class _ToggleMenuFlyoutItem_Meta_(ComPtr.__class__):
     pass
 class ToggleMenuFlyoutItem(ComPtr, metaclass=_ToggleMenuFlyoutItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.MenuFlyoutItem
     default_interface: win32more.Windows.UI.Xaml.Controls.IToggleMenuFlyoutItem
     _classid_ = 'Windows.UI.Xaml.Controls.ToggleMenuFlyoutItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ToggleMenuFlyoutItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IToggleMenuFlyoutItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ToggleMenuFlyoutItem: ...
     @winrt_mixinmethod
@@ -25548,6 +26720,13 @@ class ToggleSplitButton(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.SplitButton
     default_interface: win32more.Windows.UI.Xaml.Controls.IToggleSplitButton
     _classid_ = 'Windows.UI.Xaml.Controls.ToggleSplitButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ToggleSplitButton.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IToggleSplitButtonFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ToggleSplitButton: ...
     @winrt_mixinmethod
@@ -25563,6 +26742,13 @@ class ToggleSplitButtonAutomationPeer(ComPtr):
     extends: win32more.Windows.UI.Xaml.Automation.Peers.FrameworkElementAutomationPeer
     default_interface: win32more.Windows.UI.Xaml.Controls.IToggleSplitButtonAutomationPeer
     _classid_ = 'Windows.UI.Xaml.Controls.ToggleSplitButtonAutomationPeer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Controls.ToggleSplitButtonAutomationPeer.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IToggleSplitButtonAutomationPeerFactory, owner: win32more.Windows.UI.Xaml.Controls.ToggleSplitButton, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ToggleSplitButtonAutomationPeer: ...
     @winrt_mixinmethod
@@ -25587,6 +26773,13 @@ class ToggleSwitch(ComPtr, metaclass=_ToggleSwitch_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IToggleSwitch
     _classid_ = 'Windows.UI.Xaml.Controls.ToggleSwitch'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ToggleSwitch.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.ToggleSwitch: ...
     @winrt_mixinmethod
@@ -25645,27 +26838,34 @@ class ToggleSwitch(ComPtr, metaclass=_ToggleSwitch_Meta_):
     def get_OffContentProperty(cls: win32more.Windows.UI.Xaml.Controls.IToggleSwitchStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_OffContentTemplateProperty(cls: win32more.Windows.UI.Xaml.Controls.IToggleSwitchStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    IsOn = property(get_IsOn, put_IsOn)
     Header = property(get_Header, put_Header)
     HeaderTemplate = property(get_HeaderTemplate, put_HeaderTemplate)
-    OnContent = property(get_OnContent, put_OnContent)
-    OnContentTemplate = property(get_OnContentTemplate, put_OnContentTemplate)
+    IsOn = property(get_IsOn, put_IsOn)
     OffContent = property(get_OffContent, put_OffContent)
     OffContentTemplate = property(get_OffContentTemplate, put_OffContentTemplate)
+    OnContent = property(get_OnContent, put_OnContent)
+    OnContentTemplate = property(get_OnContentTemplate, put_OnContentTemplate)
     TemplateSettings = property(get_TemplateSettings, None)
-    _ToggleSwitch_Meta_.IsOnProperty = property(get_IsOnProperty.__wrapped__, None)
     _ToggleSwitch_Meta_.HeaderProperty = property(get_HeaderProperty.__wrapped__, None)
     _ToggleSwitch_Meta_.HeaderTemplateProperty = property(get_HeaderTemplateProperty.__wrapped__, None)
-    _ToggleSwitch_Meta_.OnContentProperty = property(get_OnContentProperty.__wrapped__, None)
-    _ToggleSwitch_Meta_.OnContentTemplateProperty = property(get_OnContentTemplateProperty.__wrapped__, None)
+    _ToggleSwitch_Meta_.IsOnProperty = property(get_IsOnProperty.__wrapped__, None)
     _ToggleSwitch_Meta_.OffContentProperty = property(get_OffContentProperty.__wrapped__, None)
     _ToggleSwitch_Meta_.OffContentTemplateProperty = property(get_OffContentTemplateProperty.__wrapped__, None)
+    _ToggleSwitch_Meta_.OnContentProperty = property(get_OnContentProperty.__wrapped__, None)
+    _ToggleSwitch_Meta_.OnContentTemplateProperty = property(get_OnContentTemplateProperty.__wrapped__, None)
 class _ToolTip_Meta_(ComPtr.__class__):
     pass
 class ToolTip(ComPtr, metaclass=_ToolTip_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ContentControl
     default_interface: win32more.Windows.UI.Xaml.Controls.IToolTip
     _classid_ = 'Windows.UI.Xaml.Controls.ToolTip'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.ToolTip.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IToolTipFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.ToolTip: ...
     @winrt_mixinmethod
@@ -25717,14 +26917,14 @@ class ToolTip(ComPtr, metaclass=_ToolTip_Meta_):
     HorizontalOffset = property(get_HorizontalOffset, put_HorizontalOffset)
     IsOpen = property(get_IsOpen, put_IsOpen)
     Placement = property(get_Placement, put_Placement)
-    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
-    VerticalOffset = property(get_VerticalOffset, put_VerticalOffset)
-    TemplateSettings = property(get_TemplateSettings, None)
     PlacementRect = property(get_PlacementRect, put_PlacementRect)
-    _ToolTip_Meta_.PlacementRectProperty = property(get_PlacementRectProperty.__wrapped__, None)
+    PlacementTarget = property(get_PlacementTarget, put_PlacementTarget)
+    TemplateSettings = property(get_TemplateSettings, None)
+    VerticalOffset = property(get_VerticalOffset, put_VerticalOffset)
     _ToolTip_Meta_.HorizontalOffsetProperty = property(get_HorizontalOffsetProperty.__wrapped__, None)
     _ToolTip_Meta_.IsOpenProperty = property(get_IsOpenProperty.__wrapped__, None)
     _ToolTip_Meta_.PlacementProperty = property(get_PlacementProperty.__wrapped__, None)
+    _ToolTip_Meta_.PlacementRectProperty = property(get_PlacementRectProperty.__wrapped__, None)
     _ToolTip_Meta_.PlacementTargetProperty = property(get_PlacementTargetProperty.__wrapped__, None)
     _ToolTip_Meta_.VerticalOffsetProperty = property(get_VerticalOffsetProperty.__wrapped__, None)
 class _ToolTipService_Meta_(ComPtr.__class__):
@@ -25760,6 +26960,13 @@ class TreeView(ComPtr, metaclass=_TreeView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeView
     _classid_ = 'Windows.UI.Xaml.Controls.TreeView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TreeView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TreeView: ...
     @winrt_mixinmethod
@@ -25854,24 +27061,24 @@ class TreeView(ComPtr, metaclass=_TreeView_Meta_):
     def get_ItemsSourceProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewStatics2) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SelectionModeProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    RootNodes = property(get_RootNodes, None)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
-    SelectedNodes = property(get_SelectedNodes, None)
     CanDragItems = property(get_CanDragItems, put_CanDragItems)
     CanReorderItems = property(get_CanReorderItems, put_CanReorderItems)
-    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
-    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
     ItemContainerStyle = property(get_ItemContainerStyle, put_ItemContainerStyle)
     ItemContainerStyleSelector = property(get_ItemContainerStyleSelector, put_ItemContainerStyleSelector)
     ItemContainerTransitions = property(get_ItemContainerTransitions, put_ItemContainerTransitions)
+    ItemTemplate = property(get_ItemTemplate, put_ItemTemplate)
+    ItemTemplateSelector = property(get_ItemTemplateSelector, put_ItemTemplateSelector)
     ItemsSource = property(get_ItemsSource, put_ItemsSource)
+    RootNodes = property(get_RootNodes, None)
+    SelectedNodes = property(get_SelectedNodes, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     _TreeView_Meta_.CanDragItemsProperty = property(get_CanDragItemsProperty.__wrapped__, None)
     _TreeView_Meta_.CanReorderItemsProperty = property(get_CanReorderItemsProperty.__wrapped__, None)
-    _TreeView_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
-    _TreeView_Meta_.ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty.__wrapped__, None)
     _TreeView_Meta_.ItemContainerStyleProperty = property(get_ItemContainerStyleProperty.__wrapped__, None)
     _TreeView_Meta_.ItemContainerStyleSelectorProperty = property(get_ItemContainerStyleSelectorProperty.__wrapped__, None)
     _TreeView_Meta_.ItemContainerTransitionsProperty = property(get_ItemContainerTransitionsProperty.__wrapped__, None)
+    _TreeView_Meta_.ItemTemplateProperty = property(get_ItemTemplateProperty.__wrapped__, None)
+    _TreeView_Meta_.ItemTemplateSelectorProperty = property(get_ItemTemplateSelectorProperty.__wrapped__, None)
     _TreeView_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
     _TreeView_Meta_.SelectionModeProperty = property(get_SelectionModeProperty.__wrapped__, None)
 class TreeViewCollapsedEventArgs(ComPtr):
@@ -25882,8 +27089,8 @@ class TreeViewCollapsedEventArgs(ComPtr):
     def get_Node(self: win32more.Windows.UI.Xaml.Controls.ITreeViewCollapsedEventArgs) -> win32more.Windows.UI.Xaml.Controls.TreeViewNode: ...
     @winrt_mixinmethod
     def get_Item(self: win32more.Windows.UI.Xaml.Controls.ITreeViewCollapsedEventArgs2) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Node = property(get_Node, None)
     Item = property(get_Item, None)
+    Node = property(get_Node, None)
 class TreeViewDragItemsCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeViewDragItemsCompletedEventArgs
@@ -25917,14 +27124,21 @@ class TreeViewExpandingEventArgs(ComPtr):
     def get_Node(self: win32more.Windows.UI.Xaml.Controls.ITreeViewExpandingEventArgs) -> win32more.Windows.UI.Xaml.Controls.TreeViewNode: ...
     @winrt_mixinmethod
     def get_Item(self: win32more.Windows.UI.Xaml.Controls.ITreeViewExpandingEventArgs2) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Node = property(get_Node, None)
     Item = property(get_Item, None)
+    Node = property(get_Node, None)
 class _TreeViewItem_Meta_(ComPtr.__class__):
     pass
 class TreeViewItem(ComPtr, metaclass=_TreeViewItem_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.ListViewItem
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeViewItem
     _classid_ = 'Windows.UI.Xaml.Controls.TreeViewItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TreeViewItem.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TreeViewItem: ...
     @winrt_mixinmethod
@@ -25979,23 +27193,23 @@ class TreeViewItem(ComPtr, metaclass=_TreeViewItem_Meta_):
     def get_IsExpandedProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TreeViewItemTemplateSettingsProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    GlyphOpacity = property(get_GlyphOpacity, put_GlyphOpacity)
-    GlyphBrush = property(get_GlyphBrush, put_GlyphBrush)
-    ExpandedGlyph = property(get_ExpandedGlyph, put_ExpandedGlyph)
     CollapsedGlyph = property(get_CollapsedGlyph, put_CollapsedGlyph)
+    ExpandedGlyph = property(get_ExpandedGlyph, put_ExpandedGlyph)
+    GlyphBrush = property(get_GlyphBrush, put_GlyphBrush)
+    GlyphOpacity = property(get_GlyphOpacity, put_GlyphOpacity)
     GlyphSize = property(get_GlyphSize, put_GlyphSize)
-    IsExpanded = property(get_IsExpanded, put_IsExpanded)
-    TreeViewItemTemplateSettings = property(get_TreeViewItemTemplateSettings, None)
     HasUnrealizedChildren = property(get_HasUnrealizedChildren, put_HasUnrealizedChildren)
+    IsExpanded = property(get_IsExpanded, put_IsExpanded)
     ItemsSource = property(get_ItemsSource, put_ItemsSource)
-    _TreeViewItem_Meta_.HasUnrealizedChildrenProperty = property(get_HasUnrealizedChildrenProperty.__wrapped__, None)
-    _TreeViewItem_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
-    _TreeViewItem_Meta_.GlyphOpacityProperty = property(get_GlyphOpacityProperty.__wrapped__, None)
-    _TreeViewItem_Meta_.GlyphBrushProperty = property(get_GlyphBrushProperty.__wrapped__, None)
-    _TreeViewItem_Meta_.ExpandedGlyphProperty = property(get_ExpandedGlyphProperty.__wrapped__, None)
+    TreeViewItemTemplateSettings = property(get_TreeViewItemTemplateSettings, None)
     _TreeViewItem_Meta_.CollapsedGlyphProperty = property(get_CollapsedGlyphProperty.__wrapped__, None)
+    _TreeViewItem_Meta_.ExpandedGlyphProperty = property(get_ExpandedGlyphProperty.__wrapped__, None)
+    _TreeViewItem_Meta_.GlyphBrushProperty = property(get_GlyphBrushProperty.__wrapped__, None)
+    _TreeViewItem_Meta_.GlyphOpacityProperty = property(get_GlyphOpacityProperty.__wrapped__, None)
     _TreeViewItem_Meta_.GlyphSizeProperty = property(get_GlyphSizeProperty.__wrapped__, None)
+    _TreeViewItem_Meta_.HasUnrealizedChildrenProperty = property(get_HasUnrealizedChildrenProperty.__wrapped__, None)
     _TreeViewItem_Meta_.IsExpandedProperty = property(get_IsExpandedProperty.__wrapped__, None)
+    _TreeViewItem_Meta_.ItemsSourceProperty = property(get_ItemsSourceProperty.__wrapped__, None)
     _TreeViewItem_Meta_.TreeViewItemTemplateSettingsProperty = property(get_TreeViewItemTemplateSettingsProperty.__wrapped__, None)
 class TreeViewItemInvokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -26007,14 +27221,21 @@ class TreeViewItemInvokedEventArgs(ComPtr):
     def put_Handled(self: win32more.Windows.UI.Xaml.Controls.ITreeViewItemInvokedEventArgs, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_Handled(self: win32more.Windows.UI.Xaml.Controls.ITreeViewItemInvokedEventArgs) -> Boolean: ...
-    InvokedItem = property(get_InvokedItem, None)
     Handled = property(get_Handled, put_Handled)
+    InvokedItem = property(get_InvokedItem, None)
 class _TreeViewItemTemplateSettings_Meta_(ComPtr.__class__):
     pass
 class TreeViewItemTemplateSettings(ComPtr, metaclass=_TreeViewItemTemplateSettings_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeViewItemTemplateSettings
     _classid_ = 'Windows.UI.Xaml.Controls.TreeViewItemTemplateSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TreeViewItemTemplateSettings.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemTemplateSettingsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TreeViewItemTemplateSettings: ...
     @winrt_mixinmethod
@@ -26033,18 +27254,25 @@ class TreeViewItemTemplateSettings(ComPtr, metaclass=_TreeViewItemTemplateSettin
     def get_IndentationProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemTemplateSettingsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_DragItemsCountProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewItemTemplateSettingsStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ExpandedGlyphVisibility = property(get_ExpandedGlyphVisibility, None)
     CollapsedGlyphVisibility = property(get_CollapsedGlyphVisibility, None)
-    Indentation = property(get_Indentation, None)
     DragItemsCount = property(get_DragItemsCount, None)
-    _TreeViewItemTemplateSettings_Meta_.ExpandedGlyphVisibilityProperty = property(get_ExpandedGlyphVisibilityProperty.__wrapped__, None)
+    ExpandedGlyphVisibility = property(get_ExpandedGlyphVisibility, None)
+    Indentation = property(get_Indentation, None)
     _TreeViewItemTemplateSettings_Meta_.CollapsedGlyphVisibilityProperty = property(get_CollapsedGlyphVisibilityProperty.__wrapped__, None)
-    _TreeViewItemTemplateSettings_Meta_.IndentationProperty = property(get_IndentationProperty.__wrapped__, None)
     _TreeViewItemTemplateSettings_Meta_.DragItemsCountProperty = property(get_DragItemsCountProperty.__wrapped__, None)
+    _TreeViewItemTemplateSettings_Meta_.ExpandedGlyphVisibilityProperty = property(get_ExpandedGlyphVisibilityProperty.__wrapped__, None)
+    _TreeViewItemTemplateSettings_Meta_.IndentationProperty = property(get_IndentationProperty.__wrapped__, None)
 class TreeViewList(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.ListView
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeViewList
     _classid_ = 'Windows.UI.Xaml.Controls.TreeViewList'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TreeViewList.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewListFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TreeViewList: ...
 class _TreeViewNode_Meta_(ComPtr.__class__):
@@ -26053,6 +27281,13 @@ class TreeViewNode(ComPtr, metaclass=_TreeViewNode_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Controls.ITreeViewNode
     _classid_ = 'Windows.UI.Xaml.Controls.TreeViewNode'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TreeViewNode.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewNodeFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TreeViewNode: ...
     @winrt_mixinmethod
@@ -26083,27 +27318,34 @@ class TreeViewNode(ComPtr, metaclass=_TreeViewNode_Meta_):
     def get_IsExpandedProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewNodeStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_HasChildrenProperty(cls: win32more.Windows.UI.Xaml.Controls.ITreeViewNodeStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Content = property(get_Content, put_Content)
-    Parent = property(get_Parent, None)
-    IsExpanded = property(get_IsExpanded, put_IsExpanded)
-    HasChildren = property(get_HasChildren, None)
-    Depth = property(get_Depth, None)
-    HasUnrealizedChildren = property(get_HasUnrealizedChildren, put_HasUnrealizedChildren)
     Children = property(get_Children, None)
+    Content = property(get_Content, put_Content)
+    Depth = property(get_Depth, None)
+    HasChildren = property(get_HasChildren, None)
+    HasUnrealizedChildren = property(get_HasUnrealizedChildren, put_HasUnrealizedChildren)
+    IsExpanded = property(get_IsExpanded, put_IsExpanded)
+    Parent = property(get_Parent, None)
     _TreeViewNode_Meta_.ContentProperty = property(get_ContentProperty.__wrapped__, None)
     _TreeViewNode_Meta_.DepthProperty = property(get_DepthProperty.__wrapped__, None)
-    _TreeViewNode_Meta_.IsExpandedProperty = property(get_IsExpandedProperty.__wrapped__, None)
     _TreeViewNode_Meta_.HasChildrenProperty = property(get_HasChildrenProperty.__wrapped__, None)
-TreeViewSelectionMode = Int32
-TreeViewSelectionMode_None: TreeViewSelectionMode = 0
-TreeViewSelectionMode_Single: TreeViewSelectionMode = 1
-TreeViewSelectionMode_Multiple: TreeViewSelectionMode = 2
+    _TreeViewNode_Meta_.IsExpandedProperty = property(get_IsExpandedProperty.__wrapped__, None)
+class TreeViewSelectionMode(Int32):  # enum
+    None_ = 0
+    Single = 1
+    Multiple = 2
 class _TwoPaneView_Meta_(ComPtr.__class__):
     pass
 class TwoPaneView(ComPtr, metaclass=_TwoPaneView_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.ITwoPaneView
     _classid_ = 'Windows.UI.Xaml.Controls.TwoPaneView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.TwoPaneView.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.ITwoPaneViewFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.TwoPaneView: ...
     @winrt_mixinmethod
@@ -26168,41 +27410,41 @@ class TwoPaneView(ComPtr, metaclass=_TwoPaneView_Meta_):
     def get_MinWideModeWidthProperty(cls: win32more.Windows.UI.Xaml.Controls.ITwoPaneViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MinTallModeHeightProperty(cls: win32more.Windows.UI.Xaml.Controls.ITwoPaneViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    MinTallModeHeight = property(get_MinTallModeHeight, put_MinTallModeHeight)
+    MinWideModeWidth = property(get_MinWideModeWidth, put_MinWideModeWidth)
+    Mode = property(get_Mode, None)
     Pane1 = property(get_Pane1, put_Pane1)
-    Pane2 = property(get_Pane2, put_Pane2)
     Pane1Length = property(get_Pane1Length, put_Pane1Length)
+    Pane2 = property(get_Pane2, put_Pane2)
     Pane2Length = property(get_Pane2Length, put_Pane2Length)
     PanePriority = property(get_PanePriority, put_PanePriority)
-    Mode = property(get_Mode, None)
-    WideModeConfiguration = property(get_WideModeConfiguration, put_WideModeConfiguration)
     TallModeConfiguration = property(get_TallModeConfiguration, put_TallModeConfiguration)
-    MinWideModeWidth = property(get_MinWideModeWidth, put_MinWideModeWidth)
-    MinTallModeHeight = property(get_MinTallModeHeight, put_MinTallModeHeight)
-    _TwoPaneView_Meta_.Pane1Property = property(get_Pane1Property.__wrapped__, None)
-    _TwoPaneView_Meta_.Pane2Property = property(get_Pane2Property.__wrapped__, None)
-    _TwoPaneView_Meta_.Pane1LengthProperty = property(get_Pane1LengthProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.Pane2LengthProperty = property(get_Pane2LengthProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.PanePriorityProperty = property(get_PanePriorityProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.ModeProperty = property(get_ModeProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.WideModeConfigurationProperty = property(get_WideModeConfigurationProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.TallModeConfigurationProperty = property(get_TallModeConfigurationProperty.__wrapped__, None)
-    _TwoPaneView_Meta_.MinWideModeWidthProperty = property(get_MinWideModeWidthProperty.__wrapped__, None)
+    WideModeConfiguration = property(get_WideModeConfiguration, put_WideModeConfiguration)
     _TwoPaneView_Meta_.MinTallModeHeightProperty = property(get_MinTallModeHeightProperty.__wrapped__, None)
-TwoPaneViewMode = Int32
-TwoPaneViewMode_SinglePane: TwoPaneViewMode = 0
-TwoPaneViewMode_Wide: TwoPaneViewMode = 1
-TwoPaneViewMode_Tall: TwoPaneViewMode = 2
-TwoPaneViewPriority = Int32
-TwoPaneViewPriority_Pane1: TwoPaneViewPriority = 0
-TwoPaneViewPriority_Pane2: TwoPaneViewPriority = 1
-TwoPaneViewTallModeConfiguration = Int32
-TwoPaneViewTallModeConfiguration_SinglePane: TwoPaneViewTallModeConfiguration = 0
-TwoPaneViewTallModeConfiguration_TopBottom: TwoPaneViewTallModeConfiguration = 1
-TwoPaneViewTallModeConfiguration_BottomTop: TwoPaneViewTallModeConfiguration = 2
-TwoPaneViewWideModeConfiguration = Int32
-TwoPaneViewWideModeConfiguration_SinglePane: TwoPaneViewWideModeConfiguration = 0
-TwoPaneViewWideModeConfiguration_LeftRight: TwoPaneViewWideModeConfiguration = 1
-TwoPaneViewWideModeConfiguration_RightLeft: TwoPaneViewWideModeConfiguration = 2
+    _TwoPaneView_Meta_.MinWideModeWidthProperty = property(get_MinWideModeWidthProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.ModeProperty = property(get_ModeProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.Pane1LengthProperty = property(get_Pane1LengthProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.Pane1Property = property(get_Pane1Property.__wrapped__, None)
+    _TwoPaneView_Meta_.Pane2LengthProperty = property(get_Pane2LengthProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.Pane2Property = property(get_Pane2Property.__wrapped__, None)
+    _TwoPaneView_Meta_.PanePriorityProperty = property(get_PanePriorityProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.TallModeConfigurationProperty = property(get_TallModeConfigurationProperty.__wrapped__, None)
+    _TwoPaneView_Meta_.WideModeConfigurationProperty = property(get_WideModeConfigurationProperty.__wrapped__, None)
+class TwoPaneViewMode(Int32):  # enum
+    SinglePane = 0
+    Wide = 1
+    Tall = 2
+class TwoPaneViewPriority(Int32):  # enum
+    Pane1 = 0
+    Pane2 = 1
+class TwoPaneViewTallModeConfiguration(Int32):  # enum
+    SinglePane = 0
+    TopBottom = 1
+    BottomTop = 2
+class TwoPaneViewWideModeConfiguration(Int32):  # enum
+    SinglePane = 0
+    LeftRight = 1
+    RightLeft = 2
 class UIElementCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.UIElement]
@@ -26242,6 +27484,13 @@ class UserControl(ComPtr, metaclass=_UserControl_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Control
     default_interface: win32more.Windows.UI.Xaml.Controls.IUserControl
     _classid_ = 'Windows.UI.Xaml.Controls.UserControl'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.UserControl.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Controls.IUserControlFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Controls.UserControl: ...
     @winrt_mixinmethod
@@ -26258,6 +27507,13 @@ class VariableSizedWrapGrid(ComPtr, metaclass=_VariableSizedWrapGrid_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IVariableSizedWrapGrid
     _classid_ = 'Windows.UI.Xaml.Controls.VariableSizedWrapGrid'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.VariableSizedWrapGrid.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.VariableSizedWrapGrid: ...
     @winrt_mixinmethod
@@ -26308,26 +27564,33 @@ class VariableSizedWrapGrid(ComPtr, metaclass=_VariableSizedWrapGrid_Meta_):
     def GetColumnSpan(cls: win32more.Windows.UI.Xaml.Controls.IVariableSizedWrapGridStatics, element: win32more.Windows.UI.Xaml.UIElement) -> Int32: ...
     @winrt_classmethod
     def SetColumnSpan(cls: win32more.Windows.UI.Xaml.Controls.IVariableSizedWrapGridStatics, element: win32more.Windows.UI.Xaml.UIElement, value: Int32) -> Void: ...
+    HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
     ItemHeight = property(get_ItemHeight, put_ItemHeight)
     ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    Orientation = property(get_Orientation, put_Orientation)
-    HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
-    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
     MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
+    Orientation = property(get_Orientation, put_Orientation)
+    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
+    _VariableSizedWrapGrid_Meta_.ColumnSpanProperty = property(get_ColumnSpanProperty.__wrapped__, None)
+    _VariableSizedWrapGrid_Meta_.HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty.__wrapped__, None)
     _VariableSizedWrapGrid_Meta_.ItemHeightProperty = property(get_ItemHeightProperty.__wrapped__, None)
     _VariableSizedWrapGrid_Meta_.ItemWidthProperty = property(get_ItemWidthProperty.__wrapped__, None)
-    _VariableSizedWrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
-    _VariableSizedWrapGrid_Meta_.HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty.__wrapped__, None)
-    _VariableSizedWrapGrid_Meta_.VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty.__wrapped__, None)
     _VariableSizedWrapGrid_Meta_.MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty.__wrapped__, None)
+    _VariableSizedWrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
     _VariableSizedWrapGrid_Meta_.RowSpanProperty = property(get_RowSpanProperty.__wrapped__, None)
-    _VariableSizedWrapGrid_Meta_.ColumnSpanProperty = property(get_ColumnSpanProperty.__wrapped__, None)
+    _VariableSizedWrapGrid_Meta_.VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty.__wrapped__, None)
 class _Viewbox_Meta_(ComPtr.__class__):
     pass
 class Viewbox(ComPtr, metaclass=_Viewbox_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IViewbox
     _classid_ = 'Windows.UI.Xaml.Controls.Viewbox'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.Viewbox.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.Viewbox: ...
     @winrt_mixinmethod
@@ -26349,11 +27612,11 @@ class Viewbox(ComPtr, metaclass=_Viewbox_Meta_):
     Child = property(get_Child, put_Child)
     Stretch = property(get_Stretch, put_Stretch)
     StretchDirection = property(get_StretchDirection, put_StretchDirection)
-    _Viewbox_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
     _Viewbox_Meta_.StretchDirectionProperty = property(get_StretchDirectionProperty.__wrapped__, None)
-VirtualizationMode = Int32
-VirtualizationMode_Standard: VirtualizationMode = 0
-VirtualizationMode_Recycling: VirtualizationMode = 1
+    _Viewbox_Meta_.StretchProperty = property(get_StretchProperty.__wrapped__, None)
+class VirtualizationMode(Int32):  # enum
+    Standard = 0
+    Recycling = 1
 class VirtualizingPanel(ComPtr):
     extends: win32more.Windows.UI.Xaml.Controls.Panel
     default_interface: win32more.Windows.UI.Xaml.Controls.IVirtualizingPanel
@@ -26379,6 +27642,13 @@ class VirtualizingStackPanel(ComPtr, metaclass=_VirtualizingStackPanel_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.OrientedVirtualizingPanel
     default_interface: win32more.Windows.UI.Xaml.Controls.IVirtualizingStackPanel
     _classid_ = 'Windows.UI.Xaml.Controls.VirtualizingStackPanel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.VirtualizingStackPanel.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.VirtualizingStackPanel: ...
     @winrt_mixinmethod
@@ -26412,19 +27682,28 @@ class VirtualizingStackPanel(ComPtr, metaclass=_VirtualizingStackPanel_Meta_):
     AreScrollSnapPointsRegular = property(get_AreScrollSnapPointsRegular, put_AreScrollSnapPointsRegular)
     Orientation = property(get_Orientation, put_Orientation)
     _VirtualizingStackPanel_Meta_.AreScrollSnapPointsRegularProperty = property(get_AreScrollSnapPointsRegularProperty.__wrapped__, None)
+    _VirtualizingStackPanel_Meta_.IsVirtualizingProperty = property(get_IsVirtualizingProperty.__wrapped__, None)
     _VirtualizingStackPanel_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
     _VirtualizingStackPanel_Meta_.VirtualizationModeProperty = property(get_VirtualizationModeProperty.__wrapped__, None)
-    _VirtualizingStackPanel_Meta_.IsVirtualizingProperty = property(get_IsVirtualizingProperty.__wrapped__, None)
 class _WebView_Meta_(ComPtr.__class__):
     pass
 class WebView(ComPtr, metaclass=_WebView_Meta_):
     extends: win32more.Windows.UI.Xaml.FrameworkElement
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebView
     _classid_ = 'Windows.UI.Xaml.Controls.WebView'
-    @winrt_factorymethod
-    def CreateInstanceWithExecutionMode(cls: win32more.Windows.UI.Xaml.Controls.IWebViewFactory4, executionMode: win32more.Windows.UI.Xaml.Controls.WebViewExecutionMode) -> win32more.Windows.UI.Xaml.Controls.WebView: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.WebView.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Controls.WebView.CreateInstanceWithExecutionMode(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.WebView: ...
+    @winrt_factorymethod
+    def CreateInstanceWithExecutionMode(cls: win32more.Windows.UI.Xaml.Controls.IWebViewFactory4, executionMode: win32more.Windows.UI.Xaml.Controls.WebViewExecutionMode) -> win32more.Windows.UI.Xaml.Controls.WebView: ...
     @winrt_mixinmethod
     def get_Source(self: win32more.Windows.UI.Xaml.Controls.IWebView) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
@@ -26611,41 +27890,48 @@ class WebView(ComPtr, metaclass=_WebView_Meta_):
     def get_AllowedScriptNotifyUrisProperty(cls: win32more.Windows.UI.Xaml.Controls.IWebViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_DataTransferPackageProperty(cls: win32more.Windows.UI.Xaml.Controls.IWebViewStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Source = property(get_Source, put_Source)
     AllowedScriptNotifyUris = property(get_AllowedScriptNotifyUris, put_AllowedScriptNotifyUris)
-    DataTransferPackage = property(get_DataTransferPackage, None)
     CanGoBack = property(get_CanGoBack, None)
     CanGoForward = property(get_CanGoForward, None)
-    DocumentTitle = property(get_DocumentTitle, None)
-    DefaultBackgroundColor = property(get_DefaultBackgroundColor, put_DefaultBackgroundColor)
     ContainsFullScreenElement = property(get_ContainsFullScreenElement, None)
-    ExecutionMode = property(get_ExecutionMode, None)
+    DataTransferPackage = property(get_DataTransferPackage, None)
+    DefaultBackgroundColor = property(get_DefaultBackgroundColor, put_DefaultBackgroundColor)
     DeferredPermissionRequests = property(get_DeferredPermissionRequests, None)
+    DocumentTitle = property(get_DocumentTitle, None)
+    ExecutionMode = property(get_ExecutionMode, None)
     Settings = property(get_Settings, None)
+    Source = property(get_Source, put_Source)
+    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
     XYFocusLeft = property(get_XYFocusLeft, put_XYFocusLeft)
     XYFocusRight = property(get_XYFocusRight, put_XYFocusRight)
     XYFocusUp = property(get_XYFocusUp, put_XYFocusUp)
-    XYFocusDown = property(get_XYFocusDown, put_XYFocusDown)
+    _WebView_Meta_.AllowedScriptNotifyUrisProperty = property(get_AllowedScriptNotifyUrisProperty.__wrapped__, None)
+    _WebView_Meta_.AnyScriptNotifyUri = property(get_AnyScriptNotifyUri.__wrapped__, None)
+    _WebView_Meta_.CanGoBackProperty = property(get_CanGoBackProperty.__wrapped__, None)
+    _WebView_Meta_.CanGoForwardProperty = property(get_CanGoForwardProperty.__wrapped__, None)
+    _WebView_Meta_.ContainsFullScreenElementProperty = property(get_ContainsFullScreenElementProperty.__wrapped__, None)
+    _WebView_Meta_.DataTransferPackageProperty = property(get_DataTransferPackageProperty.__wrapped__, None)
+    _WebView_Meta_.DefaultBackgroundColorProperty = property(get_DefaultBackgroundColorProperty.__wrapped__, None)
+    _WebView_Meta_.DefaultExecutionMode = property(get_DefaultExecutionMode.__wrapped__, None)
+    _WebView_Meta_.DocumentTitleProperty = property(get_DocumentTitleProperty.__wrapped__, None)
+    _WebView_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
+    _WebView_Meta_.XYFocusDownProperty = property(get_XYFocusDownProperty.__wrapped__, None)
     _WebView_Meta_.XYFocusLeftProperty = property(get_XYFocusLeftProperty.__wrapped__, None)
     _WebView_Meta_.XYFocusRightProperty = property(get_XYFocusRightProperty.__wrapped__, None)
     _WebView_Meta_.XYFocusUpProperty = property(get_XYFocusUpProperty.__wrapped__, None)
-    _WebView_Meta_.XYFocusDownProperty = property(get_XYFocusDownProperty.__wrapped__, None)
-    _WebView_Meta_.DefaultExecutionMode = property(get_DefaultExecutionMode.__wrapped__, None)
-    _WebView_Meta_.ContainsFullScreenElementProperty = property(get_ContainsFullScreenElementProperty.__wrapped__, None)
-    _WebView_Meta_.CanGoBackProperty = property(get_CanGoBackProperty.__wrapped__, None)
-    _WebView_Meta_.CanGoForwardProperty = property(get_CanGoForwardProperty.__wrapped__, None)
-    _WebView_Meta_.DocumentTitleProperty = property(get_DocumentTitleProperty.__wrapped__, None)
-    _WebView_Meta_.DefaultBackgroundColorProperty = property(get_DefaultBackgroundColorProperty.__wrapped__, None)
-    _WebView_Meta_.AnyScriptNotifyUri = property(get_AnyScriptNotifyUri.__wrapped__, None)
-    _WebView_Meta_.SourceProperty = property(get_SourceProperty.__wrapped__, None)
-    _WebView_Meta_.AllowedScriptNotifyUrisProperty = property(get_AllowedScriptNotifyUrisProperty.__wrapped__, None)
-    _WebView_Meta_.DataTransferPackageProperty = property(get_DataTransferPackageProperty.__wrapped__, None)
 class _WebViewBrush_Meta_(ComPtr.__class__):
     pass
 class WebViewBrush(ComPtr, metaclass=_WebViewBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.TileBrush
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewBrush
     _classid_ = 'Windows.UI.Xaml.Controls.WebViewBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.WebViewBrush.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.WebViewBrush: ...
     @winrt_mixinmethod
@@ -26688,13 +27974,13 @@ class WebViewDeferredPermissionRequest(ComPtr):
     def Allow(self: win32more.Windows.UI.Xaml.Controls.IWebViewDeferredPermissionRequest) -> Void: ...
     @winrt_mixinmethod
     def Deny(self: win32more.Windows.UI.Xaml.Controls.IWebViewDeferredPermissionRequest) -> Void: ...
-    Uri = property(get_Uri, None)
-    PermissionType = property(get_PermissionType, None)
     Id = property(get_Id, None)
-WebViewExecutionMode = Int32
-WebViewExecutionMode_SameThread: WebViewExecutionMode = 0
-WebViewExecutionMode_SeparateThread: WebViewExecutionMode = 1
-WebViewExecutionMode_SeparateProcess: WebViewExecutionMode = 2
+    PermissionType = property(get_PermissionType, None)
+    Uri = property(get_Uri, None)
+class WebViewExecutionMode(Int32):  # enum
+    SameThread = 0
+    SeparateThread = 1
+    SeparateProcess = 2
 class WebViewLongRunningScriptDetectedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewLongRunningScriptDetectedEventArgs
@@ -26717,8 +28003,8 @@ class WebViewNavigationCompletedEventArgs(ComPtr):
     def get_IsSuccess(self: win32more.Windows.UI.Xaml.Controls.IWebViewNavigationCompletedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def get_WebErrorStatus(self: win32more.Windows.UI.Xaml.Controls.IWebViewNavigationCompletedEventArgs) -> win32more.Windows.Web.WebErrorStatus: ...
-    Uri = property(get_Uri, None)
     IsSuccess = property(get_IsSuccess, None)
+    Uri = property(get_Uri, None)
     WebErrorStatus = property(get_WebErrorStatus, None)
 class WebViewNavigationFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -26744,8 +28030,8 @@ class WebViewNavigationStartingEventArgs(ComPtr):
     def get_Cancel(self: win32more.Windows.UI.Xaml.Controls.IWebViewNavigationStartingEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Cancel(self: win32more.Windows.UI.Xaml.Controls.IWebViewNavigationStartingEventArgs, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
     Cancel = property(get_Cancel, put_Cancel)
+    Uri = property(get_Uri, None)
 class WebViewNewWindowRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewNewWindowRequestedEventArgs
@@ -26758,9 +28044,9 @@ class WebViewNewWindowRequestedEventArgs(ComPtr):
     def get_Handled(self: win32more.Windows.UI.Xaml.Controls.IWebViewNewWindowRequestedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Handled(self: win32more.Windows.UI.Xaml.Controls.IWebViewNewWindowRequestedEventArgs, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
-    Referrer = property(get_Referrer, None)
     Handled = property(get_Handled, put_Handled)
+    Referrer = property(get_Referrer, None)
+    Uri = property(get_Uri, None)
 class WebViewPermissionRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewPermissionRequest
@@ -26779,10 +28065,10 @@ class WebViewPermissionRequest(ComPtr):
     def Allow(self: win32more.Windows.UI.Xaml.Controls.IWebViewPermissionRequest) -> Void: ...
     @winrt_mixinmethod
     def Deny(self: win32more.Windows.UI.Xaml.Controls.IWebViewPermissionRequest) -> Void: ...
-    Uri = property(get_Uri, None)
-    PermissionType = property(get_PermissionType, None)
     Id = property(get_Id, None)
+    PermissionType = property(get_PermissionType, None)
     State = property(get_State, None)
+    Uri = property(get_Uri, None)
 class WebViewPermissionRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewPermissionRequestedEventArgs
@@ -26790,19 +28076,19 @@ class WebViewPermissionRequestedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_PermissionRequest(self: win32more.Windows.UI.Xaml.Controls.IWebViewPermissionRequestedEventArgs) -> win32more.Windows.UI.Xaml.Controls.WebViewPermissionRequest: ...
     PermissionRequest = property(get_PermissionRequest, None)
-WebViewPermissionState = Int32
-WebViewPermissionState_Unknown: WebViewPermissionState = 0
-WebViewPermissionState_Defer: WebViewPermissionState = 1
-WebViewPermissionState_Allow: WebViewPermissionState = 2
-WebViewPermissionState_Deny: WebViewPermissionState = 3
-WebViewPermissionType = Int32
-WebViewPermissionType_Geolocation: WebViewPermissionType = 0
-WebViewPermissionType_UnlimitedIndexedDBQuota: WebViewPermissionType = 1
-WebViewPermissionType_Media: WebViewPermissionType = 2
-WebViewPermissionType_PointerLock: WebViewPermissionType = 3
-WebViewPermissionType_WebNotifications: WebViewPermissionType = 4
-WebViewPermissionType_Screen: WebViewPermissionType = 5
-WebViewPermissionType_ImmersiveView: WebViewPermissionType = 6
+class WebViewPermissionState(Int32):  # enum
+    Unknown = 0
+    Defer = 1
+    Allow = 2
+    Deny = 3
+class WebViewPermissionType(Int32):  # enum
+    Geolocation = 0
+    UnlimitedIndexedDBQuota = 1
+    Media = 2
+    PointerLock = 3
+    WebNotifications = 4
+    Screen = 5
+    ImmersiveView = 6
 class WebViewSeparateProcessLostEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewSeparateProcessLostEventArgs
@@ -26819,8 +28105,8 @@ class WebViewSettings(ComPtr):
     def get_IsIndexedDBEnabled(self: win32more.Windows.UI.Xaml.Controls.IWebViewSettings) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsIndexedDBEnabled(self: win32more.Windows.UI.Xaml.Controls.IWebViewSettings, value: Boolean) -> Void: ...
-    IsJavaScriptEnabled = property(get_IsJavaScriptEnabled, put_IsJavaScriptEnabled)
     IsIndexedDBEnabled = property(get_IsIndexedDBEnabled, put_IsIndexedDBEnabled)
+    IsJavaScriptEnabled = property(get_IsJavaScriptEnabled, put_IsJavaScriptEnabled)
 class WebViewUnsupportedUriSchemeIdentifiedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewUnsupportedUriSchemeIdentifiedEventArgs
@@ -26831,8 +28117,8 @@ class WebViewUnsupportedUriSchemeIdentifiedEventArgs(ComPtr):
     def get_Handled(self: win32more.Windows.UI.Xaml.Controls.IWebViewUnsupportedUriSchemeIdentifiedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def put_Handled(self: win32more.Windows.UI.Xaml.Controls.IWebViewUnsupportedUriSchemeIdentifiedEventArgs, value: Boolean) -> Void: ...
-    Uri = property(get_Uri, None)
     Handled = property(get_Handled, put_Handled)
+    Uri = property(get_Uri, None)
 class WebViewUnviewableContentIdentifiedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewUnviewableContentIdentifiedEventArgs
@@ -26843,9 +28129,9 @@ class WebViewUnviewableContentIdentifiedEventArgs(ComPtr):
     def get_Referrer(self: win32more.Windows.UI.Xaml.Controls.IWebViewUnviewableContentIdentifiedEventArgs) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def get_MediaType(self: win32more.Windows.UI.Xaml.Controls.IWebViewUnviewableContentIdentifiedEventArgs2) -> WinRT_String: ...
-    Uri = property(get_Uri, None)
-    Referrer = property(get_Referrer, None)
     MediaType = property(get_MediaType, None)
+    Referrer = property(get_Referrer, None)
+    Uri = property(get_Uri, None)
 class WebViewWebResourceRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Controls.IWebViewWebResourceRequestedEventArgs
@@ -26866,6 +28152,13 @@ class WrapGrid(ComPtr, metaclass=_WrapGrid_Meta_):
     extends: win32more.Windows.UI.Xaml.Controls.Primitives.OrientedVirtualizingPanel
     default_interface: win32more.Windows.UI.Xaml.Controls.IWrapGrid
     _classid_ = 'Windows.UI.Xaml.Controls.WrapGrid'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Controls.WrapGrid.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Controls.WrapGrid: ...
     @winrt_mixinmethod
@@ -26904,19 +28197,21 @@ class WrapGrid(ComPtr, metaclass=_WrapGrid_Meta_):
     def get_VerticalChildrenAlignmentProperty(cls: win32more.Windows.UI.Xaml.Controls.IWrapGridStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_MaximumRowsOrColumnsProperty(cls: win32more.Windows.UI.Xaml.Controls.IWrapGridStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ItemWidth = property(get_ItemWidth, put_ItemWidth)
-    ItemHeight = property(get_ItemHeight, put_ItemHeight)
-    Orientation = property(get_Orientation, put_Orientation)
     HorizontalChildrenAlignment = property(get_HorizontalChildrenAlignment, put_HorizontalChildrenAlignment)
-    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
+    ItemHeight = property(get_ItemHeight, put_ItemHeight)
+    ItemWidth = property(get_ItemWidth, put_ItemWidth)
     MaximumRowsOrColumns = property(get_MaximumRowsOrColumns, put_MaximumRowsOrColumns)
-    _WrapGrid_Meta_.ItemWidthProperty = property(get_ItemWidthProperty.__wrapped__, None)
-    _WrapGrid_Meta_.ItemHeightProperty = property(get_ItemHeightProperty.__wrapped__, None)
-    _WrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+    Orientation = property(get_Orientation, put_Orientation)
+    VerticalChildrenAlignment = property(get_VerticalChildrenAlignment, put_VerticalChildrenAlignment)
     _WrapGrid_Meta_.HorizontalChildrenAlignmentProperty = property(get_HorizontalChildrenAlignmentProperty.__wrapped__, None)
-    _WrapGrid_Meta_.VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty.__wrapped__, None)
+    _WrapGrid_Meta_.ItemHeightProperty = property(get_ItemHeightProperty.__wrapped__, None)
+    _WrapGrid_Meta_.ItemWidthProperty = property(get_ItemWidthProperty.__wrapped__, None)
     _WrapGrid_Meta_.MaximumRowsOrColumnsProperty = property(get_MaximumRowsOrColumnsProperty.__wrapped__, None)
-ZoomMode = Int32
-ZoomMode_Disabled: ZoomMode = 0
-ZoomMode_Enabled: ZoomMode = 1
+    _WrapGrid_Meta_.OrientationProperty = property(get_OrientationProperty.__wrapped__, None)
+    _WrapGrid_Meta_.VerticalChildrenAlignmentProperty = property(get_VerticalChildrenAlignmentProperty.__wrapped__, None)
+class ZoomMode(Int32):  # enum
+    Disabled = 0
+    Enabled = 1
+
+
 make_ready(__name__)

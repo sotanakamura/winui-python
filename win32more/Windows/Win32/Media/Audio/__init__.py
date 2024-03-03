@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Media
 import win32more.Windows.Win32.Media.Audio
@@ -291,7 +291,7 @@ if ARCH in 'X64,ARM64':
         dwDstUser: UIntPtr
         dwReservedDriver: UInt32 * 15
         _pack_ = 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class ACMSTREAMHEADER(EasyCastStructure):
         cbStruct: UInt32
         fdwStatus: UInt32
@@ -521,45 +521,25 @@ SPTLAUDCLNT_E_STREAM_NOT_STOPPED: win32more.Windows.Win32.Foundation.HRESULT = -
 SPTLAUDCLNT_E_STATIC_OBJECT_NOT_AVAILABLE: win32more.Windows.Win32.Foundation.HRESULT = -2004287221
 SPTLAUDCLNT_E_OBJECT_ALREADY_ACTIVE: win32more.Windows.Win32.Foundation.HRESULT = -2004287220
 SPTLAUDCLNT_E_INTERNAL: win32more.Windows.Win32.Foundation.HRESULT = -2004287219
-DEVICE_STATE_ACTIVE: UInt32 = 1
-DEVICE_STATE_DISABLED: UInt32 = 2
-DEVICE_STATE_NOTPRESENT: UInt32 = 4
-DEVICE_STATE_UNPLUGGED: UInt32 = 8
 DEVICE_STATEMASK_ALL: UInt32 = 15
-def PKEY_AudioEndpoint_FormFactor():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=0)
-def PKEY_AudioEndpoint_ControlPanelPageProvider():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=1)
-def PKEY_AudioEndpoint_Association():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=2)
-def PKEY_AudioEndpoint_PhysicalSpeakers():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=3)
-def PKEY_AudioEndpoint_GUID():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=4)
-def PKEY_AudioEndpoint_Disable_SysFx():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=5)
+PKEY_AudioEndpoint_FormFactor: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=0)
+PKEY_AudioEndpoint_ControlPanelPageProvider: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=1)
+PKEY_AudioEndpoint_Association: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=2)
+PKEY_AudioEndpoint_PhysicalSpeakers: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=3)
+PKEY_AudioEndpoint_GUID: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=4)
+PKEY_AudioEndpoint_Disable_SysFx: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=5)
 ENDPOINT_SYSFX_ENABLED: UInt32 = 0
 ENDPOINT_SYSFX_DISABLED: UInt32 = 1
-def PKEY_AudioEndpoint_FullRangeSpeakers():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=6)
-def PKEY_AudioEndpoint_Supports_EventDriven_Mode():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=7)
-def PKEY_AudioEndpoint_JackSubType():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=8)
-def PKEY_AudioEndpoint_Default_VolumeInDb():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=9)
-def PKEY_AudioEngine_DeviceFormat():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{f19f064d-082c-4e27-bc73-6882a1bb8e4c}'), pid=0)
-def PKEY_AudioEngine_OEMFormat():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04}'), pid=3)
-def PKEY_AudioEndpointLogo_IconEffects():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{f1ab780d-2010-4ed3-a3a6-8b87f0f0c476}'), pid=0)
-def PKEY_AudioEndpointLogo_IconPath():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{f1ab780d-2010-4ed3-a3a6-8b87f0f0c476}'), pid=1)
-def PKEY_AudioEndpointSettings_MenuText():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{14242002-0320-4de4-9555-a7d82b73c286}'), pid=0)
-def PKEY_AudioEndpointSettings_LaunchContract():
-    return win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY(fmtid=Guid('{14242002-0320-4de4-9555-a7d82b73c286}'), pid=1)
+PKEY_AudioEndpoint_FullRangeSpeakers: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=6)
+PKEY_AudioEndpoint_Supports_EventDriven_Mode: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=7)
+PKEY_AudioEndpoint_JackSubType: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=8)
+PKEY_AudioEndpoint_Default_VolumeInDb: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{1da5d803-d492-4edd-8c23-e0c0ffee7f0e}'), pid=9)
+PKEY_AudioEngine_DeviceFormat: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{f19f064d-082c-4e27-bc73-6882a1bb8e4c}'), pid=0)
+PKEY_AudioEngine_OEMFormat: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04}'), pid=3)
+PKEY_AudioEndpointLogo_IconEffects: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{f1ab780d-2010-4ed3-a3a6-8b87f0f0c476}'), pid=0)
+PKEY_AudioEndpointLogo_IconPath: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{f1ab780d-2010-4ed3-a3a6-8b87f0f0c476}'), pid=1)
+PKEY_AudioEndpointSettings_MenuText: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{14242002-0320-4de4-9555-a7d82b73c286}'), pid=0)
+PKEY_AudioEndpointSettings_LaunchContract: win32more.Windows.Win32.UI.Shell.PropertiesSystem.PROPERTYKEY = ConstantLazyLoader(fmtid=Guid('{14242002-0320-4de4-9555-a7d82b73c286}'), pid=1)
 DEVINTERFACE_AUDIO_RENDER: Guid = Guid('{e6327cad-dcec-4949-ae8a-991e976a79d2}')
 DEVINTERFACE_AUDIO_CAPTURE: Guid = Guid('{2eef81be-33fa-4800-9670-1cd474972c3f}')
 DEVINTERFACE_MIDI_OUTPUT: Guid = Guid('{6dc23320-ab33-4ce4-80d4-bbb3ebbf2814}')
@@ -1260,34 +1240,39 @@ AudioObjectType_BottomBackLeft: win32more.Windows.Win32.Media.Audio.AudioObjectT
 AudioObjectType_BottomBackRight: win32more.Windows.Win32.Media.Audio.AudioObjectType = 65536
 AudioObjectType_BackCenter: win32more.Windows.Win32.Media.Audio.AudioObjectType = 131072
 AudioSessionDisconnectReason = Int32
-AudioSessionDisconnectReason_DisconnectReasonDeviceRemoval: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 0
-AudioSessionDisconnectReason_DisconnectReasonServerShutdown: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 1
-AudioSessionDisconnectReason_DisconnectReasonFormatChanged: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 2
-AudioSessionDisconnectReason_DisconnectReasonSessionLogoff: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 3
-AudioSessionDisconnectReason_DisconnectReasonSessionDisconnected: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 4
-AudioSessionDisconnectReason_DisconnectReasonExclusiveModeOverride: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 5
+DisconnectReasonDeviceRemoval: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 0
+DisconnectReasonServerShutdown: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 1
+DisconnectReasonFormatChanged: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 2
+DisconnectReasonSessionLogoff: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 3
+DisconnectReasonSessionDisconnected: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 4
+DisconnectReasonExclusiveModeOverride: win32more.Windows.Win32.Media.Audio.AudioSessionDisconnectReason = 5
 AudioSessionState = Int32
-AudioSessionState_AudioSessionStateInactive: win32more.Windows.Win32.Media.Audio.AudioSessionState = 0
-AudioSessionState_AudioSessionStateActive: win32more.Windows.Win32.Media.Audio.AudioSessionState = 1
-AudioSessionState_AudioSessionStateExpired: win32more.Windows.Win32.Media.Audio.AudioSessionState = 2
+AudioSessionStateInactive: win32more.Windows.Win32.Media.Audio.AudioSessionState = 0
+AudioSessionStateActive: win32more.Windows.Win32.Media.Audio.AudioSessionState = 1
+AudioSessionStateExpired: win32more.Windows.Win32.Media.Audio.AudioSessionState = 2
 AudioStateMonitorSoundLevel = Int32
-AudioStateMonitorSoundLevel_Muted: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 0
-AudioStateMonitorSoundLevel_Low: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 1
-AudioStateMonitorSoundLevel_Full: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 2
-ConnectorType = Int32
-ConnectorType_Unknown_Connector: win32more.Windows.Win32.Media.Audio.ConnectorType = 0
-ConnectorType_Physical_Internal: win32more.Windows.Win32.Media.Audio.ConnectorType = 1
-ConnectorType_Physical_External: win32more.Windows.Win32.Media.Audio.ConnectorType = 2
-ConnectorType_Software_IO: win32more.Windows.Win32.Media.Audio.ConnectorType = 3
-ConnectorType_Software_Fixed: win32more.Windows.Win32.Media.Audio.ConnectorType = 4
-ConnectorType_Network: win32more.Windows.Win32.Media.Audio.ConnectorType = 5
+Muted: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 0
+Low: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 1
+Full: win32more.Windows.Win32.Media.Audio.AudioStateMonitorSoundLevel = 2
+class ConnectorType(Int32):  # enum
+    Unknown_Connector = 0
+    Physical_Internal = 1
+    Physical_External = 2
+    Software_IO = 3
+    Software_Fixed = 4
+    Network = 5
+DEVICE_STATE = UInt32
+DEVICE_STATE_ACTIVE: win32more.Windows.Win32.Media.Audio.DEVICE_STATE = 1
+DEVICE_STATE_DISABLED: win32more.Windows.Win32.Media.Audio.DEVICE_STATE = 2
+DEVICE_STATE_NOTPRESENT: win32more.Windows.Win32.Media.Audio.DEVICE_STATE = 4
+DEVICE_STATE_UNPLUGGED: win32more.Windows.Win32.Media.Audio.DEVICE_STATE = 8
 class DIRECTX_AUDIO_ACTIVATION_PARAMS(EasyCastStructure):
     cbDirectXAudioActivationParams: UInt32
     guidAudioSession: Guid
     dwAudioStreamFlags: UInt32
 DataFlow = Int32
-DataFlow_In: win32more.Windows.Win32.Media.Audio.DataFlow = 0
-DataFlow_Out: win32more.Windows.Win32.Media.Audio.DataFlow = 1
+In: win32more.Windows.Win32.Media.Audio.DataFlow = 0
+Out: win32more.Windows.Win32.Media.Audio.DataFlow = 1
 DeviceTopology = Guid('{1df639d0-5ec1-47aa-9379-828dc1aa8c59}')
 class ECHOWAVEFILTER(EasyCastStructure):
     wfltr: win32more.Windows.Win32.Media.Audio.WAVEFILTER
@@ -1295,28 +1280,28 @@ class ECHOWAVEFILTER(EasyCastStructure):
     dwDelay: UInt32
     _pack_ = 1
 EDataFlow = Int32
-EDataFlow_eRender: win32more.Windows.Win32.Media.Audio.EDataFlow = 0
-EDataFlow_eCapture: win32more.Windows.Win32.Media.Audio.EDataFlow = 1
-EDataFlow_eAll: win32more.Windows.Win32.Media.Audio.EDataFlow = 2
-EDataFlow_EDataFlow_enum_count: win32more.Windows.Win32.Media.Audio.EDataFlow = 3
+eRender: win32more.Windows.Win32.Media.Audio.EDataFlow = 0
+eCapture: win32more.Windows.Win32.Media.Audio.EDataFlow = 1
+eAll: win32more.Windows.Win32.Media.Audio.EDataFlow = 2
+EDataFlow_enum_count: win32more.Windows.Win32.Media.Audio.EDataFlow = 3
 ERole = Int32
-ERole_eConsole: win32more.Windows.Win32.Media.Audio.ERole = 0
-ERole_eMultimedia: win32more.Windows.Win32.Media.Audio.ERole = 1
-ERole_eCommunications: win32more.Windows.Win32.Media.Audio.ERole = 2
-ERole_ERole_enum_count: win32more.Windows.Win32.Media.Audio.ERole = 3
+eConsole: win32more.Windows.Win32.Media.Audio.ERole = 0
+eMultimedia: win32more.Windows.Win32.Media.Audio.ERole = 1
+eCommunications: win32more.Windows.Win32.Media.Audio.ERole = 2
+ERole_enum_count: win32more.Windows.Win32.Media.Audio.ERole = 3
 EndpointFormFactor = Int32
-EndpointFormFactor_RemoteNetworkDevice: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 0
-EndpointFormFactor_Speakers: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 1
-EndpointFormFactor_LineLevel: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 2
-EndpointFormFactor_Headphones: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 3
-EndpointFormFactor_Microphone: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 4
-EndpointFormFactor_Headset: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 5
-EndpointFormFactor_Handset: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 6
-EndpointFormFactor_UnknownDigitalPassthrough: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 7
-EndpointFormFactor_SPDIF: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 8
-EndpointFormFactor_DigitalAudioDisplayDevice: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 9
-EndpointFormFactor_UnknownFormFactor: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 10
-EndpointFormFactor_EndpointFormFactor_enum_count: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 11
+RemoteNetworkDevice: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 0
+Speakers: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 1
+LineLevel: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 2
+Headphones: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 3
+Microphone: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 4
+Headset: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 5
+Handset: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 6
+UnknownDigitalPassthrough: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 7
+SPDIF: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 8
+DigitalAudioDisplayDevice: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 9
+UnknownFormFactor: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 10
+EndpointFormFactor_enum_count: win32more.Windows.Win32.Media.Audio.EndpointFormFactor = 11
 HACMDRIVER = IntPtr
 HACMDRIVERID = IntPtr
 HACMOBJ = IntPtr
@@ -1746,7 +1731,7 @@ class IMMDevice(ComPtr):
     @commethod(5)
     def GetId(self, ppstrId: POINTER(win32more.Windows.Win32.Foundation.PWSTR)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(6)
-    def GetState(self, pdwState: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def GetState(self, pdwState: POINTER(UInt32)) -> win32more.Windows.Win32.Media.Audio.DEVICE_STATE: ...
 class IMMDeviceActivator(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{3b0d0ea4-d0a9-4b0e-935b-09516746fac0}')
@@ -1763,7 +1748,7 @@ class IMMDeviceEnumerator(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{a95664d2-9614-4f35-a746-de8db63617e6}')
     @commethod(3)
-    def EnumAudioEndpoints(self, dataFlow: win32more.Windows.Win32.Media.Audio.EDataFlow, dwStateMask: UInt32, ppDevices: POINTER(win32more.Windows.Win32.Media.Audio.IMMDeviceCollection)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def EnumAudioEndpoints(self, dataFlow: win32more.Windows.Win32.Media.Audio.EDataFlow, dwStateMask: win32more.Windows.Win32.Media.Audio.DEVICE_STATE, ppDevices: POINTER(win32more.Windows.Win32.Media.Audio.IMMDeviceCollection)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
     def GetDefaultAudioEndpoint(self, dataFlow: win32more.Windows.Win32.Media.Audio.EDataFlow, role: win32more.Windows.Win32.Media.Audio.ERole, ppEndpoint: POINTER(win32more.Windows.Win32.Media.Audio.IMMDevice)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(5)
@@ -1781,7 +1766,7 @@ class IMMNotificationClient(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{7991eec9-7e89-4d85-8390-6c703cec60c0}')
     @commethod(3)
-    def OnDeviceStateChanged(self, pwstrDeviceId: win32more.Windows.Win32.Foundation.PWSTR, dwNewState: UInt32) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def OnDeviceStateChanged(self, pwstrDeviceId: win32more.Windows.Win32.Foundation.PWSTR, dwNewState: win32more.Windows.Win32.Media.Audio.DEVICE_STATE) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
     def OnDeviceAdded(self, pwstrDeviceId: win32more.Windows.Win32.Foundation.PWSTR) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(5)
@@ -2402,8 +2387,8 @@ PROCESS_LOOPBACK_MODE = Int32
 PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE: win32more.Windows.Win32.Media.Audio.PROCESS_LOOPBACK_MODE = 0
 PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE: win32more.Windows.Win32.Media.Audio.PROCESS_LOOPBACK_MODE = 1
 PartType = Int32
-PartType_Connector: win32more.Windows.Win32.Media.Audio.PartType = 0
-PartType_Subunit: win32more.Windows.Win32.Media.Audio.PartType = 1
+Connector: win32more.Windows.Win32.Media.Audio.PartType = 0
+Subunit: win32more.Windows.Win32.Media.Audio.PartType = 1
 SND_FLAGS = UInt32
 SND_APPLICATION: win32more.Windows.Win32.Media.Audio.SND_FLAGS = 128
 SND_ALIAS: win32more.Windows.Win32.Media.Audio.SND_FLAGS = 65536

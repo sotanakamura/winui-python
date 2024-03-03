@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Bluetooth
 import win32more.Windows.Devices.Bluetooth.GenericAttributeProfile
 import win32more.Windows.Devices.Bluetooth.Rfcomm
@@ -24,6 +10,7 @@ import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Networking
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class BluetoothAdapter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothAdapter
@@ -58,24 +45,24 @@ class BluetoothAdapter(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Devices.Bluetooth.IBluetoothAdapterStatics, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Bluetooth.BluetoothAdapter]: ...
     @winrt_classmethod
     def GetDefaultAsync(cls: win32more.Windows.Devices.Bluetooth.IBluetoothAdapterStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Bluetooth.BluetoothAdapter]: ...
-    DeviceId = property(get_DeviceId, None)
-    BluetoothAddress = property(get_BluetoothAddress, None)
-    IsClassicSupported = property(get_IsClassicSupported, None)
-    IsLowEnergySupported = property(get_IsLowEnergySupported, None)
-    IsPeripheralRoleSupported = property(get_IsPeripheralRoleSupported, None)
-    IsCentralRoleSupported = property(get_IsCentralRoleSupported, None)
-    IsAdvertisementOffloadSupported = property(get_IsAdvertisementOffloadSupported, None)
     AreClassicSecureConnectionsSupported = property(get_AreClassicSecureConnectionsSupported, None)
     AreLowEnergySecureConnectionsSupported = property(get_AreLowEnergySecureConnectionsSupported, None)
+    BluetoothAddress = property(get_BluetoothAddress, None)
+    DeviceId = property(get_DeviceId, None)
+    IsAdvertisementOffloadSupported = property(get_IsAdvertisementOffloadSupported, None)
+    IsCentralRoleSupported = property(get_IsCentralRoleSupported, None)
+    IsClassicSupported = property(get_IsClassicSupported, None)
     IsExtendedAdvertisingSupported = property(get_IsExtendedAdvertisingSupported, None)
+    IsLowEnergySupported = property(get_IsLowEnergySupported, None)
+    IsPeripheralRoleSupported = property(get_IsPeripheralRoleSupported, None)
     MaxAdvertisementDataLength = property(get_MaxAdvertisementDataLength, None)
-BluetoothAddressType = Int32
-BluetoothAddressType_Public: BluetoothAddressType = 0
-BluetoothAddressType_Random: BluetoothAddressType = 1
-BluetoothAddressType_Unspecified: BluetoothAddressType = 2
-BluetoothCacheMode = Int32
-BluetoothCacheMode_Cached: BluetoothCacheMode = 0
-BluetoothCacheMode_Uncached: BluetoothCacheMode = 1
+class BluetoothAddressType(Int32):  # enum
+    Public = 0
+    Random = 1
+    Unspecified = 2
+class BluetoothCacheMode(Int32):  # enum
+    Cached = 0
+    Uncached = 1
 class BluetoothClassOfDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothClassOfDevice
@@ -92,13 +79,13 @@ class BluetoothClassOfDevice(ComPtr):
     def FromRawValue(cls: win32more.Windows.Devices.Bluetooth.IBluetoothClassOfDeviceStatics, rawValue: UInt32) -> win32more.Windows.Devices.Bluetooth.BluetoothClassOfDevice: ...
     @winrt_classmethod
     def FromParts(cls: win32more.Windows.Devices.Bluetooth.IBluetoothClassOfDeviceStatics, majorClass: win32more.Windows.Devices.Bluetooth.BluetoothMajorClass, minorClass: win32more.Windows.Devices.Bluetooth.BluetoothMinorClass, serviceCapabilities: win32more.Windows.Devices.Bluetooth.BluetoothServiceCapabilities) -> win32more.Windows.Devices.Bluetooth.BluetoothClassOfDevice: ...
-    RawValue = property(get_RawValue, None)
     MajorClass = property(get_MajorClass, None)
     MinorClass = property(get_MinorClass, None)
+    RawValue = property(get_RawValue, None)
     ServiceCapabilities = property(get_ServiceCapabilities, None)
-BluetoothConnectionStatus = Int32
-BluetoothConnectionStatus_Disconnected: BluetoothConnectionStatus = 0
-BluetoothConnectionStatus_Connected: BluetoothConnectionStatus = 1
+class BluetoothConnectionStatus(Int32):  # enum
+    Disconnected = 0
+    Connected = 1
 class BluetoothDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothDevice
@@ -169,17 +156,17 @@ class BluetoothDevice(ComPtr):
     def FromBluetoothAddressAsync(cls: win32more.Windows.Devices.Bluetooth.IBluetoothDeviceStatics, address: UInt64) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Bluetooth.BluetoothDevice]: ...
     @winrt_classmethod
     def GetDeviceSelector(cls: win32more.Windows.Devices.Bluetooth.IBluetoothDeviceStatics) -> WinRT_String: ...
+    BluetoothAddress = property(get_BluetoothAddress, None)
+    BluetoothDeviceId = property(get_BluetoothDeviceId, None)
+    ClassOfDevice = property(get_ClassOfDevice, None)
+    ConnectionStatus = property(get_ConnectionStatus, None)
+    DeviceAccessInformation = property(get_DeviceAccessInformation, None)
     DeviceId = property(get_DeviceId, None)
+    DeviceInformation = property(get_DeviceInformation, None)
     HostName = property(get_HostName, None)
     Name = property(get_Name, None)
-    ClassOfDevice = property(get_ClassOfDevice, None)
-    SdpRecords = property(get_SdpRecords, None)
     RfcommServices = property(get_RfcommServices, None)
-    ConnectionStatus = property(get_ConnectionStatus, None)
-    BluetoothAddress = property(get_BluetoothAddress, None)
-    DeviceInformation = property(get_DeviceInformation, None)
-    DeviceAccessInformation = property(get_DeviceAccessInformation, None)
-    BluetoothDeviceId = property(get_BluetoothDeviceId, None)
+    SdpRecords = property(get_SdpRecords, None)
     WasSecureConnectionUsedForPairing = property(get_WasSecureConnectionUsedForPairing, None)
 class BluetoothDeviceId(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -196,17 +183,17 @@ class BluetoothDeviceId(ComPtr):
     Id = property(get_Id, None)
     IsClassicDevice = property(get_IsClassicDevice, None)
     IsLowEnergyDevice = property(get_IsLowEnergyDevice, None)
-BluetoothError = Int32
-BluetoothError_Success: BluetoothError = 0
-BluetoothError_RadioNotAvailable: BluetoothError = 1
-BluetoothError_ResourceInUse: BluetoothError = 2
-BluetoothError_DeviceNotConnected: BluetoothError = 3
-BluetoothError_OtherError: BluetoothError = 4
-BluetoothError_DisabledByPolicy: BluetoothError = 5
-BluetoothError_NotSupported: BluetoothError = 6
-BluetoothError_DisabledByUser: BluetoothError = 7
-BluetoothError_ConsentRequired: BluetoothError = 8
-BluetoothError_TransportNotSupported: BluetoothError = 9
+class BluetoothError(Int32):  # enum
+    Success = 0
+    RadioNotAvailable = 1
+    ResourceInUse = 2
+    DeviceNotConnected = 3
+    OtherError = 4
+    DisabledByPolicy = 5
+    NotSupported = 6
+    DisabledByUser = 7
+    ConsentRequired = 8
+    TransportNotSupported = 9
 class BluetoothLEAppearance(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearance
@@ -221,8 +208,8 @@ class BluetoothLEAppearance(ComPtr):
     def FromRawValue(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceStatics, rawValue: UInt16) -> win32more.Windows.Devices.Bluetooth.BluetoothLEAppearance: ...
     @winrt_classmethod
     def FromParts(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceStatics, appearanceCategory: UInt16, appearanceSubCategory: UInt16) -> win32more.Windows.Devices.Bluetooth.BluetoothLEAppearance: ...
-    RawValue = property(get_RawValue, None)
     Category = property(get_Category, None)
+    RawValue = property(get_RawValue, None)
     SubCategory = property(get_SubCategory, None)
 class _BluetoothLEAppearanceCategories_Meta_(ComPtr.__class__):
     pass
@@ -273,28 +260,28 @@ class BluetoothLEAppearanceCategories(ComPtr, metaclass=_BluetoothLEAppearanceCa
     def get_WeightScale(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceCategoriesStatics) -> UInt16: ...
     @winrt_classmethod
     def get_OutdoorSportActivity(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceCategoriesStatics) -> UInt16: ...
-    _BluetoothLEAppearanceCategories_Meta_.Uncategorized = property(get_Uncategorized.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Phone = property(get_Phone.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Computer = property(get_Computer.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Watch = property(get_Watch.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.BarcodeScanner = property(get_BarcodeScanner.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.BloodPressure = property(get_BloodPressure.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.Clock = property(get_Clock.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Computer = property(get_Computer.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Cycling = property(get_Cycling.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.Display = property(get_Display.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.RemoteControl = property(get_RemoteControl.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.EyeGlasses = property(get_EyeGlasses.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Tag = property(get_Tag.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.GlucoseMeter = property(get_GlucoseMeter.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.HeartRate = property(get_HeartRate.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.HumanInterfaceDevice = property(get_HumanInterfaceDevice.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.Keyring = property(get_Keyring.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.MediaPlayer = property(get_MediaPlayer.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.BarcodeScanner = property(get_BarcodeScanner.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Thermometer = property(get_Thermometer.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.HeartRate = property(get_HeartRate.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.BloodPressure = property(get_BloodPressure.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.HumanInterfaceDevice = property(get_HumanInterfaceDevice.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.GlucoseMeter = property(get_GlucoseMeter.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.RunningWalking = property(get_RunningWalking.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.Cycling = property(get_Cycling.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.PulseOximeter = property(get_PulseOximeter.__wrapped__, None)
-    _BluetoothLEAppearanceCategories_Meta_.WeightScale = property(get_WeightScale.__wrapped__, None)
     _BluetoothLEAppearanceCategories_Meta_.OutdoorSportActivity = property(get_OutdoorSportActivity.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Phone = property(get_Phone.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.PulseOximeter = property(get_PulseOximeter.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.RemoteControl = property(get_RemoteControl.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.RunningWalking = property(get_RunningWalking.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Tag = property(get_Tag.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Thermometer = property(get_Thermometer.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Uncategorized = property(get_Uncategorized.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.Watch = property(get_Watch.__wrapped__, None)
+    _BluetoothLEAppearanceCategories_Meta_.WeightScale = property(get_WeightScale.__wrapped__, None)
 class _BluetoothLEAppearanceSubcategories_Meta_(ComPtr.__class__):
     pass
 class BluetoothLEAppearanceSubcategories(ComPtr, metaclass=_BluetoothLEAppearanceSubcategories_Meta_):
@@ -356,34 +343,34 @@ class BluetoothLEAppearanceSubcategories(ComPtr, metaclass=_BluetoothLEAppearanc
     def get_LocationPod(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceSubcategoriesStatics) -> UInt16: ...
     @winrt_classmethod
     def get_LocationNavigationPod(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEAppearanceSubcategoriesStatics) -> UInt16: ...
-    _BluetoothLEAppearanceSubcategories_Meta_.Generic = property(get_Generic.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.SportsWatch = property(get_SportsWatch.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.ThermometerEar = property(get_ThermometerEar.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.HeartRateBelt = property(get_HeartRateBelt.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.BarcodeScanner = property(get_BarcodeScanner.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.BloodPressureArm = property(get_BloodPressureArm.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.BloodPressureWrist = property(get_BloodPressureWrist.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.Keyboard = property(get_Keyboard.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.Mouse = property(get_Mouse.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.Joystick = property(get_Joystick.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.Gamepad = property(get_Gamepad.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.DigitizerTablet = property(get_DigitizerTablet.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.CardReader = property(get_CardReader.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.DigitalPen = property(get_DigitalPen.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.BarcodeScanner = property(get_BarcodeScanner.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingInShoe = property(get_RunningWalkingInShoe.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingOnShoe = property(get_RunningWalkingOnShoe.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingOnHip = property(get_RunningWalkingOnHip.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.CyclingComputer = property(get_CyclingComputer.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.CyclingSpeedSensor = property(get_CyclingSpeedSensor.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.CyclingCadenceSensor = property(get_CyclingCadenceSensor.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.CyclingComputer = property(get_CyclingComputer.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.CyclingPowerSensor = property(get_CyclingPowerSensor.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.CyclingSpeedCadenceSensor = property(get_CyclingSpeedCadenceSensor.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.OximeterFingertip = property(get_OximeterFingertip.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.OximeterWristWorn = property(get_OximeterWristWorn.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.CyclingSpeedSensor = property(get_CyclingSpeedSensor.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.DigitalPen = property(get_DigitalPen.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.DigitizerTablet = property(get_DigitizerTablet.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.Gamepad = property(get_Gamepad.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.Generic = property(get_Generic.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.HeartRateBelt = property(get_HeartRateBelt.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.Joystick = property(get_Joystick.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.Keyboard = property(get_Keyboard.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.LocationDisplay = property(get_LocationDisplay.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.LocationNavigationDisplay = property(get_LocationNavigationDisplay.__wrapped__, None)
-    _BluetoothLEAppearanceSubcategories_Meta_.LocationPod = property(get_LocationPod.__wrapped__, None)
     _BluetoothLEAppearanceSubcategories_Meta_.LocationNavigationPod = property(get_LocationNavigationPod.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.LocationPod = property(get_LocationPod.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.Mouse = property(get_Mouse.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.OximeterFingertip = property(get_OximeterFingertip.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.OximeterWristWorn = property(get_OximeterWristWorn.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingInShoe = property(get_RunningWalkingInShoe.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingOnHip = property(get_RunningWalkingOnHip.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.RunningWalkingOnShoe = property(get_RunningWalkingOnShoe.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.SportsWatch = property(get_SportsWatch.__wrapped__, None)
+    _BluetoothLEAppearanceSubcategories_Meta_.ThermometerEar = property(get_ThermometerEar.__wrapped__, None)
 class BluetoothLEConnectionParameters(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionParameters
@@ -394,9 +381,9 @@ class BluetoothLEConnectionParameters(ComPtr):
     def get_ConnectionLatency(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionParameters) -> UInt16: ...
     @winrt_mixinmethod
     def get_ConnectionInterval(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionParameters) -> UInt16: ...
-    LinkTimeout = property(get_LinkTimeout, None)
-    ConnectionLatency = property(get_ConnectionLatency, None)
     ConnectionInterval = property(get_ConnectionInterval, None)
+    ConnectionLatency = property(get_ConnectionLatency, None)
+    LinkTimeout = property(get_LinkTimeout, None)
 class BluetoothLEConnectionPhy(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhy
@@ -405,8 +392,8 @@ class BluetoothLEConnectionPhy(ComPtr):
     def get_TransmitInfo(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhy) -> win32more.Windows.Devices.Bluetooth.BluetoothLEConnectionPhyInfo: ...
     @winrt_mixinmethod
     def get_ReceiveInfo(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhy) -> win32more.Windows.Devices.Bluetooth.BluetoothLEConnectionPhyInfo: ...
-    TransmitInfo = property(get_TransmitInfo, None)
     ReceiveInfo = property(get_ReceiveInfo, None)
+    TransmitInfo = property(get_TransmitInfo, None)
 class BluetoothLEConnectionPhyInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhyInfo
@@ -417,9 +404,9 @@ class BluetoothLEConnectionPhyInfo(ComPtr):
     def get_IsUncoded2MPhy(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhyInfo) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsCodedPhy(self: win32more.Windows.Devices.Bluetooth.IBluetoothLEConnectionPhyInfo) -> Boolean: ...
+    IsCodedPhy = property(get_IsCodedPhy, None)
     IsUncoded1MPhy = property(get_IsUncoded1MPhy, None)
     IsUncoded2MPhy = property(get_IsUncoded2MPhy, None)
-    IsCodedPhy = property(get_IsCodedPhy, None)
 class BluetoothLEDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEDevice
@@ -506,16 +493,16 @@ class BluetoothLEDevice(ComPtr):
     def FromBluetoothAddressAsync(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEDeviceStatics, bluetoothAddress: UInt64) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Bluetooth.BluetoothLEDevice]: ...
     @winrt_classmethod
     def GetDeviceSelector(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEDeviceStatics) -> WinRT_String: ...
-    DeviceId = property(get_DeviceId, None)
-    Name = property(get_Name, None)
-    GattServices = property(get_GattServices, None)
-    ConnectionStatus = property(get_ConnectionStatus, None)
-    BluetoothAddress = property(get_BluetoothAddress, None)
-    DeviceInformation = property(get_DeviceInformation, None)
     Appearance = property(get_Appearance, None)
+    BluetoothAddress = property(get_BluetoothAddress, None)
     BluetoothAddressType = property(get_BluetoothAddressType, None)
-    DeviceAccessInformation = property(get_DeviceAccessInformation, None)
     BluetoothDeviceId = property(get_BluetoothDeviceId, None)
+    ConnectionStatus = property(get_ConnectionStatus, None)
+    DeviceAccessInformation = property(get_DeviceAccessInformation, None)
+    DeviceId = property(get_DeviceId, None)
+    DeviceInformation = property(get_DeviceInformation, None)
+    GattServices = property(get_GattServices, None)
+    Name = property(get_Name, None)
     WasSecureConnectionUsedForPairing = property(get_WasSecureConnectionUsedForPairing, None)
 class _BluetoothLEPreferredConnectionParameters_Meta_(ComPtr.__class__):
     pass
@@ -537,13 +524,13 @@ class BluetoothLEPreferredConnectionParameters(ComPtr, metaclass=_BluetoothLEPre
     def get_ThroughputOptimized(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEPreferredConnectionParametersStatics) -> win32more.Windows.Devices.Bluetooth.BluetoothLEPreferredConnectionParameters: ...
     @winrt_classmethod
     def get_PowerOptimized(cls: win32more.Windows.Devices.Bluetooth.IBluetoothLEPreferredConnectionParametersStatics) -> win32more.Windows.Devices.Bluetooth.BluetoothLEPreferredConnectionParameters: ...
-    LinkTimeout = property(get_LinkTimeout, None)
     ConnectionLatency = property(get_ConnectionLatency, None)
-    MinConnectionInterval = property(get_MinConnectionInterval, None)
+    LinkTimeout = property(get_LinkTimeout, None)
     MaxConnectionInterval = property(get_MaxConnectionInterval, None)
+    MinConnectionInterval = property(get_MinConnectionInterval, None)
     _BluetoothLEPreferredConnectionParameters_Meta_.Balanced = property(get_Balanced.__wrapped__, None)
-    _BluetoothLEPreferredConnectionParameters_Meta_.ThroughputOptimized = property(get_ThroughputOptimized.__wrapped__, None)
     _BluetoothLEPreferredConnectionParameters_Meta_.PowerOptimized = property(get_PowerOptimized.__wrapped__, None)
+    _BluetoothLEPreferredConnectionParameters_Meta_.ThroughputOptimized = property(get_ThroughputOptimized.__wrapped__, None)
 class BluetoothLEPreferredConnectionParametersRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothLEPreferredConnectionParametersRequest
@@ -553,109 +540,116 @@ class BluetoothLEPreferredConnectionParametersRequest(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     Status = property(get_Status, None)
-BluetoothLEPreferredConnectionParametersRequestStatus = Int32
-BluetoothLEPreferredConnectionParametersRequestStatus_Unspecified: BluetoothLEPreferredConnectionParametersRequestStatus = 0
-BluetoothLEPreferredConnectionParametersRequestStatus_Success: BluetoothLEPreferredConnectionParametersRequestStatus = 1
-BluetoothLEPreferredConnectionParametersRequestStatus_DeviceNotAvailable: BluetoothLEPreferredConnectionParametersRequestStatus = 2
-BluetoothLEPreferredConnectionParametersRequestStatus_AccessDenied: BluetoothLEPreferredConnectionParametersRequestStatus = 3
-BluetoothMajorClass = Int32
-BluetoothMajorClass_Miscellaneous: BluetoothMajorClass = 0
-BluetoothMajorClass_Computer: BluetoothMajorClass = 1
-BluetoothMajorClass_Phone: BluetoothMajorClass = 2
-BluetoothMajorClass_NetworkAccessPoint: BluetoothMajorClass = 3
-BluetoothMajorClass_AudioVideo: BluetoothMajorClass = 4
-BluetoothMajorClass_Peripheral: BluetoothMajorClass = 5
-BluetoothMajorClass_Imaging: BluetoothMajorClass = 6
-BluetoothMajorClass_Wearable: BluetoothMajorClass = 7
-BluetoothMajorClass_Toy: BluetoothMajorClass = 8
-BluetoothMajorClass_Health: BluetoothMajorClass = 9
-BluetoothMinorClass = Int32
-BluetoothMinorClass_Uncategorized: BluetoothMinorClass = 0
-BluetoothMinorClass_ComputerDesktop: BluetoothMinorClass = 1
-BluetoothMinorClass_ComputerServer: BluetoothMinorClass = 2
-BluetoothMinorClass_ComputerLaptop: BluetoothMinorClass = 3
-BluetoothMinorClass_ComputerHandheld: BluetoothMinorClass = 4
-BluetoothMinorClass_ComputerPalmSize: BluetoothMinorClass = 5
-BluetoothMinorClass_ComputerWearable: BluetoothMinorClass = 6
-BluetoothMinorClass_ComputerTablet: BluetoothMinorClass = 7
-BluetoothMinorClass_PhoneCellular: BluetoothMinorClass = 1
-BluetoothMinorClass_PhoneCordless: BluetoothMinorClass = 2
-BluetoothMinorClass_PhoneSmartPhone: BluetoothMinorClass = 3
-BluetoothMinorClass_PhoneWired: BluetoothMinorClass = 4
-BluetoothMinorClass_PhoneIsdn: BluetoothMinorClass = 5
-BluetoothMinorClass_NetworkFullyAvailable: BluetoothMinorClass = 0
-BluetoothMinorClass_NetworkUsed01To17Percent: BluetoothMinorClass = 8
-BluetoothMinorClass_NetworkUsed17To33Percent: BluetoothMinorClass = 16
-BluetoothMinorClass_NetworkUsed33To50Percent: BluetoothMinorClass = 24
-BluetoothMinorClass_NetworkUsed50To67Percent: BluetoothMinorClass = 32
-BluetoothMinorClass_NetworkUsed67To83Percent: BluetoothMinorClass = 40
-BluetoothMinorClass_NetworkUsed83To99Percent: BluetoothMinorClass = 48
-BluetoothMinorClass_NetworkNoServiceAvailable: BluetoothMinorClass = 56
-BluetoothMinorClass_AudioVideoWearableHeadset: BluetoothMinorClass = 1
-BluetoothMinorClass_AudioVideoHandsFree: BluetoothMinorClass = 2
-BluetoothMinorClass_AudioVideoMicrophone: BluetoothMinorClass = 4
-BluetoothMinorClass_AudioVideoLoudspeaker: BluetoothMinorClass = 5
-BluetoothMinorClass_AudioVideoHeadphones: BluetoothMinorClass = 6
-BluetoothMinorClass_AudioVideoPortableAudio: BluetoothMinorClass = 7
-BluetoothMinorClass_AudioVideoCarAudio: BluetoothMinorClass = 8
-BluetoothMinorClass_AudioVideoSetTopBox: BluetoothMinorClass = 9
-BluetoothMinorClass_AudioVideoHifiAudioDevice: BluetoothMinorClass = 10
-BluetoothMinorClass_AudioVideoVcr: BluetoothMinorClass = 11
-BluetoothMinorClass_AudioVideoVideoCamera: BluetoothMinorClass = 12
-BluetoothMinorClass_AudioVideoCamcorder: BluetoothMinorClass = 13
-BluetoothMinorClass_AudioVideoVideoMonitor: BluetoothMinorClass = 14
-BluetoothMinorClass_AudioVideoVideoDisplayAndLoudspeaker: BluetoothMinorClass = 15
-BluetoothMinorClass_AudioVideoVideoConferencing: BluetoothMinorClass = 16
-BluetoothMinorClass_AudioVideoGamingOrToy: BluetoothMinorClass = 18
-BluetoothMinorClass_PeripheralJoystick: BluetoothMinorClass = 1
-BluetoothMinorClass_PeripheralGamepad: BluetoothMinorClass = 2
-BluetoothMinorClass_PeripheralRemoteControl: BluetoothMinorClass = 3
-BluetoothMinorClass_PeripheralSensing: BluetoothMinorClass = 4
-BluetoothMinorClass_PeripheralDigitizerTablet: BluetoothMinorClass = 5
-BluetoothMinorClass_PeripheralCardReader: BluetoothMinorClass = 6
-BluetoothMinorClass_PeripheralDigitalPen: BluetoothMinorClass = 7
-BluetoothMinorClass_PeripheralHandheldScanner: BluetoothMinorClass = 8
-BluetoothMinorClass_PeripheralHandheldGesture: BluetoothMinorClass = 9
-BluetoothMinorClass_WearableWristwatch: BluetoothMinorClass = 1
-BluetoothMinorClass_WearablePager: BluetoothMinorClass = 2
-BluetoothMinorClass_WearableJacket: BluetoothMinorClass = 3
-BluetoothMinorClass_WearableHelmet: BluetoothMinorClass = 4
-BluetoothMinorClass_WearableGlasses: BluetoothMinorClass = 5
-BluetoothMinorClass_ToyRobot: BluetoothMinorClass = 1
-BluetoothMinorClass_ToyVehicle: BluetoothMinorClass = 2
-BluetoothMinorClass_ToyDoll: BluetoothMinorClass = 3
-BluetoothMinorClass_ToyController: BluetoothMinorClass = 4
-BluetoothMinorClass_ToyGame: BluetoothMinorClass = 5
-BluetoothMinorClass_HealthBloodPressureMonitor: BluetoothMinorClass = 1
-BluetoothMinorClass_HealthThermometer: BluetoothMinorClass = 2
-BluetoothMinorClass_HealthWeighingScale: BluetoothMinorClass = 3
-BluetoothMinorClass_HealthGlucoseMeter: BluetoothMinorClass = 4
-BluetoothMinorClass_HealthPulseOximeter: BluetoothMinorClass = 5
-BluetoothMinorClass_HealthHeartRateMonitor: BluetoothMinorClass = 6
-BluetoothMinorClass_HealthHealthDataDisplay: BluetoothMinorClass = 7
-BluetoothMinorClass_HealthStepCounter: BluetoothMinorClass = 8
-BluetoothMinorClass_HealthBodyCompositionAnalyzer: BluetoothMinorClass = 9
-BluetoothMinorClass_HealthPeakFlowMonitor: BluetoothMinorClass = 10
-BluetoothMinorClass_HealthMedicationMonitor: BluetoothMinorClass = 11
-BluetoothMinorClass_HealthKneeProsthesis: BluetoothMinorClass = 12
-BluetoothMinorClass_HealthAnkleProsthesis: BluetoothMinorClass = 13
-BluetoothMinorClass_HealthGenericHealthManager: BluetoothMinorClass = 14
-BluetoothMinorClass_HealthPersonalMobilityDevice: BluetoothMinorClass = 15
-BluetoothServiceCapabilities = UInt32
-BluetoothServiceCapabilities_None: BluetoothServiceCapabilities = 0
-BluetoothServiceCapabilities_LimitedDiscoverableMode: BluetoothServiceCapabilities = 1
-BluetoothServiceCapabilities_PositioningService: BluetoothServiceCapabilities = 8
-BluetoothServiceCapabilities_NetworkingService: BluetoothServiceCapabilities = 16
-BluetoothServiceCapabilities_RenderingService: BluetoothServiceCapabilities = 32
-BluetoothServiceCapabilities_CapturingService: BluetoothServiceCapabilities = 64
-BluetoothServiceCapabilities_ObjectTransferService: BluetoothServiceCapabilities = 128
-BluetoothServiceCapabilities_AudioService: BluetoothServiceCapabilities = 256
-BluetoothServiceCapabilities_TelephoneService: BluetoothServiceCapabilities = 512
-BluetoothServiceCapabilities_InformationService: BluetoothServiceCapabilities = 1024
+class BluetoothLEPreferredConnectionParametersRequestStatus(Int32):  # enum
+    Unspecified = 0
+    Success = 1
+    DeviceNotAvailable = 2
+    AccessDenied = 3
+class BluetoothMajorClass(Int32):  # enum
+    Miscellaneous = 0
+    Computer = 1
+    Phone = 2
+    NetworkAccessPoint = 3
+    AudioVideo = 4
+    Peripheral = 5
+    Imaging = 6
+    Wearable = 7
+    Toy = 8
+    Health = 9
+class BluetoothMinorClass(Int32):  # enum
+    Uncategorized = 0
+    ComputerDesktop = 1
+    ComputerServer = 2
+    ComputerLaptop = 3
+    ComputerHandheld = 4
+    ComputerPalmSize = 5
+    ComputerWearable = 6
+    ComputerTablet = 7
+    PhoneCellular = 1
+    PhoneCordless = 2
+    PhoneSmartPhone = 3
+    PhoneWired = 4
+    PhoneIsdn = 5
+    NetworkFullyAvailable = 0
+    NetworkUsed01To17Percent = 8
+    NetworkUsed17To33Percent = 16
+    NetworkUsed33To50Percent = 24
+    NetworkUsed50To67Percent = 32
+    NetworkUsed67To83Percent = 40
+    NetworkUsed83To99Percent = 48
+    NetworkNoServiceAvailable = 56
+    AudioVideoWearableHeadset = 1
+    AudioVideoHandsFree = 2
+    AudioVideoMicrophone = 4
+    AudioVideoLoudspeaker = 5
+    AudioVideoHeadphones = 6
+    AudioVideoPortableAudio = 7
+    AudioVideoCarAudio = 8
+    AudioVideoSetTopBox = 9
+    AudioVideoHifiAudioDevice = 10
+    AudioVideoVcr = 11
+    AudioVideoVideoCamera = 12
+    AudioVideoCamcorder = 13
+    AudioVideoVideoMonitor = 14
+    AudioVideoVideoDisplayAndLoudspeaker = 15
+    AudioVideoVideoConferencing = 16
+    AudioVideoGamingOrToy = 18
+    PeripheralJoystick = 1
+    PeripheralGamepad = 2
+    PeripheralRemoteControl = 3
+    PeripheralSensing = 4
+    PeripheralDigitizerTablet = 5
+    PeripheralCardReader = 6
+    PeripheralDigitalPen = 7
+    PeripheralHandheldScanner = 8
+    PeripheralHandheldGesture = 9
+    WearableWristwatch = 1
+    WearablePager = 2
+    WearableJacket = 3
+    WearableHelmet = 4
+    WearableGlasses = 5
+    ToyRobot = 1
+    ToyVehicle = 2
+    ToyDoll = 3
+    ToyController = 4
+    ToyGame = 5
+    HealthBloodPressureMonitor = 1
+    HealthThermometer = 2
+    HealthWeighingScale = 3
+    HealthGlucoseMeter = 4
+    HealthPulseOximeter = 5
+    HealthHeartRateMonitor = 6
+    HealthHealthDataDisplay = 7
+    HealthStepCounter = 8
+    HealthBodyCompositionAnalyzer = 9
+    HealthPeakFlowMonitor = 10
+    HealthMedicationMonitor = 11
+    HealthKneeProsthesis = 12
+    HealthAnkleProsthesis = 13
+    HealthGenericHealthManager = 14
+    HealthPersonalMobilityDevice = 15
+class BluetoothServiceCapabilities(UInt32):  # enum
+    None_ = 0
+    LimitedDiscoverableMode = 1
+    PositioningService = 8
+    NetworkingService = 16
+    RenderingService = 32
+    CapturingService = 64
+    ObjectTransferService = 128
+    AudioService = 256
+    TelephoneService = 512
+    InformationService = 1024
 class BluetoothSignalStrengthFilter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Bluetooth.IBluetoothSignalStrengthFilter
     _classid_ = 'Windows.Devices.Bluetooth.BluetoothSignalStrengthFilter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Bluetooth.BluetoothSignalStrengthFilter.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Bluetooth.BluetoothSignalStrengthFilter: ...
     @winrt_mixinmethod
@@ -705,13 +699,13 @@ class IBluetoothAdapter(ComPtr):
     def get_IsAdvertisementOffloadSupported(self) -> Boolean: ...
     @winrt_commethod(13)
     def GetRadioAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Radios.Radio]: ...
-    DeviceId = property(get_DeviceId, None)
     BluetoothAddress = property(get_BluetoothAddress, None)
+    DeviceId = property(get_DeviceId, None)
+    IsAdvertisementOffloadSupported = property(get_IsAdvertisementOffloadSupported, None)
+    IsCentralRoleSupported = property(get_IsCentralRoleSupported, None)
     IsClassicSupported = property(get_IsClassicSupported, None)
     IsLowEnergySupported = property(get_IsLowEnergySupported, None)
     IsPeripheralRoleSupported = property(get_IsPeripheralRoleSupported, None)
-    IsCentralRoleSupported = property(get_IsCentralRoleSupported, None)
-    IsAdvertisementOffloadSupported = property(get_IsAdvertisementOffloadSupported, None)
 class IBluetoothAdapter2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothAdapter2'
@@ -754,9 +748,9 @@ class IBluetoothClassOfDevice(ComPtr):
     def get_MinorClass(self) -> win32more.Windows.Devices.Bluetooth.BluetoothMinorClass: ...
     @winrt_commethod(9)
     def get_ServiceCapabilities(self) -> win32more.Windows.Devices.Bluetooth.BluetoothServiceCapabilities: ...
-    RawValue = property(get_RawValue, None)
     MajorClass = property(get_MajorClass, None)
     MinorClass = property(get_MinorClass, None)
+    RawValue = property(get_RawValue, None)
     ServiceCapabilities = property(get_ServiceCapabilities, None)
 class IBluetoothClassOfDeviceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -798,14 +792,14 @@ class IBluetoothDevice(ComPtr):
     def add_ConnectionStatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.Bluetooth.BluetoothDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_ConnectionStatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    BluetoothAddress = property(get_BluetoothAddress, None)
+    ClassOfDevice = property(get_ClassOfDevice, None)
+    ConnectionStatus = property(get_ConnectionStatus, None)
     DeviceId = property(get_DeviceId, None)
     HostName = property(get_HostName, None)
     Name = property(get_Name, None)
-    ClassOfDevice = property(get_ClassOfDevice, None)
-    SdpRecords = property(get_SdpRecords, None)
     RfcommServices = property(get_RfcommServices, None)
-    ConnectionStatus = property(get_ConnectionStatus, None)
-    BluetoothAddress = property(get_BluetoothAddress, None)
+    SdpRecords = property(get_SdpRecords, None)
 class IBluetoothDevice2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothDevice2'
@@ -899,8 +893,8 @@ class IBluetoothLEAppearance(ComPtr):
     def get_Category(self) -> UInt16: ...
     @winrt_commethod(8)
     def get_SubCategory(self) -> UInt16: ...
-    RawValue = property(get_RawValue, None)
     Category = property(get_Category, None)
+    RawValue = property(get_RawValue, None)
     SubCategory = property(get_SubCategory, None)
 class IBluetoothLEAppearanceCategoriesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -950,28 +944,28 @@ class IBluetoothLEAppearanceCategoriesStatics(ComPtr):
     def get_WeightScale(self) -> UInt16: ...
     @winrt_commethod(27)
     def get_OutdoorSportActivity(self) -> UInt16: ...
-    Uncategorized = property(get_Uncategorized, None)
-    Phone = property(get_Phone, None)
-    Computer = property(get_Computer, None)
-    Watch = property(get_Watch, None)
+    BarcodeScanner = property(get_BarcodeScanner, None)
+    BloodPressure = property(get_BloodPressure, None)
     Clock = property(get_Clock, None)
+    Computer = property(get_Computer, None)
+    Cycling = property(get_Cycling, None)
     Display = property(get_Display, None)
-    RemoteControl = property(get_RemoteControl, None)
     EyeGlasses = property(get_EyeGlasses, None)
-    Tag = property(get_Tag, None)
+    GlucoseMeter = property(get_GlucoseMeter, None)
+    HeartRate = property(get_HeartRate, None)
+    HumanInterfaceDevice = property(get_HumanInterfaceDevice, None)
     Keyring = property(get_Keyring, None)
     MediaPlayer = property(get_MediaPlayer, None)
-    BarcodeScanner = property(get_BarcodeScanner, None)
-    Thermometer = property(get_Thermometer, None)
-    HeartRate = property(get_HeartRate, None)
-    BloodPressure = property(get_BloodPressure, None)
-    HumanInterfaceDevice = property(get_HumanInterfaceDevice, None)
-    GlucoseMeter = property(get_GlucoseMeter, None)
-    RunningWalking = property(get_RunningWalking, None)
-    Cycling = property(get_Cycling, None)
-    PulseOximeter = property(get_PulseOximeter, None)
-    WeightScale = property(get_WeightScale, None)
     OutdoorSportActivity = property(get_OutdoorSportActivity, None)
+    Phone = property(get_Phone, None)
+    PulseOximeter = property(get_PulseOximeter, None)
+    RemoteControl = property(get_RemoteControl, None)
+    RunningWalking = property(get_RunningWalking, None)
+    Tag = property(get_Tag, None)
+    Thermometer = property(get_Thermometer, None)
+    Uncategorized = property(get_Uncategorized, None)
+    Watch = property(get_Watch, None)
+    WeightScale = property(get_WeightScale, None)
 class IBluetoothLEAppearanceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEAppearanceStatics'
@@ -1040,34 +1034,34 @@ class IBluetoothLEAppearanceSubcategoriesStatics(ComPtr):
     def get_LocationPod(self) -> UInt16: ...
     @winrt_commethod(33)
     def get_LocationNavigationPod(self) -> UInt16: ...
-    Generic = property(get_Generic, None)
-    SportsWatch = property(get_SportsWatch, None)
-    ThermometerEar = property(get_ThermometerEar, None)
-    HeartRateBelt = property(get_HeartRateBelt, None)
+    BarcodeScanner = property(get_BarcodeScanner, None)
     BloodPressureArm = property(get_BloodPressureArm, None)
     BloodPressureWrist = property(get_BloodPressureWrist, None)
-    Keyboard = property(get_Keyboard, None)
-    Mouse = property(get_Mouse, None)
-    Joystick = property(get_Joystick, None)
-    Gamepad = property(get_Gamepad, None)
-    DigitizerTablet = property(get_DigitizerTablet, None)
     CardReader = property(get_CardReader, None)
-    DigitalPen = property(get_DigitalPen, None)
-    BarcodeScanner = property(get_BarcodeScanner, None)
-    RunningWalkingInShoe = property(get_RunningWalkingInShoe, None)
-    RunningWalkingOnShoe = property(get_RunningWalkingOnShoe, None)
-    RunningWalkingOnHip = property(get_RunningWalkingOnHip, None)
-    CyclingComputer = property(get_CyclingComputer, None)
-    CyclingSpeedSensor = property(get_CyclingSpeedSensor, None)
     CyclingCadenceSensor = property(get_CyclingCadenceSensor, None)
+    CyclingComputer = property(get_CyclingComputer, None)
     CyclingPowerSensor = property(get_CyclingPowerSensor, None)
     CyclingSpeedCadenceSensor = property(get_CyclingSpeedCadenceSensor, None)
-    OximeterFingertip = property(get_OximeterFingertip, None)
-    OximeterWristWorn = property(get_OximeterWristWorn, None)
+    CyclingSpeedSensor = property(get_CyclingSpeedSensor, None)
+    DigitalPen = property(get_DigitalPen, None)
+    DigitizerTablet = property(get_DigitizerTablet, None)
+    Gamepad = property(get_Gamepad, None)
+    Generic = property(get_Generic, None)
+    HeartRateBelt = property(get_HeartRateBelt, None)
+    Joystick = property(get_Joystick, None)
+    Keyboard = property(get_Keyboard, None)
     LocationDisplay = property(get_LocationDisplay, None)
     LocationNavigationDisplay = property(get_LocationNavigationDisplay, None)
-    LocationPod = property(get_LocationPod, None)
     LocationNavigationPod = property(get_LocationNavigationPod, None)
+    LocationPod = property(get_LocationPod, None)
+    Mouse = property(get_Mouse, None)
+    OximeterFingertip = property(get_OximeterFingertip, None)
+    OximeterWristWorn = property(get_OximeterWristWorn, None)
+    RunningWalkingInShoe = property(get_RunningWalkingInShoe, None)
+    RunningWalkingOnHip = property(get_RunningWalkingOnHip, None)
+    RunningWalkingOnShoe = property(get_RunningWalkingOnShoe, None)
+    SportsWatch = property(get_SportsWatch, None)
+    ThermometerEar = property(get_ThermometerEar, None)
 class IBluetoothLEConnectionParameters(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEConnectionParameters'
@@ -1078,9 +1072,9 @@ class IBluetoothLEConnectionParameters(ComPtr):
     def get_ConnectionLatency(self) -> UInt16: ...
     @winrt_commethod(8)
     def get_ConnectionInterval(self) -> UInt16: ...
-    LinkTimeout = property(get_LinkTimeout, None)
-    ConnectionLatency = property(get_ConnectionLatency, None)
     ConnectionInterval = property(get_ConnectionInterval, None)
+    ConnectionLatency = property(get_ConnectionLatency, None)
+    LinkTimeout = property(get_LinkTimeout, None)
 class IBluetoothLEConnectionPhy(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEConnectionPhy'
@@ -1089,8 +1083,8 @@ class IBluetoothLEConnectionPhy(ComPtr):
     def get_TransmitInfo(self) -> win32more.Windows.Devices.Bluetooth.BluetoothLEConnectionPhyInfo: ...
     @winrt_commethod(7)
     def get_ReceiveInfo(self) -> win32more.Windows.Devices.Bluetooth.BluetoothLEConnectionPhyInfo: ...
-    TransmitInfo = property(get_TransmitInfo, None)
     ReceiveInfo = property(get_ReceiveInfo, None)
+    TransmitInfo = property(get_TransmitInfo, None)
 class IBluetoothLEConnectionPhyInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEConnectionPhyInfo'
@@ -1101,9 +1095,9 @@ class IBluetoothLEConnectionPhyInfo(ComPtr):
     def get_IsUncoded2MPhy(self) -> Boolean: ...
     @winrt_commethod(8)
     def get_IsCodedPhy(self) -> Boolean: ...
+    IsCodedPhy = property(get_IsCodedPhy, None)
     IsUncoded1MPhy = property(get_IsUncoded1MPhy, None)
     IsUncoded2MPhy = property(get_IsUncoded2MPhy, None)
-    IsCodedPhy = property(get_IsCodedPhy, None)
 class IBluetoothLEDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEDevice'
@@ -1132,11 +1126,11 @@ class IBluetoothLEDevice(ComPtr):
     def add_ConnectionStatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.Bluetooth.BluetoothLEDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(17)
     def remove_ConnectionStatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    DeviceId = property(get_DeviceId, None)
-    Name = property(get_Name, None)
-    GattServices = property(get_GattServices, None)
-    ConnectionStatus = property(get_ConnectionStatus, None)
     BluetoothAddress = property(get_BluetoothAddress, None)
+    ConnectionStatus = property(get_ConnectionStatus, None)
+    DeviceId = property(get_DeviceId, None)
+    GattServices = property(get_GattServices, None)
+    Name = property(get_Name, None)
 class IBluetoothLEDevice2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEDevice2'
@@ -1147,9 +1141,9 @@ class IBluetoothLEDevice2(ComPtr):
     def get_Appearance(self) -> win32more.Windows.Devices.Bluetooth.BluetoothLEAppearance: ...
     @winrt_commethod(8)
     def get_BluetoothAddressType(self) -> win32more.Windows.Devices.Bluetooth.BluetoothAddressType: ...
-    DeviceInformation = property(get_DeviceInformation, None)
     Appearance = property(get_Appearance, None)
     BluetoothAddressType = property(get_BluetoothAddressType, None)
+    DeviceInformation = property(get_DeviceInformation, None)
 class IBluetoothLEDevice3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEDevice3'
@@ -1239,10 +1233,10 @@ class IBluetoothLEPreferredConnectionParameters(ComPtr):
     def get_MinConnectionInterval(self) -> UInt16: ...
     @winrt_commethod(9)
     def get_MaxConnectionInterval(self) -> UInt16: ...
-    LinkTimeout = property(get_LinkTimeout, None)
     ConnectionLatency = property(get_ConnectionLatency, None)
-    MinConnectionInterval = property(get_MinConnectionInterval, None)
+    LinkTimeout = property(get_LinkTimeout, None)
     MaxConnectionInterval = property(get_MaxConnectionInterval, None)
+    MinConnectionInterval = property(get_MinConnectionInterval, None)
 class IBluetoothLEPreferredConnectionParametersRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothLEPreferredConnectionParametersRequest'
@@ -1261,8 +1255,8 @@ class IBluetoothLEPreferredConnectionParametersStatics(ComPtr):
     @winrt_commethod(8)
     def get_PowerOptimized(self) -> win32more.Windows.Devices.Bluetooth.BluetoothLEPreferredConnectionParameters: ...
     Balanced = property(get_Balanced, None)
-    ThroughputOptimized = property(get_ThroughputOptimized, None)
     PowerOptimized = property(get_PowerOptimized, None)
+    ThroughputOptimized = property(get_ThroughputOptimized, None)
 class IBluetoothSignalStrengthFilter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Bluetooth.IBluetoothSignalStrengthFilter'
@@ -1295,4 +1289,6 @@ class IBluetoothUuidHelperStatics(ComPtr):
     def FromShortId(self, shortId: UInt32) -> Guid: ...
     @winrt_commethod(7)
     def TryGetShortId(self, uuid: Guid) -> win32more.Windows.Foundation.IReference[UInt32]: ...
+
+
 make_ready(__name__)

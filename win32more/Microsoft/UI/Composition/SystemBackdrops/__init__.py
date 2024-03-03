@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI
 import win32more.Microsoft.UI.Composition
 import win32more.Microsoft.UI.Composition.SystemBackdrops
@@ -22,10 +8,18 @@ import win32more.Windows.Foundation
 import win32more.Windows.UI
 import win32more.Windows.UI.Composition
 import win32more.Windows.UI.Core
+import win32more.Windows.Win32.System.WinRT
 class DesktopAcrylicController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Composition.SystemBackdrops.IDesktopAcrylicController
     _classid_ = 'Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController: ...
     @winrt_mixinmethod
@@ -82,17 +76,17 @@ class DesktopAcrylicController(ComPtr):
     def put_TintColor(self: win32more.Microsoft.UI.Composition.SystemBackdrops.IDesktopAcrylicController, value: win32more.Windows.UI.Color) -> Void: ...
     @winrt_classmethod
     def IsSupported(cls: win32more.Microsoft.UI.Composition.SystemBackdrops.IDesktopAcrylicControllerStatics) -> Boolean: ...
-    TintOpacity = property(get_TintOpacity, put_TintOpacity)
-    Kind = property(get_Kind, put_Kind)
-    State = property(get_State, None)
-    IsClosed = property(get_IsClosed, None)
     FallbackColor = property(get_FallbackColor, put_FallbackColor)
+    IsClosed = property(get_IsClosed, None)
+    Kind = property(get_Kind, put_Kind)
     LuminosityOpacity = property(get_LuminosityOpacity, put_LuminosityOpacity)
+    State = property(get_State, None)
     TintColor = property(get_TintColor, put_TintColor)
-DesktopAcrylicKind = Int32
-DesktopAcrylicKind_Default: DesktopAcrylicKind = 0
-DesktopAcrylicKind_Base: DesktopAcrylicKind = 1
-DesktopAcrylicKind_Thin: DesktopAcrylicKind = 2
+    TintOpacity = property(get_TintOpacity, put_TintOpacity)
+class DesktopAcrylicKind(Int32):  # enum
+    Default = 0
+    Base = 1
+    Thin = 2
 class IDesktopAcrylicController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Composition.SystemBackdrops.IDesktopAcrylicController'
@@ -234,6 +228,13 @@ class MicaController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Composition.SystemBackdrops.IMicaController
     _classid_ = 'Microsoft.UI.Composition.SystemBackdrops.MicaController'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Composition.SystemBackdrops.MicaController.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Composition.SystemBackdrops.MicaController: ...
     @winrt_mixinmethod
@@ -290,20 +291,27 @@ class MicaController(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_classmethod
     def IsSupported(cls: win32more.Microsoft.UI.Composition.SystemBackdrops.IMicaControllerStatics) -> Boolean: ...
-    State = property(get_State, None)
-    IsClosed = property(get_IsClosed, None)
     FallbackColor = property(get_FallbackColor, put_FallbackColor)
+    IsClosed = property(get_IsClosed, None)
+    Kind = property(get_Kind, put_Kind)
     LuminosityOpacity = property(get_LuminosityOpacity, put_LuminosityOpacity)
+    State = property(get_State, None)
     TintColor = property(get_TintColor, put_TintColor)
     TintOpacity = property(get_TintOpacity, put_TintOpacity)
-    Kind = property(get_Kind, put_Kind)
-MicaKind = Int32
-MicaKind_Base: MicaKind = 0
-MicaKind_BaseAlt: MicaKind = 1
+class MicaKind(Int32):  # enum
+    Base = 0
+    BaseAlt = 1
 class SystemBackdropConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Composition.SystemBackdrops.ISystemBackdropConfiguration
     _classid_ = 'Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration: ...
     @winrt_mixinmethod
@@ -322,16 +330,18 @@ class SystemBackdropConfiguration(ComPtr):
     def put_HighContrastBackgroundColor(self: win32more.Microsoft.UI.Composition.SystemBackdrops.ISystemBackdropConfiguration, value: win32more.Windows.Foundation.IReference[win32more.Windows.UI.Color]) -> Void: ...
     @winrt_mixinmethod
     def get_IsHighContrast(self: win32more.Microsoft.UI.Composition.SystemBackdrops.ISystemBackdropConfiguration) -> Boolean: ...
-    Theme = property(get_Theme, put_Theme)
+    HighContrastBackgroundColor = property(get_HighContrastBackgroundColor, put_HighContrastBackgroundColor)
     IsHighContrast = property(get_IsHighContrast, put_IsHighContrast)
     IsInputActive = property(get_IsInputActive, put_IsInputActive)
-    HighContrastBackgroundColor = property(get_HighContrastBackgroundColor, put_HighContrastBackgroundColor)
-SystemBackdropState = Int32
-SystemBackdropState_Active: SystemBackdropState = 0
-SystemBackdropState_Fallback: SystemBackdropState = 1
-SystemBackdropState_HighContrast: SystemBackdropState = 2
-SystemBackdropTheme = Int32
-SystemBackdropTheme_Default: SystemBackdropTheme = 0
-SystemBackdropTheme_Light: SystemBackdropTheme = 1
-SystemBackdropTheme_Dark: SystemBackdropTheme = 2
+    Theme = property(get_Theme, put_Theme)
+class SystemBackdropState(Int32):  # enum
+    Active = 0
+    Fallback = 1
+    HighContrast = 2
+class SystemBackdropTheme(Int32):  # enum
+    Default = 0
+    Light = 1
+    Dark = 2
+
+
 make_ready(__name__)

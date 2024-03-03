@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.System.Com
@@ -609,11 +609,15 @@ class JabColorF(EasyCastStructure):
     J: Single
     a: Single
     b: Single
+LCSCSTYPE = Int32
+LCS_CALIBRATED_RGB: win32more.Windows.Win32.UI.ColorSystem.LCSCSTYPE = 0
+LCS_sRGB: win32more.Windows.Win32.UI.ColorSystem.LCSCSTYPE = 1934772034
+LCS_WINDOWS_COLOR_SPACE: win32more.Windows.Win32.UI.ColorSystem.LCSCSTYPE = 1466527264
 class LOGCOLORSPACEA(EasyCastStructure):
     lcsSignature: UInt32
     lcsVersion: UInt32
     lcsSize: UInt32
-    lcsCSType: Int32
+    lcsCSType: win32more.Windows.Win32.UI.ColorSystem.LCSCSTYPE
     lcsIntent: Int32
     lcsEndpoints: win32more.Windows.Win32.Graphics.Gdi.CIEXYZTRIPLE
     lcsGammaRed: UInt32
@@ -624,7 +628,7 @@ class LOGCOLORSPACEW(EasyCastStructure):
     lcsSignature: UInt32
     lcsVersion: UInt32
     lcsSize: UInt32
-    lcsCSType: Int32
+    lcsCSType: win32more.Windows.Win32.UI.ColorSystem.LCSCSTYPE
     lcsIntent: Int32
     lcsEndpoints: win32more.Windows.Win32.Graphics.Gdi.CIEXYZTRIPLE
     lcsGammaRed: UInt32
@@ -694,8 +698,8 @@ class RGBCOLOR(EasyCastStructure):
     green: UInt16
     blue: UInt16
 WCS_DEVICE_CAPABILITIES_TYPE = Int32
-WCS_DEVICE_CAPABILITIES_TYPE_VideoCardGammaTable: win32more.Windows.Win32.UI.ColorSystem.WCS_DEVICE_CAPABILITIES_TYPE = 1
-WCS_DEVICE_CAPABILITIES_TYPE_MicrosoftHardwareColorV2: win32more.Windows.Win32.UI.ColorSystem.WCS_DEVICE_CAPABILITIES_TYPE = 2
+VideoCardGammaTable: win32more.Windows.Win32.UI.ColorSystem.WCS_DEVICE_CAPABILITIES_TYPE = 1
+MicrosoftHardwareColorV2: win32more.Windows.Win32.UI.ColorSystem.WCS_DEVICE_CAPABILITIES_TYPE = 2
 class WCS_DEVICE_MHC2_CAPABILITIES(EasyCastStructure):
     Size: UInt32
     SupportsMhc2: win32more.Windows.Win32.Foundation.BOOL

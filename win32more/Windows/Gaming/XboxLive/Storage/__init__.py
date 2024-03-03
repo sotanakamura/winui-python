@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Gaming.XboxLive.Storage
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class GameSaveBlobGetResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveBlobGetResult
@@ -94,11 +81,11 @@ class GameSaveContainerInfo(ComPtr):
     def get_LastModifiedTime(self: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfo) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_NeedsSync(self: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfo) -> Boolean: ...
-    Name = property(get_Name, None)
-    TotalSize = property(get_TotalSize, None)
     DisplayName = property(get_DisplayName, None)
     LastModifiedTime = property(get_LastModifiedTime, None)
+    Name = property(get_Name, None)
     NeedsSync = property(get_NeedsSync, None)
+    TotalSize = property(get_TotalSize, None)
 class GameSaveContainerInfoGetResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfoGetResult
@@ -119,22 +106,22 @@ class GameSaveContainerInfoQuery(ComPtr):
     def GetContainerInfoWithIndexAndMaxAsync(self: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfoQuery, startIndex: UInt32, maxNumberOfItems: UInt32) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Gaming.XboxLive.Storage.GameSaveContainerInfoGetResult]: ...
     @winrt_mixinmethod
     def GetItemCountAsync(self: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfoQuery) -> win32more.Windows.Foundation.IAsyncOperation[UInt32]: ...
-GameSaveErrorStatus = Int32
-GameSaveErrorStatus_Ok: GameSaveErrorStatus = 0
-GameSaveErrorStatus_Abort: GameSaveErrorStatus = -2147467260
-GameSaveErrorStatus_InvalidContainerName: GameSaveErrorStatus = -2138898431
-GameSaveErrorStatus_NoAccess: GameSaveErrorStatus = -2138898430
-GameSaveErrorStatus_OutOfLocalStorage: GameSaveErrorStatus = -2138898429
-GameSaveErrorStatus_UserCanceled: GameSaveErrorStatus = -2138898428
-GameSaveErrorStatus_UpdateTooBig: GameSaveErrorStatus = -2138898427
-GameSaveErrorStatus_QuotaExceeded: GameSaveErrorStatus = -2138898426
-GameSaveErrorStatus_ProvidedBufferTooSmall: GameSaveErrorStatus = -2138898425
-GameSaveErrorStatus_BlobNotFound: GameSaveErrorStatus = -2138898424
-GameSaveErrorStatus_NoXboxLiveInfo: GameSaveErrorStatus = -2138898423
-GameSaveErrorStatus_ContainerNotInSync: GameSaveErrorStatus = -2138898422
-GameSaveErrorStatus_ContainerSyncFailed: GameSaveErrorStatus = -2138898421
-GameSaveErrorStatus_UserHasNoXboxLiveInfo: GameSaveErrorStatus = -2138898420
-GameSaveErrorStatus_ObjectExpired: GameSaveErrorStatus = -2138898419
+class GameSaveErrorStatus(Int32):  # enum
+    Ok = 0
+    Abort = -2147467260
+    InvalidContainerName = -2138898431
+    NoAccess = -2138898430
+    OutOfLocalStorage = -2138898429
+    UserCanceled = -2138898428
+    UpdateTooBig = -2138898427
+    QuotaExceeded = -2138898426
+    ProvidedBufferTooSmall = -2138898425
+    BlobNotFound = -2138898424
+    NoXboxLiveInfo = -2138898423
+    ContainerNotInSync = -2138898422
+    ContainerSyncFailed = -2138898421
+    UserHasNoXboxLiveInfo = -2138898420
+    ObjectExpired = -2138898419
 class GameSaveOperationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveOperationResult
@@ -164,8 +151,8 @@ class GameSaveProvider(ComPtr):
     def GetForUserAsync(cls: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveProviderStatics, user: win32more.Windows.System.User, serviceConfigId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Gaming.XboxLive.Storage.GameSaveProviderGetResult]: ...
     @winrt_classmethod
     def GetSyncOnDemandForUserAsync(cls: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveProviderStatics, user: win32more.Windows.System.User, serviceConfigId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Gaming.XboxLive.Storage.GameSaveProviderGetResult]: ...
-    User = property(get_User, None)
     ContainersChangedSinceLastSync = property(get_ContainersChangedSinceLastSync, None)
+    User = property(get_User, None)
 class GameSaveProviderGetResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.XboxLive.Storage.IGameSaveProviderGetResult
@@ -250,11 +237,11 @@ class IGameSaveContainerInfo(ComPtr):
     def get_LastModifiedTime(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(10)
     def get_NeedsSync(self) -> Boolean: ...
-    Name = property(get_Name, None)
-    TotalSize = property(get_TotalSize, None)
     DisplayName = property(get_DisplayName, None)
     LastModifiedTime = property(get_LastModifiedTime, None)
+    Name = property(get_Name, None)
     NeedsSync = property(get_NeedsSync, None)
+    TotalSize = property(get_TotalSize, None)
 class IGameSaveContainerInfoGetResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.XboxLive.Storage.IGameSaveContainerInfoGetResult'
@@ -300,8 +287,8 @@ class IGameSaveProvider(ComPtr):
     def GetRemainingBytesInQuotaAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[Int64]: ...
     @winrt_commethod(12)
     def get_ContainersChangedSinceLastSync(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
-    User = property(get_User, None)
     ContainersChangedSinceLastSync = property(get_ContainersChangedSinceLastSync, None)
+    User = property(get_User, None)
 class IGameSaveProviderGetResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.XboxLive.Storage.IGameSaveProviderGetResult'
@@ -320,4 +307,6 @@ class IGameSaveProviderStatics(ComPtr):
     def GetForUserAsync(self, user: win32more.Windows.System.User, serviceConfigId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Gaming.XboxLive.Storage.GameSaveProviderGetResult]: ...
     @winrt_commethod(7)
     def GetSyncOnDemandForUserAsync(self, user: win32more.Windows.System.User, serviceConfigId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Gaming.XboxLive.Storage.GameSaveProviderGetResult]: ...
+
+
 make_ready(__name__)

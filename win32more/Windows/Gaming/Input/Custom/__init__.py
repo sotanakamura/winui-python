@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Gaming.Input
 import win32more.Windows.Gaming.Input.Custom
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class GameControllerFactoryManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Input.Custom.GameControllerFactoryManager'
@@ -51,10 +38,10 @@ class GipFirmwareUpdateResult(ComPtr):
     ExtendedErrorCode = property(get_ExtendedErrorCode, None)
     FinalComponentId = property(get_FinalComponentId, None)
     Status = property(get_Status, None)
-GipFirmwareUpdateStatus = Int32
-GipFirmwareUpdateStatus_Completed: GipFirmwareUpdateStatus = 0
-GipFirmwareUpdateStatus_UpToDate: GipFirmwareUpdateStatus = 1
-GipFirmwareUpdateStatus_Failed: GipFirmwareUpdateStatus = 2
+class GipFirmwareUpdateStatus(Int32):  # enum
+    Completed = 0
+    UpToDate = 1
+    Failed = 2
 class GipGameControllerProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.Custom.IGipGameControllerProvider
@@ -80,10 +67,10 @@ class GipGameControllerProvider(ComPtr):
     HardwareVendorId = property(get_HardwareVendorId, None)
     HardwareVersionInfo = property(get_HardwareVersionInfo, None)
     IsConnected = property(get_IsConnected, None)
-GipMessageClass = Int32
-GipMessageClass_Command: GipMessageClass = 0
-GipMessageClass_LowLatency: GipMessageClass = 1
-GipMessageClass_StandardLatency: GipMessageClass = 2
+class GipMessageClass(Int32):  # enum
+    Command = 0
+    LowLatency = 1
+    StandardLatency = 2
 class HidGameControllerProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.Custom.IHidGameControllerProvider
@@ -108,13 +95,13 @@ class HidGameControllerProvider(ComPtr):
     def get_HardwareVersionInfo(self: win32more.Windows.Gaming.Input.Custom.IGameControllerProvider) -> win32more.Windows.Gaming.Input.Custom.GameControllerVersionInfo: ...
     @winrt_mixinmethod
     def get_IsConnected(self: win32more.Windows.Gaming.Input.Custom.IGameControllerProvider) -> Boolean: ...
-    UsageId = property(get_UsageId, None)
-    UsagePage = property(get_UsagePage, None)
     FirmwareVersionInfo = property(get_FirmwareVersionInfo, None)
     HardwareProductId = property(get_HardwareProductId, None)
     HardwareVendorId = property(get_HardwareVendorId, None)
     HardwareVersionInfo = property(get_HardwareVersionInfo, None)
     IsConnected = property(get_IsConnected, None)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class ICustomGameControllerFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Input.Custom.ICustomGameControllerFactory'
@@ -233,21 +220,21 @@ class IXusbGameControllerProvider(ComPtr):
     _iid_ = Guid('{6e2971eb-0efb-48b4-808b-837643b2f216}')
     @winrt_commethod(6)
     def SetVibration(self, lowFrequencyMotorSpeed: Double, highFrequencyMotorSpeed: Double) -> Void: ...
-XusbDeviceSubtype = Int32
-XusbDeviceSubtype_Unknown: XusbDeviceSubtype = 0
-XusbDeviceSubtype_Gamepad: XusbDeviceSubtype = 1
-XusbDeviceSubtype_ArcadePad: XusbDeviceSubtype = 2
-XusbDeviceSubtype_ArcadeStick: XusbDeviceSubtype = 3
-XusbDeviceSubtype_FlightStick: XusbDeviceSubtype = 4
-XusbDeviceSubtype_Wheel: XusbDeviceSubtype = 5
-XusbDeviceSubtype_Guitar: XusbDeviceSubtype = 6
-XusbDeviceSubtype_GuitarAlternate: XusbDeviceSubtype = 7
-XusbDeviceSubtype_GuitarBass: XusbDeviceSubtype = 8
-XusbDeviceSubtype_DrumKit: XusbDeviceSubtype = 9
-XusbDeviceSubtype_DancePad: XusbDeviceSubtype = 10
-XusbDeviceType = Int32
-XusbDeviceType_Unknown: XusbDeviceType = 0
-XusbDeviceType_Gamepad: XusbDeviceType = 1
+class XusbDeviceSubtype(Int32):  # enum
+    Unknown = 0
+    Gamepad = 1
+    ArcadePad = 2
+    ArcadeStick = 3
+    FlightStick = 4
+    Wheel = 5
+    Guitar = 6
+    GuitarAlternate = 7
+    GuitarBass = 8
+    DrumKit = 9
+    DancePad = 10
+class XusbDeviceType(Int32):  # enum
+    Unknown = 0
+    Gamepad = 1
 class XusbGameControllerProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.Custom.IXusbGameControllerProvider
@@ -269,4 +256,6 @@ class XusbGameControllerProvider(ComPtr):
     HardwareVendorId = property(get_HardwareVendorId, None)
     HardwareVersionInfo = property(get_HardwareVersionInfo, None)
     IsConnected = property(get_IsConnected, None)
+
+
 make_ready(__name__)

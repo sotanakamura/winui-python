@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Networking.Sockets
@@ -23,10 +9,18 @@ import win32more.Windows.Security.Cryptography.Certificates
 import win32more.Windows.System
 import win32more.Windows.Web.Http
 import win32more.Windows.Web.Http.Filters
+import win32more.Windows.Win32.System.WinRT
 class HttpBaseProtocolFilter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.Filters.IHttpBaseProtocolFilter
     _classid_ = 'Windows.Web.Http.Filters.HttpBaseProtocolFilter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.Filters.HttpBaseProtocolFilter.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.Filters.HttpBaseProtocolFilter: ...
     @winrt_mixinmethod
@@ -93,15 +87,15 @@ class HttpBaseProtocolFilter(ComPtr):
     AllowUI = property(get_AllowUI, put_AllowUI)
     AutomaticDecompression = property(get_AutomaticDecompression, put_AutomaticDecompression)
     CacheControl = property(get_CacheControl, None)
-    CookieManager = property(get_CookieManager, None)
     ClientCertificate = property(get_ClientCertificate, put_ClientCertificate)
+    CookieManager = property(get_CookieManager, None)
+    CookieUsageBehavior = property(get_CookieUsageBehavior, put_CookieUsageBehavior)
     IgnorableServerCertificateErrors = property(get_IgnorableServerCertificateErrors, None)
     MaxConnectionsPerServer = property(get_MaxConnectionsPerServer, put_MaxConnectionsPerServer)
+    MaxVersion = property(get_MaxVersion, put_MaxVersion)
     ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
     ServerCredential = property(get_ServerCredential, put_ServerCredential)
     UseProxy = property(get_UseProxy, put_UseProxy)
-    MaxVersion = property(get_MaxVersion, put_MaxVersion)
-    CookieUsageBehavior = property(get_CookieUsageBehavior, put_CookieUsageBehavior)
     User = property(get_User, None)
 class HttpCacheControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -117,17 +111,17 @@ class HttpCacheControl(ComPtr):
     def put_WriteBehavior(self: win32more.Windows.Web.Http.Filters.IHttpCacheControl, value: win32more.Windows.Web.Http.Filters.HttpCacheWriteBehavior) -> Void: ...
     ReadBehavior = property(get_ReadBehavior, put_ReadBehavior)
     WriteBehavior = property(get_WriteBehavior, put_WriteBehavior)
-HttpCacheReadBehavior = Int32
-HttpCacheReadBehavior_Default: HttpCacheReadBehavior = 0
-HttpCacheReadBehavior_MostRecent: HttpCacheReadBehavior = 1
-HttpCacheReadBehavior_OnlyFromCache: HttpCacheReadBehavior = 2
-HttpCacheReadBehavior_NoCache: HttpCacheReadBehavior = 3
-HttpCacheWriteBehavior = Int32
-HttpCacheWriteBehavior_Default: HttpCacheWriteBehavior = 0
-HttpCacheWriteBehavior_NoCache: HttpCacheWriteBehavior = 1
-HttpCookieUsageBehavior = Int32
-HttpCookieUsageBehavior_Default: HttpCookieUsageBehavior = 0
-HttpCookieUsageBehavior_NoCookies: HttpCookieUsageBehavior = 1
+class HttpCacheReadBehavior(Int32):  # enum
+    Default = 0
+    MostRecent = 1
+    OnlyFromCache = 2
+    NoCache = 3
+class HttpCacheWriteBehavior(Int32):  # enum
+    Default = 0
+    NoCache = 1
+class HttpCookieUsageBehavior(Int32):  # enum
+    Default = 0
+    NoCookies = 1
 class HttpServerCustomValidationRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.Filters.IHttpServerCustomValidationRequestedEventArgs
@@ -197,8 +191,8 @@ class IHttpBaseProtocolFilter(ComPtr):
     AllowUI = property(get_AllowUI, put_AllowUI)
     AutomaticDecompression = property(get_AutomaticDecompression, put_AutomaticDecompression)
     CacheControl = property(get_CacheControl, None)
-    CookieManager = property(get_CookieManager, None)
     ClientCertificate = property(get_ClientCertificate, put_ClientCertificate)
+    CookieManager = property(get_CookieManager, None)
     IgnorableServerCertificateErrors = property(get_IgnorableServerCertificateErrors, None)
     MaxConnectionsPerServer = property(get_MaxConnectionsPerServer, put_MaxConnectionsPerServer)
     ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
@@ -288,4 +282,6 @@ class IHttpServerCustomValidationRequestedEventArgs(ComPtr):
     ServerCertificateErrorSeverity = property(get_ServerCertificateErrorSeverity, None)
     ServerCertificateErrors = property(get_ServerCertificateErrors, None)
     ServerIntermediateCertificates = property(get_ServerIntermediateCertificates, None)
+
+
 make_ready(__name__)

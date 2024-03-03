@@ -1,27 +1,21 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.UI.Core.AnimationMetrics
+import win32more.Windows.Win32.System.WinRT
 class AnimationDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Core.AnimationMetrics.IAnimationDescription
     _classid_ = 'Windows.UI.Core.AnimationMetrics.AnimationDescription'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Core.AnimationMetrics.AnimationDescription.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Core.AnimationMetrics.IAnimationDescriptionFactory, effect: win32more.Windows.UI.Core.AnimationMetrics.AnimationEffect, target: win32more.Windows.UI.Core.AnimationMetrics.AnimationEffectTarget) -> win32more.Windows.UI.Core.AnimationMetrics.AnimationDescription: ...
     @winrt_mixinmethod
@@ -35,68 +29,68 @@ class AnimationDescription(ComPtr):
     @winrt_mixinmethod
     def get_ZOrder(self: win32more.Windows.UI.Core.AnimationMetrics.IAnimationDescription) -> Int32: ...
     Animations = property(get_Animations, None)
+    DelayLimit = property(get_DelayLimit, None)
     StaggerDelay = property(get_StaggerDelay, None)
     StaggerDelayFactor = property(get_StaggerDelayFactor, None)
-    DelayLimit = property(get_DelayLimit, None)
     ZOrder = property(get_ZOrder, None)
-AnimationEffect = Int32
-AnimationEffect_Expand: AnimationEffect = 0
-AnimationEffect_Collapse: AnimationEffect = 1
-AnimationEffect_Reposition: AnimationEffect = 2
-AnimationEffect_FadeIn: AnimationEffect = 3
-AnimationEffect_FadeOut: AnimationEffect = 4
-AnimationEffect_AddToList: AnimationEffect = 5
-AnimationEffect_DeleteFromList: AnimationEffect = 6
-AnimationEffect_AddToGrid: AnimationEffect = 7
-AnimationEffect_DeleteFromGrid: AnimationEffect = 8
-AnimationEffect_AddToSearchGrid: AnimationEffect = 9
-AnimationEffect_DeleteFromSearchGrid: AnimationEffect = 10
-AnimationEffect_AddToSearchList: AnimationEffect = 11
-AnimationEffect_DeleteFromSearchList: AnimationEffect = 12
-AnimationEffect_ShowEdgeUI: AnimationEffect = 13
-AnimationEffect_ShowPanel: AnimationEffect = 14
-AnimationEffect_HideEdgeUI: AnimationEffect = 15
-AnimationEffect_HidePanel: AnimationEffect = 16
-AnimationEffect_ShowPopup: AnimationEffect = 17
-AnimationEffect_HidePopup: AnimationEffect = 18
-AnimationEffect_PointerDown: AnimationEffect = 19
-AnimationEffect_PointerUp: AnimationEffect = 20
-AnimationEffect_DragSourceStart: AnimationEffect = 21
-AnimationEffect_DragSourceEnd: AnimationEffect = 22
-AnimationEffect_TransitionContent: AnimationEffect = 23
-AnimationEffect_Reveal: AnimationEffect = 24
-AnimationEffect_Hide: AnimationEffect = 25
-AnimationEffect_DragBetweenEnter: AnimationEffect = 26
-AnimationEffect_DragBetweenLeave: AnimationEffect = 27
-AnimationEffect_SwipeSelect: AnimationEffect = 28
-AnimationEffect_SwipeDeselect: AnimationEffect = 29
-AnimationEffect_SwipeReveal: AnimationEffect = 30
-AnimationEffect_EnterPage: AnimationEffect = 31
-AnimationEffect_TransitionPage: AnimationEffect = 32
-AnimationEffect_CrossFade: AnimationEffect = 33
-AnimationEffect_Peek: AnimationEffect = 34
-AnimationEffect_UpdateBadge: AnimationEffect = 35
-AnimationEffectTarget = Int32
-AnimationEffectTarget_Primary: AnimationEffectTarget = 0
-AnimationEffectTarget_Added: AnimationEffectTarget = 1
-AnimationEffectTarget_Affected: AnimationEffectTarget = 2
-AnimationEffectTarget_Background: AnimationEffectTarget = 3
-AnimationEffectTarget_Content: AnimationEffectTarget = 4
-AnimationEffectTarget_Deleted: AnimationEffectTarget = 5
-AnimationEffectTarget_Deselected: AnimationEffectTarget = 6
-AnimationEffectTarget_DragSource: AnimationEffectTarget = 7
-AnimationEffectTarget_Hidden: AnimationEffectTarget = 8
-AnimationEffectTarget_Incoming: AnimationEffectTarget = 9
-AnimationEffectTarget_Outgoing: AnimationEffectTarget = 10
-AnimationEffectTarget_Outline: AnimationEffectTarget = 11
-AnimationEffectTarget_Remaining: AnimationEffectTarget = 12
-AnimationEffectTarget_Revealed: AnimationEffectTarget = 13
-AnimationEffectTarget_RowIn: AnimationEffectTarget = 14
-AnimationEffectTarget_RowOut: AnimationEffectTarget = 15
-AnimationEffectTarget_Selected: AnimationEffectTarget = 16
-AnimationEffectTarget_Selection: AnimationEffectTarget = 17
-AnimationEffectTarget_Shown: AnimationEffectTarget = 18
-AnimationEffectTarget_Tapped: AnimationEffectTarget = 19
+class AnimationEffect(Int32):  # enum
+    Expand = 0
+    Collapse = 1
+    Reposition = 2
+    FadeIn = 3
+    FadeOut = 4
+    AddToList = 5
+    DeleteFromList = 6
+    AddToGrid = 7
+    DeleteFromGrid = 8
+    AddToSearchGrid = 9
+    DeleteFromSearchGrid = 10
+    AddToSearchList = 11
+    DeleteFromSearchList = 12
+    ShowEdgeUI = 13
+    ShowPanel = 14
+    HideEdgeUI = 15
+    HidePanel = 16
+    ShowPopup = 17
+    HidePopup = 18
+    PointerDown = 19
+    PointerUp = 20
+    DragSourceStart = 21
+    DragSourceEnd = 22
+    TransitionContent = 23
+    Reveal = 24
+    Hide = 25
+    DragBetweenEnter = 26
+    DragBetweenLeave = 27
+    SwipeSelect = 28
+    SwipeDeselect = 29
+    SwipeReveal = 30
+    EnterPage = 31
+    TransitionPage = 32
+    CrossFade = 33
+    Peek = 34
+    UpdateBadge = 35
+class AnimationEffectTarget(Int32):  # enum
+    Primary = 0
+    Added = 1
+    Affected = 2
+    Background = 3
+    Content = 4
+    Deleted = 5
+    Deselected = 6
+    DragSource = 7
+    Hidden = 8
+    Incoming = 9
+    Outgoing = 10
+    Outline = 11
+    Remaining = 12
+    Revealed = 13
+    RowIn = 14
+    RowOut = 15
+    Selected = 16
+    Selection = 17
+    Shown = 18
+    Tapped = 19
 AnimationMetricsContract: UInt32 = 65536
 class IAnimationDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -113,9 +107,9 @@ class IAnimationDescription(ComPtr):
     @winrt_commethod(10)
     def get_ZOrder(self) -> Int32: ...
     Animations = property(get_Animations, None)
+    DelayLimit = property(get_DelayLimit, None)
     StaggerDelay = property(get_StaggerDelay, None)
     StaggerDelayFactor = property(get_StaggerDelayFactor, None)
-    DelayLimit = property(get_DelayLimit, None)
     ZOrder = property(get_ZOrder, None)
 class IAnimationDescriptionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -131,8 +125,8 @@ class IOpacityAnimation(ComPtr):
     def get_InitialOpacity(self) -> win32more.Windows.Foundation.IReference[Single]: ...
     @winrt_commethod(7)
     def get_FinalOpacity(self) -> Single: ...
-    InitialOpacity = property(get_InitialOpacity, None)
     FinalOpacity = property(get_FinalOpacity, None)
+    InitialOpacity = property(get_InitialOpacity, None)
 class IPropertyAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Core.AnimationMetrics.IPropertyAnimation'
@@ -147,11 +141,11 @@ class IPropertyAnimation(ComPtr):
     def get_Control1(self) -> win32more.Windows.Foundation.Point: ...
     @winrt_commethod(10)
     def get_Control2(self) -> win32more.Windows.Foundation.Point: ...
-    Type = property(get_Type, None)
-    Delay = property(get_Delay, None)
-    Duration = property(get_Duration, None)
     Control1 = property(get_Control1, None)
     Control2 = property(get_Control2, None)
+    Delay = property(get_Delay, None)
+    Duration = property(get_Duration, None)
+    Type = property(get_Type, None)
 class IScaleAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Core.AnimationMetrics.IScaleAnimation'
@@ -166,10 +160,10 @@ class IScaleAnimation(ComPtr):
     def get_FinalScaleY(self) -> Single: ...
     @winrt_commethod(10)
     def get_NormalizedOrigin(self) -> win32more.Windows.Foundation.Point: ...
-    InitialScaleX = property(get_InitialScaleX, None)
-    InitialScaleY = property(get_InitialScaleY, None)
     FinalScaleX = property(get_FinalScaleX, None)
     FinalScaleY = property(get_FinalScaleY, None)
+    InitialScaleX = property(get_InitialScaleX, None)
+    InitialScaleY = property(get_InitialScaleY, None)
     NormalizedOrigin = property(get_NormalizedOrigin, None)
 class OpacityAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -189,13 +183,13 @@ class OpacityAnimation(ComPtr):
     def get_Control1(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def get_Control2(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
-    InitialOpacity = property(get_InitialOpacity, None)
-    FinalOpacity = property(get_FinalOpacity, None)
-    Type = property(get_Type, None)
-    Delay = property(get_Delay, None)
-    Duration = property(get_Duration, None)
     Control1 = property(get_Control1, None)
     Control2 = property(get_Control2, None)
+    Delay = property(get_Delay, None)
+    Duration = property(get_Duration, None)
+    FinalOpacity = property(get_FinalOpacity, None)
+    InitialOpacity = property(get_InitialOpacity, None)
+    Type = property(get_Type, None)
 class PropertyAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation
@@ -210,15 +204,15 @@ class PropertyAnimation(ComPtr):
     def get_Control1(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def get_Control2(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
-    Type = property(get_Type, None)
-    Delay = property(get_Delay, None)
-    Duration = property(get_Duration, None)
     Control1 = property(get_Control1, None)
     Control2 = property(get_Control2, None)
-PropertyAnimationType = Int32
-PropertyAnimationType_Scale: PropertyAnimationType = 0
-PropertyAnimationType_Translation: PropertyAnimationType = 1
-PropertyAnimationType_Opacity: PropertyAnimationType = 2
+    Delay = property(get_Delay, None)
+    Duration = property(get_Duration, None)
+    Type = property(get_Type, None)
+class PropertyAnimationType(Int32):  # enum
+    Scale = 0
+    Translation = 1
+    Opacity = 2
 class ScaleAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Core.AnimationMetrics.IScaleAnimation
@@ -243,16 +237,16 @@ class ScaleAnimation(ComPtr):
     def get_Control1(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def get_Control2(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
-    InitialScaleX = property(get_InitialScaleX, None)
-    InitialScaleY = property(get_InitialScaleY, None)
-    FinalScaleX = property(get_FinalScaleX, None)
-    FinalScaleY = property(get_FinalScaleY, None)
-    NormalizedOrigin = property(get_NormalizedOrigin, None)
-    Type = property(get_Type, None)
-    Delay = property(get_Delay, None)
-    Duration = property(get_Duration, None)
     Control1 = property(get_Control1, None)
     Control2 = property(get_Control2, None)
+    Delay = property(get_Delay, None)
+    Duration = property(get_Duration, None)
+    FinalScaleX = property(get_FinalScaleX, None)
+    FinalScaleY = property(get_FinalScaleY, None)
+    InitialScaleX = property(get_InitialScaleX, None)
+    InitialScaleY = property(get_InitialScaleY, None)
+    NormalizedOrigin = property(get_NormalizedOrigin, None)
+    Type = property(get_Type, None)
 class TranslationAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation
@@ -267,9 +261,11 @@ class TranslationAnimation(ComPtr):
     def get_Control1(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def get_Control2(self: win32more.Windows.UI.Core.AnimationMetrics.IPropertyAnimation) -> win32more.Windows.Foundation.Point: ...
-    Type = property(get_Type, None)
-    Delay = property(get_Delay, None)
-    Duration = property(get_Duration, None)
     Control1 = property(get_Control1, None)
     Control2 = property(get_Control2, None)
+    Delay = property(get_Delay, None)
+    Duration = property(get_Duration, None)
+    Type = property(get_Type, None)
+
+
 make_ready(__name__)

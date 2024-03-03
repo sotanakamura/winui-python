@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -23,10 +9,19 @@ import win32more.Windows.Media.Devices
 import win32more.Windows.Media.Devices.Core
 import win32more.Windows.Media.MediaProperties
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class AdvancedPhotoCaptureSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IAdvancedPhotoCaptureSettings
     _classid_ = 'Windows.Media.Devices.AdvancedPhotoCaptureSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Devices.AdvancedPhotoCaptureSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Devices.AdvancedPhotoCaptureSettings: ...
     @winrt_mixinmethod
@@ -46,14 +41,14 @@ class AdvancedPhotoControl(ComPtr):
     def get_Mode(self: win32more.Windows.Media.Devices.IAdvancedPhotoControl) -> win32more.Windows.Media.Devices.AdvancedPhotoMode: ...
     @winrt_mixinmethod
     def Configure(self: win32more.Windows.Media.Devices.IAdvancedPhotoControl, settings: win32more.Windows.Media.Devices.AdvancedPhotoCaptureSettings) -> Void: ...
+    Mode = property(get_Mode, None)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, None)
-AdvancedPhotoMode = Int32
-AdvancedPhotoMode_Auto: AdvancedPhotoMode = 0
-AdvancedPhotoMode_Standard: AdvancedPhotoMode = 1
-AdvancedPhotoMode_Hdr: AdvancedPhotoMode = 2
-AdvancedPhotoMode_LowLight: AdvancedPhotoMode = 3
+class AdvancedPhotoMode(Int32):  # enum
+    Auto = 0
+    Standard = 1
+    Hdr = 2
+    LowLight = 3
 class AudioDeviceController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IAudioDeviceController
@@ -109,6 +104,13 @@ class AudioDeviceModulesManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IAudioDeviceModulesManager
     _classid_ = 'Windows.Media.Devices.AudioDeviceModulesManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Devices.AudioDeviceModulesManager.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Devices.IAudioDeviceModulesManagerFactory, deviceId: WinRT_String) -> win32more.Windows.Media.Devices.AudioDeviceModulesManager: ...
     @winrt_mixinmethod
@@ -119,13 +121,13 @@ class AudioDeviceModulesManager(ComPtr):
     def FindAllById(self: win32more.Windows.Media.Devices.IAudioDeviceModulesManager, moduleId: WinRT_String) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Devices.AudioDeviceModule]: ...
     @winrt_mixinmethod
     def FindAll(self: win32more.Windows.Media.Devices.IAudioDeviceModulesManager) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Devices.AudioDeviceModule]: ...
-AudioDeviceRole = Int32
-AudioDeviceRole_Default: AudioDeviceRole = 0
-AudioDeviceRole_Communications: AudioDeviceRole = 1
-AutoFocusRange = Int32
-AutoFocusRange_FullRange: AutoFocusRange = 0
-AutoFocusRange_Macro: AutoFocusRange = 1
-AutoFocusRange_Normal: AutoFocusRange = 2
+class AudioDeviceRole(Int32):  # enum
+    Default = 0
+    Communications = 1
+class AutoFocusRange(Int32):  # enum
+    FullRange = 0
+    Macro = 1
+    Normal = 2
 class CallControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.ICallControl
@@ -186,9 +188,9 @@ class CameraOcclusionInfo(ComPtr):
     def add_StateChanged(self: win32more.Windows.Media.Devices.ICameraOcclusionInfo, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Devices.CameraOcclusionInfo, win32more.Windows.Media.Devices.CameraOcclusionStateChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_StateChanged(self: win32more.Windows.Media.Devices.ICameraOcclusionInfo, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-CameraOcclusionKind = Int32
-CameraOcclusionKind_Lid: CameraOcclusionKind = 0
-CameraOcclusionKind_CameraHardware: CameraOcclusionKind = 1
+class CameraOcclusionKind(Int32):  # enum
+    Lid = 0
+    CameraHardware = 1
 class CameraOcclusionState(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.ICameraOcclusionState
@@ -205,38 +207,38 @@ class CameraOcclusionStateChangedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_State(self: win32more.Windows.Media.Devices.ICameraOcclusionStateChangedEventArgs) -> win32more.Windows.Media.Devices.CameraOcclusionState: ...
     State = property(get_State, None)
-CameraStreamState = Int32
-CameraStreamState_NotStreaming: CameraStreamState = 0
-CameraStreamState_Streaming: CameraStreamState = 1
-CameraStreamState_BlockedForPrivacy: CameraStreamState = 2
-CameraStreamState_Shutdown: CameraStreamState = 3
-CaptureSceneMode = Int32
-CaptureSceneMode_Auto: CaptureSceneMode = 0
-CaptureSceneMode_Manual: CaptureSceneMode = 1
-CaptureSceneMode_Macro: CaptureSceneMode = 2
-CaptureSceneMode_Portrait: CaptureSceneMode = 3
-CaptureSceneMode_Sport: CaptureSceneMode = 4
-CaptureSceneMode_Snow: CaptureSceneMode = 5
-CaptureSceneMode_Night: CaptureSceneMode = 6
-CaptureSceneMode_Beach: CaptureSceneMode = 7
-CaptureSceneMode_Sunset: CaptureSceneMode = 8
-CaptureSceneMode_Candlelight: CaptureSceneMode = 9
-CaptureSceneMode_Landscape: CaptureSceneMode = 10
-CaptureSceneMode_NightPortrait: CaptureSceneMode = 11
-CaptureSceneMode_Backlit: CaptureSceneMode = 12
-CaptureUse = Int32
-CaptureUse_None: CaptureUse = 0
-CaptureUse_Photo: CaptureUse = 1
-CaptureUse_Video: CaptureUse = 2
-ColorTemperaturePreset = Int32
-ColorTemperaturePreset_Auto: ColorTemperaturePreset = 0
-ColorTemperaturePreset_Manual: ColorTemperaturePreset = 1
-ColorTemperaturePreset_Cloudy: ColorTemperaturePreset = 2
-ColorTemperaturePreset_Daylight: ColorTemperaturePreset = 3
-ColorTemperaturePreset_Flash: ColorTemperaturePreset = 4
-ColorTemperaturePreset_Fluorescent: ColorTemperaturePreset = 5
-ColorTemperaturePreset_Tungsten: ColorTemperaturePreset = 6
-ColorTemperaturePreset_Candlelight: ColorTemperaturePreset = 7
+class CameraStreamState(Int32):  # enum
+    NotStreaming = 0
+    Streaming = 1
+    BlockedForPrivacy = 2
+    Shutdown = 3
+class CaptureSceneMode(Int32):  # enum
+    Auto = 0
+    Manual = 1
+    Macro = 2
+    Portrait = 3
+    Sport = 4
+    Snow = 5
+    Night = 6
+    Beach = 7
+    Sunset = 8
+    Candlelight = 9
+    Landscape = 10
+    NightPortrait = 11
+    Backlit = 12
+class CaptureUse(Int32):  # enum
+    None_ = 0
+    Photo = 1
+    Video = 2
+class ColorTemperaturePreset(Int32):  # enum
+    Auto = 0
+    Manual = 1
+    Cloudy = 2
+    Daylight = 3
+    Flash = 4
+    Fluorescent = 5
+    Tungsten = 6
+    Candlelight = 7
 class DefaultAudioCaptureDeviceChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IDefaultAudioDeviceChangedEventArgs
@@ -274,6 +276,13 @@ class DigitalWindowBounds(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IDigitalWindowBounds
     _classid_ = 'Windows.Media.Devices.DigitalWindowBounds'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Devices.DigitalWindowBounds.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Devices.DigitalWindowBounds: ...
     @winrt_mixinmethod
@@ -288,8 +297,8 @@ class DigitalWindowBounds(ComPtr):
     def get_Scale(self: win32more.Windows.Media.Devices.IDigitalWindowBounds) -> Double: ...
     @winrt_mixinmethod
     def put_Scale(self: win32more.Windows.Media.Devices.IDigitalWindowBounds, value: Double) -> Void: ...
-    NormalizedOriginTop = property(get_NormalizedOriginTop, put_NormalizedOriginTop)
     NormalizedOriginLeft = property(get_NormalizedOriginLeft, put_NormalizedOriginLeft)
+    NormalizedOriginTop = property(get_NormalizedOriginTop, put_NormalizedOriginTop)
     Scale = property(get_Scale, put_Scale)
 class DigitalWindowCapability(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -307,12 +316,12 @@ class DigitalWindowCapability(ComPtr):
     def get_MinScaleValueWithoutUpsampling(self: win32more.Windows.Media.Devices.IDigitalWindowCapability) -> Double: ...
     @winrt_mixinmethod
     def get_NormalizedFieldOfViewLimit(self: win32more.Windows.Media.Devices.IDigitalWindowCapability) -> win32more.Windows.Foundation.Rect: ...
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
-    MinScaleValue = property(get_MinScaleValue, None)
     MaxScaleValue = property(get_MaxScaleValue, None)
+    MinScaleValue = property(get_MinScaleValue, None)
     MinScaleValueWithoutUpsampling = property(get_MinScaleValueWithoutUpsampling, None)
     NormalizedFieldOfViewLimit = property(get_NormalizedFieldOfViewLimit, None)
+    Width = property(get_Width, None)
 class DigitalWindowControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IDigitalWindowControl
@@ -333,14 +342,14 @@ class DigitalWindowControl(ComPtr):
     def get_SupportedCapabilities(self: win32more.Windows.Media.Devices.IDigitalWindowControl) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Devices.DigitalWindowCapability]: ...
     @winrt_mixinmethod
     def GetCapabilityForSize(self: win32more.Windows.Media.Devices.IDigitalWindowControl, width: Int32, height: Int32) -> win32more.Windows.Media.Devices.DigitalWindowCapability: ...
-    IsSupported = property(get_IsSupported, None)
-    SupportedModes = property(get_SupportedModes, None)
     CurrentMode = property(get_CurrentMode, None)
+    IsSupported = property(get_IsSupported, None)
     SupportedCapabilities = property(get_SupportedCapabilities, None)
-DigitalWindowMode = Int32
-DigitalWindowMode_Off: DigitalWindowMode = 0
-DigitalWindowMode_On: DigitalWindowMode = 1
-DigitalWindowMode_Auto: DigitalWindowMode = 2
+    SupportedModes = property(get_SupportedModes, None)
+class DigitalWindowMode(Int32):  # enum
+    Off = 0
+    On = 1
+    Auto = 2
 class ExposureCompensationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IExposureCompensationControl
@@ -357,10 +366,10 @@ class ExposureCompensationControl(ComPtr):
     def get_Value(self: win32more.Windows.Media.Devices.IExposureCompensationControl) -> Single: ...
     @winrt_mixinmethod
     def SetValueAsync(self: win32more.Windows.Media.Devices.IExposureCompensationControl, value: Single) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class ExposureControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -382,11 +391,11 @@ class ExposureControl(ComPtr):
     def get_Value(self: win32more.Windows.Media.Devices.IExposureControl) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def SetValueAsync(self: win32more.Windows.Media.Devices.IExposureControl, shutterDuration: win32more.Windows.Foundation.TimeSpan) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
     Auto = property(get_Auto, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class ExposurePriorityVideoControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -398,8 +407,8 @@ class ExposurePriorityVideoControl(ComPtr):
     def get_Enabled(self: win32more.Windows.Media.Devices.IExposurePriorityVideoControl) -> Boolean: ...
     @winrt_mixinmethod
     def put_Enabled(self: win32more.Windows.Media.Devices.IExposurePriorityVideoControl, value: Boolean) -> Void: ...
-    Supported = property(get_Supported, None)
     Enabled = property(get_Enabled, put_Enabled)
+    Supported = property(get_Supported, None)
 class FlashControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IFlashControl
@@ -432,15 +441,15 @@ class FlashControl(ComPtr):
     def get_AssistantLightEnabled(self: win32more.Windows.Media.Devices.IFlashControl2) -> Boolean: ...
     @winrt_mixinmethod
     def put_AssistantLightEnabled(self: win32more.Windows.Media.Devices.IFlashControl2, value: Boolean) -> Void: ...
-    Supported = property(get_Supported, None)
-    PowerSupported = property(get_PowerSupported, None)
-    RedEyeReductionSupported = property(get_RedEyeReductionSupported, None)
-    Enabled = property(get_Enabled, put_Enabled)
-    Auto = property(get_Auto, put_Auto)
-    RedEyeReduction = property(get_RedEyeReduction, put_RedEyeReduction)
-    PowerPercent = property(get_PowerPercent, put_PowerPercent)
-    AssistantLightSupported = property(get_AssistantLightSupported, None)
     AssistantLightEnabled = property(get_AssistantLightEnabled, put_AssistantLightEnabled)
+    AssistantLightSupported = property(get_AssistantLightSupported, None)
+    Auto = property(get_Auto, put_Auto)
+    Enabled = property(get_Enabled, put_Enabled)
+    PowerPercent = property(get_PowerPercent, put_PowerPercent)
+    PowerSupported = property(get_PowerSupported, None)
+    RedEyeReduction = property(get_RedEyeReduction, put_RedEyeReduction)
+    RedEyeReductionSupported = property(get_RedEyeReductionSupported, None)
+    Supported = property(get_Supported, None)
 class FocusControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IFocusControl
@@ -487,36 +496,43 @@ class FocusControl(ComPtr):
     def LockAsync(self: win32more.Windows.Media.Devices.IFocusControl2) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def Configure(self: win32more.Windows.Media.Devices.IFocusControl2, settings: win32more.Windows.Media.Devices.FocusSettings) -> Void: ...
-    Supported = property(get_Supported, None)
-    SupportedPresets = property(get_SupportedPresets, None)
-    Preset = property(get_Preset, None)
-    Min = property(get_Min, None)
-    Max = property(get_Max, None)
-    Step = property(get_Step, None)
-    Value = property(get_Value, None)
     FocusChangedSupported = property(get_FocusChangedSupported, None)
-    WaitForFocusSupported = property(get_WaitForFocusSupported, None)
-    SupportedFocusModes = property(get_SupportedFocusModes, None)
-    SupportedFocusDistances = property(get_SupportedFocusDistances, None)
-    SupportedFocusRanges = property(get_SupportedFocusRanges, None)
-    Mode = property(get_Mode, None)
     FocusState = property(get_FocusState, None)
-FocusMode = Int32
-FocusMode_Auto: FocusMode = 0
-FocusMode_Single: FocusMode = 1
-FocusMode_Continuous: FocusMode = 2
-FocusMode_Manual: FocusMode = 3
-FocusPreset = Int32
-FocusPreset_Auto: FocusPreset = 0
-FocusPreset_Manual: FocusPreset = 1
-FocusPreset_AutoMacro: FocusPreset = 2
-FocusPreset_AutoNormal: FocusPreset = 3
-FocusPreset_AutoInfinity: FocusPreset = 4
-FocusPreset_AutoHyperfocal: FocusPreset = 5
+    Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Mode = property(get_Mode, None)
+    Preset = property(get_Preset, None)
+    Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
+    SupportedFocusDistances = property(get_SupportedFocusDistances, None)
+    SupportedFocusModes = property(get_SupportedFocusModes, None)
+    SupportedFocusRanges = property(get_SupportedFocusRanges, None)
+    SupportedPresets = property(get_SupportedPresets, None)
+    Value = property(get_Value, None)
+    WaitForFocusSupported = property(get_WaitForFocusSupported, None)
+class FocusMode(Int32):  # enum
+    Auto = 0
+    Single = 1
+    Continuous = 2
+    Manual = 3
+class FocusPreset(Int32):  # enum
+    Auto = 0
+    Manual = 1
+    AutoMacro = 2
+    AutoNormal = 3
+    AutoInfinity = 4
+    AutoHyperfocal = 5
 class FocusSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IFocusSettings
     _classid_ = 'Windows.Media.Devices.FocusSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Devices.FocusSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Devices.FocusSettings: ...
     @winrt_mixinmethod
@@ -543,12 +559,12 @@ class FocusSettings(ComPtr):
     def get_DisableDriverFallback(self: win32more.Windows.Media.Devices.IFocusSettings) -> Boolean: ...
     @winrt_mixinmethod
     def put_DisableDriverFallback(self: win32more.Windows.Media.Devices.IFocusSettings, value: Boolean) -> Void: ...
-    Mode = property(get_Mode, put_Mode)
     AutoFocusRange = property(get_AutoFocusRange, put_AutoFocusRange)
-    Value = property(get_Value, put_Value)
-    Distance = property(get_Distance, put_Distance)
-    WaitForFocus = property(get_WaitForFocus, put_WaitForFocus)
     DisableDriverFallback = property(get_DisableDriverFallback, put_DisableDriverFallback)
+    Distance = property(get_Distance, put_Distance)
+    Mode = property(get_Mode, put_Mode)
+    Value = property(get_Value, put_Value)
+    WaitForFocus = property(get_WaitForFocus, put_WaitForFocus)
 class HdrVideoControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IHdrVideoControl
@@ -561,13 +577,13 @@ class HdrVideoControl(ComPtr):
     def get_Mode(self: win32more.Windows.Media.Devices.IHdrVideoControl) -> win32more.Windows.Media.Devices.HdrVideoMode: ...
     @winrt_mixinmethod
     def put_Mode(self: win32more.Windows.Media.Devices.IHdrVideoControl, value: win32more.Windows.Media.Devices.HdrVideoMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
-HdrVideoMode = Int32
-HdrVideoMode_Off: HdrVideoMode = 0
-HdrVideoMode_On: HdrVideoMode = 1
-HdrVideoMode_Auto: HdrVideoMode = 2
+class HdrVideoMode(Int32):  # enum
+    Off = 0
+    On = 1
+    Auto = 2
 class IAdvancedPhotoCaptureSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IAdvancedPhotoCaptureSettings'
@@ -589,9 +605,9 @@ class IAdvancedPhotoControl(ComPtr):
     def get_Mode(self) -> win32more.Windows.Media.Devices.AdvancedPhotoMode: ...
     @winrt_commethod(9)
     def Configure(self, settings: win32more.Windows.Media.Devices.AdvancedPhotoCaptureSettings) -> Void: ...
+    Mode = property(get_Mode, None)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, None)
 class IAdvancedVideoCaptureDeviceController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IAdvancedVideoCaptureDeviceController'
@@ -643,18 +659,18 @@ class IAdvancedVideoCaptureDeviceController2(ComPtr):
     def get_PrimaryUse(self) -> win32more.Windows.Media.Devices.CaptureUse: ...
     @winrt_commethod(18)
     def put_PrimaryUse(self, value: win32more.Windows.Media.Devices.CaptureUse) -> Void: ...
-    LowLagPhotoSequence = property(get_LowLagPhotoSequence, None)
+    ExposureCompensationControl = property(get_ExposureCompensationControl, None)
+    ExposureControl = property(get_ExposureControl, None)
+    FlashControl = property(get_FlashControl, None)
+    FocusControl = property(get_FocusControl, None)
+    IsoSpeedControl = property(get_IsoSpeedControl, None)
     LowLagPhoto = property(get_LowLagPhoto, None)
+    LowLagPhotoSequence = property(get_LowLagPhotoSequence, None)
+    PrimaryUse = property(get_PrimaryUse, put_PrimaryUse)
+    RegionsOfInterestControl = property(get_RegionsOfInterestControl, None)
     SceneModeControl = property(get_SceneModeControl, None)
     TorchControl = property(get_TorchControl, None)
-    FlashControl = property(get_FlashControl, None)
     WhiteBalanceControl = property(get_WhiteBalanceControl, None)
-    ExposureControl = property(get_ExposureControl, None)
-    FocusControl = property(get_FocusControl, None)
-    ExposureCompensationControl = property(get_ExposureCompensationControl, None)
-    IsoSpeedControl = property(get_IsoSpeedControl, None)
-    RegionsOfInterestControl = property(get_RegionsOfInterestControl, None)
-    PrimaryUse = property(get_PrimaryUse, put_PrimaryUse)
 class IAdvancedVideoCaptureDeviceController3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IAdvancedVideoCaptureDeviceController3'
@@ -665,8 +681,8 @@ class IAdvancedVideoCaptureDeviceController3(ComPtr):
     def get_PhotoConfirmationControl(self) -> win32more.Windows.Media.Devices.PhotoConfirmationControl: ...
     @winrt_commethod(8)
     def get_ZoomControl(self) -> win32more.Windows.Media.Devices.ZoomControl: ...
-    VariablePhotoSequenceController = property(get_VariablePhotoSequenceController, None)
     PhotoConfirmationControl = property(get_PhotoConfirmationControl, None)
+    VariablePhotoSequenceController = property(get_VariablePhotoSequenceController, None)
     ZoomControl = property(get_ZoomControl, None)
 class IAdvancedVideoCaptureDeviceController4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -684,11 +700,11 @@ class IAdvancedVideoCaptureDeviceController4(ComPtr):
     def get_OpticalImageStabilizationControl(self) -> win32more.Windows.Media.Devices.OpticalImageStabilizationControl: ...
     @winrt_commethod(11)
     def get_AdvancedPhotoControl(self) -> win32more.Windows.Media.Devices.AdvancedPhotoControl: ...
-    ExposurePriorityVideoControl = property(get_ExposurePriorityVideoControl, None)
+    AdvancedPhotoControl = property(get_AdvancedPhotoControl, None)
     DesiredOptimization = property(get_DesiredOptimization, put_DesiredOptimization)
+    ExposurePriorityVideoControl = property(get_ExposurePriorityVideoControl, None)
     HdrVideoControl = property(get_HdrVideoControl, None)
     OpticalImageStabilizationControl = property(get_OpticalImageStabilizationControl, None)
-    AdvancedPhotoControl = property(get_AdvancedPhotoControl, None)
 class IAdvancedVideoCaptureDeviceController5(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IAdvancedVideoCaptureDeviceController5'
@@ -905,8 +921,8 @@ class IDigitalWindowBounds(ComPtr):
     def get_Scale(self) -> Double: ...
     @winrt_commethod(11)
     def put_Scale(self, value: Double) -> Void: ...
-    NormalizedOriginTop = property(get_NormalizedOriginTop, put_NormalizedOriginTop)
     NormalizedOriginLeft = property(get_NormalizedOriginLeft, put_NormalizedOriginLeft)
+    NormalizedOriginTop = property(get_NormalizedOriginTop, put_NormalizedOriginTop)
     Scale = property(get_Scale, put_Scale)
 class IDigitalWindowCapability(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -924,12 +940,12 @@ class IDigitalWindowCapability(ComPtr):
     def get_MinScaleValueWithoutUpsampling(self) -> Double: ...
     @winrt_commethod(11)
     def get_NormalizedFieldOfViewLimit(self) -> win32more.Windows.Foundation.Rect: ...
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
-    MinScaleValue = property(get_MinScaleValue, None)
     MaxScaleValue = property(get_MaxScaleValue, None)
+    MinScaleValue = property(get_MinScaleValue, None)
     MinScaleValueWithoutUpsampling = property(get_MinScaleValueWithoutUpsampling, None)
     NormalizedFieldOfViewLimit = property(get_NormalizedFieldOfViewLimit, None)
+    Width = property(get_Width, None)
 class IDigitalWindowControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IDigitalWindowControl'
@@ -950,10 +966,10 @@ class IDigitalWindowControl(ComPtr):
     def get_SupportedCapabilities(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Devices.DigitalWindowCapability]: ...
     @winrt_commethod(13)
     def GetCapabilityForSize(self, width: Int32, height: Int32) -> win32more.Windows.Media.Devices.DigitalWindowCapability: ...
-    IsSupported = property(get_IsSupported, None)
-    SupportedModes = property(get_SupportedModes, None)
     CurrentMode = property(get_CurrentMode, None)
+    IsSupported = property(get_IsSupported, None)
     SupportedCapabilities = property(get_SupportedCapabilities, None)
+    SupportedModes = property(get_SupportedModes, None)
 class IExposureCompensationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IExposureCompensationControl'
@@ -970,10 +986,10 @@ class IExposureCompensationControl(ComPtr):
     def get_Value(self) -> Single: ...
     @winrt_commethod(11)
     def SetValueAsync(self, value: Single) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class IExposureControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -995,11 +1011,11 @@ class IExposureControl(ComPtr):
     def get_Value(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(13)
     def SetValueAsync(self, shutterDuration: win32more.Windows.Foundation.TimeSpan) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
     Auto = property(get_Auto, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class IExposurePriorityVideoControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1011,8 +1027,8 @@ class IExposurePriorityVideoControl(ComPtr):
     def get_Enabled(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_Enabled(self, value: Boolean) -> Void: ...
-    Supported = property(get_Supported, None)
     Enabled = property(get_Enabled, put_Enabled)
+    Supported = property(get_Supported, None)
 class IFlashControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IFlashControl'
@@ -1039,13 +1055,13 @@ class IFlashControl(ComPtr):
     def get_PowerPercent(self) -> Single: ...
     @winrt_commethod(16)
     def put_PowerPercent(self, value: Single) -> Void: ...
-    Supported = property(get_Supported, None)
-    PowerSupported = property(get_PowerSupported, None)
-    RedEyeReductionSupported = property(get_RedEyeReductionSupported, None)
-    Enabled = property(get_Enabled, put_Enabled)
     Auto = property(get_Auto, put_Auto)
-    RedEyeReduction = property(get_RedEyeReduction, put_RedEyeReduction)
+    Enabled = property(get_Enabled, put_Enabled)
     PowerPercent = property(get_PowerPercent, put_PowerPercent)
+    PowerSupported = property(get_PowerSupported, None)
+    RedEyeReduction = property(get_RedEyeReduction, put_RedEyeReduction)
+    RedEyeReductionSupported = property(get_RedEyeReductionSupported, None)
+    Supported = property(get_Supported, None)
 class IFlashControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IFlashControl2'
@@ -1056,8 +1072,8 @@ class IFlashControl2(ComPtr):
     def get_AssistantLightEnabled(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_AssistantLightEnabled(self, value: Boolean) -> Void: ...
-    AssistantLightSupported = property(get_AssistantLightSupported, None)
     AssistantLightEnabled = property(get_AssistantLightEnabled, put_AssistantLightEnabled)
+    AssistantLightSupported = property(get_AssistantLightSupported, None)
 class IFocusControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IFocusControl'
@@ -1084,12 +1100,12 @@ class IFocusControl(ComPtr):
     def SetValueAsync(self, focus: UInt32) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(16)
     def FocusAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
+    Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Preset = property(get_Preset, None)
+    Step = property(get_Step, None)
     Supported = property(get_Supported, None)
     SupportedPresets = property(get_SupportedPresets, None)
-    Preset = property(get_Preset, None)
-    Min = property(get_Min, None)
-    Max = property(get_Max, None)
-    Step = property(get_Step, None)
     Value = property(get_Value, None)
 class IFocusControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1116,12 +1132,12 @@ class IFocusControl2(ComPtr):
     @winrt_commethod(15)
     def Configure(self, settings: win32more.Windows.Media.Devices.FocusSettings) -> Void: ...
     FocusChangedSupported = property(get_FocusChangedSupported, None)
-    WaitForFocusSupported = property(get_WaitForFocusSupported, None)
-    SupportedFocusModes = property(get_SupportedFocusModes, None)
-    SupportedFocusDistances = property(get_SupportedFocusDistances, None)
-    SupportedFocusRanges = property(get_SupportedFocusRanges, None)
-    Mode = property(get_Mode, None)
     FocusState = property(get_FocusState, None)
+    Mode = property(get_Mode, None)
+    SupportedFocusDistances = property(get_SupportedFocusDistances, None)
+    SupportedFocusModes = property(get_SupportedFocusModes, None)
+    SupportedFocusRanges = property(get_SupportedFocusRanges, None)
+    WaitForFocusSupported = property(get_WaitForFocusSupported, None)
 class IFocusSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IFocusSettings'
@@ -1150,12 +1166,12 @@ class IFocusSettings(ComPtr):
     def get_DisableDriverFallback(self) -> Boolean: ...
     @winrt_commethod(17)
     def put_DisableDriverFallback(self, value: Boolean) -> Void: ...
-    Mode = property(get_Mode, put_Mode)
     AutoFocusRange = property(get_AutoFocusRange, put_AutoFocusRange)
-    Value = property(get_Value, put_Value)
-    Distance = property(get_Distance, put_Distance)
-    WaitForFocus = property(get_WaitForFocus, put_WaitForFocus)
     DisableDriverFallback = property(get_DisableDriverFallback, put_DisableDriverFallback)
+    Distance = property(get_Distance, put_Distance)
+    Mode = property(get_Mode, put_Mode)
+    Value = property(get_Value, put_Value)
+    WaitForFocus = property(get_WaitForFocus, put_WaitForFocus)
 class IHdrVideoControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IHdrVideoControl'
@@ -1168,9 +1184,9 @@ class IHdrVideoControl(ComPtr):
     def get_Mode(self) -> win32more.Windows.Media.Devices.HdrVideoMode: ...
     @winrt_commethod(9)
     def put_Mode(self, value: win32more.Windows.Media.Devices.HdrVideoMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
 class IInfraredTorchControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IInfraredTorchControl'
@@ -1193,13 +1209,13 @@ class IInfraredTorchControl(ComPtr):
     def get_Power(self) -> Int32: ...
     @winrt_commethod(14)
     def put_Power(self, value: Int32) -> Void: ...
-    IsSupported = property(get_IsSupported, None)
-    SupportedModes = property(get_SupportedModes, None)
     CurrentMode = property(get_CurrentMode, put_CurrentMode)
-    MinPower = property(get_MinPower, None)
+    IsSupported = property(get_IsSupported, None)
     MaxPower = property(get_MaxPower, None)
-    PowerStep = property(get_PowerStep, None)
+    MinPower = property(get_MinPower, None)
     Power = property(get_Power, put_Power)
+    PowerStep = property(get_PowerStep, None)
+    SupportedModes = property(get_SupportedModes, None)
 class IIsoSpeedControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IIsoSpeedControl'
@@ -1212,9 +1228,9 @@ class IIsoSpeedControl(ComPtr):
     def get_Preset(self) -> win32more.Windows.Media.Devices.IsoSpeedPreset: ...
     @winrt_commethod(9)
     def SetPresetAsync(self, preset: win32more.Windows.Media.Devices.IsoSpeedPreset) -> win32more.Windows.Foundation.IAsyncAction: ...
+    Preset = property(get_Preset, None)
     Supported = property(get_Supported, None)
     SupportedPresets = property(get_SupportedPresets, None)
-    Preset = property(get_Preset, None)
 class IIsoSpeedControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IIsoSpeedControl2'
@@ -1233,11 +1249,11 @@ class IIsoSpeedControl2(ComPtr):
     def get_Auto(self) -> Boolean: ...
     @winrt_commethod(12)
     def SetAutoAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Min = property(get_Min, None)
+    Auto = property(get_Auto, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
     Value = property(get_Value, None)
-    Auto = property(get_Auto, None)
 class IKeypadPressedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IKeypadPressedEventArgs'
@@ -1267,10 +1283,10 @@ class ILowLagPhotoControl(ComPtr):
     def put_DesiredThumbnailSize(self, value: UInt32) -> Void: ...
     @winrt_commethod(14)
     def get_HardwareAcceleratedThumbnailSupported(self) -> UInt32: ...
-    ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
-    ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
     DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
     HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
+    ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
+    ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
 class ILowLagPhotoSequenceControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.ILowLagPhotoSequenceControl'
@@ -1307,15 +1323,15 @@ class ILowLagPhotoSequenceControl(ComPtr):
     def put_DesiredThumbnailSize(self, value: UInt32) -> Void: ...
     @winrt_commethod(21)
     def get_HardwareAcceleratedThumbnailSupported(self) -> UInt32: ...
-    Supported = property(get_Supported, None)
+    DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
+    HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
     MaxPastPhotos = property(get_MaxPastPhotos, None)
     MaxPhotosPerSecond = property(get_MaxPhotosPerSecond, None)
     PastPhotoLimit = property(get_PastPhotoLimit, put_PastPhotoLimit)
     PhotosPerSecondLimit = property(get_PhotosPerSecondLimit, put_PhotosPerSecondLimit)
+    Supported = property(get_Supported, None)
     ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
     ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
-    DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
-    HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
 class IMediaDeviceControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IMediaDeviceControl'
@@ -1347,12 +1363,12 @@ class IMediaDeviceControlCapabilities(ComPtr):
     def get_Default(self) -> Double: ...
     @winrt_commethod(11)
     def get_AutoModeSupported(self) -> Boolean: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
-    Max = property(get_Max, None)
-    Step = property(get_Step, None)
-    Default = property(get_Default, None)
     AutoModeSupported = property(get_AutoModeSupported, None)
+    Default = property(get_Default, None)
+    Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
 class IMediaDeviceController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IMediaDeviceController'
@@ -1393,8 +1409,8 @@ class IModuleCommandResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Devices.SendCommandStatus: ...
     @winrt_commethod(7)
     def get_Result(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
-    Status = property(get_Status, None)
     Result = property(get_Result, None)
+    Status = property(get_Status, None)
 class IOpticalImageStabilizationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IOpticalImageStabilizationControl'
@@ -1407,9 +1423,9 @@ class IOpticalImageStabilizationControl(ComPtr):
     def get_Mode(self) -> win32more.Windows.Media.Devices.OpticalImageStabilizationMode: ...
     @winrt_commethod(9)
     def put_Mode(self, value: win32more.Windows.Media.Devices.OpticalImageStabilizationMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
 class IPanelBasedOptimizationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IPanelBasedOptimizationControl'
@@ -1436,9 +1452,9 @@ class IPhotoConfirmationControl(ComPtr):
     def get_PixelFormat(self) -> win32more.Windows.Media.MediaProperties.MediaPixelFormat: ...
     @winrt_commethod(10)
     def put_PixelFormat(self, format: win32more.Windows.Media.MediaProperties.MediaPixelFormat) -> Void: ...
-    Supported = property(get_Supported, None)
     Enabled = property(get_Enabled, put_Enabled)
     PixelFormat = property(get_PixelFormat, put_PixelFormat)
+    Supported = property(get_Supported, None)
 class IRedialRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IRedialRequestedEventArgs'
@@ -1465,9 +1481,9 @@ class IRegionOfInterest(ComPtr):
     def get_Bounds(self) -> win32more.Windows.Foundation.Rect: ...
     @winrt_commethod(13)
     def put_Bounds(self, value: win32more.Windows.Foundation.Rect) -> Void: ...
+    AutoExposureEnabled = property(get_AutoExposureEnabled, put_AutoExposureEnabled)
     AutoFocusEnabled = property(get_AutoFocusEnabled, put_AutoFocusEnabled)
     AutoWhiteBalanceEnabled = property(get_AutoWhiteBalanceEnabled, put_AutoWhiteBalanceEnabled)
-    AutoExposureEnabled = property(get_AutoExposureEnabled, put_AutoExposureEnabled)
     Bounds = property(get_Bounds, put_Bounds)
 class IRegionOfInterest2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1485,8 +1501,8 @@ class IRegionOfInterest2(ComPtr):
     def get_Weight(self) -> UInt32: ...
     @winrt_commethod(11)
     def put_Weight(self, value: UInt32) -> Void: ...
-    Type = property(get_Type, put_Type)
     BoundsNormalized = property(get_BoundsNormalized, put_BoundsNormalized)
+    Type = property(get_Type, put_Type)
     Weight = property(get_Weight, put_Weight)
 class IRegionsOfInterestControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1506,10 +1522,10 @@ class IRegionsOfInterestControl(ComPtr):
     def get_AutoWhiteBalanceSupported(self) -> Boolean: ...
     @winrt_commethod(12)
     def get_AutoExposureSupported(self) -> Boolean: ...
-    MaxRegions = property(get_MaxRegions, None)
+    AutoExposureSupported = property(get_AutoExposureSupported, None)
     AutoFocusSupported = property(get_AutoFocusSupported, None)
     AutoWhiteBalanceSupported = property(get_AutoWhiteBalanceSupported, None)
-    AutoExposureSupported = property(get_AutoExposureSupported, None)
+    MaxRegions = property(get_MaxRegions, None)
 class ISceneModeControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.ISceneModeControl'
@@ -1538,10 +1554,10 @@ class ITorchControl(ComPtr):
     def get_PowerPercent(self) -> Single: ...
     @winrt_commethod(11)
     def put_PowerPercent(self, value: Single) -> Void: ...
-    Supported = property(get_Supported, None)
-    PowerSupported = property(get_PowerSupported, None)
     Enabled = property(get_Enabled, put_Enabled)
     PowerPercent = property(get_PowerPercent, put_PowerPercent)
+    PowerSupported = property(get_PowerSupported, None)
+    Supported = property(get_Supported, None)
 class IVideoDeviceController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IVideoDeviceController'
@@ -1572,17 +1588,17 @@ class IVideoDeviceController(ComPtr):
     def TrySetPowerlineFrequency(self, value: win32more.Windows.Media.Capture.PowerlineFrequency) -> Boolean: ...
     @winrt_commethod(18)
     def TryGetPowerlineFrequency(self, value: POINTER(win32more.Windows.Media.Capture.PowerlineFrequency)) -> Boolean: ...
+    BacklightCompensation = property(get_BacklightCompensation, None)
     Brightness = property(get_Brightness, None)
     Contrast = property(get_Contrast, None)
-    Hue = property(get_Hue, None)
-    WhiteBalance = property(get_WhiteBalance, None)
-    BacklightCompensation = property(get_BacklightCompensation, None)
-    Pan = property(get_Pan, None)
-    Tilt = property(get_Tilt, None)
-    Zoom = property(get_Zoom, None)
-    Roll = property(get_Roll, None)
     Exposure = property(get_Exposure, None)
     Focus = property(get_Focus, None)
+    Hue = property(get_Hue, None)
+    Pan = property(get_Pan, None)
+    Roll = property(get_Roll, None)
+    Tilt = property(get_Tilt, None)
+    WhiteBalance = property(get_WhiteBalance, None)
+    Zoom = property(get_Zoom, None)
 class IVideoDeviceControllerGetDevicePropertyResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IVideoDeviceControllerGetDevicePropertyResult'
@@ -1605,9 +1621,9 @@ class IVideoTemporalDenoisingControl(ComPtr):
     def get_Mode(self) -> win32more.Windows.Media.Devices.VideoTemporalDenoisingMode: ...
     @winrt_commethod(9)
     def put_Mode(self, value: win32more.Windows.Media.Devices.VideoTemporalDenoisingMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
 class IWhiteBalanceControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IWhiteBalanceControl'
@@ -1628,11 +1644,11 @@ class IWhiteBalanceControl(ComPtr):
     def get_Value(self) -> UInt32: ...
     @winrt_commethod(13)
     def SetValueAsync(self, temperature: UInt32) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
-    Preset = property(get_Preset, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Preset = property(get_Preset, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class IZoomControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1650,10 +1666,10 @@ class IZoomControl(ComPtr):
     def get_Value(self) -> Single: ...
     @winrt_commethod(11)
     def put_Value(self, value: Single) -> Void: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, put_Value)
 class IZoomControl2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1665,8 +1681,8 @@ class IZoomControl2(ComPtr):
     def get_Mode(self) -> win32more.Windows.Media.Devices.ZoomTransitionMode: ...
     @winrt_commethod(8)
     def Configure(self, settings: win32more.Windows.Media.Devices.ZoomSettings) -> Void: ...
-    SupportedModes = property(get_SupportedModes, None)
     Mode = property(get_Mode, None)
+    SupportedModes = property(get_SupportedModes, None)
 class IZoomSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.IZoomSettings'
@@ -1703,17 +1719,17 @@ class InfraredTorchControl(ComPtr):
     def get_Power(self: win32more.Windows.Media.Devices.IInfraredTorchControl) -> Int32: ...
     @winrt_mixinmethod
     def put_Power(self: win32more.Windows.Media.Devices.IInfraredTorchControl, value: Int32) -> Void: ...
-    IsSupported = property(get_IsSupported, None)
-    SupportedModes = property(get_SupportedModes, None)
     CurrentMode = property(get_CurrentMode, put_CurrentMode)
-    MinPower = property(get_MinPower, None)
+    IsSupported = property(get_IsSupported, None)
     MaxPower = property(get_MaxPower, None)
-    PowerStep = property(get_PowerStep, None)
+    MinPower = property(get_MinPower, None)
     Power = property(get_Power, put_Power)
-InfraredTorchMode = Int32
-InfraredTorchMode_Off: InfraredTorchMode = 0
-InfraredTorchMode_On: InfraredTorchMode = 1
-InfraredTorchMode_AlternatingFrameIllumination: InfraredTorchMode = 2
+    PowerStep = property(get_PowerStep, None)
+    SupportedModes = property(get_SupportedModes, None)
+class InfraredTorchMode(Int32):  # enum
+    Off = 0
+    On = 1
+    AlternatingFrameIllumination = 2
 class IsoSpeedControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IIsoSpeedControl
@@ -1740,27 +1756,27 @@ class IsoSpeedControl(ComPtr):
     def get_Auto(self: win32more.Windows.Media.Devices.IIsoSpeedControl2) -> Boolean: ...
     @winrt_mixinmethod
     def SetAutoAsync(self: win32more.Windows.Media.Devices.IIsoSpeedControl2) -> win32more.Windows.Foundation.IAsyncAction: ...
+    Auto = property(get_Auto, None)
+    Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Preset = property(get_Preset, None)
+    Step = property(get_Step, None)
     Supported = property(get_Supported, None)
     SupportedPresets = property(get_SupportedPresets, None)
-    Preset = property(get_Preset, None)
-    Min = property(get_Min, None)
-    Max = property(get_Max, None)
-    Step = property(get_Step, None)
     Value = property(get_Value, None)
-    Auto = property(get_Auto, None)
-IsoSpeedPreset = Int32
-IsoSpeedPreset_Auto: IsoSpeedPreset = 0
-IsoSpeedPreset_Iso50: IsoSpeedPreset = 1
-IsoSpeedPreset_Iso80: IsoSpeedPreset = 2
-IsoSpeedPreset_Iso100: IsoSpeedPreset = 3
-IsoSpeedPreset_Iso200: IsoSpeedPreset = 4
-IsoSpeedPreset_Iso400: IsoSpeedPreset = 5
-IsoSpeedPreset_Iso800: IsoSpeedPreset = 6
-IsoSpeedPreset_Iso1600: IsoSpeedPreset = 7
-IsoSpeedPreset_Iso3200: IsoSpeedPreset = 8
-IsoSpeedPreset_Iso6400: IsoSpeedPreset = 9
-IsoSpeedPreset_Iso12800: IsoSpeedPreset = 10
-IsoSpeedPreset_Iso25600: IsoSpeedPreset = 11
+class IsoSpeedPreset(Int32):  # enum
+    Auto = 0
+    Iso50 = 1
+    Iso80 = 2
+    Iso100 = 3
+    Iso200 = 4
+    Iso400 = 5
+    Iso800 = 6
+    Iso1600 = 7
+    Iso3200 = 8
+    Iso6400 = 9
+    Iso12800 = 10
+    Iso25600 = 11
 class KeypadPressedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IKeypadPressedEventArgs
@@ -1794,10 +1810,10 @@ class LowLagPhotoControl(ComPtr):
     def put_DesiredThumbnailSize(self: win32more.Windows.Media.Devices.ILowLagPhotoControl, value: UInt32) -> Void: ...
     @winrt_mixinmethod
     def get_HardwareAcceleratedThumbnailSupported(self: win32more.Windows.Media.Devices.ILowLagPhotoControl) -> UInt32: ...
-    ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
-    ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
     DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
     HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
+    ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
+    ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
 class LowLagPhotoSequenceControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.ILowLagPhotoSequenceControl
@@ -1834,36 +1850,36 @@ class LowLagPhotoSequenceControl(ComPtr):
     def put_DesiredThumbnailSize(self: win32more.Windows.Media.Devices.ILowLagPhotoSequenceControl, value: UInt32) -> Void: ...
     @winrt_mixinmethod
     def get_HardwareAcceleratedThumbnailSupported(self: win32more.Windows.Media.Devices.ILowLagPhotoSequenceControl) -> UInt32: ...
-    Supported = property(get_Supported, None)
+    DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
+    HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
     MaxPastPhotos = property(get_MaxPastPhotos, None)
     MaxPhotosPerSecond = property(get_MaxPhotosPerSecond, None)
     PastPhotoLimit = property(get_PastPhotoLimit, put_PastPhotoLimit)
     PhotosPerSecondLimit = property(get_PhotosPerSecondLimit, put_PhotosPerSecondLimit)
+    Supported = property(get_Supported, None)
     ThumbnailEnabled = property(get_ThumbnailEnabled, put_ThumbnailEnabled)
     ThumbnailFormat = property(get_ThumbnailFormat, put_ThumbnailFormat)
-    DesiredThumbnailSize = property(get_DesiredThumbnailSize, put_DesiredThumbnailSize)
-    HardwareAcceleratedThumbnailSupported = property(get_HardwareAcceleratedThumbnailSupported, None)
-ManualFocusDistance = Int32
-ManualFocusDistance_Infinity: ManualFocusDistance = 0
-ManualFocusDistance_Hyperfocal: ManualFocusDistance = 1
-ManualFocusDistance_Nearest: ManualFocusDistance = 2
-MediaCaptureFocusState = Int32
-MediaCaptureFocusState_Uninitialized: MediaCaptureFocusState = 0
-MediaCaptureFocusState_Lost: MediaCaptureFocusState = 1
-MediaCaptureFocusState_Searching: MediaCaptureFocusState = 2
-MediaCaptureFocusState_Focused: MediaCaptureFocusState = 3
-MediaCaptureFocusState_Failed: MediaCaptureFocusState = 4
-MediaCaptureOptimization = Int32
-MediaCaptureOptimization_Default: MediaCaptureOptimization = 0
-MediaCaptureOptimization_Quality: MediaCaptureOptimization = 1
-MediaCaptureOptimization_Latency: MediaCaptureOptimization = 2
-MediaCaptureOptimization_Power: MediaCaptureOptimization = 3
-MediaCaptureOptimization_LatencyThenQuality: MediaCaptureOptimization = 4
-MediaCaptureOptimization_LatencyThenPower: MediaCaptureOptimization = 5
-MediaCaptureOptimization_PowerAndQuality: MediaCaptureOptimization = 6
-MediaCapturePauseBehavior = Int32
-MediaCapturePauseBehavior_RetainHardwareResources: MediaCapturePauseBehavior = 0
-MediaCapturePauseBehavior_ReleaseHardwareResources: MediaCapturePauseBehavior = 1
+class ManualFocusDistance(Int32):  # enum
+    Infinity = 0
+    Hyperfocal = 1
+    Nearest = 2
+class MediaCaptureFocusState(Int32):  # enum
+    Uninitialized = 0
+    Lost = 1
+    Searching = 2
+    Focused = 3
+    Failed = 4
+class MediaCaptureOptimization(Int32):  # enum
+    Default = 0
+    Quality = 1
+    Latency = 2
+    Power = 3
+    LatencyThenQuality = 4
+    LatencyThenPower = 5
+    PowerAndQuality = 6
+class MediaCapturePauseBehavior(Int32):  # enum
+    RetainHardwareResources = 0
+    ReleaseHardwareResources = 1
 class MediaDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Devices.MediaDevice'
@@ -1916,12 +1932,12 @@ class MediaDeviceControlCapabilities(ComPtr):
     def get_Default(self: win32more.Windows.Media.Devices.IMediaDeviceControlCapabilities) -> Double: ...
     @winrt_mixinmethod
     def get_AutoModeSupported(self: win32more.Windows.Media.Devices.IMediaDeviceControlCapabilities) -> Boolean: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
-    Max = property(get_Max, None)
-    Step = property(get_Step, None)
-    Default = property(get_Default, None)
     AutoModeSupported = property(get_AutoModeSupported, None)
+    Default = property(get_Default, None)
+    Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
 class ModuleCommandResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IModuleCommandResult
@@ -1930,8 +1946,8 @@ class ModuleCommandResult(ComPtr):
     def get_Status(self: win32more.Windows.Media.Devices.IModuleCommandResult) -> win32more.Windows.Media.Devices.SendCommandStatus: ...
     @winrt_mixinmethod
     def get_Result(self: win32more.Windows.Media.Devices.IModuleCommandResult) -> win32more.Windows.Storage.Streams.IBuffer: ...
-    Status = property(get_Status, None)
     Result = property(get_Result, None)
+    Status = property(get_Status, None)
 class OpticalImageStabilizationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IOpticalImageStabilizationControl
@@ -1944,13 +1960,13 @@ class OpticalImageStabilizationControl(ComPtr):
     def get_Mode(self: win32more.Windows.Media.Devices.IOpticalImageStabilizationControl) -> win32more.Windows.Media.Devices.OpticalImageStabilizationMode: ...
     @winrt_mixinmethod
     def put_Mode(self: win32more.Windows.Media.Devices.IOpticalImageStabilizationControl, value: win32more.Windows.Media.Devices.OpticalImageStabilizationMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
-OpticalImageStabilizationMode = Int32
-OpticalImageStabilizationMode_Off: OpticalImageStabilizationMode = 0
-OpticalImageStabilizationMode_On: OpticalImageStabilizationMode = 1
-OpticalImageStabilizationMode_Auto: OpticalImageStabilizationMode = 2
+class OpticalImageStabilizationMode(Int32):  # enum
+    Off = 0
+    On = 1
+    Auto = 2
 class PanelBasedOptimizationControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IPanelBasedOptimizationControl
@@ -1977,9 +1993,9 @@ class PhotoConfirmationControl(ComPtr):
     def get_PixelFormat(self: win32more.Windows.Media.Devices.IPhotoConfirmationControl) -> win32more.Windows.Media.MediaProperties.MediaPixelFormat: ...
     @winrt_mixinmethod
     def put_PixelFormat(self: win32more.Windows.Media.Devices.IPhotoConfirmationControl, format: win32more.Windows.Media.MediaProperties.MediaPixelFormat) -> Void: ...
-    Supported = property(get_Supported, None)
     Enabled = property(get_Enabled, put_Enabled)
     PixelFormat = property(get_PixelFormat, put_PixelFormat)
+    Supported = property(get_Supported, None)
 class RedialRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IRedialRequestedEventArgs
@@ -1994,6 +2010,13 @@ class RegionOfInterest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IRegionOfInterest
     _classid_ = 'Windows.Media.Devices.RegionOfInterest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Devices.RegionOfInterest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Devices.RegionOfInterest: ...
     @winrt_mixinmethod
@@ -2024,16 +2047,16 @@ class RegionOfInterest(ComPtr):
     def get_Weight(self: win32more.Windows.Media.Devices.IRegionOfInterest2) -> UInt32: ...
     @winrt_mixinmethod
     def put_Weight(self: win32more.Windows.Media.Devices.IRegionOfInterest2, value: UInt32) -> Void: ...
+    AutoExposureEnabled = property(get_AutoExposureEnabled, put_AutoExposureEnabled)
     AutoFocusEnabled = property(get_AutoFocusEnabled, put_AutoFocusEnabled)
     AutoWhiteBalanceEnabled = property(get_AutoWhiteBalanceEnabled, put_AutoWhiteBalanceEnabled)
-    AutoExposureEnabled = property(get_AutoExposureEnabled, put_AutoExposureEnabled)
     Bounds = property(get_Bounds, put_Bounds)
-    Type = property(get_Type, put_Type)
     BoundsNormalized = property(get_BoundsNormalized, put_BoundsNormalized)
+    Type = property(get_Type, put_Type)
     Weight = property(get_Weight, put_Weight)
-RegionOfInterestType = Int32
-RegionOfInterestType_Unknown: RegionOfInterestType = 0
-RegionOfInterestType_Face: RegionOfInterestType = 1
+class RegionOfInterestType(Int32):  # enum
+    Unknown = 0
+    Face = 1
 class RegionsOfInterestControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IRegionsOfInterestControl
@@ -2052,10 +2075,10 @@ class RegionsOfInterestControl(ComPtr):
     def get_AutoWhiteBalanceSupported(self: win32more.Windows.Media.Devices.IRegionsOfInterestControl) -> Boolean: ...
     @winrt_mixinmethod
     def get_AutoExposureSupported(self: win32more.Windows.Media.Devices.IRegionsOfInterestControl) -> Boolean: ...
-    MaxRegions = property(get_MaxRegions, None)
+    AutoExposureSupported = property(get_AutoExposureSupported, None)
     AutoFocusSupported = property(get_AutoFocusSupported, None)
     AutoWhiteBalanceSupported = property(get_AutoWhiteBalanceSupported, None)
-    AutoExposureSupported = property(get_AutoExposureSupported, None)
+    MaxRegions = property(get_MaxRegions, None)
 class SceneModeControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.ISceneModeControl
@@ -2068,26 +2091,26 @@ class SceneModeControl(ComPtr):
     def SetValueAsync(self: win32more.Windows.Media.Devices.ISceneModeControl, sceneMode: win32more.Windows.Media.Devices.CaptureSceneMode) -> win32more.Windows.Foundation.IAsyncAction: ...
     SupportedModes = property(get_SupportedModes, None)
     Value = property(get_Value, None)
-SendCommandStatus = Int32
-SendCommandStatus_Success: SendCommandStatus = 0
-SendCommandStatus_DeviceNotAvailable: SendCommandStatus = 1
-TelephonyKey = Int32
-TelephonyKey_D0: TelephonyKey = 0
-TelephonyKey_D1: TelephonyKey = 1
-TelephonyKey_D2: TelephonyKey = 2
-TelephonyKey_D3: TelephonyKey = 3
-TelephonyKey_D4: TelephonyKey = 4
-TelephonyKey_D5: TelephonyKey = 5
-TelephonyKey_D6: TelephonyKey = 6
-TelephonyKey_D7: TelephonyKey = 7
-TelephonyKey_D8: TelephonyKey = 8
-TelephonyKey_D9: TelephonyKey = 9
-TelephonyKey_Star: TelephonyKey = 10
-TelephonyKey_Pound: TelephonyKey = 11
-TelephonyKey_A: TelephonyKey = 12
-TelephonyKey_B: TelephonyKey = 13
-TelephonyKey_C: TelephonyKey = 14
-TelephonyKey_D: TelephonyKey = 15
+class SendCommandStatus(Int32):  # enum
+    Success = 0
+    DeviceNotAvailable = 1
+class TelephonyKey(Int32):  # enum
+    D0 = 0
+    D1 = 1
+    D2 = 2
+    D3 = 3
+    D4 = 4
+    D5 = 5
+    D6 = 6
+    D7 = 7
+    D8 = 8
+    D9 = 9
+    Star = 10
+    Pound = 11
+    A = 12
+    B = 13
+    C = 14
+    D = 15
 class TorchControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.ITorchControl
@@ -2104,10 +2127,10 @@ class TorchControl(ComPtr):
     def get_PowerPercent(self: win32more.Windows.Media.Devices.ITorchControl) -> Single: ...
     @winrt_mixinmethod
     def put_PowerPercent(self: win32more.Windows.Media.Devices.ITorchControl, value: Single) -> Void: ...
-    Supported = property(get_Supported, None)
-    PowerSupported = property(get_PowerSupported, None)
     Enabled = property(get_Enabled, put_Enabled)
     PowerPercent = property(get_PowerPercent, put_PowerPercent)
+    PowerSupported = property(get_PowerSupported, None)
+    Supported = property(get_Supported, None)
 class VideoDeviceController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IVideoDeviceController
@@ -2214,43 +2237,43 @@ class VideoDeviceController(ComPtr):
     def get_CameraOcclusionInfo(self: win32more.Windows.Media.Devices.IAdvancedVideoCaptureDeviceController10) -> win32more.Windows.Media.Devices.CameraOcclusionInfo: ...
     @winrt_mixinmethod
     def TryAcquireExclusiveControl(self: win32more.Windows.Media.Devices.IAdvancedVideoCaptureDeviceController11, deviceId: WinRT_String, mode: win32more.Windows.Media.Capture.MediaCaptureDeviceExclusiveControlReleaseMode) -> Boolean: ...
-    Brightness = property(get_Brightness, None)
-    Contrast = property(get_Contrast, None)
-    Hue = property(get_Hue, None)
-    WhiteBalance = property(get_WhiteBalance, None)
-    BacklightCompensation = property(get_BacklightCompensation, None)
-    Pan = property(get_Pan, None)
-    Tilt = property(get_Tilt, None)
-    Zoom = property(get_Zoom, None)
-    Roll = property(get_Roll, None)
-    Exposure = property(get_Exposure, None)
-    Focus = property(get_Focus, None)
-    LowLagPhotoSequence = property(get_LowLagPhotoSequence, None)
-    LowLagPhoto = property(get_LowLagPhoto, None)
-    SceneModeControl = property(get_SceneModeControl, None)
-    TorchControl = property(get_TorchControl, None)
-    FlashControl = property(get_FlashControl, None)
-    WhiteBalanceControl = property(get_WhiteBalanceControl, None)
-    ExposureControl = property(get_ExposureControl, None)
-    FocusControl = property(get_FocusControl, None)
-    ExposureCompensationControl = property(get_ExposureCompensationControl, None)
-    IsoSpeedControl = property(get_IsoSpeedControl, None)
-    RegionsOfInterestControl = property(get_RegionsOfInterestControl, None)
-    PrimaryUse = property(get_PrimaryUse, put_PrimaryUse)
-    VariablePhotoSequenceController = property(get_VariablePhotoSequenceController, None)
-    PhotoConfirmationControl = property(get_PhotoConfirmationControl, None)
-    ZoomControl = property(get_ZoomControl, None)
-    ExposurePriorityVideoControl = property(get_ExposurePriorityVideoControl, None)
-    DesiredOptimization = property(get_DesiredOptimization, put_DesiredOptimization)
-    HdrVideoControl = property(get_HdrVideoControl, None)
-    OpticalImageStabilizationControl = property(get_OpticalImageStabilizationControl, None)
     AdvancedPhotoControl = property(get_AdvancedPhotoControl, None)
-    Id = property(get_Id, None)
-    VideoTemporalDenoisingControl = property(get_VideoTemporalDenoisingControl, None)
-    InfraredTorchControl = property(get_InfraredTorchControl, None)
-    PanelBasedOptimizationControl = property(get_PanelBasedOptimizationControl, None)
-    DigitalWindowControl = property(get_DigitalWindowControl, None)
+    BacklightCompensation = property(get_BacklightCompensation, None)
+    Brightness = property(get_Brightness, None)
     CameraOcclusionInfo = property(get_CameraOcclusionInfo, None)
+    Contrast = property(get_Contrast, None)
+    DesiredOptimization = property(get_DesiredOptimization, put_DesiredOptimization)
+    DigitalWindowControl = property(get_DigitalWindowControl, None)
+    Exposure = property(get_Exposure, None)
+    ExposureCompensationControl = property(get_ExposureCompensationControl, None)
+    ExposureControl = property(get_ExposureControl, None)
+    ExposurePriorityVideoControl = property(get_ExposurePriorityVideoControl, None)
+    FlashControl = property(get_FlashControl, None)
+    Focus = property(get_Focus, None)
+    FocusControl = property(get_FocusControl, None)
+    HdrVideoControl = property(get_HdrVideoControl, None)
+    Hue = property(get_Hue, None)
+    Id = property(get_Id, None)
+    InfraredTorchControl = property(get_InfraredTorchControl, None)
+    IsoSpeedControl = property(get_IsoSpeedControl, None)
+    LowLagPhoto = property(get_LowLagPhoto, None)
+    LowLagPhotoSequence = property(get_LowLagPhotoSequence, None)
+    OpticalImageStabilizationControl = property(get_OpticalImageStabilizationControl, None)
+    Pan = property(get_Pan, None)
+    PanelBasedOptimizationControl = property(get_PanelBasedOptimizationControl, None)
+    PhotoConfirmationControl = property(get_PhotoConfirmationControl, None)
+    PrimaryUse = property(get_PrimaryUse, put_PrimaryUse)
+    RegionsOfInterestControl = property(get_RegionsOfInterestControl, None)
+    Roll = property(get_Roll, None)
+    SceneModeControl = property(get_SceneModeControl, None)
+    Tilt = property(get_Tilt, None)
+    TorchControl = property(get_TorchControl, None)
+    VariablePhotoSequenceController = property(get_VariablePhotoSequenceController, None)
+    VideoTemporalDenoisingControl = property(get_VideoTemporalDenoisingControl, None)
+    WhiteBalance = property(get_WhiteBalance, None)
+    WhiteBalanceControl = property(get_WhiteBalanceControl, None)
+    Zoom = property(get_Zoom, None)
+    ZoomControl = property(get_ZoomControl, None)
 class VideoDeviceControllerGetDevicePropertyResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IVideoDeviceControllerGetDevicePropertyResult
@@ -2261,21 +2284,21 @@ class VideoDeviceControllerGetDevicePropertyResult(ComPtr):
     def get_Value(self: win32more.Windows.Media.Devices.IVideoDeviceControllerGetDevicePropertyResult) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     Status = property(get_Status, None)
     Value = property(get_Value, None)
-VideoDeviceControllerGetDevicePropertyStatus = Int32
-VideoDeviceControllerGetDevicePropertyStatus_Success: VideoDeviceControllerGetDevicePropertyStatus = 0
-VideoDeviceControllerGetDevicePropertyStatus_UnknownFailure: VideoDeviceControllerGetDevicePropertyStatus = 1
-VideoDeviceControllerGetDevicePropertyStatus_BufferTooSmall: VideoDeviceControllerGetDevicePropertyStatus = 2
-VideoDeviceControllerGetDevicePropertyStatus_NotSupported: VideoDeviceControllerGetDevicePropertyStatus = 3
-VideoDeviceControllerGetDevicePropertyStatus_DeviceNotAvailable: VideoDeviceControllerGetDevicePropertyStatus = 4
-VideoDeviceControllerGetDevicePropertyStatus_MaxPropertyValueSizeTooSmall: VideoDeviceControllerGetDevicePropertyStatus = 5
-VideoDeviceControllerGetDevicePropertyStatus_MaxPropertyValueSizeRequired: VideoDeviceControllerGetDevicePropertyStatus = 6
-VideoDeviceControllerSetDevicePropertyStatus = Int32
-VideoDeviceControllerSetDevicePropertyStatus_Success: VideoDeviceControllerSetDevicePropertyStatus = 0
-VideoDeviceControllerSetDevicePropertyStatus_UnknownFailure: VideoDeviceControllerSetDevicePropertyStatus = 1
-VideoDeviceControllerSetDevicePropertyStatus_NotSupported: VideoDeviceControllerSetDevicePropertyStatus = 2
-VideoDeviceControllerSetDevicePropertyStatus_InvalidValue: VideoDeviceControllerSetDevicePropertyStatus = 3
-VideoDeviceControllerSetDevicePropertyStatus_DeviceNotAvailable: VideoDeviceControllerSetDevicePropertyStatus = 4
-VideoDeviceControllerSetDevicePropertyStatus_NotInControl: VideoDeviceControllerSetDevicePropertyStatus = 5
+class VideoDeviceControllerGetDevicePropertyStatus(Int32):  # enum
+    Success = 0
+    UnknownFailure = 1
+    BufferTooSmall = 2
+    NotSupported = 3
+    DeviceNotAvailable = 4
+    MaxPropertyValueSizeTooSmall = 5
+    MaxPropertyValueSizeRequired = 6
+class VideoDeviceControllerSetDevicePropertyStatus(Int32):  # enum
+    Success = 0
+    UnknownFailure = 1
+    NotSupported = 2
+    InvalidValue = 3
+    DeviceNotAvailable = 4
+    NotInControl = 5
 class VideoTemporalDenoisingControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IVideoTemporalDenoisingControl
@@ -2288,13 +2311,13 @@ class VideoTemporalDenoisingControl(ComPtr):
     def get_Mode(self: win32more.Windows.Media.Devices.IVideoTemporalDenoisingControl) -> win32more.Windows.Media.Devices.VideoTemporalDenoisingMode: ...
     @winrt_mixinmethod
     def put_Mode(self: win32more.Windows.Media.Devices.IVideoTemporalDenoisingControl, value: win32more.Windows.Media.Devices.VideoTemporalDenoisingMode) -> Void: ...
+    Mode = property(get_Mode, put_Mode)
     Supported = property(get_Supported, None)
     SupportedModes = property(get_SupportedModes, None)
-    Mode = property(get_Mode, put_Mode)
-VideoTemporalDenoisingMode = Int32
-VideoTemporalDenoisingMode_Off: VideoTemporalDenoisingMode = 0
-VideoTemporalDenoisingMode_On: VideoTemporalDenoisingMode = 1
-VideoTemporalDenoisingMode_Auto: VideoTemporalDenoisingMode = 2
+class VideoTemporalDenoisingMode(Int32):  # enum
+    Off = 0
+    On = 1
+    Auto = 2
 class WhiteBalanceControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IWhiteBalanceControl
@@ -2315,11 +2338,11 @@ class WhiteBalanceControl(ComPtr):
     def get_Value(self: win32more.Windows.Media.Devices.IWhiteBalanceControl) -> UInt32: ...
     @winrt_mixinmethod
     def SetValueAsync(self: win32more.Windows.Media.Devices.IWhiteBalanceControl, temperature: UInt32) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Supported = property(get_Supported, None)
-    Preset = property(get_Preset, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
+    Min = property(get_Min, None)
+    Preset = property(get_Preset, None)
     Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
     Value = property(get_Value, None)
 class ZoomControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -2343,17 +2366,24 @@ class ZoomControl(ComPtr):
     def get_Mode(self: win32more.Windows.Media.Devices.IZoomControl2) -> win32more.Windows.Media.Devices.ZoomTransitionMode: ...
     @winrt_mixinmethod
     def Configure(self: win32more.Windows.Media.Devices.IZoomControl2, settings: win32more.Windows.Media.Devices.ZoomSettings) -> Void: ...
-    Supported = property(get_Supported, None)
-    Min = property(get_Min, None)
     Max = property(get_Max, None)
-    Step = property(get_Step, None)
-    Value = property(get_Value, put_Value)
-    SupportedModes = property(get_SupportedModes, None)
+    Min = property(get_Min, None)
     Mode = property(get_Mode, None)
+    Step = property(get_Step, None)
+    Supported = property(get_Supported, None)
+    SupportedModes = property(get_SupportedModes, None)
+    Value = property(get_Value, put_Value)
 class ZoomSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Devices.IZoomSettings
     _classid_ = 'Windows.Media.Devices.ZoomSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Devices.ZoomSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Devices.ZoomSettings: ...
     @winrt_mixinmethod
@@ -2366,8 +2396,10 @@ class ZoomSettings(ComPtr):
     def put_Value(self: win32more.Windows.Media.Devices.IZoomSettings, value: Single) -> Void: ...
     Mode = property(get_Mode, put_Mode)
     Value = property(get_Value, put_Value)
-ZoomTransitionMode = Int32
-ZoomTransitionMode_Auto: ZoomTransitionMode = 0
-ZoomTransitionMode_Direct: ZoomTransitionMode = 1
-ZoomTransitionMode_Smooth: ZoomTransitionMode = 2
+class ZoomTransitionMode(Int32):  # enum
+    Auto = 0
+    Direct = 1
+    Smooth = 2
+
+
 make_ready(__name__)

@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -29,6 +15,7 @@ import win32more.Windows.Media.MediaProperties
 import win32more.Windows.Media.Render
 import win32more.Windows.Media.Transcoding
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.WinRT
 class AudioDeviceInputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioDeviceInputNode
@@ -69,19 +56,19 @@ class AudioDeviceInputNode(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def get_Emitter(self: win32more.Windows.Media.Audio.IAudioInputNode2) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
-    Device = property(get_Device, None)
-    OutgoingConnections = property(get_OutgoingConnections, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
     ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    Device = property(get_Device, None)
+    EffectDefinitions = property(get_EffectDefinitions, None)
     Emitter = property(get_Emitter, None)
-AudioDeviceNodeCreationStatus = Int32
-AudioDeviceNodeCreationStatus_Success: AudioDeviceNodeCreationStatus = 0
-AudioDeviceNodeCreationStatus_DeviceNotAvailable: AudioDeviceNodeCreationStatus = 1
-AudioDeviceNodeCreationStatus_FormatNotSupported: AudioDeviceNodeCreationStatus = 2
-AudioDeviceNodeCreationStatus_UnknownFailure: AudioDeviceNodeCreationStatus = 3
-AudioDeviceNodeCreationStatus_AccessDenied: AudioDeviceNodeCreationStatus = 4
+    EncodingProperties = property(get_EncodingProperties, None)
+    OutgoingConnections = property(get_OutgoingConnections, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
+class AudioDeviceNodeCreationStatus(Int32):  # enum
+    Success = 0
+    DeviceNotAvailable = 1
+    FormatNotSupported = 2
+    UnknownFailure = 3
+    AccessDenied = 4
 class AudioDeviceOutputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioDeviceOutputNode
@@ -116,12 +103,12 @@ class AudioDeviceOutputNode(ComPtr):
     def put_Listener(self: win32more.Windows.Media.Audio.IAudioNodeWithListener, value: win32more.Windows.Media.Audio.AudioNodeListener) -> Void: ...
     @winrt_mixinmethod
     def get_Listener(self: win32more.Windows.Media.Audio.IAudioNodeWithListener) -> win32more.Windows.Media.Audio.AudioNodeListener: ...
+    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
     Device = property(get_Device, None)
     EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
     EncodingProperties = property(get_EncodingProperties, None)
-    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
     Listener = property(get_Listener, put_Listener)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
 class AudioFileInputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioFileInputNode
@@ -188,25 +175,25 @@ class AudioFileInputNode(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def get_Emitter(self: win32more.Windows.Media.Audio.IAudioInputNode2) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
-    PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
-    Position = property(get_Position, None)
-    StartTime = property(get_StartTime, put_StartTime)
+    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    Duration = property(get_Duration, None)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    Emitter = property(get_Emitter, None)
+    EncodingProperties = property(get_EncodingProperties, None)
     EndTime = property(get_EndTime, put_EndTime)
     LoopCount = property(get_LoopCount, put_LoopCount)
-    Duration = property(get_Duration, None)
-    SourceFile = property(get_SourceFile, None)
     OutgoingConnections = property(get_OutgoingConnections, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
     OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
-    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
-    Emitter = property(get_Emitter, None)
-AudioFileNodeCreationStatus = Int32
-AudioFileNodeCreationStatus_Success: AudioFileNodeCreationStatus = 0
-AudioFileNodeCreationStatus_FileNotFound: AudioFileNodeCreationStatus = 1
-AudioFileNodeCreationStatus_InvalidFileType: AudioFileNodeCreationStatus = 2
-AudioFileNodeCreationStatus_FormatNotSupported: AudioFileNodeCreationStatus = 3
-AudioFileNodeCreationStatus_UnknownFailure: AudioFileNodeCreationStatus = 4
+    PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
+    Position = property(get_Position, None)
+    SourceFile = property(get_SourceFile, None)
+    StartTime = property(get_StartTime, put_StartTime)
+class AudioFileNodeCreationStatus(Int32):  # enum
+    Success = 0
+    FileNotFound = 1
+    InvalidFileType = 2
+    FormatNotSupported = 3
+    UnknownFailure = 4
 class AudioFileOutputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioFileOutputNode
@@ -241,12 +228,12 @@ class AudioFileOutputNode(ComPtr):
     def EnableEffectsByDefinition(self: win32more.Windows.Media.Audio.IAudioNode, definition: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
+    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    EncodingProperties = property(get_EncodingProperties, None)
     File = property(get_File, None)
     FileEncodingProfile = property(get_FileEncodingProfile, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
     OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
-    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
 class AudioFrameCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioFrameCompletedEventArgs
@@ -310,14 +297,14 @@ class AudioFrameInputNode(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def get_Emitter(self: win32more.Windows.Media.Audio.IAudioInputNode2) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
+    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    Emitter = property(get_Emitter, None)
+    EncodingProperties = property(get_EncodingProperties, None)
+    OutgoingConnections = property(get_OutgoingConnections, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
     PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
     QueuedSampleCount = property(get_QueuedSampleCount, None)
-    OutgoingConnections = property(get_OutgoingConnections, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
-    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
-    Emitter = property(get_Emitter, None)
 class AudioFrameOutputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioFrameOutputNode
@@ -348,10 +335,10 @@ class AudioFrameOutputNode(ComPtr):
     def EnableEffectsByDefinition(self: win32more.Windows.Media.Audio.IAudioNode, definition: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
     ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    EncodingProperties = property(get_EncodingProperties, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
 class AudioGraph(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioGraph
@@ -454,15 +441,22 @@ class AudioGraphConnection(ComPtr):
     def get_Gain(self: win32more.Windows.Media.Audio.IAudioGraphConnection) -> Double: ...
     Destination = property(get_Destination, None)
     Gain = property(get_Gain, put_Gain)
-AudioGraphCreationStatus = Int32
-AudioGraphCreationStatus_Success: AudioGraphCreationStatus = 0
-AudioGraphCreationStatus_DeviceNotAvailable: AudioGraphCreationStatus = 1
-AudioGraphCreationStatus_FormatNotSupported: AudioGraphCreationStatus = 2
-AudioGraphCreationStatus_UnknownFailure: AudioGraphCreationStatus = 3
+class AudioGraphCreationStatus(Int32):  # enum
+    Success = 0
+    DeviceNotAvailable = 1
+    FormatNotSupported = 2
+    UnknownFailure = 3
 class AudioGraphSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioGraphSettings
     _classid_ = 'Windows.Media.Audio.AudioGraphSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Audio.AudioGraphSettings.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Audio.IAudioGraphSettingsFactory, audioRenderCategory: win32more.Windows.Media.Render.AudioRenderCategory) -> win32more.Windows.Media.Audio.AudioGraphSettings: ...
     @winrt_mixinmethod
@@ -493,18 +487,18 @@ class AudioGraphSettings(ComPtr):
     def put_MaxPlaybackSpeedFactor(self: win32more.Windows.Media.Audio.IAudioGraphSettings2, value: Double) -> Void: ...
     @winrt_mixinmethod
     def get_MaxPlaybackSpeedFactor(self: win32more.Windows.Media.Audio.IAudioGraphSettings2) -> Double: ...
-    EncodingProperties = property(get_EncodingProperties, put_EncodingProperties)
-    PrimaryRenderDevice = property(get_PrimaryRenderDevice, put_PrimaryRenderDevice)
-    QuantumSizeSelectionMode = property(get_QuantumSizeSelectionMode, put_QuantumSizeSelectionMode)
-    DesiredSamplesPerQuantum = property(get_DesiredSamplesPerQuantum, put_DesiredSamplesPerQuantum)
     AudioRenderCategory = property(get_AudioRenderCategory, put_AudioRenderCategory)
     DesiredRenderDeviceAudioProcessing = property(get_DesiredRenderDeviceAudioProcessing, put_DesiredRenderDeviceAudioProcessing)
+    DesiredSamplesPerQuantum = property(get_DesiredSamplesPerQuantum, put_DesiredSamplesPerQuantum)
+    EncodingProperties = property(get_EncodingProperties, put_EncodingProperties)
     MaxPlaybackSpeedFactor = property(get_MaxPlaybackSpeedFactor, put_MaxPlaybackSpeedFactor)
-AudioGraphUnrecoverableError = Int32
-AudioGraphUnrecoverableError_None: AudioGraphUnrecoverableError = 0
-AudioGraphUnrecoverableError_AudioDeviceLost: AudioGraphUnrecoverableError = 1
-AudioGraphUnrecoverableError_AudioSessionDisconnected: AudioGraphUnrecoverableError = 2
-AudioGraphUnrecoverableError_UnknownFailure: AudioGraphUnrecoverableError = 3
+    PrimaryRenderDevice = property(get_PrimaryRenderDevice, put_PrimaryRenderDevice)
+    QuantumSizeSelectionMode = property(get_QuantumSizeSelectionMode, put_QuantumSizeSelectionMode)
+class AudioGraphUnrecoverableError(Int32):  # enum
+    None_ = 0
+    AudioDeviceLost = 1
+    AudioSessionDisconnected = 2
+    UnknownFailure = 3
 class AudioGraphUnrecoverableErrorOccurredEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioGraphUnrecoverableErrorOccurredEventArgs
@@ -516,10 +510,19 @@ class AudioNodeEmitter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioNodeEmitter
     _classid_ = 'Windows.Media.Audio.AudioNodeEmitter'
-    @winrt_factorymethod
-    def CreateAudioNodeEmitter(cls: win32more.Windows.Media.Audio.IAudioNodeEmitterFactory, shape: win32more.Windows.Media.Audio.AudioNodeEmitterShape, decayModel: win32more.Windows.Media.Audio.AudioNodeEmitterDecayModel, settings: win32more.Windows.Media.Audio.AudioNodeEmitterSettings) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Audio.AudioNodeEmitter.CreateInstance(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Media.Audio.AudioNodeEmitter.CreateAudioNodeEmitter(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
+    @winrt_factorymethod
+    def CreateAudioNodeEmitter(cls: win32more.Windows.Media.Audio.IAudioNodeEmitterFactory, shape: win32more.Windows.Media.Audio.AudioNodeEmitterShape, decayModel: win32more.Windows.Media.Audio.AudioNodeEmitterDecayModel, settings: win32more.Windows.Media.Audio.AudioNodeEmitterSettings) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
     @winrt_mixinmethod
     def get_Position(self: win32more.Windows.Media.Audio.IAudioNodeEmitter) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_mixinmethod
@@ -554,15 +557,15 @@ class AudioNodeEmitter(ComPtr):
     def get_SpatialAudioModel(self: win32more.Windows.Media.Audio.IAudioNodeEmitter2) -> win32more.Windows.Media.Audio.SpatialAudioModel: ...
     @winrt_mixinmethod
     def put_SpatialAudioModel(self: win32more.Windows.Media.Audio.IAudioNodeEmitter2, value: win32more.Windows.Media.Audio.SpatialAudioModel) -> Void: ...
-    Position = property(get_Position, put_Position)
-    Direction = property(get_Direction, put_Direction)
-    Shape = property(get_Shape, None)
     DecayModel = property(get_DecayModel, None)
-    Gain = property(get_Gain, put_Gain)
+    Direction = property(get_Direction, put_Direction)
     DistanceScale = property(get_DistanceScale, put_DistanceScale)
     DopplerScale = property(get_DopplerScale, put_DopplerScale)
     DopplerVelocity = property(get_DopplerVelocity, put_DopplerVelocity)
+    Gain = property(get_Gain, put_Gain)
     IsDopplerDisabled = property(get_IsDopplerDisabled, None)
+    Position = property(get_Position, put_Position)
+    Shape = property(get_Shape, None)
     SpatialAudioModel = property(get_SpatialAudioModel, put_SpatialAudioModel)
 class AudioNodeEmitterConeProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -577,9 +580,9 @@ class AudioNodeEmitterConeProperties(ComPtr):
     InnerAngle = property(get_InnerAngle, None)
     OuterAngle = property(get_OuterAngle, None)
     OuterAngleGain = property(get_OuterAngleGain, None)
-AudioNodeEmitterDecayKind = Int32
-AudioNodeEmitterDecayKind_Natural: AudioNodeEmitterDecayKind = 0
-AudioNodeEmitterDecayKind_Custom: AudioNodeEmitterDecayKind = 1
+class AudioNodeEmitterDecayKind(Int32):  # enum
+    Natural = 0
+    Custom = 1
 class AudioNodeEmitterDecayModel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioNodeEmitterDecayModel
@@ -597,8 +600,8 @@ class AudioNodeEmitterDecayModel(ComPtr):
     @winrt_classmethod
     def CreateCustom(cls: win32more.Windows.Media.Audio.IAudioNodeEmitterDecayModelStatics, minGain: Double, maxGain: Double) -> win32more.Windows.Media.Audio.AudioNodeEmitterDecayModel: ...
     Kind = property(get_Kind, None)
-    MinGain = property(get_MinGain, None)
     MaxGain = property(get_MaxGain, None)
+    MinGain = property(get_MinGain, None)
     NaturalProperties = property(get_NaturalProperties, None)
 class AudioNodeEmitterNaturalDecayModelProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -608,11 +611,11 @@ class AudioNodeEmitterNaturalDecayModelProperties(ComPtr):
     def get_UnityGainDistance(self: win32more.Windows.Media.Audio.IAudioNodeEmitterNaturalDecayModelProperties) -> Double: ...
     @winrt_mixinmethod
     def get_CutoffDistance(self: win32more.Windows.Media.Audio.IAudioNodeEmitterNaturalDecayModelProperties) -> Double: ...
-    UnityGainDistance = property(get_UnityGainDistance, None)
     CutoffDistance = property(get_CutoffDistance, None)
-AudioNodeEmitterSettings = UInt32
-AudioNodeEmitterSettings_None: AudioNodeEmitterSettings = 0
-AudioNodeEmitterSettings_DisableDoppler: AudioNodeEmitterSettings = 1
+    UnityGainDistance = property(get_UnityGainDistance, None)
+class AudioNodeEmitterSettings(UInt32):  # enum
+    None_ = 0
+    DisableDoppler = 1
 class AudioNodeEmitterShape(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioNodeEmitterShape
@@ -625,15 +628,22 @@ class AudioNodeEmitterShape(ComPtr):
     def CreateCone(cls: win32more.Windows.Media.Audio.IAudioNodeEmitterShapeStatics, innerAngle: Double, outerAngle: Double, outerAngleGain: Double) -> win32more.Windows.Media.Audio.AudioNodeEmitterShape: ...
     @winrt_classmethod
     def CreateOmnidirectional(cls: win32more.Windows.Media.Audio.IAudioNodeEmitterShapeStatics) -> win32more.Windows.Media.Audio.AudioNodeEmitterShape: ...
-    Kind = property(get_Kind, None)
     ConeProperties = property(get_ConeProperties, None)
-AudioNodeEmitterShapeKind = Int32
-AudioNodeEmitterShapeKind_Omnidirectional: AudioNodeEmitterShapeKind = 0
-AudioNodeEmitterShapeKind_Cone: AudioNodeEmitterShapeKind = 1
+    Kind = property(get_Kind, None)
+class AudioNodeEmitterShapeKind(Int32):  # enum
+    Omnidirectional = 0
+    Cone = 1
 class AudioNodeListener(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioNodeListener
     _classid_ = 'Windows.Media.Audio.AudioNodeListener'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Audio.AudioNodeListener.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Audio.AudioNodeListener: ...
     @winrt_mixinmethod
@@ -652,10 +662,10 @@ class AudioNodeListener(ComPtr):
     def get_DopplerVelocity(self: win32more.Windows.Media.Audio.IAudioNodeListener) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_mixinmethod
     def put_DopplerVelocity(self: win32more.Windows.Media.Audio.IAudioNodeListener, value: win32more.Windows.Foundation.Numerics.Vector3) -> Void: ...
-    Position = property(get_Position, put_Position)
-    Orientation = property(get_Orientation, put_Orientation)
-    SpeedOfSound = property(get_SpeedOfSound, put_SpeedOfSound)
     DopplerVelocity = property(get_DopplerVelocity, put_DopplerVelocity)
+    Orientation = property(get_Orientation, put_Orientation)
+    Position = property(get_Position, put_Position)
+    SpeedOfSound = property(get_SpeedOfSound, put_SpeedOfSound)
 class AudioPlaybackConnection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioPlaybackConnection
@@ -692,16 +702,16 @@ class AudioPlaybackConnectionOpenResult(ComPtr):
     def get_Status(self: win32more.Windows.Media.Audio.IAudioPlaybackConnectionOpenResult) -> win32more.Windows.Media.Audio.AudioPlaybackConnectionOpenResultStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.IAudioPlaybackConnectionOpenResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
-AudioPlaybackConnectionOpenResultStatus = Int32
-AudioPlaybackConnectionOpenResultStatus_Success: AudioPlaybackConnectionOpenResultStatus = 0
-AudioPlaybackConnectionOpenResultStatus_RequestTimedOut: AudioPlaybackConnectionOpenResultStatus = 1
-AudioPlaybackConnectionOpenResultStatus_DeniedBySystem: AudioPlaybackConnectionOpenResultStatus = 2
-AudioPlaybackConnectionOpenResultStatus_UnknownFailure: AudioPlaybackConnectionOpenResultStatus = 3
-AudioPlaybackConnectionState = Int32
-AudioPlaybackConnectionState_Closed: AudioPlaybackConnectionState = 0
-AudioPlaybackConnectionState_Opened: AudioPlaybackConnectionState = 1
+    Status = property(get_Status, None)
+class AudioPlaybackConnectionOpenResultStatus(Int32):  # enum
+    Success = 0
+    RequestTimedOut = 1
+    DeniedBySystem = 2
+    UnknownFailure = 3
+class AudioPlaybackConnectionState(Int32):  # enum
+    Closed = 0
+    Opened = 1
 class AudioStateMonitor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IAudioStateMonitor
@@ -767,12 +777,12 @@ class AudioSubmixNode(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def get_Emitter(self: win32more.Windows.Media.Audio.IAudioInputNode2) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
-    OutgoingConnections = property(get_OutgoingConnections, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
     ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    EffectDefinitions = property(get_EffectDefinitions, None)
     Emitter = property(get_Emitter, None)
+    EncodingProperties = property(get_EncodingProperties, None)
+    OutgoingConnections = property(get_OutgoingConnections, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
 class CreateAudioDeviceInputNodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateAudioDeviceInputNodeResult
@@ -783,9 +793,9 @@ class CreateAudioDeviceInputNodeResult(ComPtr):
     def get_DeviceInputNode(self: win32more.Windows.Media.Audio.ICreateAudioDeviceInputNodeResult) -> win32more.Windows.Media.Audio.AudioDeviceInputNode: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateAudioDeviceInputNodeResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     DeviceInputNode = property(get_DeviceInputNode, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class CreateAudioDeviceOutputNodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateAudioDeviceOutputNodeResult
@@ -796,9 +806,9 @@ class CreateAudioDeviceOutputNodeResult(ComPtr):
     def get_DeviceOutputNode(self: win32more.Windows.Media.Audio.ICreateAudioDeviceOutputNodeResult) -> win32more.Windows.Media.Audio.AudioDeviceOutputNode: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateAudioDeviceOutputNodeResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     DeviceOutputNode = property(get_DeviceOutputNode, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class CreateAudioFileInputNodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateAudioFileInputNodeResult
@@ -809,9 +819,9 @@ class CreateAudioFileInputNodeResult(ComPtr):
     def get_FileInputNode(self: win32more.Windows.Media.Audio.ICreateAudioFileInputNodeResult) -> win32more.Windows.Media.Audio.AudioFileInputNode: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateAudioFileInputNodeResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    FileInputNode = property(get_FileInputNode, None)
     ExtendedError = property(get_ExtendedError, None)
+    FileInputNode = property(get_FileInputNode, None)
+    Status = property(get_Status, None)
 class CreateAudioFileOutputNodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateAudioFileOutputNodeResult
@@ -822,9 +832,9 @@ class CreateAudioFileOutputNodeResult(ComPtr):
     def get_FileOutputNode(self: win32more.Windows.Media.Audio.ICreateAudioFileOutputNodeResult) -> win32more.Windows.Media.Audio.AudioFileOutputNode: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateAudioFileOutputNodeResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    FileOutputNode = property(get_FileOutputNode, None)
     ExtendedError = property(get_ExtendedError, None)
+    FileOutputNode = property(get_FileOutputNode, None)
+    Status = property(get_Status, None)
 class CreateAudioGraphResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateAudioGraphResult
@@ -835,9 +845,9 @@ class CreateAudioGraphResult(ComPtr):
     def get_Graph(self: win32more.Windows.Media.Audio.ICreateAudioGraphResult) -> win32more.Windows.Media.Audio.AudioGraph: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateAudioGraphResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    Graph = property(get_Graph, None)
     ExtendedError = property(get_ExtendedError, None)
+    Graph = property(get_Graph, None)
+    Status = property(get_Status, None)
 class CreateMediaSourceAudioInputNodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ICreateMediaSourceAudioInputNodeResult
@@ -848,13 +858,20 @@ class CreateMediaSourceAudioInputNodeResult(ComPtr):
     def get_Node(self: win32more.Windows.Media.Audio.ICreateMediaSourceAudioInputNodeResult) -> win32more.Windows.Media.Audio.MediaSourceAudioInputNode: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Audio.ICreateMediaSourceAudioInputNodeResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    Node = property(get_Node, None)
     ExtendedError = property(get_ExtendedError, None)
+    Node = property(get_Node, None)
+    Status = property(get_Status, None)
 class EchoEffectDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IEchoEffectDefinition
     _classid_ = 'Windows.Media.Audio.EchoEffectDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Audio.EchoEffectDefinition.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Audio.IEchoEffectDefinitionFactory, audioGraph: win32more.Windows.Media.Audio.AudioGraph) -> win32more.Windows.Media.Audio.EchoEffectDefinition: ...
     @winrt_mixinmethod
@@ -873,11 +890,11 @@ class EchoEffectDefinition(ComPtr):
     def get_ActivatableClassId(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    WetDryMix = property(get_WetDryMix, put_WetDryMix)
-    Feedback = property(get_Feedback, put_Feedback)
-    Delay = property(get_Delay, put_Delay)
     ActivatableClassId = property(get_ActivatableClassId, None)
+    Delay = property(get_Delay, put_Delay)
+    Feedback = property(get_Feedback, put_Feedback)
     Properties = property(get_Properties, None)
+    WetDryMix = property(get_WetDryMix, put_WetDryMix)
 class EqualizerBand(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IEqualizerBand
@@ -901,6 +918,13 @@ class EqualizerEffectDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IEqualizerEffectDefinition
     _classid_ = 'Windows.Media.Audio.EqualizerEffectDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Audio.EqualizerEffectDefinition.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Audio.IEqualizerEffectDefinitionFactory, audioGraph: win32more.Windows.Media.Audio.AudioGraph) -> win32more.Windows.Media.Audio.EqualizerEffectDefinition: ...
     @winrt_mixinmethod
@@ -909,8 +933,8 @@ class EqualizerEffectDefinition(ComPtr):
     def get_ActivatableClassId(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Bands = property(get_Bands, None)
     ActivatableClassId = property(get_ActivatableClassId, None)
+    Bands = property(get_Bands, None)
     Properties = property(get_Properties, None)
 class FrameInputNodeQuantumStartedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -965,13 +989,13 @@ class IAudioFileInputNode(ComPtr):
     def add_FileCompleted(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Audio.AudioFileInputNode, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_FileCompleted(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
-    Position = property(get_Position, None)
-    StartTime = property(get_StartTime, put_StartTime)
+    Duration = property(get_Duration, None)
     EndTime = property(get_EndTime, put_EndTime)
     LoopCount = property(get_LoopCount, put_LoopCount)
-    Duration = property(get_Duration, None)
+    PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
+    Position = property(get_Position, None)
     SourceFile = property(get_SourceFile, None)
+    StartTime = property(get_StartTime, put_StartTime)
 class IAudioFileOutputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioFileOutputNode'
@@ -1149,12 +1173,12 @@ class IAudioGraphSettings(ComPtr):
     def get_DesiredRenderDeviceAudioProcessing(self) -> win32more.Windows.Media.AudioProcessing: ...
     @winrt_commethod(17)
     def put_DesiredRenderDeviceAudioProcessing(self, value: win32more.Windows.Media.AudioProcessing) -> Void: ...
+    AudioRenderCategory = property(get_AudioRenderCategory, put_AudioRenderCategory)
+    DesiredRenderDeviceAudioProcessing = property(get_DesiredRenderDeviceAudioProcessing, put_DesiredRenderDeviceAudioProcessing)
+    DesiredSamplesPerQuantum = property(get_DesiredSamplesPerQuantum, put_DesiredSamplesPerQuantum)
     EncodingProperties = property(get_EncodingProperties, put_EncodingProperties)
     PrimaryRenderDevice = property(get_PrimaryRenderDevice, put_PrimaryRenderDevice)
     QuantumSizeSelectionMode = property(get_QuantumSizeSelectionMode, put_QuantumSizeSelectionMode)
-    DesiredSamplesPerQuantum = property(get_DesiredSamplesPerQuantum, put_DesiredSamplesPerQuantum)
-    AudioRenderCategory = property(get_AudioRenderCategory, put_AudioRenderCategory)
-    DesiredRenderDeviceAudioProcessing = property(get_DesiredRenderDeviceAudioProcessing, put_DesiredRenderDeviceAudioProcessing)
 class IAudioGraphSettings2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioGraphSettings2'
@@ -1229,10 +1253,10 @@ class IAudioNode(ComPtr):
     def DisableEffectsByDefinition(self, definition: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> Void: ...
     @winrt_commethod(16)
     def EnableEffectsByDefinition(self, definition: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> Void: ...
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
     ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    EncodingProperties = property(get_EncodingProperties, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
 class IAudioNodeEmitter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioNodeEmitter'
@@ -1267,15 +1291,15 @@ class IAudioNodeEmitter(ComPtr):
     def put_DopplerVelocity(self, value: win32more.Windows.Foundation.Numerics.Vector3) -> Void: ...
     @winrt_commethod(20)
     def get_IsDopplerDisabled(self) -> Boolean: ...
-    Position = property(get_Position, put_Position)
-    Direction = property(get_Direction, put_Direction)
-    Shape = property(get_Shape, None)
     DecayModel = property(get_DecayModel, None)
-    Gain = property(get_Gain, put_Gain)
+    Direction = property(get_Direction, put_Direction)
     DistanceScale = property(get_DistanceScale, put_DistanceScale)
     DopplerScale = property(get_DopplerScale, put_DopplerScale)
     DopplerVelocity = property(get_DopplerVelocity, put_DopplerVelocity)
+    Gain = property(get_Gain, put_Gain)
     IsDopplerDisabled = property(get_IsDopplerDisabled, None)
+    Position = property(get_Position, put_Position)
+    Shape = property(get_Shape, None)
 class IAudioNodeEmitter2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioNodeEmitter2'
@@ -1311,8 +1335,8 @@ class IAudioNodeEmitterDecayModel(ComPtr):
     @winrt_commethod(9)
     def get_NaturalProperties(self) -> win32more.Windows.Media.Audio.AudioNodeEmitterNaturalDecayModelProperties: ...
     Kind = property(get_Kind, None)
-    MinGain = property(get_MinGain, None)
     MaxGain = property(get_MaxGain, None)
+    MinGain = property(get_MinGain, None)
     NaturalProperties = property(get_NaturalProperties, None)
 class IAudioNodeEmitterDecayModelStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1336,8 +1360,8 @@ class IAudioNodeEmitterNaturalDecayModelProperties(ComPtr):
     def get_UnityGainDistance(self) -> Double: ...
     @winrt_commethod(7)
     def get_CutoffDistance(self) -> Double: ...
-    UnityGainDistance = property(get_UnityGainDistance, None)
     CutoffDistance = property(get_CutoffDistance, None)
+    UnityGainDistance = property(get_UnityGainDistance, None)
 class IAudioNodeEmitterShape(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioNodeEmitterShape'
@@ -1346,8 +1370,8 @@ class IAudioNodeEmitterShape(ComPtr):
     def get_Kind(self) -> win32more.Windows.Media.Audio.AudioNodeEmitterShapeKind: ...
     @winrt_commethod(7)
     def get_ConeProperties(self) -> win32more.Windows.Media.Audio.AudioNodeEmitterConeProperties: ...
-    Kind = property(get_Kind, None)
     ConeProperties = property(get_ConeProperties, None)
+    Kind = property(get_Kind, None)
 class IAudioNodeEmitterShapeStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioNodeEmitterShapeStatics'
@@ -1376,10 +1400,10 @@ class IAudioNodeListener(ComPtr):
     def get_DopplerVelocity(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_commethod(13)
     def put_DopplerVelocity(self, value: win32more.Windows.Foundation.Numerics.Vector3) -> Void: ...
-    Position = property(get_Position, put_Position)
-    Orientation = property(get_Orientation, put_Orientation)
-    SpeedOfSound = property(get_SpeedOfSound, put_SpeedOfSound)
     DopplerVelocity = property(get_DopplerVelocity, put_DopplerVelocity)
+    Orientation = property(get_Orientation, put_Orientation)
+    Position = property(get_Position, put_Position)
+    SpeedOfSound = property(get_SpeedOfSound, put_SpeedOfSound)
 class IAudioNodeWithListener(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioNodeWithListener'
@@ -1419,8 +1443,8 @@ class IAudioPlaybackConnectionOpenResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioPlaybackConnectionOpenResultStatus: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class IAudioPlaybackConnectionStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IAudioPlaybackConnectionStatics'
@@ -1468,8 +1492,8 @@ class ICreateAudioDeviceInputNodeResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioDeviceNodeCreationStatus: ...
     @winrt_commethod(7)
     def get_DeviceInputNode(self) -> win32more.Windows.Media.Audio.AudioDeviceInputNode: ...
-    Status = property(get_Status, None)
     DeviceInputNode = property(get_DeviceInputNode, None)
+    Status = property(get_Status, None)
 class ICreateAudioDeviceInputNodeResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateAudioDeviceInputNodeResult2'
@@ -1485,8 +1509,8 @@ class ICreateAudioDeviceOutputNodeResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioDeviceNodeCreationStatus: ...
     @winrt_commethod(7)
     def get_DeviceOutputNode(self) -> win32more.Windows.Media.Audio.AudioDeviceOutputNode: ...
-    Status = property(get_Status, None)
     DeviceOutputNode = property(get_DeviceOutputNode, None)
+    Status = property(get_Status, None)
 class ICreateAudioDeviceOutputNodeResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateAudioDeviceOutputNodeResult2'
@@ -1502,8 +1526,8 @@ class ICreateAudioFileInputNodeResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioFileNodeCreationStatus: ...
     @winrt_commethod(7)
     def get_FileInputNode(self) -> win32more.Windows.Media.Audio.AudioFileInputNode: ...
-    Status = property(get_Status, None)
     FileInputNode = property(get_FileInputNode, None)
+    Status = property(get_Status, None)
 class ICreateAudioFileInputNodeResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateAudioFileInputNodeResult2'
@@ -1519,8 +1543,8 @@ class ICreateAudioFileOutputNodeResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioFileNodeCreationStatus: ...
     @winrt_commethod(7)
     def get_FileOutputNode(self) -> win32more.Windows.Media.Audio.AudioFileOutputNode: ...
-    Status = property(get_Status, None)
     FileOutputNode = property(get_FileOutputNode, None)
+    Status = property(get_Status, None)
 class ICreateAudioFileOutputNodeResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateAudioFileOutputNodeResult2'
@@ -1536,8 +1560,8 @@ class ICreateAudioGraphResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.AudioGraphCreationStatus: ...
     @winrt_commethod(7)
     def get_Graph(self) -> win32more.Windows.Media.Audio.AudioGraph: ...
-    Status = property(get_Status, None)
     Graph = property(get_Graph, None)
+    Status = property(get_Status, None)
 class ICreateAudioGraphResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateAudioGraphResult2'
@@ -1553,8 +1577,8 @@ class ICreateMediaSourceAudioInputNodeResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Audio.MediaSourceAudioInputNodeCreationStatus: ...
     @winrt_commethod(7)
     def get_Node(self) -> win32more.Windows.Media.Audio.MediaSourceAudioInputNode: ...
-    Status = property(get_Status, None)
     Node = property(get_Node, None)
+    Status = property(get_Status, None)
 class ICreateMediaSourceAudioInputNodeResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ICreateMediaSourceAudioInputNodeResult2'
@@ -1578,9 +1602,9 @@ class IEchoEffectDefinition(ComPtr):
     def put_Delay(self, value: Double) -> Void: ...
     @winrt_commethod(11)
     def get_Delay(self) -> Double: ...
-    WetDryMix = property(get_WetDryMix, put_WetDryMix)
-    Feedback = property(get_Feedback, put_Feedback)
     Delay = property(get_Delay, put_Delay)
+    Feedback = property(get_Feedback, put_Feedback)
+    WetDryMix = property(get_WetDryMix, put_WetDryMix)
 class IEchoEffectDefinitionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IEchoEffectDefinitionFactory'
@@ -1638,8 +1662,8 @@ class ILimiterEffectDefinition(ComPtr):
     def put_Loudness(self, value: UInt32) -> Void: ...
     @winrt_commethod(9)
     def get_Loudness(self) -> UInt32: ...
-    Release = property(get_Release, put_Release)
     Loudness = property(get_Loudness, put_Loudness)
+    Release = property(get_Release, put_Release)
 class ILimiterEffectDefinitionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ILimiterEffectDefinitionFactory'
@@ -1678,13 +1702,13 @@ class IMediaSourceAudioInputNode(ComPtr):
     def add_MediaSourceCompleted(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Audio.MediaSourceAudioInputNode, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(19)
     def remove_MediaSourceCompleted(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    Duration = property(get_Duration, None)
+    EndTime = property(get_EndTime, put_EndTime)
+    LoopCount = property(get_LoopCount, put_LoopCount)
+    MediaSource = property(get_MediaSource, None)
     PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
     Position = property(get_Position, None)
     StartTime = property(get_StartTime, put_StartTime)
-    EndTime = property(get_EndTime, put_EndTime)
-    LoopCount = property(get_LoopCount, put_LoopCount)
-    Duration = property(get_Duration, None)
-    MediaSource = property(get_MediaSource, None)
 class IReverbEffectDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IReverbEffectDefinition'
@@ -1781,29 +1805,29 @@ class IReverbEffectDefinition(ComPtr):
     def put_DisableLateField(self, value: Boolean) -> Void: ...
     @winrt_commethod(51)
     def get_DisableLateField(self) -> Boolean: ...
-    WetDryMix = property(get_WetDryMix, put_WetDryMix)
-    ReflectionsDelay = property(get_ReflectionsDelay, put_ReflectionsDelay)
-    ReverbDelay = property(get_ReverbDelay, put_ReverbDelay)
-    RearDelay = property(get_RearDelay, put_RearDelay)
-    PositionLeft = property(get_PositionLeft, put_PositionLeft)
-    PositionRight = property(get_PositionRight, put_PositionRight)
-    PositionMatrixLeft = property(get_PositionMatrixLeft, put_PositionMatrixLeft)
-    PositionMatrixRight = property(get_PositionMatrixRight, put_PositionMatrixRight)
-    EarlyDiffusion = property(get_EarlyDiffusion, put_EarlyDiffusion)
-    LateDiffusion = property(get_LateDiffusion, put_LateDiffusion)
-    LowEQGain = property(get_LowEQGain, put_LowEQGain)
-    LowEQCutoff = property(get_LowEQCutoff, put_LowEQCutoff)
-    HighEQGain = property(get_HighEQGain, put_HighEQGain)
-    HighEQCutoff = property(get_HighEQCutoff, put_HighEQCutoff)
-    RoomFilterFreq = property(get_RoomFilterFreq, put_RoomFilterFreq)
-    RoomFilterMain = property(get_RoomFilterMain, put_RoomFilterMain)
-    RoomFilterHF = property(get_RoomFilterHF, put_RoomFilterHF)
-    ReflectionsGain = property(get_ReflectionsGain, put_ReflectionsGain)
-    ReverbGain = property(get_ReverbGain, put_ReverbGain)
     DecayTime = property(get_DecayTime, put_DecayTime)
     Density = property(get_Density, put_Density)
-    RoomSize = property(get_RoomSize, put_RoomSize)
     DisableLateField = property(get_DisableLateField, put_DisableLateField)
+    EarlyDiffusion = property(get_EarlyDiffusion, put_EarlyDiffusion)
+    HighEQCutoff = property(get_HighEQCutoff, put_HighEQCutoff)
+    HighEQGain = property(get_HighEQGain, put_HighEQGain)
+    LateDiffusion = property(get_LateDiffusion, put_LateDiffusion)
+    LowEQCutoff = property(get_LowEQCutoff, put_LowEQCutoff)
+    LowEQGain = property(get_LowEQGain, put_LowEQGain)
+    PositionLeft = property(get_PositionLeft, put_PositionLeft)
+    PositionMatrixLeft = property(get_PositionMatrixLeft, put_PositionMatrixLeft)
+    PositionMatrixRight = property(get_PositionMatrixRight, put_PositionMatrixRight)
+    PositionRight = property(get_PositionRight, put_PositionRight)
+    RearDelay = property(get_RearDelay, put_RearDelay)
+    ReflectionsDelay = property(get_ReflectionsDelay, put_ReflectionsDelay)
+    ReflectionsGain = property(get_ReflectionsGain, put_ReflectionsGain)
+    ReverbDelay = property(get_ReverbDelay, put_ReverbDelay)
+    ReverbGain = property(get_ReverbGain, put_ReverbGain)
+    RoomFilterFreq = property(get_RoomFilterFreq, put_RoomFilterFreq)
+    RoomFilterHF = property(get_RoomFilterHF, put_RoomFilterHF)
+    RoomFilterMain = property(get_RoomFilterMain, put_RoomFilterMain)
+    RoomSize = property(get_RoomSize, put_RoomSize)
+    WetDryMix = property(get_WetDryMix, put_WetDryMix)
 class IReverbEffectDefinitionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.IReverbEffectDefinitionFactory'
@@ -1837,10 +1861,10 @@ class ISpatialAudioDeviceConfiguration(ComPtr):
     def add_ConfigurationChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Audio.SpatialAudioDeviceConfiguration, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_ConfigurationChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    DeviceId = property(get_DeviceId, None)
-    IsSpatialAudioSupported = property(get_IsSpatialAudioSupported, None)
     ActiveSpatialAudioFormat = property(get_ActiveSpatialAudioFormat, None)
     DefaultSpatialAudioFormat = property(get_DefaultSpatialAudioFormat, None)
+    DeviceId = property(get_DeviceId, None)
+    IsSpatialAudioSupported = property(get_IsSpatialAudioSupported, None)
 class ISpatialAudioDeviceConfigurationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ISpatialAudioDeviceConfigurationStatics'
@@ -1882,12 +1906,12 @@ class ISpatialAudioFormatSubtypeStatics(ComPtr):
     def get_DTSHeadphoneX(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_DTSXUltra(self) -> WinRT_String: ...
-    WindowsSonic = property(get_WindowsSonic, None)
+    DTSHeadphoneX = property(get_DTSHeadphoneX, None)
+    DTSXUltra = property(get_DTSXUltra, None)
     DolbyAtmosForHeadphones = property(get_DolbyAtmosForHeadphones, None)
     DolbyAtmosForHomeTheater = property(get_DolbyAtmosForHomeTheater, None)
     DolbyAtmosForSpeakers = property(get_DolbyAtmosForSpeakers, None)
-    DTSHeadphoneX = property(get_DTSHeadphoneX, None)
-    DTSXUltra = property(get_DTSXUltra, None)
+    WindowsSonic = property(get_WindowsSonic, None)
 class ISpatialAudioFormatSubtypeStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Audio.ISpatialAudioFormatSubtypeStatics2'
@@ -1899,6 +1923,13 @@ class LimiterEffectDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ILimiterEffectDefinition
     _classid_ = 'Windows.Media.Audio.LimiterEffectDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Audio.LimiterEffectDefinition.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Audio.ILimiterEffectDefinitionFactory, audioGraph: win32more.Windows.Media.Audio.AudioGraph) -> win32more.Windows.Media.Audio.LimiterEffectDefinition: ...
     @winrt_mixinmethod
@@ -1913,10 +1944,10 @@ class LimiterEffectDefinition(ComPtr):
     def get_ActivatableClassId(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Release = property(get_Release, put_Release)
-    Loudness = property(get_Loudness, put_Loudness)
     ActivatableClassId = property(get_ActivatableClassId, None)
+    Loudness = property(get_Loudness, put_Loudness)
     Properties = property(get_Properties, None)
+    Release = property(get_Release, put_Release)
 class MediaSourceAudioInputNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IMediaSourceAudioInputNode
@@ -1983,35 +2014,42 @@ class MediaSourceAudioInputNode(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def get_Emitter(self: win32more.Windows.Media.Audio.IAudioInputNode2) -> win32more.Windows.Media.Audio.AudioNodeEmitter: ...
+    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
+    Duration = property(get_Duration, None)
+    EffectDefinitions = property(get_EffectDefinitions, None)
+    Emitter = property(get_Emitter, None)
+    EncodingProperties = property(get_EncodingProperties, None)
+    EndTime = property(get_EndTime, put_EndTime)
+    LoopCount = property(get_LoopCount, put_LoopCount)
+    MediaSource = property(get_MediaSource, None)
+    OutgoingConnections = property(get_OutgoingConnections, None)
+    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
     PlaybackSpeedFactor = property(get_PlaybackSpeedFactor, put_PlaybackSpeedFactor)
     Position = property(get_Position, None)
     StartTime = property(get_StartTime, put_StartTime)
-    EndTime = property(get_EndTime, put_EndTime)
-    LoopCount = property(get_LoopCount, put_LoopCount)
-    Duration = property(get_Duration, None)
-    MediaSource = property(get_MediaSource, None)
-    OutgoingConnections = property(get_OutgoingConnections, None)
-    EffectDefinitions = property(get_EffectDefinitions, None)
-    OutgoingGain = property(get_OutgoingGain, put_OutgoingGain)
-    EncodingProperties = property(get_EncodingProperties, None)
-    ConsumeInput = property(get_ConsumeInput, put_ConsumeInput)
-    Emitter = property(get_Emitter, None)
-MediaSourceAudioInputNodeCreationStatus = Int32
-MediaSourceAudioInputNodeCreationStatus_Success: MediaSourceAudioInputNodeCreationStatus = 0
-MediaSourceAudioInputNodeCreationStatus_FormatNotSupported: MediaSourceAudioInputNodeCreationStatus = 1
-MediaSourceAudioInputNodeCreationStatus_NetworkError: MediaSourceAudioInputNodeCreationStatus = 2
-MediaSourceAudioInputNodeCreationStatus_UnknownFailure: MediaSourceAudioInputNodeCreationStatus = 3
-MixedRealitySpatialAudioFormatPolicy = Int32
-MixedRealitySpatialAudioFormatPolicy_UseMixedRealityDefaultSpatialAudioFormat: MixedRealitySpatialAudioFormatPolicy = 0
-MixedRealitySpatialAudioFormatPolicy_UseDeviceConfigurationDefaultSpatialAudioFormat: MixedRealitySpatialAudioFormatPolicy = 1
-QuantumSizeSelectionMode = Int32
-QuantumSizeSelectionMode_SystemDefault: QuantumSizeSelectionMode = 0
-QuantumSizeSelectionMode_LowestLatency: QuantumSizeSelectionMode = 1
-QuantumSizeSelectionMode_ClosestToDesired: QuantumSizeSelectionMode = 2
+class MediaSourceAudioInputNodeCreationStatus(Int32):  # enum
+    Success = 0
+    FormatNotSupported = 1
+    NetworkError = 2
+    UnknownFailure = 3
+class MixedRealitySpatialAudioFormatPolicy(Int32):  # enum
+    UseMixedRealityDefaultSpatialAudioFormat = 0
+    UseDeviceConfigurationDefaultSpatialAudioFormat = 1
+class QuantumSizeSelectionMode(Int32):  # enum
+    SystemDefault = 0
+    LowestLatency = 1
+    ClosestToDesired = 2
 class ReverbEffectDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.IReverbEffectDefinition
     _classid_ = 'Windows.Media.Audio.ReverbEffectDefinition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Audio.ReverbEffectDefinition.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Audio.IReverbEffectDefinitionFactory, audioGraph: win32more.Windows.Media.Audio.AudioGraph) -> win32more.Windows.Media.Audio.ReverbEffectDefinition: ...
     @winrt_mixinmethod
@@ -2110,31 +2148,31 @@ class ReverbEffectDefinition(ComPtr):
     def get_ActivatableClassId(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Media.Effects.IAudioEffectDefinition) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    WetDryMix = property(get_WetDryMix, put_WetDryMix)
-    ReflectionsDelay = property(get_ReflectionsDelay, put_ReflectionsDelay)
-    ReverbDelay = property(get_ReverbDelay, put_ReverbDelay)
-    RearDelay = property(get_RearDelay, put_RearDelay)
-    PositionLeft = property(get_PositionLeft, put_PositionLeft)
-    PositionRight = property(get_PositionRight, put_PositionRight)
-    PositionMatrixLeft = property(get_PositionMatrixLeft, put_PositionMatrixLeft)
-    PositionMatrixRight = property(get_PositionMatrixRight, put_PositionMatrixRight)
-    EarlyDiffusion = property(get_EarlyDiffusion, put_EarlyDiffusion)
-    LateDiffusion = property(get_LateDiffusion, put_LateDiffusion)
-    LowEQGain = property(get_LowEQGain, put_LowEQGain)
-    LowEQCutoff = property(get_LowEQCutoff, put_LowEQCutoff)
-    HighEQGain = property(get_HighEQGain, put_HighEQGain)
-    HighEQCutoff = property(get_HighEQCutoff, put_HighEQCutoff)
-    RoomFilterFreq = property(get_RoomFilterFreq, put_RoomFilterFreq)
-    RoomFilterMain = property(get_RoomFilterMain, put_RoomFilterMain)
-    RoomFilterHF = property(get_RoomFilterHF, put_RoomFilterHF)
-    ReflectionsGain = property(get_ReflectionsGain, put_ReflectionsGain)
-    ReverbGain = property(get_ReverbGain, put_ReverbGain)
+    ActivatableClassId = property(get_ActivatableClassId, None)
     DecayTime = property(get_DecayTime, put_DecayTime)
     Density = property(get_Density, put_Density)
-    RoomSize = property(get_RoomSize, put_RoomSize)
     DisableLateField = property(get_DisableLateField, put_DisableLateField)
-    ActivatableClassId = property(get_ActivatableClassId, None)
+    EarlyDiffusion = property(get_EarlyDiffusion, put_EarlyDiffusion)
+    HighEQCutoff = property(get_HighEQCutoff, put_HighEQCutoff)
+    HighEQGain = property(get_HighEQGain, put_HighEQGain)
+    LateDiffusion = property(get_LateDiffusion, put_LateDiffusion)
+    LowEQCutoff = property(get_LowEQCutoff, put_LowEQCutoff)
+    LowEQGain = property(get_LowEQGain, put_LowEQGain)
+    PositionLeft = property(get_PositionLeft, put_PositionLeft)
+    PositionMatrixLeft = property(get_PositionMatrixLeft, put_PositionMatrixLeft)
+    PositionMatrixRight = property(get_PositionMatrixRight, put_PositionMatrixRight)
+    PositionRight = property(get_PositionRight, put_PositionRight)
     Properties = property(get_Properties, None)
+    RearDelay = property(get_RearDelay, put_RearDelay)
+    ReflectionsDelay = property(get_ReflectionsDelay, put_ReflectionsDelay)
+    ReflectionsGain = property(get_ReflectionsGain, put_ReflectionsGain)
+    ReverbDelay = property(get_ReverbDelay, put_ReverbDelay)
+    ReverbGain = property(get_ReverbGain, put_ReverbGain)
+    RoomFilterFreq = property(get_RoomFilterFreq, put_RoomFilterFreq)
+    RoomFilterHF = property(get_RoomFilterHF, put_RoomFilterHF)
+    RoomFilterMain = property(get_RoomFilterMain, put_RoomFilterMain)
+    RoomSize = property(get_RoomSize, put_RoomSize)
+    WetDryMix = property(get_WetDryMix, put_WetDryMix)
 class SetDefaultSpatialAudioFormatResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ISetDefaultSpatialAudioFormatResult
@@ -2142,13 +2180,13 @@ class SetDefaultSpatialAudioFormatResult(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.Media.Audio.ISetDefaultSpatialAudioFormatResult) -> win32more.Windows.Media.Audio.SetDefaultSpatialAudioFormatStatus: ...
     Status = property(get_Status, None)
-SetDefaultSpatialAudioFormatStatus = Int32
-SetDefaultSpatialAudioFormatStatus_Succeeded: SetDefaultSpatialAudioFormatStatus = 0
-SetDefaultSpatialAudioFormatStatus_AccessDenied: SetDefaultSpatialAudioFormatStatus = 1
-SetDefaultSpatialAudioFormatStatus_LicenseExpired: SetDefaultSpatialAudioFormatStatus = 2
-SetDefaultSpatialAudioFormatStatus_LicenseNotValidForAudioEndpoint: SetDefaultSpatialAudioFormatStatus = 3
-SetDefaultSpatialAudioFormatStatus_NotSupportedOnAudioEndpoint: SetDefaultSpatialAudioFormatStatus = 4
-SetDefaultSpatialAudioFormatStatus_UnknownError: SetDefaultSpatialAudioFormatStatus = 5
+class SetDefaultSpatialAudioFormatStatus(Int32):  # enum
+    Succeeded = 0
+    AccessDenied = 1
+    LicenseExpired = 2
+    LicenseNotValidForAudioEndpoint = 3
+    NotSupportedOnAudioEndpoint = 4
+    UnknownError = 5
 class SpatialAudioDeviceConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ISpatialAudioDeviceConfiguration
@@ -2171,10 +2209,10 @@ class SpatialAudioDeviceConfiguration(ComPtr):
     def remove_ConfigurationChanged(self: win32more.Windows.Media.Audio.ISpatialAudioDeviceConfiguration, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_classmethod
     def GetForDeviceId(cls: win32more.Windows.Media.Audio.ISpatialAudioDeviceConfigurationStatics, deviceId: WinRT_String) -> win32more.Windows.Media.Audio.SpatialAudioDeviceConfiguration: ...
-    DeviceId = property(get_DeviceId, None)
-    IsSpatialAudioSupported = property(get_IsSpatialAudioSupported, None)
     ActiveSpatialAudioFormat = property(get_ActiveSpatialAudioFormat, None)
     DefaultSpatialAudioFormat = property(get_DefaultSpatialAudioFormat, None)
+    DeviceId = property(get_DeviceId, None)
+    IsSpatialAudioSupported = property(get_IsSpatialAudioSupported, None)
 class SpatialAudioFormatConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Audio.ISpatialAudioFormatConfiguration
@@ -2209,14 +2247,16 @@ class SpatialAudioFormatSubtype(ComPtr, metaclass=_SpatialAudioFormatSubtype_Met
     def get_DTSHeadphoneX(cls: win32more.Windows.Media.Audio.ISpatialAudioFormatSubtypeStatics) -> WinRT_String: ...
     @winrt_classmethod
     def get_DTSXUltra(cls: win32more.Windows.Media.Audio.ISpatialAudioFormatSubtypeStatics) -> WinRT_String: ...
+    _SpatialAudioFormatSubtype_Meta_.DTSHeadphoneX = property(get_DTSHeadphoneX.__wrapped__, None)
     _SpatialAudioFormatSubtype_Meta_.DTSXForHomeTheater = property(get_DTSXForHomeTheater.__wrapped__, None)
-    _SpatialAudioFormatSubtype_Meta_.WindowsSonic = property(get_WindowsSonic.__wrapped__, None)
+    _SpatialAudioFormatSubtype_Meta_.DTSXUltra = property(get_DTSXUltra.__wrapped__, None)
     _SpatialAudioFormatSubtype_Meta_.DolbyAtmosForHeadphones = property(get_DolbyAtmosForHeadphones.__wrapped__, None)
     _SpatialAudioFormatSubtype_Meta_.DolbyAtmosForHomeTheater = property(get_DolbyAtmosForHomeTheater.__wrapped__, None)
     _SpatialAudioFormatSubtype_Meta_.DolbyAtmosForSpeakers = property(get_DolbyAtmosForSpeakers.__wrapped__, None)
-    _SpatialAudioFormatSubtype_Meta_.DTSHeadphoneX = property(get_DTSHeadphoneX.__wrapped__, None)
-    _SpatialAudioFormatSubtype_Meta_.DTSXUltra = property(get_DTSXUltra.__wrapped__, None)
-SpatialAudioModel = Int32
-SpatialAudioModel_ObjectBased: SpatialAudioModel = 0
-SpatialAudioModel_FoldDown: SpatialAudioModel = 1
+    _SpatialAudioFormatSubtype_Meta_.WindowsSonic = property(get_WindowsSonic.__wrapped__, None)
+class SpatialAudioModel(Int32):  # enum
+    ObjectBased = 0
+    FoldDown = 1
+
+
 make_ready(__name__)

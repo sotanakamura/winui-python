@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.AppService
 import win32more.Windows.ApplicationModel.VoiceCommands
 import win32more.Windows.Foundation
@@ -22,6 +8,7 @@ import win32more.Windows.Foundation.Collections
 import win32more.Windows.Globalization
 import win32more.Windows.Media.SpeechRecognition
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.WinRT
 class IVoiceCommand(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.VoiceCommands.IVoiceCommand'
@@ -85,14 +72,14 @@ class IVoiceCommandContentTile(ComPtr):
     def get_ContentTileType(self) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTileType: ...
     @winrt_commethod(21)
     def put_ContentTileType(self, value: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTileType) -> Void: ...
-    Title = property(get_Title, put_Title)
-    TextLine1 = property(get_TextLine1, put_TextLine1)
-    TextLine2 = property(get_TextLine2, put_TextLine2)
-    TextLine3 = property(get_TextLine3, put_TextLine3)
-    Image = property(get_Image, put_Image)
     AppContext = property(get_AppContext, put_AppContext)
     AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     ContentTileType = property(get_ContentTileType, put_ContentTileType)
+    Image = property(get_Image, put_Image)
+    TextLine1 = property(get_TextLine1, put_TextLine1)
+    TextLine2 = property(get_TextLine2, put_TextLine2)
+    TextLine3 = property(get_TextLine3, put_TextLine3)
+    Title = property(get_Title, put_Title)
 class IVoiceCommandDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.VoiceCommands.IVoiceCommandDefinition'
@@ -139,9 +126,9 @@ class IVoiceCommandResponse(ComPtr):
     def put_AppLaunchArgument(self, value: WinRT_String) -> Void: ...
     @winrt_commethod(12)
     def get_VoiceCommandContentTiles(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTile]: ...
+    AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     Message = property(get_Message, put_Message)
     RepeatMessage = property(get_RepeatMessage, put_RepeatMessage)
-    AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     VoiceCommandContentTiles = property(get_VoiceCommandContentTiles, None)
 class IVoiceCommandResponseStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -223,14 +210,14 @@ class VoiceCommandCompletedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Reason(self: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandCompletedEventArgs) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandCompletionReason: ...
     Reason = property(get_Reason, None)
-VoiceCommandCompletionReason = Int32
-VoiceCommandCompletionReason_Unknown: VoiceCommandCompletionReason = 0
-VoiceCommandCompletionReason_CommunicationFailed: VoiceCommandCompletionReason = 1
-VoiceCommandCompletionReason_ResourceLimitsExceeded: VoiceCommandCompletionReason = 2
-VoiceCommandCompletionReason_Canceled: VoiceCommandCompletionReason = 3
-VoiceCommandCompletionReason_TimeoutExceeded: VoiceCommandCompletionReason = 4
-VoiceCommandCompletionReason_AppLaunched: VoiceCommandCompletionReason = 5
-VoiceCommandCompletionReason_Completed: VoiceCommandCompletionReason = 6
+class VoiceCommandCompletionReason(Int32):  # enum
+    Unknown = 0
+    CommunicationFailed = 1
+    ResourceLimitsExceeded = 2
+    Canceled = 3
+    TimeoutExceeded = 4
+    AppLaunched = 5
+    Completed = 6
 class VoiceCommandConfirmationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandConfirmationResult
@@ -242,6 +229,13 @@ class VoiceCommandContentTile(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandContentTile
     _classid_ = 'Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTile'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTile.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTile: ...
     @winrt_mixinmethod
@@ -276,23 +270,23 @@ class VoiceCommandContentTile(ComPtr):
     def get_ContentTileType(self: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandContentTile) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTileType: ...
     @winrt_mixinmethod
     def put_ContentTileType(self: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandContentTile, value: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTileType) -> Void: ...
-    Title = property(get_Title, put_Title)
-    TextLine1 = property(get_TextLine1, put_TextLine1)
-    TextLine2 = property(get_TextLine2, put_TextLine2)
-    TextLine3 = property(get_TextLine3, put_TextLine3)
-    Image = property(get_Image, put_Image)
     AppContext = property(get_AppContext, put_AppContext)
     AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     ContentTileType = property(get_ContentTileType, put_ContentTileType)
-VoiceCommandContentTileType = Int32
-VoiceCommandContentTileType_TitleOnly: VoiceCommandContentTileType = 0
-VoiceCommandContentTileType_TitleWithText: VoiceCommandContentTileType = 1
-VoiceCommandContentTileType_TitleWith68x68Icon: VoiceCommandContentTileType = 2
-VoiceCommandContentTileType_TitleWith68x68IconAndText: VoiceCommandContentTileType = 3
-VoiceCommandContentTileType_TitleWith68x92Icon: VoiceCommandContentTileType = 4
-VoiceCommandContentTileType_TitleWith68x92IconAndText: VoiceCommandContentTileType = 5
-VoiceCommandContentTileType_TitleWith280x140Icon: VoiceCommandContentTileType = 6
-VoiceCommandContentTileType_TitleWith280x140IconAndText: VoiceCommandContentTileType = 7
+    Image = property(get_Image, put_Image)
+    TextLine1 = property(get_TextLine1, put_TextLine1)
+    TextLine2 = property(get_TextLine2, put_TextLine2)
+    TextLine3 = property(get_TextLine3, put_TextLine3)
+    Title = property(get_Title, put_Title)
+class VoiceCommandContentTileType(Int32):  # enum
+    TitleOnly = 0
+    TitleWithText = 1
+    TitleWith68x68Icon = 2
+    TitleWith68x68IconAndText = 3
+    TitleWith68x92Icon = 4
+    TitleWith68x92IconAndText = 5
+    TitleWith280x140Icon = 6
+    TitleWith280x140IconAndText = 7
 class VoiceCommandDefinition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandDefinition
@@ -352,9 +346,9 @@ class VoiceCommandResponse(ComPtr, metaclass=_VoiceCommandResponse_Meta_):
     def CreateResponseForPrompt(cls: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandResponseStatics, message: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage, repeatMessage: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandResponse: ...
     @winrt_classmethod
     def CreateResponseForPromptWithTiles(cls: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandResponseStatics, message: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage, repeatMessage: win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage, contentTiles: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandContentTile]) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandResponse: ...
+    AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     Message = property(get_Message, put_Message)
     RepeatMessage = property(get_RepeatMessage, put_RepeatMessage)
-    AppLaunchArgument = property(get_AppLaunchArgument, put_AppLaunchArgument)
     VoiceCommandContentTiles = property(get_VoiceCommandContentTiles, None)
     _VoiceCommandResponse_Meta_.MaxSupportedVoiceCommandContentTiles = property(get_MaxSupportedVoiceCommandContentTiles.__wrapped__, None)
 class VoiceCommandServiceConnection(ComPtr):
@@ -388,6 +382,13 @@ class VoiceCommandUserMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandUserMessage
     _classid_ = 'Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.VoiceCommands.VoiceCommandUserMessage: ...
     @winrt_mixinmethod
@@ -400,4 +401,6 @@ class VoiceCommandUserMessage(ComPtr):
     def put_SpokenMessage(self: win32more.Windows.ApplicationModel.VoiceCommands.IVoiceCommandUserMessage, value: WinRT_String) -> Void: ...
     DisplayMessage = property(get_DisplayMessage, put_DisplayMessage)
     SpokenMessage = property(get_SpokenMessage, put_SpokenMessage)
+
+
 make_ready(__name__)

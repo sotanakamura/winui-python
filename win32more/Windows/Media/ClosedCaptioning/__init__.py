@@ -1,46 +1,33 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Media.ClosedCaptioning
 import win32more.Windows.UI
-ClosedCaptionColor = Int32
-ClosedCaptionColor_Default: ClosedCaptionColor = 0
-ClosedCaptionColor_White: ClosedCaptionColor = 1
-ClosedCaptionColor_Black: ClosedCaptionColor = 2
-ClosedCaptionColor_Red: ClosedCaptionColor = 3
-ClosedCaptionColor_Green: ClosedCaptionColor = 4
-ClosedCaptionColor_Blue: ClosedCaptionColor = 5
-ClosedCaptionColor_Yellow: ClosedCaptionColor = 6
-ClosedCaptionColor_Magenta: ClosedCaptionColor = 7
-ClosedCaptionColor_Cyan: ClosedCaptionColor = 8
-ClosedCaptionEdgeEffect = Int32
-ClosedCaptionEdgeEffect_Default: ClosedCaptionEdgeEffect = 0
-ClosedCaptionEdgeEffect_None: ClosedCaptionEdgeEffect = 1
-ClosedCaptionEdgeEffect_Raised: ClosedCaptionEdgeEffect = 2
-ClosedCaptionEdgeEffect_Depressed: ClosedCaptionEdgeEffect = 3
-ClosedCaptionEdgeEffect_Uniform: ClosedCaptionEdgeEffect = 4
-ClosedCaptionEdgeEffect_DropShadow: ClosedCaptionEdgeEffect = 5
-ClosedCaptionOpacity = Int32
-ClosedCaptionOpacity_Default: ClosedCaptionOpacity = 0
-ClosedCaptionOpacity_OneHundredPercent: ClosedCaptionOpacity = 1
-ClosedCaptionOpacity_SeventyFivePercent: ClosedCaptionOpacity = 2
-ClosedCaptionOpacity_TwentyFivePercent: ClosedCaptionOpacity = 3
-ClosedCaptionOpacity_ZeroPercent: ClosedCaptionOpacity = 4
+import win32more.Windows.Win32.System.WinRT
+class ClosedCaptionColor(Int32):  # enum
+    Default = 0
+    White = 1
+    Black = 2
+    Red = 3
+    Green = 4
+    Blue = 5
+    Yellow = 6
+    Magenta = 7
+    Cyan = 8
+class ClosedCaptionEdgeEffect(Int32):  # enum
+    Default = 0
+    None_ = 1
+    Raised = 2
+    Depressed = 3
+    Uniform = 4
+    DropShadow = 5
+class ClosedCaptionOpacity(Int32):  # enum
+    Default = 0
+    OneHundredPercent = 1
+    SeventyFivePercent = 2
+    TwentyFivePercent = 3
+    ZeroPercent = 4
 class _ClosedCaptionProperties_Meta_(ComPtr.__class__):
     pass
 class ClosedCaptionProperties(ComPtr, metaclass=_ClosedCaptionProperties_Meta_):
@@ -74,33 +61,33 @@ class ClosedCaptionProperties(ComPtr, metaclass=_ClosedCaptionProperties_Meta_):
     def get_ComputedRegionColor(cls: win32more.Windows.Media.ClosedCaptioning.IClosedCaptionPropertiesStatics) -> win32more.Windows.UI.Color: ...
     @winrt_classmethod
     def get_RegionOpacity(cls: win32more.Windows.Media.ClosedCaptioning.IClosedCaptionPropertiesStatics) -> win32more.Windows.Media.ClosedCaptioning.ClosedCaptionOpacity: ...
-    _ClosedCaptionProperties_Meta_.FontColor = property(get_FontColor.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.BackgroundColor = property(get_BackgroundColor.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.BackgroundOpacity = property(get_BackgroundOpacity.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.ComputedBackgroundColor = property(get_ComputedBackgroundColor.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.ComputedFontColor = property(get_ComputedFontColor.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.ComputedRegionColor = property(get_ComputedRegionColor.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.FontColor = property(get_FontColor.__wrapped__, None)
+    _ClosedCaptionProperties_Meta_.FontEffect = property(get_FontEffect.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.FontOpacity = property(get_FontOpacity.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.FontSize = property(get_FontSize.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.FontStyle = property(get_FontStyle.__wrapped__, None)
-    _ClosedCaptionProperties_Meta_.FontEffect = property(get_FontEffect.__wrapped__, None)
-    _ClosedCaptionProperties_Meta_.BackgroundColor = property(get_BackgroundColor.__wrapped__, None)
-    _ClosedCaptionProperties_Meta_.ComputedBackgroundColor = property(get_ComputedBackgroundColor.__wrapped__, None)
-    _ClosedCaptionProperties_Meta_.BackgroundOpacity = property(get_BackgroundOpacity.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.RegionColor = property(get_RegionColor.__wrapped__, None)
-    _ClosedCaptionProperties_Meta_.ComputedRegionColor = property(get_ComputedRegionColor.__wrapped__, None)
     _ClosedCaptionProperties_Meta_.RegionOpacity = property(get_RegionOpacity.__wrapped__, None)
-ClosedCaptionSize = Int32
-ClosedCaptionSize_Default: ClosedCaptionSize = 0
-ClosedCaptionSize_FiftyPercent: ClosedCaptionSize = 1
-ClosedCaptionSize_OneHundredPercent: ClosedCaptionSize = 2
-ClosedCaptionSize_OneHundredFiftyPercent: ClosedCaptionSize = 3
-ClosedCaptionSize_TwoHundredPercent: ClosedCaptionSize = 4
-ClosedCaptionStyle = Int32
-ClosedCaptionStyle_Default: ClosedCaptionStyle = 0
-ClosedCaptionStyle_MonospacedWithSerifs: ClosedCaptionStyle = 1
-ClosedCaptionStyle_ProportionalWithSerifs: ClosedCaptionStyle = 2
-ClosedCaptionStyle_MonospacedWithoutSerifs: ClosedCaptionStyle = 3
-ClosedCaptionStyle_ProportionalWithoutSerifs: ClosedCaptionStyle = 4
-ClosedCaptionStyle_Casual: ClosedCaptionStyle = 5
-ClosedCaptionStyle_Cursive: ClosedCaptionStyle = 6
-ClosedCaptionStyle_SmallCapitals: ClosedCaptionStyle = 7
+class ClosedCaptionSize(Int32):  # enum
+    Default = 0
+    FiftyPercent = 1
+    OneHundredPercent = 2
+    OneHundredFiftyPercent = 3
+    TwoHundredPercent = 4
+class ClosedCaptionStyle(Int32):  # enum
+    Default = 0
+    MonospacedWithSerifs = 1
+    ProportionalWithSerifs = 2
+    MonospacedWithoutSerifs = 3
+    ProportionalWithoutSerifs = 4
+    Casual = 5
+    Cursive = 6
+    SmallCapitals = 7
 class IClosedCaptionPropertiesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.ClosedCaptioning.IClosedCaptionPropertiesStatics'
@@ -129,17 +116,17 @@ class IClosedCaptionPropertiesStatics(ComPtr):
     def get_ComputedRegionColor(self) -> win32more.Windows.UI.Color: ...
     @winrt_commethod(17)
     def get_RegionOpacity(self) -> win32more.Windows.Media.ClosedCaptioning.ClosedCaptionOpacity: ...
-    FontColor = property(get_FontColor, None)
+    BackgroundColor = property(get_BackgroundColor, None)
+    BackgroundOpacity = property(get_BackgroundOpacity, None)
+    ComputedBackgroundColor = property(get_ComputedBackgroundColor, None)
     ComputedFontColor = property(get_ComputedFontColor, None)
+    ComputedRegionColor = property(get_ComputedRegionColor, None)
+    FontColor = property(get_FontColor, None)
+    FontEffect = property(get_FontEffect, None)
     FontOpacity = property(get_FontOpacity, None)
     FontSize = property(get_FontSize, None)
     FontStyle = property(get_FontStyle, None)
-    FontEffect = property(get_FontEffect, None)
-    BackgroundColor = property(get_BackgroundColor, None)
-    ComputedBackgroundColor = property(get_ComputedBackgroundColor, None)
-    BackgroundOpacity = property(get_BackgroundOpacity, None)
     RegionColor = property(get_RegionColor, None)
-    ComputedRegionColor = property(get_ComputedRegionColor, None)
     RegionOpacity = property(get_RegionOpacity, None)
 class IClosedCaptionPropertiesStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -149,4 +136,6 @@ class IClosedCaptionPropertiesStatics2(ComPtr):
     def add_PropertiesChanged(self, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(7)
     def remove_PropertiesChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+
+
 make_ready(__name__)

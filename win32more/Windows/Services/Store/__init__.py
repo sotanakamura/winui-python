@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Services.Store
 import win32more.Windows.System
 import win32more.Windows.Web.Http
+import win32more.Windows.Win32.System.WinRT
 class IStoreAcquireLicenseResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreAcquireLicenseResult'
@@ -29,8 +16,8 @@ class IStoreAcquireLicenseResult(ComPtr):
     def get_StorePackageLicense(self) -> win32more.Windows.Services.Store.StorePackageLicense: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    StorePackageLicense = property(get_StorePackageLicense, None)
     ExtendedError = property(get_ExtendedError, None)
+    StorePackageLicense = property(get_StorePackageLicense, None)
 class IStoreAppLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreAppLicense'
@@ -53,14 +40,14 @@ class IStoreAppLicense(ComPtr):
     def get_IsTrialOwnedByThisUser(self) -> Boolean: ...
     @winrt_commethod(14)
     def get_TrialUniqueId(self) -> WinRT_String: ...
-    SkuStoreId = property(get_SkuStoreId, None)
-    IsActive = property(get_IsActive, None)
-    IsTrial = property(get_IsTrial, None)
+    AddOnLicenses = property(get_AddOnLicenses, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    AddOnLicenses = property(get_AddOnLicenses, None)
-    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
+    IsActive = property(get_IsActive, None)
+    IsTrial = property(get_IsTrial, None)
     IsTrialOwnedByThisUser = property(get_IsTrialOwnedByThisUser, None)
+    SkuStoreId = property(get_SkuStoreId, None)
+    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
     TrialUniqueId = property(get_TrialUniqueId, None)
 class IStoreAppLicense2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -85,10 +72,10 @@ class IStoreAvailability(ComPtr):
     def RequestPurchaseAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
     @winrt_commethod(11)
     def RequestPurchaseWithPurchasePropertiesAsync(self, storePurchaseProperties: win32more.Windows.Services.Store.StorePurchaseProperties) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
-    StoreId = property(get_StoreId, None)
     EndDate = property(get_EndDate, None)
-    Price = property(get_Price, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
+    Price = property(get_Price, None)
+    StoreId = property(get_StoreId, None)
 class IStoreCanAcquireLicenseResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreCanAcquireLicenseResult'
@@ -122,14 +109,14 @@ class IStoreCollectionData(ComPtr):
     def get_TrialTimeRemaining(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(13)
     def get_ExtendedJsonData(self) -> WinRT_String: ...
-    IsTrial = property(get_IsTrial, None)
+    AcquiredDate = property(get_AcquiredDate, None)
     CampaignId = property(get_CampaignId, None)
     DeveloperOfferId = property(get_DeveloperOfferId, None)
-    AcquiredDate = property(get_AcquiredDate, None)
-    StartDate = property(get_StartDate, None)
     EndDate = property(get_EndDate, None)
-    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
+    IsTrial = property(get_IsTrial, None)
+    StartDate = property(get_StartDate, None)
+    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
 class IStoreConsumableResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreConsumableResult'
@@ -142,10 +129,10 @@ class IStoreConsumableResult(ComPtr):
     def get_BalanceRemaining(self) -> UInt32: ...
     @winrt_commethod(9)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    TrackingId = property(get_TrackingId, None)
     BalanceRemaining = property(get_BalanceRemaining, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
+    TrackingId = property(get_TrackingId, None)
 class IStoreContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreContext'
@@ -272,11 +259,11 @@ class IStoreImage(ComPtr):
     def get_Height(self) -> UInt32: ...
     @winrt_commethod(10)
     def get_Caption(self) -> WinRT_String: ...
-    Uri = property(get_Uri, None)
-    ImagePurposeTag = property(get_ImagePurposeTag, None)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
     Caption = property(get_Caption, None)
+    Height = property(get_Height, None)
+    ImagePurposeTag = property(get_ImagePurposeTag, None)
+    Uri = property(get_Uri, None)
+    Width = property(get_Width, None)
 class IStoreLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreLicense'
@@ -291,11 +278,11 @@ class IStoreLicense(ComPtr):
     def get_ExtendedJsonData(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_InAppOfferToken(self) -> WinRT_String: ...
-    SkuStoreId = property(get_SkuStoreId, None)
-    IsActive = property(get_IsActive, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
     InAppOfferToken = property(get_InAppOfferToken, None)
+    IsActive = property(get_IsActive, None)
+    SkuStoreId = property(get_SkuStoreId, None)
 class IStorePackageInstallOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePackageInstallOptions'
@@ -319,8 +306,8 @@ class IStorePackageLicense(ComPtr):
     def get_IsValid(self) -> Boolean: ...
     @winrt_commethod(10)
     def ReleaseLicense(self) -> Void: ...
-    Package = property(get_Package, None)
     IsValid = property(get_IsValid, None)
+    Package = property(get_Package, None)
 class IStorePackageUpdate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePackageUpdate'
@@ -329,8 +316,8 @@ class IStorePackageUpdate(ComPtr):
     def get_Package(self) -> win32more.Windows.ApplicationModel.Package: ...
     @winrt_commethod(7)
     def get_Mandatory(self) -> Boolean: ...
-    Package = property(get_Package, None)
     Mandatory = property(get_Mandatory, None)
+    Package = property(get_Package, None)
 class IStorePackageUpdateResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePackageUpdateResult'
@@ -364,12 +351,12 @@ class IStorePrice(ComPtr):
     def get_CurrencyCode(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_FormattedRecurrencePrice(self) -> WinRT_String: ...
+    CurrencyCode = property(get_CurrencyCode, None)
     FormattedBasePrice = property(get_FormattedBasePrice, None)
     FormattedPrice = property(get_FormattedPrice, None)
+    FormattedRecurrencePrice = property(get_FormattedRecurrencePrice, None)
     IsOnSale = property(get_IsOnSale, None)
     SaleEndDate = property(get_SaleEndDate, None)
-    CurrencyCode = property(get_CurrencyCode, None)
-    FormattedRecurrencePrice = property(get_FormattedRecurrencePrice, None)
 class IStorePrice2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePrice2'
@@ -423,21 +410,21 @@ class IStoreProduct(ComPtr):
     def RequestPurchaseWithPurchasePropertiesAsync(self, storePurchaseProperties: win32more.Windows.Services.Store.StorePurchaseProperties) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
     @winrt_commethod(23)
     def get_InAppOfferToken(self) -> WinRT_String: ...
-    StoreId = property(get_StoreId, None)
-    Language = property(get_Language, None)
-    Title = property(get_Title, None)
     Description = property(get_Description, None)
-    ProductKind = property(get_ProductKind, None)
-    HasDigitalDownload = property(get_HasDigitalDownload, None)
-    Keywords = property(get_Keywords, None)
-    Images = property(get_Images, None)
-    Videos = property(get_Videos, None)
-    Skus = property(get_Skus, None)
-    IsInUserCollection = property(get_IsInUserCollection, None)
-    Price = property(get_Price, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    LinkUri = property(get_LinkUri, None)
+    HasDigitalDownload = property(get_HasDigitalDownload, None)
+    Images = property(get_Images, None)
     InAppOfferToken = property(get_InAppOfferToken, None)
+    IsInUserCollection = property(get_IsInUserCollection, None)
+    Keywords = property(get_Keywords, None)
+    Language = property(get_Language, None)
+    LinkUri = property(get_LinkUri, None)
+    Price = property(get_Price, None)
+    ProductKind = property(get_ProductKind, None)
+    Skus = property(get_Skus, None)
+    StoreId = property(get_StoreId, None)
+    Title = property(get_Title, None)
+    Videos = property(get_Videos, None)
 class IStoreProductOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreProductOptions'
@@ -457,9 +444,9 @@ class IStoreProductPagedQueryResult(ComPtr):
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
     @winrt_commethod(9)
     def GetNextAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StoreProductPagedQueryResult]: ...
-    Products = property(get_Products, None)
-    HasMoreResults = property(get_HasMoreResults, None)
     ExtendedError = property(get_ExtendedError, None)
+    HasMoreResults = property(get_HasMoreResults, None)
+    Products = property(get_Products, None)
 class IStoreProductQueryResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreProductQueryResult'
@@ -468,8 +455,8 @@ class IStoreProductQueryResult(ComPtr):
     def get_Products(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Services.Store.StoreProduct]: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Products = property(get_Products, None)
     ExtendedError = property(get_ExtendedError, None)
+    Products = property(get_Products, None)
 class IStoreProductResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreProductResult'
@@ -478,8 +465,8 @@ class IStoreProductResult(ComPtr):
     def get_Product(self) -> win32more.Windows.Services.Store.StoreProduct: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Product = property(get_Product, None)
     ExtendedError = property(get_ExtendedError, None)
+    Product = property(get_Product, None)
 class IStorePurchaseProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePurchaseProperties'
@@ -492,8 +479,8 @@ class IStorePurchaseProperties(ComPtr):
     def get_ExtendedJsonData(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_ExtendedJsonData(self, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, put_Name)
     ExtendedJsonData = property(get_ExtendedJsonData, put_ExtendedJsonData)
+    Name = property(get_Name, put_Name)
 class IStorePurchasePropertiesFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStorePurchasePropertiesFactory'
@@ -508,8 +495,8 @@ class IStorePurchaseResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Services.Store.StorePurchaseStatus: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class IStoreQueueItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreQueueItem'
@@ -530,9 +517,9 @@ class IStoreQueueItem(ComPtr):
     def add_StatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Services.Store.StoreQueueItem, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_StatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ProductId = property(get_ProductId, None)
-    PackageFamilyName = property(get_PackageFamilyName, None)
     InstallKind = property(get_InstallKind, None)
+    PackageFamilyName = property(get_PackageFamilyName, None)
+    ProductId = property(get_ProductId, None)
 class IStoreQueueItem2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreQueueItem2'
@@ -562,10 +549,10 @@ class IStoreQueueItemStatus(ComPtr):
     def get_UpdateStatus(self) -> win32more.Windows.Services.Store.StorePackageUpdateStatus: ...
     @winrt_commethod(9)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    PackageInstallState = property(get_PackageInstallState, None)
-    PackageInstallExtendedState = property(get_PackageInstallExtendedState, None)
-    UpdateStatus = property(get_UpdateStatus, None)
     ExtendedError = property(get_ExtendedError, None)
+    PackageInstallExtendedState = property(get_PackageInstallExtendedState, None)
+    PackageInstallState = property(get_PackageInstallState, None)
+    UpdateStatus = property(get_UpdateStatus, None)
 class IStoreRateAndReviewResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreRateAndReviewResult'
@@ -580,8 +567,8 @@ class IStoreRateAndReviewResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Services.Store.StoreRateAndReviewStatus: ...
     ExtendedError = property(get_ExtendedError, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    WasUpdated = property(get_WasUpdated, None)
     Status = property(get_Status, None)
+    WasUpdated = property(get_WasUpdated, None)
 class IStoreRequestHelperStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreRequestHelperStatics'
@@ -596,8 +583,8 @@ class IStoreSendRequestResult(ComPtr):
     def get_Response(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Response = property(get_Response, None)
     ExtendedError = property(get_ExtendedError, None)
+    Response = property(get_Response, None)
 class IStoreSendRequestResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreSendRequestResult2'
@@ -647,22 +634,22 @@ class IStoreSku(ComPtr):
     def get_IsSubscription(self) -> Boolean: ...
     @winrt_commethod(24)
     def get_SubscriptionInfo(self) -> win32more.Windows.Services.Store.StoreSubscriptionInfo: ...
-    StoreId = property(get_StoreId, None)
-    Language = property(get_Language, None)
-    Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    IsTrial = property(get_IsTrial, None)
-    CustomDeveloperData = property(get_CustomDeveloperData, None)
-    Images = property(get_Images, None)
-    Videos = property(get_Videos, None)
     Availabilities = property(get_Availabilities, None)
-    Price = property(get_Price, None)
-    ExtendedJsonData = property(get_ExtendedJsonData, None)
-    IsInUserCollection = property(get_IsInUserCollection, None)
     BundledSkus = property(get_BundledSkus, None)
     CollectionData = property(get_CollectionData, None)
+    CustomDeveloperData = property(get_CustomDeveloperData, None)
+    Description = property(get_Description, None)
+    ExtendedJsonData = property(get_ExtendedJsonData, None)
+    Images = property(get_Images, None)
+    IsInUserCollection = property(get_IsInUserCollection, None)
     IsSubscription = property(get_IsSubscription, None)
+    IsTrial = property(get_IsTrial, None)
+    Language = property(get_Language, None)
+    Price = property(get_Price, None)
+    StoreId = property(get_StoreId, None)
     SubscriptionInfo = property(get_SubscriptionInfo, None)
+    Title = property(get_Title, None)
+    Videos = property(get_Videos, None)
 class IStoreSubscriptionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.IStoreSubscriptionInfo'
@@ -708,12 +695,12 @@ class IStoreVideo(ComPtr):
     def get_Caption(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_PreviewImage(self) -> win32more.Windows.Services.Store.StoreImage: ...
+    Caption = property(get_Caption, None)
+    Height = property(get_Height, None)
+    PreviewImage = property(get_PreviewImage, None)
     Uri = property(get_Uri, None)
     VideoPurposeTag = property(get_VideoPurposeTag, None)
     Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Caption = property(get_Caption, None)
-    PreviewImage = property(get_PreviewImage, None)
 class StoreAcquireLicenseResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreAcquireLicenseResult
@@ -722,8 +709,8 @@ class StoreAcquireLicenseResult(ComPtr):
     def get_StorePackageLicense(self: win32more.Windows.Services.Store.IStoreAcquireLicenseResult) -> win32more.Windows.Services.Store.StorePackageLicense: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreAcquireLicenseResult) -> win32more.Windows.Foundation.HResult: ...
-    StorePackageLicense = property(get_StorePackageLicense, None)
     ExtendedError = property(get_ExtendedError, None)
+    StorePackageLicense = property(get_StorePackageLicense, None)
 class StoreAppLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreAppLicense
@@ -748,16 +735,16 @@ class StoreAppLicense(ComPtr):
     def get_TrialUniqueId(self: win32more.Windows.Services.Store.IStoreAppLicense) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_IsDiscLicense(self: win32more.Windows.Services.Store.IStoreAppLicense2) -> Boolean: ...
-    SkuStoreId = property(get_SkuStoreId, None)
-    IsActive = property(get_IsActive, None)
-    IsTrial = property(get_IsTrial, None)
+    AddOnLicenses = property(get_AddOnLicenses, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    AddOnLicenses = property(get_AddOnLicenses, None)
-    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
-    IsTrialOwnedByThisUser = property(get_IsTrialOwnedByThisUser, None)
-    TrialUniqueId = property(get_TrialUniqueId, None)
+    IsActive = property(get_IsActive, None)
     IsDiscLicense = property(get_IsDiscLicense, None)
+    IsTrial = property(get_IsTrial, None)
+    IsTrialOwnedByThisUser = property(get_IsTrialOwnedByThisUser, None)
+    SkuStoreId = property(get_SkuStoreId, None)
+    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
+    TrialUniqueId = property(get_TrialUniqueId, None)
 class StoreAvailability(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreAvailability
@@ -774,10 +761,10 @@ class StoreAvailability(ComPtr):
     def RequestPurchaseAsync(self: win32more.Windows.Services.Store.IStoreAvailability) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
     @winrt_mixinmethod
     def RequestPurchaseWithPurchasePropertiesAsync(self: win32more.Windows.Services.Store.IStoreAvailability, storePurchaseProperties: win32more.Windows.Services.Store.StorePurchaseProperties) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
-    StoreId = property(get_StoreId, None)
     EndDate = property(get_EndDate, None)
-    Price = property(get_Price, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
+    Price = property(get_Price, None)
+    StoreId = property(get_StoreId, None)
 class StoreCanAcquireLicenseResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreCanAcquireLicenseResult
@@ -791,12 +778,12 @@ class StoreCanAcquireLicenseResult(ComPtr):
     ExtendedError = property(get_ExtendedError, None)
     LicensableSku = property(get_LicensableSku, None)
     Status = property(get_Status, None)
-StoreCanLicenseStatus = Int32
-StoreCanLicenseStatus_NotLicensableToUser: StoreCanLicenseStatus = 0
-StoreCanLicenseStatus_Licensable: StoreCanLicenseStatus = 1
-StoreCanLicenseStatus_LicenseActionNotApplicableToProduct: StoreCanLicenseStatus = 2
-StoreCanLicenseStatus_NetworkError: StoreCanLicenseStatus = 3
-StoreCanLicenseStatus_ServerError: StoreCanLicenseStatus = 4
+class StoreCanLicenseStatus(Int32):  # enum
+    NotLicensableToUser = 0
+    Licensable = 1
+    LicenseActionNotApplicableToProduct = 2
+    NetworkError = 3
+    ServerError = 4
 class StoreCollectionData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreCollectionData
@@ -817,14 +804,14 @@ class StoreCollectionData(ComPtr):
     def get_TrialTimeRemaining(self: win32more.Windows.Services.Store.IStoreCollectionData) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def get_ExtendedJsonData(self: win32more.Windows.Services.Store.IStoreCollectionData) -> WinRT_String: ...
-    IsTrial = property(get_IsTrial, None)
+    AcquiredDate = property(get_AcquiredDate, None)
     CampaignId = property(get_CampaignId, None)
     DeveloperOfferId = property(get_DeveloperOfferId, None)
-    AcquiredDate = property(get_AcquiredDate, None)
-    StartDate = property(get_StartDate, None)
     EndDate = property(get_EndDate, None)
-    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
+    IsTrial = property(get_IsTrial, None)
+    StartDate = property(get_StartDate, None)
+    TrialTimeRemaining = property(get_TrialTimeRemaining, None)
 class StoreConsumableResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreConsumableResult
@@ -837,15 +824,15 @@ class StoreConsumableResult(ComPtr):
     def get_BalanceRemaining(self: win32more.Windows.Services.Store.IStoreConsumableResult) -> UInt32: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreConsumableResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    TrackingId = property(get_TrackingId, None)
     BalanceRemaining = property(get_BalanceRemaining, None)
     ExtendedError = property(get_ExtendedError, None)
-StoreConsumableStatus = Int32
-StoreConsumableStatus_Succeeded: StoreConsumableStatus = 0
-StoreConsumableStatus_InsufficentQuantity: StoreConsumableStatus = 1
-StoreConsumableStatus_NetworkError: StoreConsumableStatus = 2
-StoreConsumableStatus_ServerError: StoreConsumableStatus = 3
+    Status = property(get_Status, None)
+    TrackingId = property(get_TrackingId, None)
+class StoreConsumableStatus(Int32):  # enum
+    Succeeded = 0
+    InsufficentQuantity = 1
+    NetworkError = 2
+    ServerError = 3
 class StoreContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreContext
@@ -936,16 +923,16 @@ class StoreContext(ComPtr):
     def GetDefault(cls: win32more.Windows.Services.Store.IStoreContextStatics) -> win32more.Windows.Services.Store.StoreContext: ...
     @winrt_classmethod
     def GetForUser(cls: win32more.Windows.Services.Store.IStoreContextStatics, user: win32more.Windows.System.User) -> win32more.Windows.Services.Store.StoreContext: ...
-    User = property(get_User, None)
     CanSilentlyDownloadStorePackageUpdates = property(get_CanSilentlyDownloadStorePackageUpdates, None)
+    User = property(get_User, None)
 StoreContract: UInt32 = 262144
-StoreDurationUnit = Int32
-StoreDurationUnit_Minute: StoreDurationUnit = 0
-StoreDurationUnit_Hour: StoreDurationUnit = 1
-StoreDurationUnit_Day: StoreDurationUnit = 2
-StoreDurationUnit_Week: StoreDurationUnit = 3
-StoreDurationUnit_Month: StoreDurationUnit = 4
-StoreDurationUnit_Year: StoreDurationUnit = 5
+class StoreDurationUnit(Int32):  # enum
+    Minute = 0
+    Hour = 1
+    Day = 2
+    Week = 3
+    Month = 4
+    Year = 5
 class StoreImage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreImage
@@ -960,11 +947,11 @@ class StoreImage(ComPtr):
     def get_Height(self: win32more.Windows.Services.Store.IStoreImage) -> UInt32: ...
     @winrt_mixinmethod
     def get_Caption(self: win32more.Windows.Services.Store.IStoreImage) -> WinRT_String: ...
-    Uri = property(get_Uri, None)
-    ImagePurposeTag = property(get_ImagePurposeTag, None)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
     Caption = property(get_Caption, None)
+    Height = property(get_Height, None)
+    ImagePurposeTag = property(get_ImagePurposeTag, None)
+    Uri = property(get_Uri, None)
+    Width = property(get_Width, None)
 class StoreLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreLicense
@@ -979,15 +966,22 @@ class StoreLicense(ComPtr):
     def get_ExtendedJsonData(self: win32more.Windows.Services.Store.IStoreLicense) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_InAppOfferToken(self: win32more.Windows.Services.Store.IStoreLicense) -> WinRT_String: ...
-    SkuStoreId = property(get_SkuStoreId, None)
-    IsActive = property(get_IsActive, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
     InAppOfferToken = property(get_InAppOfferToken, None)
+    IsActive = property(get_IsActive, None)
+    SkuStoreId = property(get_SkuStoreId, None)
 class StorePackageInstallOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStorePackageInstallOptions
     _classid_ = 'Windows.Services.Store.StorePackageInstallOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Services.Store.StorePackageInstallOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Services.Store.StorePackageInstallOptions: ...
     @winrt_mixinmethod
@@ -1011,8 +1005,8 @@ class StorePackageLicense(ComPtr):
     def ReleaseLicense(self: win32more.Windows.Services.Store.IStorePackageLicense) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    Package = property(get_Package, None)
     IsValid = property(get_IsValid, None)
+    Package = property(get_Package, None)
 class StorePackageUpdate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStorePackageUpdate
@@ -1021,8 +1015,8 @@ class StorePackageUpdate(ComPtr):
     def get_Package(self: win32more.Windows.Services.Store.IStorePackageUpdate) -> win32more.Windows.ApplicationModel.Package: ...
     @winrt_mixinmethod
     def get_Mandatory(self: win32more.Windows.Services.Store.IStorePackageUpdate) -> Boolean: ...
-    Package = property(get_Package, None)
     Mandatory = property(get_Mandatory, None)
+    Package = property(get_Package, None)
 class StorePackageUpdateResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStorePackageUpdateResult
@@ -1036,16 +1030,16 @@ class StorePackageUpdateResult(ComPtr):
     OverallState = property(get_OverallState, None)
     StorePackageUpdateStatuses = property(get_StorePackageUpdateStatuses, None)
     StoreQueueItems = property(get_StoreQueueItems, None)
-StorePackageUpdateState = Int32
-StorePackageUpdateState_Pending: StorePackageUpdateState = 0
-StorePackageUpdateState_Downloading: StorePackageUpdateState = 1
-StorePackageUpdateState_Deploying: StorePackageUpdateState = 2
-StorePackageUpdateState_Completed: StorePackageUpdateState = 3
-StorePackageUpdateState_Canceled: StorePackageUpdateState = 4
-StorePackageUpdateState_OtherError: StorePackageUpdateState = 5
-StorePackageUpdateState_ErrorLowBattery: StorePackageUpdateState = 6
-StorePackageUpdateState_ErrorWiFiRecommended: StorePackageUpdateState = 7
-StorePackageUpdateState_ErrorWiFiRequired: StorePackageUpdateState = 8
+class StorePackageUpdateState(Int32):  # enum
+    Pending = 0
+    Downloading = 1
+    Deploying = 2
+    Completed = 3
+    Canceled = 4
+    OtherError = 5
+    ErrorLowBattery = 6
+    ErrorWiFiRecommended = 7
+    ErrorWiFiRequired = 8
 class StorePackageUpdateStatus(EasyCastStructure):
     PackageFamilyName: WinRT_String
     PackageDownloadSizeInBytes: UInt64
@@ -1075,12 +1069,12 @@ class StorePrice(ComPtr):
     def get_UnformattedPrice(self: win32more.Windows.Services.Store.IStorePrice2) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_UnformattedRecurrencePrice(self: win32more.Windows.Services.Store.IStorePrice2) -> WinRT_String: ...
+    CurrencyCode = property(get_CurrencyCode, None)
     FormattedBasePrice = property(get_FormattedBasePrice, None)
     FormattedPrice = property(get_FormattedPrice, None)
+    FormattedRecurrencePrice = property(get_FormattedRecurrencePrice, None)
     IsOnSale = property(get_IsOnSale, None)
     SaleEndDate = property(get_SaleEndDate, None)
-    CurrencyCode = property(get_CurrencyCode, None)
-    FormattedRecurrencePrice = property(get_FormattedRecurrencePrice, None)
     UnformattedBasePrice = property(get_UnformattedBasePrice, None)
     UnformattedPrice = property(get_UnformattedPrice, None)
     UnformattedRecurrencePrice = property(get_UnformattedRecurrencePrice, None)
@@ -1124,25 +1118,32 @@ class StoreProduct(ComPtr):
     def RequestPurchaseWithPurchasePropertiesAsync(self: win32more.Windows.Services.Store.IStoreProduct, storePurchaseProperties: win32more.Windows.Services.Store.StorePurchaseProperties) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StorePurchaseResult]: ...
     @winrt_mixinmethod
     def get_InAppOfferToken(self: win32more.Windows.Services.Store.IStoreProduct) -> WinRT_String: ...
-    StoreId = property(get_StoreId, None)
-    Language = property(get_Language, None)
-    Title = property(get_Title, None)
     Description = property(get_Description, None)
-    ProductKind = property(get_ProductKind, None)
-    HasDigitalDownload = property(get_HasDigitalDownload, None)
-    Keywords = property(get_Keywords, None)
-    Images = property(get_Images, None)
-    Videos = property(get_Videos, None)
-    Skus = property(get_Skus, None)
-    IsInUserCollection = property(get_IsInUserCollection, None)
-    Price = property(get_Price, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    LinkUri = property(get_LinkUri, None)
+    HasDigitalDownload = property(get_HasDigitalDownload, None)
+    Images = property(get_Images, None)
     InAppOfferToken = property(get_InAppOfferToken, None)
+    IsInUserCollection = property(get_IsInUserCollection, None)
+    Keywords = property(get_Keywords, None)
+    Language = property(get_Language, None)
+    LinkUri = property(get_LinkUri, None)
+    Price = property(get_Price, None)
+    ProductKind = property(get_ProductKind, None)
+    Skus = property(get_Skus, None)
+    StoreId = property(get_StoreId, None)
+    Title = property(get_Title, None)
+    Videos = property(get_Videos, None)
 class StoreProductOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreProductOptions
     _classid_ = 'Windows.Services.Store.StoreProductOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Services.Store.StoreProductOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Services.Store.StoreProductOptions: ...
     @winrt_mixinmethod
@@ -1160,9 +1161,9 @@ class StoreProductPagedQueryResult(ComPtr):
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreProductPagedQueryResult) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def GetNextAsync(self: win32more.Windows.Services.Store.IStoreProductPagedQueryResult) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Services.Store.StoreProductPagedQueryResult]: ...
-    Products = property(get_Products, None)
-    HasMoreResults = property(get_HasMoreResults, None)
     ExtendedError = property(get_ExtendedError, None)
+    HasMoreResults = property(get_HasMoreResults, None)
+    Products = property(get_Products, None)
 class StoreProductQueryResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreProductQueryResult
@@ -1171,8 +1172,8 @@ class StoreProductQueryResult(ComPtr):
     def get_Products(self: win32more.Windows.Services.Store.IStoreProductQueryResult) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Services.Store.StoreProduct]: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreProductQueryResult) -> win32more.Windows.Foundation.HResult: ...
-    Products = property(get_Products, None)
     ExtendedError = property(get_ExtendedError, None)
+    Products = property(get_Products, None)
 class StoreProductResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreProductResult
@@ -1181,16 +1182,25 @@ class StoreProductResult(ComPtr):
     def get_Product(self: win32more.Windows.Services.Store.IStoreProductResult) -> win32more.Windows.Services.Store.StoreProduct: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreProductResult) -> win32more.Windows.Foundation.HResult: ...
-    Product = property(get_Product, None)
     ExtendedError = property(get_ExtendedError, None)
+    Product = property(get_Product, None)
 class StorePurchaseProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStorePurchaseProperties
     _classid_ = 'Windows.Services.Store.StorePurchaseProperties'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.Services.Store.IStorePurchasePropertiesFactory, name: WinRT_String) -> win32more.Windows.Services.Store.StorePurchaseProperties: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Services.Store.StorePurchaseProperties.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Services.Store.StorePurchaseProperties.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Services.Store.StorePurchaseProperties: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.Services.Store.IStorePurchasePropertiesFactory, name: WinRT_String) -> win32more.Windows.Services.Store.StorePurchaseProperties: ...
     @winrt_mixinmethod
     def get_Name(self: win32more.Windows.Services.Store.IStorePurchaseProperties) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -1199,8 +1209,8 @@ class StorePurchaseProperties(ComPtr):
     def get_ExtendedJsonData(self: win32more.Windows.Services.Store.IStorePurchaseProperties) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_ExtendedJsonData(self: win32more.Windows.Services.Store.IStorePurchaseProperties, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, put_Name)
     ExtendedJsonData = property(get_ExtendedJsonData, put_ExtendedJsonData)
+    Name = property(get_Name, put_Name)
 class StorePurchaseResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStorePurchaseResult
@@ -1209,14 +1219,14 @@ class StorePurchaseResult(ComPtr):
     def get_Status(self: win32more.Windows.Services.Store.IStorePurchaseResult) -> win32more.Windows.Services.Store.StorePurchaseStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStorePurchaseResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
-StorePurchaseStatus = Int32
-StorePurchaseStatus_Succeeded: StorePurchaseStatus = 0
-StorePurchaseStatus_AlreadyPurchased: StorePurchaseStatus = 1
-StorePurchaseStatus_NotPurchased: StorePurchaseStatus = 2
-StorePurchaseStatus_NetworkError: StorePurchaseStatus = 3
-StorePurchaseStatus_ServerError: StorePurchaseStatus = 4
+    Status = property(get_Status, None)
+class StorePurchaseStatus(Int32):  # enum
+    Succeeded = 0
+    AlreadyPurchased = 1
+    NotPurchased = 2
+    NetworkError = 3
+    ServerError = 4
 class StoreQueueItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreQueueItem
@@ -1243,9 +1253,9 @@ class StoreQueueItem(ComPtr):
     def PauseInstallAsync(self: win32more.Windows.Services.Store.IStoreQueueItem2) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def ResumeInstallAsync(self: win32more.Windows.Services.Store.IStoreQueueItem2) -> win32more.Windows.Foundation.IAsyncAction: ...
-    ProductId = property(get_ProductId, None)
-    PackageFamilyName = property(get_PackageFamilyName, None)
     InstallKind = property(get_InstallKind, None)
+    PackageFamilyName = property(get_PackageFamilyName, None)
+    ProductId = property(get_ProductId, None)
 class StoreQueueItemCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreQueueItemCompletedEventArgs
@@ -1253,32 +1263,32 @@ class StoreQueueItemCompletedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.Services.Store.IStoreQueueItemCompletedEventArgs) -> win32more.Windows.Services.Store.StoreQueueItemStatus: ...
     Status = property(get_Status, None)
-StoreQueueItemExtendedState = Int32
-StoreQueueItemExtendedState_ActivePending: StoreQueueItemExtendedState = 0
-StoreQueueItemExtendedState_ActiveStarting: StoreQueueItemExtendedState = 1
-StoreQueueItemExtendedState_ActiveAcquiringLicense: StoreQueueItemExtendedState = 2
-StoreQueueItemExtendedState_ActiveDownloading: StoreQueueItemExtendedState = 3
-StoreQueueItemExtendedState_ActiveRestoringData: StoreQueueItemExtendedState = 4
-StoreQueueItemExtendedState_ActiveInstalling: StoreQueueItemExtendedState = 5
-StoreQueueItemExtendedState_Completed: StoreQueueItemExtendedState = 6
-StoreQueueItemExtendedState_Canceled: StoreQueueItemExtendedState = 7
-StoreQueueItemExtendedState_Paused: StoreQueueItemExtendedState = 8
-StoreQueueItemExtendedState_Error: StoreQueueItemExtendedState = 9
-StoreQueueItemExtendedState_PausedPackagesInUse: StoreQueueItemExtendedState = 10
-StoreQueueItemExtendedState_PausedLowBattery: StoreQueueItemExtendedState = 11
-StoreQueueItemExtendedState_PausedWiFiRecommended: StoreQueueItemExtendedState = 12
-StoreQueueItemExtendedState_PausedWiFiRequired: StoreQueueItemExtendedState = 13
-StoreQueueItemExtendedState_PausedReadyToInstall: StoreQueueItemExtendedState = 14
-StoreQueueItemKind = Int32
-StoreQueueItemKind_Install: StoreQueueItemKind = 0
-StoreQueueItemKind_Update: StoreQueueItemKind = 1
-StoreQueueItemKind_Repair: StoreQueueItemKind = 2
-StoreQueueItemState = Int32
-StoreQueueItemState_Active: StoreQueueItemState = 0
-StoreQueueItemState_Completed: StoreQueueItemState = 1
-StoreQueueItemState_Canceled: StoreQueueItemState = 2
-StoreQueueItemState_Error: StoreQueueItemState = 3
-StoreQueueItemState_Paused: StoreQueueItemState = 4
+class StoreQueueItemExtendedState(Int32):  # enum
+    ActivePending = 0
+    ActiveStarting = 1
+    ActiveAcquiringLicense = 2
+    ActiveDownloading = 3
+    ActiveRestoringData = 4
+    ActiveInstalling = 5
+    Completed = 6
+    Canceled = 7
+    Paused = 8
+    Error = 9
+    PausedPackagesInUse = 10
+    PausedLowBattery = 11
+    PausedWiFiRecommended = 12
+    PausedWiFiRequired = 13
+    PausedReadyToInstall = 14
+class StoreQueueItemKind(Int32):  # enum
+    Install = 0
+    Update = 1
+    Repair = 2
+class StoreQueueItemState(Int32):  # enum
+    Active = 0
+    Completed = 1
+    Canceled = 2
+    Error = 3
+    Paused = 4
 class StoreQueueItemStatus(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreQueueItemStatus
@@ -1291,10 +1301,10 @@ class StoreQueueItemStatus(ComPtr):
     def get_UpdateStatus(self: win32more.Windows.Services.Store.IStoreQueueItemStatus) -> win32more.Windows.Services.Store.StorePackageUpdateStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreQueueItemStatus) -> win32more.Windows.Foundation.HResult: ...
-    PackageInstallState = property(get_PackageInstallState, None)
-    PackageInstallExtendedState = property(get_PackageInstallExtendedState, None)
-    UpdateStatus = property(get_UpdateStatus, None)
     ExtendedError = property(get_ExtendedError, None)
+    PackageInstallExtendedState = property(get_PackageInstallExtendedState, None)
+    PackageInstallState = property(get_PackageInstallState, None)
+    UpdateStatus = property(get_UpdateStatus, None)
 class StoreRateAndReviewResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreRateAndReviewResult
@@ -1309,13 +1319,13 @@ class StoreRateAndReviewResult(ComPtr):
     def get_Status(self: win32more.Windows.Services.Store.IStoreRateAndReviewResult) -> win32more.Windows.Services.Store.StoreRateAndReviewStatus: ...
     ExtendedError = property(get_ExtendedError, None)
     ExtendedJsonData = property(get_ExtendedJsonData, None)
-    WasUpdated = property(get_WasUpdated, None)
     Status = property(get_Status, None)
-StoreRateAndReviewStatus = Int32
-StoreRateAndReviewStatus_Succeeded: StoreRateAndReviewStatus = 0
-StoreRateAndReviewStatus_CanceledByUser: StoreRateAndReviewStatus = 1
-StoreRateAndReviewStatus_NetworkError: StoreRateAndReviewStatus = 2
-StoreRateAndReviewStatus_Error: StoreRateAndReviewStatus = 3
+    WasUpdated = property(get_WasUpdated, None)
+class StoreRateAndReviewStatus(Int32):  # enum
+    Succeeded = 0
+    CanceledByUser = 1
+    NetworkError = 2
+    Error = 3
 class StoreRequestHelper(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Store.StoreRequestHelper'
@@ -1331,9 +1341,9 @@ class StoreSendRequestResult(ComPtr):
     def get_ExtendedError(self: win32more.Windows.Services.Store.IStoreSendRequestResult) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def get_HttpStatusCode(self: win32more.Windows.Services.Store.IStoreSendRequestResult2) -> win32more.Windows.Web.Http.HttpStatusCode: ...
-    Response = property(get_Response, None)
     ExtendedError = property(get_ExtendedError, None)
     HttpStatusCode = property(get_HttpStatusCode, None)
+    Response = property(get_Response, None)
 class StoreSku(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreSku
@@ -1376,22 +1386,22 @@ class StoreSku(ComPtr):
     def get_IsSubscription(self: win32more.Windows.Services.Store.IStoreSku) -> Boolean: ...
     @winrt_mixinmethod
     def get_SubscriptionInfo(self: win32more.Windows.Services.Store.IStoreSku) -> win32more.Windows.Services.Store.StoreSubscriptionInfo: ...
-    StoreId = property(get_StoreId, None)
-    Language = property(get_Language, None)
-    Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    IsTrial = property(get_IsTrial, None)
-    CustomDeveloperData = property(get_CustomDeveloperData, None)
-    Images = property(get_Images, None)
-    Videos = property(get_Videos, None)
     Availabilities = property(get_Availabilities, None)
-    Price = property(get_Price, None)
-    ExtendedJsonData = property(get_ExtendedJsonData, None)
-    IsInUserCollection = property(get_IsInUserCollection, None)
     BundledSkus = property(get_BundledSkus, None)
     CollectionData = property(get_CollectionData, None)
+    CustomDeveloperData = property(get_CustomDeveloperData, None)
+    Description = property(get_Description, None)
+    ExtendedJsonData = property(get_ExtendedJsonData, None)
+    Images = property(get_Images, None)
+    IsInUserCollection = property(get_IsInUserCollection, None)
     IsSubscription = property(get_IsSubscription, None)
+    IsTrial = property(get_IsTrial, None)
+    Language = property(get_Language, None)
+    Price = property(get_Price, None)
+    StoreId = property(get_StoreId, None)
     SubscriptionInfo = property(get_SubscriptionInfo, None)
+    Title = property(get_Title, None)
+    Videos = property(get_Videos, None)
 class StoreSubscriptionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreSubscriptionInfo
@@ -1421,12 +1431,12 @@ class StoreUninstallStorePackageResult(ComPtr):
     def get_Status(self: win32more.Windows.Services.Store.IStoreUninstallStorePackageResult) -> win32more.Windows.Services.Store.StoreUninstallStorePackageStatus: ...
     ExtendedError = property(get_ExtendedError, None)
     Status = property(get_Status, None)
-StoreUninstallStorePackageStatus = Int32
-StoreUninstallStorePackageStatus_Succeeded: StoreUninstallStorePackageStatus = 0
-StoreUninstallStorePackageStatus_CanceledByUser: StoreUninstallStorePackageStatus = 1
-StoreUninstallStorePackageStatus_NetworkError: StoreUninstallStorePackageStatus = 2
-StoreUninstallStorePackageStatus_UninstallNotApplicable: StoreUninstallStorePackageStatus = 3
-StoreUninstallStorePackageStatus_Error: StoreUninstallStorePackageStatus = 4
+class StoreUninstallStorePackageStatus(Int32):  # enum
+    Succeeded = 0
+    CanceledByUser = 1
+    NetworkError = 2
+    UninstallNotApplicable = 3
+    Error = 4
 class StoreVideo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Store.IStoreVideo
@@ -1443,10 +1453,12 @@ class StoreVideo(ComPtr):
     def get_Caption(self: win32more.Windows.Services.Store.IStoreVideo) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_PreviewImage(self: win32more.Windows.Services.Store.IStoreVideo) -> win32more.Windows.Services.Store.StoreImage: ...
+    Caption = property(get_Caption, None)
+    Height = property(get_Height, None)
+    PreviewImage = property(get_PreviewImage, None)
     Uri = property(get_Uri, None)
     VideoPurposeTag = property(get_VideoPurposeTag, None)
     Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Caption = property(get_Caption, None)
-    PreviewImage = property(get_PreviewImage, None)
+
+
 make_ready(__name__)

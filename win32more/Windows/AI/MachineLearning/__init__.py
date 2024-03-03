@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.AI.MachineLearning
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -24,6 +10,7 @@ import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Media
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IImageFeatureDescriptor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.IImageFeatureDescriptor'
@@ -36,10 +23,10 @@ class IImageFeatureDescriptor(ComPtr):
     def get_Width(self) -> UInt32: ...
     @winrt_commethod(9)
     def get_Height(self) -> UInt32: ...
-    BitmapPixelFormat = property(get_BitmapPixelFormat, None)
     BitmapAlphaMode = property(get_BitmapAlphaMode, None)
-    Width = property(get_Width, None)
+    BitmapPixelFormat = property(get_BitmapPixelFormat, None)
     Height = property(get_Height, None)
+    Width = property(get_Width, None)
 class IImageFeatureDescriptor2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.IImageFeatureDescriptor2'
@@ -81,13 +68,13 @@ class ILearningModel(ComPtr):
     @winrt_commethod(13)
     def get_OutputFeatures(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor]: ...
     Author = property(get_Author, None)
-    Name = property(get_Name, None)
-    Domain = property(get_Domain, None)
     Description = property(get_Description, None)
-    Version = property(get_Version, None)
-    Metadata = property(get_Metadata, None)
+    Domain = property(get_Domain, None)
     InputFeatures = property(get_InputFeatures, None)
+    Metadata = property(get_Metadata, None)
+    Name = property(get_Name, None)
     OutputFeatures = property(get_OutputFeatures, None)
+    Version = property(get_Version, None)
 class ILearningModelBinding(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ILearningModelBinding'
@@ -140,8 +127,8 @@ class ILearningModelEvaluationResult(ComPtr):
     def get_Outputs(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     CorrelationId = property(get_CorrelationId, None)
     ErrorStatus = property(get_ErrorStatus, None)
-    Succeeded = property(get_Succeeded, None)
     Outputs = property(get_Outputs, None)
+    Succeeded = property(get_Succeeded, None)
 class ILearningModelFeatureDescriptor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ILearningModelFeatureDescriptor'
@@ -154,10 +141,10 @@ class ILearningModelFeatureDescriptor(ComPtr):
     def get_Kind(self) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_commethod(9)
     def get_IsRequired(self) -> Boolean: ...
-    Name = property(get_Name, None)
     Description = property(get_Description, None)
-    Kind = property(get_Kind, None)
     IsRequired = property(get_IsRequired, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
 class ILearningModelFeatureValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ILearningModelFeatureValue'
@@ -187,9 +174,9 @@ class ILearningModelSession(ComPtr):
     def Evaluate(self, bindings: win32more.Windows.AI.MachineLearning.LearningModelBinding, correlationId: WinRT_String) -> win32more.Windows.AI.MachineLearning.LearningModelEvaluationResult: ...
     @winrt_commethod(12)
     def EvaluateFeatures(self, features: win32more.Windows.Foundation.Collections.IMap[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable], correlationId: WinRT_String) -> win32more.Windows.AI.MachineLearning.LearningModelEvaluationResult: ...
-    Model = property(get_Model, None)
     Device = property(get_Device, None)
     EvaluationProperties = property(get_EvaluationProperties, None)
+    Model = property(get_Model, None)
 class ILearningModelSessionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ILearningModelSessionFactory'
@@ -273,8 +260,8 @@ class ITensor(ComPtr):
     def get_TensorKind(self) -> win32more.Windows.AI.MachineLearning.TensorKind: ...
     @winrt_commethod(7)
     def get_Shape(self) -> win32more.Windows.Foundation.Collections.IVectorView[Int64]: ...
-    TensorKind = property(get_TensorKind, None)
     Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class ITensorBoolean(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ITensorBoolean'
@@ -335,8 +322,8 @@ class ITensorFeatureDescriptor(ComPtr):
     def get_TensorKind(self) -> win32more.Windows.AI.MachineLearning.TensorKind: ...
     @winrt_commethod(7)
     def get_Shape(self) -> win32more.Windows.Foundation.Collections.IVectorView[Int64]: ...
-    TensorKind = property(get_TensorKind, None)
     Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class ITensorFloat(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.AI.MachineLearning.ITensorFloat'
@@ -643,15 +630,15 @@ class ImageFeatureDescriptor(ComPtr):
     def get_Kind(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_mixinmethod
     def get_IsRequired(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> Boolean: ...
-    BitmapPixelFormat = property(get_BitmapPixelFormat, None)
     BitmapAlphaMode = property(get_BitmapAlphaMode, None)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    PixelRange = property(get_PixelRange, None)
-    Name = property(get_Name, None)
+    BitmapPixelFormat = property(get_BitmapPixelFormat, None)
     Description = property(get_Description, None)
-    Kind = property(get_Kind, None)
+    Height = property(get_Height, None)
     IsRequired = property(get_IsRequired, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
+    PixelRange = property(get_PixelRange, None)
+    Width = property(get_Width, None)
 class ImageFeatureValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.IImageFeatureValue
@@ -662,8 +649,8 @@ class ImageFeatureValue(ComPtr):
     def get_Kind(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureValue) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_classmethod
     def CreateFromVideoFrame(cls: win32more.Windows.AI.MachineLearning.IImageFeatureValueStatics, image: win32more.Windows.Media.VideoFrame) -> win32more.Windows.AI.MachineLearning.ImageFeatureValue: ...
-    VideoFrame = property(get_VideoFrame, None)
     Kind = property(get_Kind, None)
+    VideoFrame = property(get_VideoFrame, None)
 class LearningModel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModel
@@ -703,17 +690,24 @@ class LearningModel(ComPtr):
     @winrt_classmethod
     def LoadFromStreamWithOperatorProvider(cls: win32more.Windows.AI.MachineLearning.ILearningModelStatics, modelStream: win32more.Windows.Storage.Streams.IRandomAccessStreamReference, operatorProvider: win32more.Windows.AI.MachineLearning.ILearningModelOperatorProvider) -> win32more.Windows.AI.MachineLearning.LearningModel: ...
     Author = property(get_Author, None)
-    Name = property(get_Name, None)
-    Domain = property(get_Domain, None)
     Description = property(get_Description, None)
-    Version = property(get_Version, None)
-    Metadata = property(get_Metadata, None)
+    Domain = property(get_Domain, None)
     InputFeatures = property(get_InputFeatures, None)
+    Metadata = property(get_Metadata, None)
+    Name = property(get_Name, None)
     OutputFeatures = property(get_OutputFeatures, None)
+    Version = property(get_Version, None)
 class LearningModelBinding(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModelBinding
     _classid_ = 'Windows.AI.MachineLearning.LearningModelBinding'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.AI.MachineLearning.LearningModelBinding.CreateFromSession(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFromSession(cls: win32more.Windows.AI.MachineLearning.ILearningModelBindingFactory, session: win32more.Windows.AI.MachineLearning.LearningModelSession) -> win32more.Windows.AI.MachineLearning.LearningModelBinding: ...
     @winrt_mixinmethod
@@ -737,6 +731,13 @@ class LearningModelDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModelDevice
     _classid_ = 'Windows.AI.MachineLearning.LearningModelDevice'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.AI.MachineLearning.LearningModelDevice.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.AI.MachineLearning.ILearningModelDeviceFactory, deviceKind: win32more.Windows.AI.MachineLearning.LearningModelDeviceKind) -> win32more.Windows.AI.MachineLearning.LearningModelDevice: ...
     @winrt_mixinmethod
@@ -747,12 +748,12 @@ class LearningModelDevice(ComPtr):
     def CreateFromDirect3D11Device(cls: win32more.Windows.AI.MachineLearning.ILearningModelDeviceStatics, device: win32more.Windows.Graphics.DirectX.Direct3D11.IDirect3DDevice) -> win32more.Windows.AI.MachineLearning.LearningModelDevice: ...
     AdapterId = property(get_AdapterId, None)
     Direct3D11Device = property(get_Direct3D11Device, None)
-LearningModelDeviceKind = Int32
-LearningModelDeviceKind_Default: LearningModelDeviceKind = 0
-LearningModelDeviceKind_Cpu: LearningModelDeviceKind = 1
-LearningModelDeviceKind_DirectX: LearningModelDeviceKind = 2
-LearningModelDeviceKind_DirectXHighPerformance: LearningModelDeviceKind = 3
-LearningModelDeviceKind_DirectXMinPower: LearningModelDeviceKind = 4
+class LearningModelDeviceKind(Int32):  # enum
+    Default = 0
+    Cpu = 1
+    DirectX = 2
+    DirectXHighPerformance = 3
+    DirectXMinPower = 4
 class LearningModelEvaluationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModelEvaluationResult
@@ -767,27 +768,38 @@ class LearningModelEvaluationResult(ComPtr):
     def get_Outputs(self: win32more.Windows.AI.MachineLearning.ILearningModelEvaluationResult) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     CorrelationId = property(get_CorrelationId, None)
     ErrorStatus = property(get_ErrorStatus, None)
-    Succeeded = property(get_Succeeded, None)
     Outputs = property(get_Outputs, None)
-LearningModelFeatureKind = Int32
-LearningModelFeatureKind_Tensor: LearningModelFeatureKind = 0
-LearningModelFeatureKind_Sequence: LearningModelFeatureKind = 1
-LearningModelFeatureKind_Map: LearningModelFeatureKind = 2
-LearningModelFeatureKind_Image: LearningModelFeatureKind = 3
-LearningModelPixelRange = Int32
-LearningModelPixelRange_ZeroTo255: LearningModelPixelRange = 0
-LearningModelPixelRange_ZeroToOne: LearningModelPixelRange = 1
-LearningModelPixelRange_MinusOneToOne: LearningModelPixelRange = 2
+    Succeeded = property(get_Succeeded, None)
+class LearningModelFeatureKind(Int32):  # enum
+    Tensor = 0
+    Sequence = 1
+    Map = 2
+    Image = 3
+class LearningModelPixelRange(Int32):  # enum
+    ZeroTo255 = 0
+    ZeroToOne = 1
+    MinusOneToOne = 2
 class LearningModelSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModelSession
     _classid_ = 'Windows.AI.MachineLearning.LearningModelSession'
-    @winrt_factorymethod
-    def CreateFromModelOnDeviceWithSessionOptions(cls: win32more.Windows.AI.MachineLearning.ILearningModelSessionFactory2, model: win32more.Windows.AI.MachineLearning.LearningModel, deviceToRunOn: win32more.Windows.AI.MachineLearning.LearningModelDevice, learningModelSessionOptions: win32more.Windows.AI.MachineLearning.LearningModelSessionOptions) -> win32more.Windows.AI.MachineLearning.LearningModelSession: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.AI.MachineLearning.LearningModelSession.CreateFromModel(*args)
+        elif len(args) == 2:
+            return win32more.Windows.AI.MachineLearning.LearningModelSession.CreateFromModelOnDevice(*args)
+        elif len(args) == 3:
+            return win32more.Windows.AI.MachineLearning.LearningModelSession.CreateFromModelOnDeviceWithSessionOptions(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFromModel(cls: win32more.Windows.AI.MachineLearning.ILearningModelSessionFactory, model: win32more.Windows.AI.MachineLearning.LearningModel) -> win32more.Windows.AI.MachineLearning.LearningModelSession: ...
     @winrt_factorymethod
     def CreateFromModelOnDevice(cls: win32more.Windows.AI.MachineLearning.ILearningModelSessionFactory, model: win32more.Windows.AI.MachineLearning.LearningModel, deviceToRunOn: win32more.Windows.AI.MachineLearning.LearningModelDevice) -> win32more.Windows.AI.MachineLearning.LearningModelSession: ...
+    @winrt_factorymethod
+    def CreateFromModelOnDeviceWithSessionOptions(cls: win32more.Windows.AI.MachineLearning.ILearningModelSessionFactory2, model: win32more.Windows.AI.MachineLearning.LearningModel, deviceToRunOn: win32more.Windows.AI.MachineLearning.LearningModelDevice, learningModelSessionOptions: win32more.Windows.AI.MachineLearning.LearningModelSessionOptions) -> win32more.Windows.AI.MachineLearning.LearningModelSession: ...
     @winrt_mixinmethod
     def get_Model(self: win32more.Windows.AI.MachineLearning.ILearningModelSession) -> win32more.Windows.AI.MachineLearning.LearningModel: ...
     @winrt_mixinmethod
@@ -804,13 +816,20 @@ class LearningModelSession(ComPtr):
     def EvaluateFeatures(self: win32more.Windows.AI.MachineLearning.ILearningModelSession, features: win32more.Windows.Foundation.Collections.IMap[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable], correlationId: WinRT_String) -> win32more.Windows.AI.MachineLearning.LearningModelEvaluationResult: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    Model = property(get_Model, None)
     Device = property(get_Device, None)
     EvaluationProperties = property(get_EvaluationProperties, None)
+    Model = property(get_Model, None)
 class LearningModelSessionOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ILearningModelSessionOptions
     _classid_ = 'Windows.AI.MachineLearning.LearningModelSessionOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.AI.MachineLearning.LearningModelSessionOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.AI.MachineLearning.LearningModelSessionOptions: ...
     @winrt_mixinmethod
@@ -842,12 +861,12 @@ class MapFeatureDescriptor(ComPtr):
     def get_Kind(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_mixinmethod
     def get_IsRequired(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> Boolean: ...
-    KeyKind = property(get_KeyKind, None)
-    ValueDescriptor = property(get_ValueDescriptor, None)
-    Name = property(get_Name, None)
     Description = property(get_Description, None)
-    Kind = property(get_Kind, None)
     IsRequired = property(get_IsRequired, None)
+    KeyKind = property(get_KeyKind, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
+    ValueDescriptor = property(get_ValueDescriptor, None)
 class SequenceFeatureDescriptor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ISequenceFeatureDescriptor
@@ -862,11 +881,11 @@ class SequenceFeatureDescriptor(ComPtr):
     def get_Kind(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_mixinmethod
     def get_IsRequired(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> Boolean: ...
-    ElementDescriptor = property(get_ElementDescriptor, None)
-    Name = property(get_Name, None)
     Description = property(get_Description, None)
-    Kind = property(get_Kind, None)
+    ElementDescriptor = property(get_ElementDescriptor, None)
     IsRequired = property(get_IsRequired, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
 class TensorBoolean(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorBoolean
@@ -895,9 +914,9 @@ class TensorBoolean(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorBooleanStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Boolean], 'In']) -> win32more.Windows.AI.MachineLearning.TensorBoolean: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorBooleanStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Boolean]) -> win32more.Windows.AI.MachineLearning.TensorBoolean: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorDouble(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorDouble
@@ -926,9 +945,9 @@ class TensorDouble(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorDoubleStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Double], 'In']) -> win32more.Windows.AI.MachineLearning.TensorDouble: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorDoubleStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Double]) -> win32more.Windows.AI.MachineLearning.TensorDouble: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorFeatureDescriptor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorFeatureDescriptor
@@ -945,12 +964,12 @@ class TensorFeatureDescriptor(ComPtr):
     def get_Kind(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> win32more.Windows.AI.MachineLearning.LearningModelFeatureKind: ...
     @winrt_mixinmethod
     def get_IsRequired(self: win32more.Windows.AI.MachineLearning.ILearningModelFeatureDescriptor) -> Boolean: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
-    Name = property(get_Name, None)
     Description = property(get_Description, None)
-    Kind = property(get_Kind, None)
     IsRequired = property(get_IsRequired, None)
+    Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorFloat(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorFloat
@@ -979,9 +998,9 @@ class TensorFloat(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorFloatStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Single], 'In']) -> win32more.Windows.AI.MachineLearning.TensorFloat: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorFloatStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Single]) -> win32more.Windows.AI.MachineLearning.TensorFloat: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorFloat16Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorFloat16Bit
@@ -1010,9 +1029,9 @@ class TensorFloat16Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorFloat16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Single], 'In']) -> win32more.Windows.AI.MachineLearning.TensorFloat16Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorFloat16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Single]) -> win32more.Windows.AI.MachineLearning.TensorFloat16Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorInt16Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorInt16Bit
@@ -1041,9 +1060,9 @@ class TensorInt16Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorInt16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Int16], 'In']) -> win32more.Windows.AI.MachineLearning.TensorInt16Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorInt16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Int16]) -> win32more.Windows.AI.MachineLearning.TensorInt16Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorInt32Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorInt32Bit
@@ -1072,9 +1091,9 @@ class TensorInt32Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorInt32BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Int32], 'In']) -> win32more.Windows.AI.MachineLearning.TensorInt32Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorInt32BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Int32]) -> win32more.Windows.AI.MachineLearning.TensorInt32Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorInt64Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorInt64Bit
@@ -1103,9 +1122,9 @@ class TensorInt64Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorInt64BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Int64], 'In']) -> win32more.Windows.AI.MachineLearning.TensorInt64Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorInt64BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Int64]) -> win32more.Windows.AI.MachineLearning.TensorInt64Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorInt8Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorInt8Bit
@@ -1134,26 +1153,26 @@ class TensorInt8Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorInt8BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.AI.MachineLearning.TensorInt8Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorInt8BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Byte]) -> win32more.Windows.AI.MachineLearning.TensorInt8Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
-TensorKind = Int32
-TensorKind_Undefined: TensorKind = 0
-TensorKind_Float: TensorKind = 1
-TensorKind_UInt8: TensorKind = 2
-TensorKind_Int8: TensorKind = 3
-TensorKind_UInt16: TensorKind = 4
-TensorKind_Int16: TensorKind = 5
-TensorKind_Int32: TensorKind = 6
-TensorKind_Int64: TensorKind = 7
-TensorKind_String: TensorKind = 8
-TensorKind_Boolean: TensorKind = 9
-TensorKind_Float16: TensorKind = 10
-TensorKind_Double: TensorKind = 11
-TensorKind_UInt32: TensorKind = 12
-TensorKind_UInt64: TensorKind = 13
-TensorKind_Complex64: TensorKind = 14
-TensorKind_Complex128: TensorKind = 15
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
+class TensorKind(Int32):  # enum
+    Undefined = 0
+    Float = 1
+    UInt8 = 2
+    Int8 = 3
+    UInt16 = 4
+    Int16 = 5
+    Int32 = 6
+    Int64 = 7
+    String = 8
+    Boolean = 9
+    Float16 = 10
+    Double = 11
+    UInt32 = 12
+    UInt64 = 13
+    Complex64 = 14
+    Complex128 = 15
 class TensorString(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorString
@@ -1180,9 +1199,9 @@ class TensorString(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorStringStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[WinRT_String], 'In']) -> win32more.Windows.AI.MachineLearning.TensorString: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorStringStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.AI.MachineLearning.TensorString: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorUInt16Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorUInt16Bit
@@ -1211,9 +1230,9 @@ class TensorUInt16Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorUInt16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[UInt16], 'In']) -> win32more.Windows.AI.MachineLearning.TensorUInt16Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorUInt16BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[UInt16]) -> win32more.Windows.AI.MachineLearning.TensorUInt16Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorUInt32Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorUInt32Bit
@@ -1242,9 +1261,9 @@ class TensorUInt32Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorUInt32BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[UInt32], 'In']) -> win32more.Windows.AI.MachineLearning.TensorUInt32Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorUInt32BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[UInt32]) -> win32more.Windows.AI.MachineLearning.TensorUInt32Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorUInt64Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorUInt64Bit
@@ -1273,9 +1292,9 @@ class TensorUInt64Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorUInt64BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[UInt64], 'In']) -> win32more.Windows.AI.MachineLearning.TensorUInt64Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorUInt64BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[UInt64]) -> win32more.Windows.AI.MachineLearning.TensorUInt64Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
 class TensorUInt8Bit(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.AI.MachineLearning.ITensorUInt8Bit
@@ -1304,7 +1323,9 @@ class TensorUInt8Bit(ComPtr):
     def CreateFromArray(cls: win32more.Windows.AI.MachineLearning.ITensorUInt8BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.AI.MachineLearning.TensorUInt8Bit: ...
     @winrt_classmethod
     def CreateFromIterable(cls: win32more.Windows.AI.MachineLearning.ITensorUInt8BitStatics, shape: win32more.Windows.Foundation.Collections.IIterable[Int64], data: win32more.Windows.Foundation.Collections.IIterable[Byte]) -> win32more.Windows.AI.MachineLearning.TensorUInt8Bit: ...
-    TensorKind = property(get_TensorKind, None)
-    Shape = property(get_Shape, None)
     Kind = property(get_Kind, None)
+    Shape = property(get_Shape, None)
+    TensorKind = property(get_TensorKind, None)
+
+
 make_ready(__name__)

@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.SocialInfo
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class ISocialFeedChildItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialFeedChildItem'
@@ -47,10 +34,10 @@ class ISocialFeedChildItem(ComPtr):
     Author = property(get_Author, None)
     PrimaryContent = property(get_PrimaryContent, None)
     SecondaryContent = property(get_SecondaryContent, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    SharedItem = property(get_SharedItem, put_SharedItem)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnails = property(get_Thumbnails, None)
-    SharedItem = property(get_SharedItem, put_SharedItem)
+    Timestamp = property(get_Timestamp, put_Timestamp)
 class ISocialFeedContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialFeedContent'
@@ -67,9 +54,9 @@ class ISocialFeedContent(ComPtr):
     def get_TargetUri(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(11)
     def put_TargetUri(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Title = property(get_Title, put_Title)
     Message = property(get_Message, put_Message)
     TargetUri = property(get_TargetUri, put_TargetUri)
+    Title = property(get_Title, put_Title)
 class ISocialFeedItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialFeedItem'
@@ -115,17 +102,17 @@ class ISocialFeedItem(ComPtr):
     @winrt_commethod(25)
     def put_Style(self, value: win32more.Windows.ApplicationModel.SocialInfo.SocialFeedItemStyle) -> Void: ...
     Author = property(get_Author, None)
+    BadgeCountValue = property(get_BadgeCountValue, put_BadgeCountValue)
+    BadgeStyle = property(get_BadgeStyle, put_BadgeStyle)
+    ChildItem = property(get_ChildItem, put_ChildItem)
     PrimaryContent = property(get_PrimaryContent, None)
+    RemoteId = property(get_RemoteId, put_RemoteId)
     SecondaryContent = property(get_SecondaryContent, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    SharedItem = property(get_SharedItem, put_SharedItem)
+    Style = property(get_Style, put_Style)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnails = property(get_Thumbnails, None)
-    SharedItem = property(get_SharedItem, put_SharedItem)
-    BadgeStyle = property(get_BadgeStyle, put_BadgeStyle)
-    BadgeCountValue = property(get_BadgeCountValue, put_BadgeCountValue)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    ChildItem = property(get_ChildItem, put_ChildItem)
-    Style = property(get_Style, put_Style)
+    Timestamp = property(get_Timestamp, put_Timestamp)
 class ISocialFeedSharedItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialFeedSharedItem'
@@ -148,11 +135,11 @@ class ISocialFeedSharedItem(ComPtr):
     def put_Thumbnail(self, value: win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail) -> Void: ...
     @winrt_commethod(14)
     def get_Thumbnail(self) -> win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail: ...
-    OriginalSource = property(get_OriginalSource, put_OriginalSource)
     Content = property(get_Content, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    OriginalSource = property(get_OriginalSource, put_OriginalSource)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Timestamp = property(get_Timestamp, put_Timestamp)
 class ISocialItemThumbnail(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialItemThumbnail'
@@ -171,9 +158,9 @@ class ISocialItemThumbnail(ComPtr):
     def put_BitmapSize(self, value: win32more.Windows.Graphics.Imaging.BitmapSize) -> Void: ...
     @winrt_commethod(12)
     def SetImageAsync(self, image: win32more.Windows.Storage.Streams.IInputStream) -> win32more.Windows.Foundation.IAsyncAction: ...
-    TargetUri = property(get_TargetUri, put_TargetUri)
-    ImageUri = property(get_ImageUri, put_ImageUri)
     BitmapSize = property(get_BitmapSize, put_BitmapSize)
+    ImageUri = property(get_ImageUri, put_ImageUri)
+    TargetUri = property(get_TargetUri, put_TargetUri)
 class ISocialUserInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.SocialInfo.ISocialUserInfo'
@@ -195,13 +182,20 @@ class ISocialUserInfo(ComPtr):
     @winrt_commethod(13)
     def put_TargetUri(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
     DisplayName = property(get_DisplayName, put_DisplayName)
-    UserName = property(get_UserName, put_UserName)
     RemoteId = property(get_RemoteId, put_RemoteId)
     TargetUri = property(get_TargetUri, put_TargetUri)
+    UserName = property(get_UserName, put_UserName)
 class SocialFeedChildItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedChildItem
     _classid_ = 'Windows.ApplicationModel.SocialInfo.SocialFeedChildItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.SocialInfo.SocialFeedChildItem.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.SocialInfo.SocialFeedChildItem: ...
     @winrt_mixinmethod
@@ -227,10 +221,10 @@ class SocialFeedChildItem(ComPtr):
     Author = property(get_Author, None)
     PrimaryContent = property(get_PrimaryContent, None)
     SecondaryContent = property(get_SecondaryContent, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    SharedItem = property(get_SharedItem, put_SharedItem)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnails = property(get_Thumbnails, None)
-    SharedItem = property(get_SharedItem, put_SharedItem)
+    Timestamp = property(get_Timestamp, put_Timestamp)
 class SocialFeedContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedContent
@@ -247,13 +241,20 @@ class SocialFeedContent(ComPtr):
     def get_TargetUri(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedContent) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def put_TargetUri(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedContent, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Title = property(get_Title, put_Title)
     Message = property(get_Message, put_Message)
     TargetUri = property(get_TargetUri, put_TargetUri)
+    Title = property(get_Title, put_Title)
 class SocialFeedItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedItem
     _classid_ = 'Windows.ApplicationModel.SocialInfo.SocialFeedItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.SocialInfo.SocialFeedItem.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.SocialInfo.SocialFeedItem: ...
     @winrt_mixinmethod
@@ -297,28 +298,35 @@ class SocialFeedItem(ComPtr):
     @winrt_mixinmethod
     def put_Style(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedItem, value: win32more.Windows.ApplicationModel.SocialInfo.SocialFeedItemStyle) -> Void: ...
     Author = property(get_Author, None)
+    BadgeCountValue = property(get_BadgeCountValue, put_BadgeCountValue)
+    BadgeStyle = property(get_BadgeStyle, put_BadgeStyle)
+    ChildItem = property(get_ChildItem, put_ChildItem)
     PrimaryContent = property(get_PrimaryContent, None)
+    RemoteId = property(get_RemoteId, put_RemoteId)
     SecondaryContent = property(get_SecondaryContent, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    SharedItem = property(get_SharedItem, put_SharedItem)
+    Style = property(get_Style, put_Style)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnails = property(get_Thumbnails, None)
-    SharedItem = property(get_SharedItem, put_SharedItem)
-    BadgeStyle = property(get_BadgeStyle, put_BadgeStyle)
-    BadgeCountValue = property(get_BadgeCountValue, put_BadgeCountValue)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    ChildItem = property(get_ChildItem, put_ChildItem)
-    Style = property(get_Style, put_Style)
-SocialFeedItemStyle = Int32
-SocialFeedItemStyle_Default: SocialFeedItemStyle = 0
-SocialFeedItemStyle_Photo: SocialFeedItemStyle = 1
-SocialFeedKind = Int32
-SocialFeedKind_HomeFeed: SocialFeedKind = 0
-SocialFeedKind_ContactFeed: SocialFeedKind = 1
-SocialFeedKind_Dashboard: SocialFeedKind = 2
+    Timestamp = property(get_Timestamp, put_Timestamp)
+class SocialFeedItemStyle(Int32):  # enum
+    Default = 0
+    Photo = 1
+class SocialFeedKind(Int32):  # enum
+    HomeFeed = 0
+    ContactFeed = 1
+    Dashboard = 2
 class SocialFeedSharedItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedSharedItem
     _classid_ = 'Windows.ApplicationModel.SocialInfo.SocialFeedSharedItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.SocialInfo.SocialFeedSharedItem.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.SocialInfo.SocialFeedSharedItem: ...
     @winrt_mixinmethod
@@ -339,23 +347,30 @@ class SocialFeedSharedItem(ComPtr):
     def put_Thumbnail(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedSharedItem, value: win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail) -> Void: ...
     @winrt_mixinmethod
     def get_Thumbnail(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialFeedSharedItem) -> win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail: ...
-    OriginalSource = property(get_OriginalSource, put_OriginalSource)
     Content = property(get_Content, None)
-    Timestamp = property(get_Timestamp, put_Timestamp)
+    OriginalSource = property(get_OriginalSource, put_OriginalSource)
     TargetUri = property(get_TargetUri, put_TargetUri)
     Thumbnail = property(get_Thumbnail, put_Thumbnail)
-SocialFeedUpdateMode = Int32
-SocialFeedUpdateMode_Append: SocialFeedUpdateMode = 0
-SocialFeedUpdateMode_Replace: SocialFeedUpdateMode = 1
+    Timestamp = property(get_Timestamp, put_Timestamp)
+class SocialFeedUpdateMode(Int32):  # enum
+    Append = 0
+    Replace = 1
 SocialInfoContract: UInt32 = 131072
-SocialItemBadgeStyle = Int32
-SocialItemBadgeStyle_Hidden: SocialItemBadgeStyle = 0
-SocialItemBadgeStyle_Visible: SocialItemBadgeStyle = 1
-SocialItemBadgeStyle_VisibleWithCount: SocialItemBadgeStyle = 2
+class SocialItemBadgeStyle(Int32):  # enum
+    Hidden = 0
+    Visible = 1
+    VisibleWithCount = 2
 class SocialItemThumbnail(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialItemThumbnail
     _classid_ = 'Windows.ApplicationModel.SocialInfo.SocialItemThumbnail'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.SocialInfo.SocialItemThumbnail: ...
     @winrt_mixinmethod
@@ -372,9 +387,9 @@ class SocialItemThumbnail(ComPtr):
     def put_BitmapSize(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialItemThumbnail, value: win32more.Windows.Graphics.Imaging.BitmapSize) -> Void: ...
     @winrt_mixinmethod
     def SetImageAsync(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialItemThumbnail, image: win32more.Windows.Storage.Streams.IInputStream) -> win32more.Windows.Foundation.IAsyncAction: ...
-    TargetUri = property(get_TargetUri, put_TargetUri)
-    ImageUri = property(get_ImageUri, put_ImageUri)
     BitmapSize = property(get_BitmapSize, put_BitmapSize)
+    ImageUri = property(get_ImageUri, put_ImageUri)
+    TargetUri = property(get_TargetUri, put_TargetUri)
 class SocialUserInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.SocialInfo.ISocialUserInfo
@@ -396,7 +411,9 @@ class SocialUserInfo(ComPtr):
     @winrt_mixinmethod
     def put_TargetUri(self: win32more.Windows.ApplicationModel.SocialInfo.ISocialUserInfo, value: win32more.Windows.Foundation.Uri) -> Void: ...
     DisplayName = property(get_DisplayName, put_DisplayName)
-    UserName = property(get_UserName, put_UserName)
     RemoteId = property(get_RemoteId, put_RemoteId)
     TargetUri = property(get_TargetUri, put_TargetUri)
+    UserName = property(get_UserName, put_UserName)
+
+
 make_ready(__name__)

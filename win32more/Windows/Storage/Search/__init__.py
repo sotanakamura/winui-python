@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Data.Text
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -22,27 +8,28 @@ import win32more.Windows.Storage
 import win32more.Windows.Storage.FileProperties
 import win32more.Windows.Storage.Search
 import win32more.Windows.Storage.Streams
-CommonFileQuery = Int32
-CommonFileQuery_DefaultQuery: CommonFileQuery = 0
-CommonFileQuery_OrderByName: CommonFileQuery = 1
-CommonFileQuery_OrderByTitle: CommonFileQuery = 2
-CommonFileQuery_OrderByMusicProperties: CommonFileQuery = 3
-CommonFileQuery_OrderBySearchRank: CommonFileQuery = 4
-CommonFileQuery_OrderByDate: CommonFileQuery = 5
-CommonFolderQuery = Int32
-CommonFolderQuery_DefaultQuery: CommonFolderQuery = 0
-CommonFolderQuery_GroupByYear: CommonFolderQuery = 100
-CommonFolderQuery_GroupByMonth: CommonFolderQuery = 101
-CommonFolderQuery_GroupByArtist: CommonFolderQuery = 102
-CommonFolderQuery_GroupByAlbum: CommonFolderQuery = 103
-CommonFolderQuery_GroupByAlbumArtist: CommonFolderQuery = 104
-CommonFolderQuery_GroupByComposer: CommonFolderQuery = 105
-CommonFolderQuery_GroupByGenre: CommonFolderQuery = 106
-CommonFolderQuery_GroupByPublishedYear: CommonFolderQuery = 107
-CommonFolderQuery_GroupByRating: CommonFolderQuery = 108
-CommonFolderQuery_GroupByTag: CommonFolderQuery = 109
-CommonFolderQuery_GroupByAuthor: CommonFolderQuery = 110
-CommonFolderQuery_GroupByType: CommonFolderQuery = 111
+import win32more.Windows.Win32.System.WinRT
+class CommonFileQuery(Int32):  # enum
+    DefaultQuery = 0
+    OrderByName = 1
+    OrderByTitle = 2
+    OrderByMusicProperties = 3
+    OrderBySearchRank = 4
+    OrderByDate = 5
+class CommonFolderQuery(Int32):  # enum
+    DefaultQuery = 0
+    GroupByYear = 100
+    GroupByMonth = 101
+    GroupByArtist = 102
+    GroupByAlbum = 103
+    GroupByAlbumArtist = 104
+    GroupByComposer = 105
+    GroupByGenre = 106
+    GroupByPublishedYear = 107
+    GroupByRating = 108
+    GroupByTag = 109
+    GroupByAuthor = 110
+    GroupByType = 111
 class ContentIndexer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Search.IContentIndexer
@@ -89,13 +76,13 @@ class ContentIndexerQuery(ComPtr):
     @winrt_mixinmethod
     def get_QueryFolder(self: win32more.Windows.Storage.Search.IContentIndexerQuery) -> win32more.Windows.Storage.StorageFolder: ...
     QueryFolder = property(get_QueryFolder, None)
-DateStackOption = Int32
-DateStackOption_None: DateStackOption = 0
-DateStackOption_Year: DateStackOption = 1
-DateStackOption_Month: DateStackOption = 2
-FolderDepth = Int32
-FolderDepth_Shallow: FolderDepth = 0
-FolderDepth_Deep: FolderDepth = 1
+class DateStackOption(Int32):  # enum
+    None_ = 0
+    Year = 1
+    Month = 2
+class FolderDepth(Int32):  # enum
+    Shallow = 0
+    Deep = 1
 class IContentIndexer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Search.IContentIndexer'
@@ -212,15 +199,15 @@ class IQueryOptions(ComPtr):
     def SetThumbnailPrefetch(self, mode: win32more.Windows.Storage.FileProperties.ThumbnailMode, requestedSize: UInt32, options: win32more.Windows.Storage.FileProperties.ThumbnailOptions) -> Void: ...
     @winrt_commethod(23)
     def SetPropertyPrefetch(self, options: win32more.Windows.Storage.FileProperties.PropertyPrefetchOptions, propertiesToRetrieve: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> Void: ...
+    ApplicationSearchFilter = property(get_ApplicationSearchFilter, put_ApplicationSearchFilter)
+    DateStackOption = property(get_DateStackOption, None)
     FileTypeFilter = property(get_FileTypeFilter, None)
     FolderDepth = property(get_FolderDepth, put_FolderDepth)
-    ApplicationSearchFilter = property(get_ApplicationSearchFilter, put_ApplicationSearchFilter)
-    UserSearchFilter = property(get_UserSearchFilter, put_UserSearchFilter)
-    Language = property(get_Language, put_Language)
-    IndexerOption = property(get_IndexerOption, put_IndexerOption)
-    SortOrder = property(get_SortOrder, None)
     GroupPropertyName = property(get_GroupPropertyName, None)
-    DateStackOption = property(get_DateStackOption, None)
+    IndexerOption = property(get_IndexerOption, put_IndexerOption)
+    Language = property(get_Language, put_Language)
+    SortOrder = property(get_SortOrder, None)
+    UserSearchFilter = property(get_UserSearchFilter, put_UserSearchFilter)
 class IQueryOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Search.IQueryOptionsFactory'
@@ -312,8 +299,8 @@ class IStorageLibraryChangeTrackerTriggerDetails(ComPtr):
     def get_Folder(self) -> win32more.Windows.Storage.StorageFolder: ...
     @winrt_commethod(7)
     def get_ChangeTracker(self) -> win32more.Windows.Storage.StorageLibraryChangeTracker: ...
-    Folder = property(get_Folder, None)
     ChangeTracker = property(get_ChangeTracker, None)
+    Folder = property(get_Folder, None)
 class IStorageLibraryContentChangedTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Search.IStorageLibraryContentChangedTriggerDetails'
@@ -364,6 +351,13 @@ class IndexableContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Search.IIndexableContent
     _classid_ = 'Windows.Storage.Search.IndexableContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Search.IndexableContent.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Search.IndexableContent: ...
     @winrt_mixinmethod
@@ -384,26 +378,37 @@ class IndexableContent(ComPtr):
     Properties = property(get_Properties, None)
     Stream = property(get_Stream, put_Stream)
     StreamContentType = property(get_StreamContentType, put_StreamContentType)
-IndexedState = Int32
-IndexedState_Unknown: IndexedState = 0
-IndexedState_NotIndexed: IndexedState = 1
-IndexedState_PartiallyIndexed: IndexedState = 2
-IndexedState_FullyIndexed: IndexedState = 3
-IndexerOption = Int32
-IndexerOption_UseIndexerWhenAvailable: IndexerOption = 0
-IndexerOption_OnlyUseIndexer: IndexerOption = 1
-IndexerOption_DoNotUseIndexer: IndexerOption = 2
-IndexerOption_OnlyUseIndexerAndOptimizeForIndexedProperties: IndexerOption = 3
+class IndexedState(Int32):  # enum
+    Unknown = 0
+    NotIndexed = 1
+    PartiallyIndexed = 2
+    FullyIndexed = 3
+class IndexerOption(Int32):  # enum
+    UseIndexerWhenAvailable = 0
+    OnlyUseIndexer = 1
+    DoNotUseIndexer = 2
+    OnlyUseIndexerAndOptimizeForIndexedProperties = 3
 class QueryOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Search.IQueryOptions
     _classid_ = 'Windows.Storage.Search.QueryOptions'
-    @winrt_factorymethod
-    def CreateCommonFileQuery(cls: win32more.Windows.Storage.Search.IQueryOptionsFactory, query: win32more.Windows.Storage.Search.CommonFileQuery, fileTypeFilter: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Storage.Search.QueryOptions: ...
-    @winrt_factorymethod
-    def CreateCommonFolderQuery(cls: win32more.Windows.Storage.Search.IQueryOptionsFactory, query: win32more.Windows.Storage.Search.CommonFolderQuery) -> win32more.Windows.Storage.Search.QueryOptions: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Search.QueryOptions.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Storage.Search.QueryOptions.CreateCommonFolderQuery(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Storage.Search.QueryOptions.CreateCommonFileQuery(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Search.QueryOptions: ...
+    @winrt_factorymethod
+    def CreateCommonFolderQuery(cls: win32more.Windows.Storage.Search.IQueryOptionsFactory, query: win32more.Windows.Storage.Search.CommonFolderQuery) -> win32more.Windows.Storage.Search.QueryOptions: ...
+    @winrt_factorymethod
+    def CreateCommonFileQuery(cls: win32more.Windows.Storage.Search.IQueryOptionsFactory, query: win32more.Windows.Storage.Search.CommonFileQuery, fileTypeFilter: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Storage.Search.QueryOptions: ...
     @winrt_mixinmethod
     def get_FileTypeFilter(self: win32more.Windows.Storage.Search.IQueryOptions) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     @winrt_mixinmethod
@@ -442,16 +447,16 @@ class QueryOptions(ComPtr):
     def SetPropertyPrefetch(self: win32more.Windows.Storage.Search.IQueryOptions, options: win32more.Windows.Storage.FileProperties.PropertyPrefetchOptions, propertiesToRetrieve: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> Void: ...
     @winrt_mixinmethod
     def get_StorageProviderIdFilter(self: win32more.Windows.Storage.Search.IQueryOptionsWithProviderFilter) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
+    ApplicationSearchFilter = property(get_ApplicationSearchFilter, put_ApplicationSearchFilter)
+    DateStackOption = property(get_DateStackOption, None)
     FileTypeFilter = property(get_FileTypeFilter, None)
     FolderDepth = property(get_FolderDepth, put_FolderDepth)
-    ApplicationSearchFilter = property(get_ApplicationSearchFilter, put_ApplicationSearchFilter)
-    UserSearchFilter = property(get_UserSearchFilter, put_UserSearchFilter)
-    Language = property(get_Language, put_Language)
-    IndexerOption = property(get_IndexerOption, put_IndexerOption)
-    SortOrder = property(get_SortOrder, None)
     GroupPropertyName = property(get_GroupPropertyName, None)
-    DateStackOption = property(get_DateStackOption, None)
+    IndexerOption = property(get_IndexerOption, put_IndexerOption)
+    Language = property(get_Language, put_Language)
+    SortOrder = property(get_SortOrder, None)
     StorageProviderIdFilter = property(get_StorageProviderIdFilter, None)
+    UserSearchFilter = property(get_UserSearchFilter, put_UserSearchFilter)
 class SortEntry(EasyCastStructure):
     PropertyName: WinRT_String
     AscendingOrder: Boolean
@@ -577,8 +582,8 @@ class StorageLibraryChangeTrackerTriggerDetails(ComPtr):
     def get_Folder(self: win32more.Windows.Storage.Search.IStorageLibraryChangeTrackerTriggerDetails) -> win32more.Windows.Storage.StorageFolder: ...
     @winrt_mixinmethod
     def get_ChangeTracker(self: win32more.Windows.Storage.Search.IStorageLibraryChangeTrackerTriggerDetails) -> win32more.Windows.Storage.StorageLibraryChangeTracker: ...
-    Folder = property(get_Folder, None)
     ChangeTracker = property(get_ChangeTracker, None)
+    Folder = property(get_Folder, None)
 class StorageLibraryContentChangedTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Search.IStorageLibraryContentChangedTriggerDetails
@@ -592,6 +597,13 @@ class ValueAndLanguage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Search.IValueAndLanguage
     _classid_ = 'Windows.Storage.Search.ValueAndLanguage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Search.ValueAndLanguage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Search.ValueAndLanguage: ...
     @winrt_mixinmethod
@@ -604,4 +616,6 @@ class ValueAndLanguage(ComPtr):
     def put_Value(self: win32more.Windows.Storage.Search.IValueAndLanguage, value: win32more.Windows.Win32.System.WinRT.IInspectable) -> Void: ...
     Language = property(get_Language, put_Language)
     Value = property(get_Value, put_Value)
+
+
 make_ready(__name__)

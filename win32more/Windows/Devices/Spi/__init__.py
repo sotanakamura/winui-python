@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Spi
 import win32more.Windows.Devices.Spi.Provider
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class ISpiBusInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Spi.ISpiBusInfo'
@@ -32,8 +19,8 @@ class ISpiBusInfo(ComPtr):
     @winrt_commethod(9)
     def get_SupportedDataBitLengths(self) -> win32more.Windows.Foundation.Collections.IVectorView[Int32]: ...
     ChipSelectLineCount = property(get_ChipSelectLineCount, None)
-    MinClockFrequency = property(get_MinClockFrequency, None)
     MaxClockFrequency = property(get_MaxClockFrequency, None)
+    MinClockFrequency = property(get_MinClockFrequency, None)
     SupportedDataBitLengths = property(get_SupportedDataBitLengths, None)
 class ISpiConnectionSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -60,9 +47,9 @@ class ISpiConnectionSettings(ComPtr):
     @winrt_commethod(15)
     def put_SharingMode(self, value: win32more.Windows.Devices.Spi.SpiSharingMode) -> Void: ...
     ChipSelectLine = property(get_ChipSelectLine, put_ChipSelectLine)
-    Mode = property(get_Mode, put_Mode)
-    DataBitLength = property(get_DataBitLength, put_DataBitLength)
     ClockFrequency = property(get_ClockFrequency, put_ClockFrequency)
+    DataBitLength = property(get_DataBitLength, put_DataBitLength)
+    Mode = property(get_Mode, put_Mode)
     SharingMode = property(get_SharingMode, put_SharingMode)
 class ISpiConnectionSettingsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -100,8 +87,8 @@ class ISpiDevice(ComPtr):
     def TransferSequential(self, writeBuffer: Annotated[SZArray[Byte], 'In'], readBuffer: Annotated[SZArray[Byte], 'Out']) -> Void: ...
     @winrt_commethod(11)
     def TransferFullDuplex(self, writeBuffer: Annotated[SZArray[Byte], 'In'], readBuffer: Annotated[SZArray[Byte], 'Out']) -> Void: ...
-    DeviceId = property(get_DeviceId, None)
     ConnectionSettings = property(get_ConnectionSettings, None)
+    DeviceId = property(get_DeviceId, None)
 class ISpiDeviceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Spi.ISpiDeviceStatics'
@@ -127,13 +114,20 @@ class SpiBusInfo(ComPtr):
     @winrt_mixinmethod
     def get_SupportedDataBitLengths(self: win32more.Windows.Devices.Spi.ISpiBusInfo) -> win32more.Windows.Foundation.Collections.IVectorView[Int32]: ...
     ChipSelectLineCount = property(get_ChipSelectLineCount, None)
-    MinClockFrequency = property(get_MinClockFrequency, None)
     MaxClockFrequency = property(get_MaxClockFrequency, None)
+    MinClockFrequency = property(get_MinClockFrequency, None)
     SupportedDataBitLengths = property(get_SupportedDataBitLengths, None)
 class SpiConnectionSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Spi.ISpiConnectionSettings
     _classid_ = 'Windows.Devices.Spi.SpiConnectionSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Spi.SpiConnectionSettings.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Spi.ISpiConnectionSettingsFactory, chipSelectLine: Int32) -> win32more.Windows.Devices.Spi.SpiConnectionSettings: ...
     @winrt_mixinmethod
@@ -157,9 +151,9 @@ class SpiConnectionSettings(ComPtr):
     @winrt_mixinmethod
     def put_SharingMode(self: win32more.Windows.Devices.Spi.ISpiConnectionSettings, value: win32more.Windows.Devices.Spi.SpiSharingMode) -> Void: ...
     ChipSelectLine = property(get_ChipSelectLine, put_ChipSelectLine)
-    Mode = property(get_Mode, put_Mode)
-    DataBitLength = property(get_DataBitLength, put_DataBitLength)
     ClockFrequency = property(get_ClockFrequency, put_ClockFrequency)
+    DataBitLength = property(get_DataBitLength, put_DataBitLength)
+    Mode = property(get_Mode, put_Mode)
     SharingMode = property(get_SharingMode, put_SharingMode)
 class SpiController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -197,14 +191,16 @@ class SpiDevice(ComPtr):
     def GetBusInfo(cls: win32more.Windows.Devices.Spi.ISpiDeviceStatics, busId: WinRT_String) -> win32more.Windows.Devices.Spi.SpiBusInfo: ...
     @winrt_classmethod
     def FromIdAsync(cls: win32more.Windows.Devices.Spi.ISpiDeviceStatics, busId: WinRT_String, settings: win32more.Windows.Devices.Spi.SpiConnectionSettings) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Spi.SpiDevice]: ...
-    DeviceId = property(get_DeviceId, None)
     ConnectionSettings = property(get_ConnectionSettings, None)
-SpiMode = Int32
-SpiMode_Mode0: SpiMode = 0
-SpiMode_Mode1: SpiMode = 1
-SpiMode_Mode2: SpiMode = 2
-SpiMode_Mode3: SpiMode = 3
-SpiSharingMode = Int32
-SpiSharingMode_Exclusive: SpiSharingMode = 0
-SpiSharingMode_Shared: SpiSharingMode = 1
+    DeviceId = property(get_DeviceId, None)
+class SpiMode(Int32):  # enum
+    Mode0 = 0
+    Mode1 = 1
+    Mode2 = 2
+    Mode3 = 3
+class SpiSharingMode(Int32):  # enum
+    Exclusive = 0
+    Shared = 1
+
+
 make_ready(__name__)

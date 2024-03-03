@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Data.HtmlHelp
 import win32more.Windows.Win32.Devices.DeviceAndDriverInstallation
 import win32more.Windows.Win32.Devices.Properties
@@ -7,6 +7,7 @@ import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.System.Diagnostics.Debug
 import win32more.Windows.Win32.System.Registry
+import win32more.Windows.Win32.System.SystemInformation
 import win32more.Windows.Win32.UI.Controls
 import win32more.Windows.Win32.UI.WindowsAndMessaging
 NUM_CM_PROB_V1: UInt32 = 37
@@ -270,132 +271,12 @@ SPINT_REMOVED: UInt32 = 4
 SPID_ACTIVE: UInt32 = 1
 SPID_DEFAULT: UInt32 = 2
 SPID_REMOVED: UInt32 = 4
-DIF_SELECTDEVICE: UInt32 = 1
-DIF_INSTALLDEVICE: UInt32 = 2
-DIF_ASSIGNRESOURCES: UInt32 = 3
-DIF_PROPERTIES: UInt32 = 4
-DIF_REMOVE: UInt32 = 5
-DIF_FIRSTTIMESETUP: UInt32 = 6
-DIF_FOUNDDEVICE: UInt32 = 7
-DIF_SELECTCLASSDRIVERS: UInt32 = 8
-DIF_VALIDATECLASSDRIVERS: UInt32 = 9
-DIF_INSTALLCLASSDRIVERS: UInt32 = 10
-DIF_CALCDISKSPACE: UInt32 = 11
-DIF_DESTROYPRIVATEDATA: UInt32 = 12
-DIF_VALIDATEDRIVER: UInt32 = 13
-DIF_DETECT: UInt32 = 15
-DIF_INSTALLWIZARD: UInt32 = 16
-DIF_DESTROYWIZARDDATA: UInt32 = 17
-DIF_PROPERTYCHANGE: UInt32 = 18
-DIF_ENABLECLASS: UInt32 = 19
-DIF_DETECTVERIFY: UInt32 = 20
-DIF_INSTALLDEVICEFILES: UInt32 = 21
-DIF_UNREMOVE: UInt32 = 22
-DIF_SELECTBESTCOMPATDRV: UInt32 = 23
-DIF_ALLOW_INSTALL: UInt32 = 24
-DIF_REGISTERDEVICE: UInt32 = 25
-DIF_NEWDEVICEWIZARD_PRESELECT: UInt32 = 26
-DIF_NEWDEVICEWIZARD_SELECT: UInt32 = 27
-DIF_NEWDEVICEWIZARD_PREANALYZE: UInt32 = 28
-DIF_NEWDEVICEWIZARD_POSTANALYZE: UInt32 = 29
-DIF_NEWDEVICEWIZARD_FINISHINSTALL: UInt32 = 30
-DIF_UNUSED1: UInt32 = 31
-DIF_INSTALLINTERFACES: UInt32 = 32
-DIF_DETECTCANCEL: UInt32 = 33
-DIF_REGISTER_COINSTALLERS: UInt32 = 34
-DIF_ADDPROPERTYPAGE_ADVANCED: UInt32 = 35
-DIF_ADDPROPERTYPAGE_BASIC: UInt32 = 36
-DIF_RESERVED1: UInt32 = 37
-DIF_TROUBLESHOOTER: UInt32 = 38
-DIF_POWERMESSAGEWAKE: UInt32 = 39
-DIF_ADDREMOTEPROPERTYPAGE_ADVANCED: UInt32 = 40
-DIF_UPDATEDRIVER_UI: UInt32 = 41
-DIF_FINISHINSTALL_ACTION: UInt32 = 42
-DIF_RESERVED2: UInt32 = 48
-DIF_MOVEDEVICE: UInt32 = 14
-DI_SHOWOEM: Int32 = 1
-DI_SHOWCOMPAT: Int32 = 2
-DI_SHOWCLASS: Int32 = 4
-DI_SHOWALL: Int32 = 7
-DI_NOVCP: Int32 = 8
-DI_DIDCOMPAT: Int32 = 16
-DI_DIDCLASS: Int32 = 32
-DI_AUTOASSIGNRES: Int32 = 64
-DI_NEEDRESTART: Int32 = 128
-DI_NEEDREBOOT: Int32 = 256
-DI_NOBROWSE: Int32 = 512
-DI_MULTMFGS: Int32 = 1024
-DI_DISABLED: Int32 = 2048
-DI_GENERALPAGE_ADDED: Int32 = 4096
-DI_RESOURCEPAGE_ADDED: Int32 = 8192
-DI_PROPERTIES_CHANGE: Int32 = 16384
-DI_INF_IS_SORTED: Int32 = 32768
-DI_ENUMSINGLEINF: Int32 = 65536
-DI_DONOTCALLCONFIGMG: Int32 = 131072
-DI_INSTALLDISABLED: Int32 = 262144
-DI_COMPAT_FROM_CLASS: Int32 = 524288
-DI_CLASSINSTALLPARAMS: Int32 = 1048576
-DI_NODI_DEFAULTACTION: Int32 = 2097152
-DI_QUIETINSTALL: Int32 = 8388608
-DI_NOFILECOPY: Int32 = 16777216
-DI_FORCECOPY: Int32 = 33554432
-DI_DRIVERPAGE_ADDED: Int32 = 67108864
-DI_USECI_SELECTSTRINGS: Int32 = 134217728
-DI_OVERRIDE_INFFLAGS: Int32 = 268435456
-DI_PROPS_NOCHANGEUSAGE: Int32 = 536870912
-DI_NOSELECTICONS: Int32 = 1073741824
-DI_NOWRITE_IDS: Int32 = -2147483648
-DI_FLAGSEX_RESERVED2: Int32 = 1
-DI_FLAGSEX_RESERVED3: Int32 = 2
-DI_FLAGSEX_CI_FAILED: Int32 = 4
-DI_FLAGSEX_FINISHINSTALL_ACTION: Int32 = 8
-DI_FLAGSEX_DIDINFOLIST: Int32 = 16
-DI_FLAGSEX_DIDCOMPATINFO: Int32 = 32
-DI_FLAGSEX_FILTERCLASSES: Int32 = 64
-DI_FLAGSEX_SETFAILEDINSTALL: Int32 = 128
-DI_FLAGSEX_DEVICECHANGE: Int32 = 256
-DI_FLAGSEX_ALWAYSWRITEIDS: Int32 = 512
-DI_FLAGSEX_PROPCHANGE_PENDING: Int32 = 1024
-DI_FLAGSEX_ALLOWEXCLUDEDDRVS: Int32 = 2048
-DI_FLAGSEX_NOUIONQUERYREMOVE: Int32 = 4096
-DI_FLAGSEX_USECLASSFORCOMPAT: Int32 = 8192
-DI_FLAGSEX_RESERVED4: Int32 = 16384
-DI_FLAGSEX_NO_DRVREG_MODIFY: Int32 = 32768
-DI_FLAGSEX_IN_SYSTEM_SETUP: Int32 = 65536
-DI_FLAGSEX_INET_DRIVER: Int32 = 131072
-DI_FLAGSEX_APPENDDRIVERLIST: Int32 = 262144
-DI_FLAGSEX_PREINSTALLBACKUP: Int32 = 524288
-DI_FLAGSEX_BACKUPONREPLACE: Int32 = 1048576
-DI_FLAGSEX_DRIVERLIST_FROM_URL: Int32 = 2097152
-DI_FLAGSEX_RESERVED1: Int32 = 4194304
-DI_FLAGSEX_EXCLUDE_OLD_INET_DRIVERS: Int32 = 8388608
-DI_FLAGSEX_POWERPAGE_ADDED: Int32 = 16777216
-DI_FLAGSEX_FILTERSIMILARDRIVERS: Int32 = 33554432
-DI_FLAGSEX_INSTALLEDDRIVER: Int32 = 67108864
-DI_FLAGSEX_NO_CLASSLIST_NODE_MERGE: Int32 = 134217728
-DI_FLAGSEX_ALTPLATFORM_DRVSEARCH: Int32 = 268435456
-DI_FLAGSEX_RESTART_DEVICE_ONLY: Int32 = 536870912
-DI_FLAGSEX_RECURSIVESEARCH: Int32 = 1073741824
-DI_FLAGSEX_SEARCH_PUBLISHED_INFS: Int32 = -2147483648
 ENABLECLASS_QUERY: UInt32 = 0
 ENABLECLASS_SUCCESS: UInt32 = 1
 ENABLECLASS_FAILURE: UInt32 = 2
-DICS_ENABLE: UInt32 = 1
-DICS_DISABLE: UInt32 = 2
-DICS_PROPCHANGE: UInt32 = 3
-DICS_START: UInt32 = 4
-DICS_STOP: UInt32 = 5
-DICS_FLAG_GLOBAL: UInt32 = 1
-DICS_FLAG_CONFIGSPECIFIC: UInt32 = 2
-DICS_FLAG_CONFIGGENERAL: UInt32 = 4
-DI_REMOVEDEVICE_GLOBAL: UInt32 = 1
-DI_REMOVEDEVICE_CONFIGSPECIFIC: UInt32 = 2
-DI_UNREMOVEDEVICE_CONFIGSPECIFIC: UInt32 = 2
 MAX_INSTALLWIZARD_DYNAPAGES: UInt32 = 20
 NDW_INSTALLFLAG_DIDFACTDEFS: UInt32 = 1
 NDW_INSTALLFLAG_HARDWAREALLREADYIN: UInt32 = 2
-NDW_INSTALLFLAG_NEEDRESTART: Int32 = 128
-NDW_INSTALLFLAG_NEEDREBOOT: Int32 = 256
 NDW_INSTALLFLAG_NEEDSHUTDOWN: UInt32 = 512
 NDW_INSTALLFLAG_EXPRESSINTRO: UInt32 = 1024
 NDW_INSTALLFLAG_SKIPISDEVINSTALLED: UInt32 = 2048
@@ -425,38 +306,6 @@ IDD_DYNAWIZ_SELECTCLASS_PAGE: UInt32 = 10012
 IDD_DYNAWIZ_INSTALLDETECTED_PREVPAGE: UInt32 = 10006
 IDD_DYNAWIZ_INSTALLDETECTED_NEXTPAGE: UInt32 = 10007
 IDD_DYNAWIZ_INSTALLDETECTED_NODEVS: UInt32 = 10008
-DNF_DUPDESC: UInt32 = 1
-DNF_OLDDRIVER: UInt32 = 2
-DNF_EXCLUDEFROMLIST: UInt32 = 4
-DNF_NODRIVER: UInt32 = 8
-DNF_LEGACYINF: UInt32 = 16
-DNF_CLASS_DRIVER: UInt32 = 32
-DNF_COMPATIBLE_DRIVER: UInt32 = 64
-DNF_INET_DRIVER: UInt32 = 128
-DNF_UNUSED1: UInt32 = 256
-DNF_UNUSED2: UInt32 = 512
-DNF_OLD_INET_DRIVER: UInt32 = 1024
-DNF_BAD_DRIVER: UInt32 = 2048
-DNF_DUPPROVIDER: UInt32 = 4096
-DNF_INF_IS_SIGNED: UInt32 = 8192
-DNF_OEM_F6_INF: UInt32 = 16384
-DNF_DUPDRIVERVER: UInt32 = 32768
-DNF_BASIC_DRIVER: UInt32 = 65536
-DNF_AUTHENTICODE_SIGNED: UInt32 = 131072
-DNF_INSTALLEDDRIVER: UInt32 = 262144
-DNF_ALWAYSEXCLUDEFROMLIST: UInt32 = 524288
-DNF_INBOX_DRIVER: UInt32 = 1048576
-DNF_REQUESTADDITIONALSOFTWARE: UInt32 = 2097152
-DNF_UNUSED_22: UInt32 = 4194304
-DNF_UNUSED_23: UInt32 = 8388608
-DNF_UNUSED_24: UInt32 = 16777216
-DNF_UNUSED_25: UInt32 = 33554432
-DNF_UNUSED_26: UInt32 = 67108864
-DNF_UNUSED_27: UInt32 = 134217728
-DNF_UNUSED_28: UInt32 = 268435456
-DNF_UNUSED_29: UInt32 = 536870912
-DNF_UNUSED_30: UInt32 = 1073741824
-DNF_UNUSED_31: UInt32 = 2147483648
 DRIVER_HARDWAREID_RANK: UInt32 = 4095
 DRIVER_HARDWAREID_MASK: UInt32 = 2147487743
 DRIVER_UNTRUSTED_RANK: UInt32 = 2147483648
@@ -474,10 +323,6 @@ INFINFO_INF_NAME_IS_ABSOLUTE: UInt32 = 2
 INFINFO_DEFAULT_SEARCH: UInt32 = 3
 INFINFO_REVERSE_DEFAULT_SEARCH: UInt32 = 4
 INFINFO_INF_PATH_LIST_SEARCH: UInt32 = 5
-FILE_COMPRESSION_NONE: UInt32 = 0
-FILE_COMPRESSION_WINLZA: UInt32 = 1
-FILE_COMPRESSION_MSZIP: UInt32 = 2
-FILE_COMPRESSION_NTCAB: UInt32 = 3
 SRCLIST_TEMPORARY: UInt32 = 1
 SRCLIST_NOBROWSE: UInt32 = 2
 SRCLIST_SYSTEM: UInt32 = 16
@@ -593,19 +438,11 @@ LogSevWarning: UInt32 = 1
 LogSevError: UInt32 = 2
 LogSevFatalError: UInt32 = 3
 LogSevMaximum: UInt32 = 4
-DICD_GENERATE_ID: UInt32 = 1
-DICD_INHERIT_CLASSDRVS: UInt32 = 2
 DIOD_INHERIT_CLASSDRVS: UInt32 = 2
 DIOD_CANCEL_REMOVE: UInt32 = 4
 DIODI_NO_ADD: UInt32 = 1
 SPRDI_FIND_DUPS: UInt32 = 1
 SPDIT_NODRIVER: UInt32 = 0
-DIGCF_DEFAULT: UInt32 = 1
-DIGCF_PRESENT: UInt32 = 2
-DIGCF_ALLCLASSES: UInt32 = 4
-DIGCF_PROFILE: UInt32 = 8
-DIGCF_DEVICEINTERFACE: UInt32 = 16
-DIGCF_INTERFACEDEVICE: UInt32 = 16
 DIBCI_NOINSTALLCLASS: UInt32 = 1
 DIBCI_NODISPLAYCLASS: UInt32 = 2
 DIOCR_INSTALLER: UInt32 = 1
@@ -615,44 +452,6 @@ DIREG_DRV: UInt32 = 2
 DIREG_BOTH: UInt32 = 4
 DICLASSPROP_INSTALLER: UInt32 = 1
 DICLASSPROP_INTERFACE: UInt32 = 2
-SPDRP_DEVICEDESC: UInt32 = 0
-SPDRP_HARDWAREID: UInt32 = 1
-SPDRP_COMPATIBLEIDS: UInt32 = 2
-SPDRP_UNUSED0: UInt32 = 3
-SPDRP_SERVICE: UInt32 = 4
-SPDRP_UNUSED1: UInt32 = 5
-SPDRP_UNUSED2: UInt32 = 6
-SPDRP_CLASS: UInt32 = 7
-SPDRP_CLASSGUID: UInt32 = 8
-SPDRP_DRIVER: UInt32 = 9
-SPDRP_CONFIGFLAGS: UInt32 = 10
-SPDRP_MFG: UInt32 = 11
-SPDRP_FRIENDLYNAME: UInt32 = 12
-SPDRP_LOCATION_INFORMATION: UInt32 = 13
-SPDRP_PHYSICAL_DEVICE_OBJECT_NAME: UInt32 = 14
-SPDRP_CAPABILITIES: UInt32 = 15
-SPDRP_UI_NUMBER: UInt32 = 16
-SPDRP_UPPERFILTERS: UInt32 = 17
-SPDRP_LOWERFILTERS: UInt32 = 18
-SPDRP_BUSTYPEGUID: UInt32 = 19
-SPDRP_LEGACYBUSTYPE: UInt32 = 20
-SPDRP_BUSNUMBER: UInt32 = 21
-SPDRP_ENUMERATOR_NAME: UInt32 = 22
-SPDRP_SECURITY: UInt32 = 23
-SPDRP_SECURITY_SDS: UInt32 = 24
-SPDRP_DEVTYPE: UInt32 = 25
-SPDRP_EXCLUSIVE: UInt32 = 26
-SPDRP_CHARACTERISTICS: UInt32 = 27
-SPDRP_ADDRESS: UInt32 = 28
-SPDRP_UI_NUMBER_DESC_FORMAT: UInt32 = 29
-SPDRP_DEVICE_POWER_DATA: UInt32 = 30
-SPDRP_REMOVAL_POLICY: UInt32 = 31
-SPDRP_REMOVAL_POLICY_HW_DEFAULT: UInt32 = 32
-SPDRP_REMOVAL_POLICY_OVERRIDE: UInt32 = 33
-SPDRP_INSTALL_STATE: UInt32 = 34
-SPDRP_LOCATION_PATHS: UInt32 = 35
-SPDRP_BASE_CONTAINERID: UInt32 = 36
-SPDRP_MAXIMUM_PROPERTY: UInt32 = 37
 SPCRP_UPPERFILTERS: UInt32 = 17
 SPCRP_LOWERFILTERS: UInt32 = 18
 SPCRP_SECURITY: UInt32 = 23
@@ -1288,17 +1087,17 @@ def SetupGetMultiSzFieldW(Context: POINTER(win32more.Windows.Win32.Devices.Devic
 @winfunctype('SETUPAPI.dll')
 def SetupGetBinaryField(Context: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.INFCONTEXT), FieldIndex: UInt32, ReturnBuffer: POINTER(Byte), ReturnBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupGetFileCompressionInfoA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileName: POINTER(win32more.Windows.Win32.Foundation.PSTR), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(UInt32)) -> UInt32: ...
+def SetupGetFileCompressionInfoA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileName: POINTER(win32more.Windows.Win32.Foundation.PSTR), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> UInt32: ...
 @winfunctype('SETUPAPI.dll')
-def SetupGetFileCompressionInfoW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileName: POINTER(win32more.Windows.Win32.Foundation.PWSTR), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(UInt32)) -> UInt32: ...
+def SetupGetFileCompressionInfoW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileName: POINTER(win32more.Windows.Win32.Foundation.PWSTR), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> UInt32: ...
 @winfunctype('SETUPAPI.dll')
-def SetupGetFileCompressionInfoExA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileNameBuffer: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileNameBufferLen: UInt32, RequiredBufferLen: POINTER(UInt32), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupGetFileCompressionInfoExA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileNameBuffer: win32more.Windows.Win32.Foundation.PSTR, ActualSourceFileNameBufferLen: UInt32, RequiredBufferLen: POINTER(UInt32), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupGetFileCompressionInfoExW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileNameBuffer: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileNameBufferLen: UInt32, RequiredBufferLen: POINTER(UInt32), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupGetFileCompressionInfoExW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileNameBuffer: win32more.Windows.Win32.Foundation.PWSTR, ActualSourceFileNameBufferLen: UInt32, RequiredBufferLen: POINTER(UInt32), SourceFileSize: POINTER(UInt32), TargetFileSize: POINTER(UInt32), CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDecompressOrCopyFileA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, TargetFileName: win32more.Windows.Win32.Foundation.PSTR, CompressionType: POINTER(UInt32)) -> UInt32: ...
+def SetupDecompressOrCopyFileA(SourceFileName: win32more.Windows.Win32.Foundation.PSTR, TargetFileName: win32more.Windows.Win32.Foundation.PSTR, CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> UInt32: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDecompressOrCopyFileW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, TargetFileName: win32more.Windows.Win32.Foundation.PWSTR, CompressionType: POINTER(UInt32)) -> UInt32: ...
+def SetupDecompressOrCopyFileW(SourceFileName: win32more.Windows.Win32.Foundation.PWSTR, TargetFileName: win32more.Windows.Win32.Foundation.PWSTR, CompressionType: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE)) -> UInt32: ...
 @winfunctype('SETUPAPI.dll')
 def SetupGetSourceFileLocationA(InfHandle: VoidPtr, InfContext: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.INFCONTEXT), FileName: win32more.Windows.Win32.Foundation.PSTR, SourceId: POINTER(UInt32), ReturnBuffer: win32more.Windows.Win32.Foundation.PSTR, ReturnBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -1584,9 +1383,9 @@ def SetupDiGetDeviceInfoListDetailA(DeviceInfoSet: win32more.Windows.Win32.Devic
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetDeviceInfoListDetailW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoSetDetailData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_LIST_DETAIL_DATA_W)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiCreateDeviceInfoA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceName: win32more.Windows.Win32.Foundation.PSTR, ClassGuid: POINTER(Guid), DeviceDescription: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, CreationFlags: UInt32, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiCreateDeviceInfoA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceName: win32more.Windows.Win32.Foundation.PSTR, ClassGuid: POINTER(Guid), DeviceDescription: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, CreationFlags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CREATION_FLAGS, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiCreateDeviceInfoW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceName: win32more.Windows.Win32.Foundation.PWSTR, ClassGuid: POINTER(Guid), DeviceDescription: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, CreationFlags: UInt32, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiCreateDeviceInfoW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceName: win32more.Windows.Win32.Foundation.PWSTR, ClassGuid: POINTER(Guid), DeviceDescription: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, CreationFlags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CREATION_FLAGS, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiOpenDeviceInfoA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInstanceId: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, OpenFlags: UInt32, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -1628,13 +1427,13 @@ def SetupDiSetDeviceInterfaceDefault(DeviceInfoSet: win32more.Windows.Win32.Devi
 @winfunctype('SETUPAPI.dll')
 def SetupDiRegisterDeviceInfo(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Flags: UInt32, CompareProc: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PSP_DETSIG_CMPPROC, CompareContext: VoidPtr, DupDeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiBuildDriverInfoList(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_BUILD_DRIVER_DRIVER_TYPE) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiBuildDriverInfoList(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiCancelDriverInfoSearch(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiEnumDriverInfoA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: UInt32, MemberIndex: UInt32, DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_A)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiEnumDriverInfoA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE, MemberIndex: UInt32, DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_A)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiEnumDriverInfoW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: UInt32, MemberIndex: UInt32, DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_W)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiEnumDriverInfoW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE, MemberIndex: UInt32, DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_W)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetSelectedDriverA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_A)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -1648,15 +1447,15 @@ def SetupDiGetDriverInfoDetailA(DeviceInfoSet: win32more.Windows.Win32.Devices.D
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetDriverInfoDetailW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DATA_V2_W), DriverInfoDetailData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DRVINFO_DETAIL_DATA_W), DriverInfoDetailDataSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiDestroyDriverInfoList(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiDestroyDriverInfoList(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), DriverType: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetClassDevsA(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: UInt32) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
+def SetupDiGetClassDevsA(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetClassDevsW(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: UInt32) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
+def SetupDiGetClassDevsW(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetClassDevsExA(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: UInt32, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, MachineName: win32more.Windows.Win32.Foundation.PSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
+def SetupDiGetClassDevsExA(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, MachineName: win32more.Windows.Win32.Foundation.PSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetClassDevsExW(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: UInt32, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, MachineName: win32more.Windows.Win32.Foundation.PWSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
+def SetupDiGetClassDevsExW(ClassGuid: POINTER(Guid), Enumerator: win32more.Windows.Win32.Foundation.PWSTR, hwndParent: win32more.Windows.Win32.Foundation.HWND, Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, MachineName: win32more.Windows.Win32.Foundation.PWSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetINFClassA(InfName: win32more.Windows.Win32.Foundation.PSTR, ClassGuid: POINTER(Guid), ClassName: win32more.Windows.Win32.Foundation.PSTR, ClassNameSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -1676,7 +1475,7 @@ def SetupDiGetClassDescriptionExA(ClassGuid: POINTER(Guid), ClassDescription: wi
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetClassDescriptionExW(ClassGuid: POINTER(Guid), ClassDescription: win32more.Windows.Win32.Foundation.PWSTR, ClassDescriptionSize: UInt32, RequiredSize: POINTER(UInt32), MachineName: win32more.Windows.Win32.Foundation.PWSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiCallClassInstaller(InstallFunction: UInt32, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiCallClassInstaller(InstallFunction: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION, DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiSelectDevice(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -1756,17 +1555,17 @@ def SetupDiSetClassPropertyW(ClassGuid: POINTER(Guid), PropertyKey: POINTER(win3
 @winfunctype('SETUPAPI.dll')
 def SetupDiSetClassPropertyExW(ClassGuid: POINTER(Guid), PropertyKey: POINTER(win32more.Windows.Win32.Devices.Properties.DEVPROPKEY), PropertyType: win32more.Windows.Win32.Devices.Properties.DEVPROPTYPE, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, Flags: UInt32, MachineName: win32more.Windows.Win32.Foundation.PWSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetDeviceRegistryPropertyA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: UInt32, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiGetDeviceRegistryPropertyA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiGetDeviceRegistryPropertyW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: UInt32, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiGetDeviceRegistryPropertyW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetClassRegistryPropertyA(ClassGuid: POINTER(Guid), Property: UInt32, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32), MachineName: win32more.Windows.Win32.Foundation.PSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiGetClassRegistryPropertyW(ClassGuid: POINTER(Guid), Property: UInt32, PropertyRegDataType: POINTER(UInt32), PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, RequiredSize: POINTER(UInt32), MachineName: win32more.Windows.Win32.Foundation.PWSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiSetDeviceRegistryPropertyA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: UInt32, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiSetDeviceRegistryPropertyA(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
-def SetupDiSetDeviceRegistryPropertyW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: UInt32, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def SetupDiSetDeviceRegistryPropertyW(DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO, DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA), Property: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
 def SetupDiSetClassRegistryPropertyA(ClassGuid: POINTER(Guid), Property: UInt32, PropertyBuffer: POINTER(Byte), PropertyBufferSize: UInt32, MachineName: win32more.Windows.Win32.Foundation.PSTR, Reserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('SETUPAPI.dll')
@@ -2385,7 +2184,7 @@ if ARCH in 'X64,ARM64':
         DiskName: win32more.Windows.Win32.Foundation.PSTR
         SetId: UInt16
         CabinetNumber: UInt16
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class CABINET_INFO_A(EasyCastStructure):
         CabinetPath: win32more.Windows.Win32.Foundation.PSTR
         CabinetFile: win32more.Windows.Win32.Foundation.PSTR
@@ -2400,7 +2199,7 @@ if ARCH in 'X64,ARM64':
         DiskName: win32more.Windows.Win32.Foundation.PWSTR
         SetId: UInt16
         CabinetNumber: UInt16
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class CABINET_INFO_W(EasyCastStructure):
         CabinetPath: win32more.Windows.Win32.Foundation.PWSTR
         CabinetFile: win32more.Windows.Win32.Foundation.PWSTR
@@ -2640,7 +2439,7 @@ if ARCH in 'X64,ARM64':
         PostProcessing: win32more.Windows.Win32.Foundation.BOOL
         InstallResult: UInt32
         PrivateData: VoidPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class COINSTALLER_CONTEXT_DATA(EasyCastStructure):
         PostProcessing: win32more.Windows.Win32.Foundation.BOOL
         InstallResult: UInt32
@@ -2803,6 +2602,50 @@ DIUNINSTALLDRIVER_FLAGS = UInt32
 DIURFLAG_VALID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DIUNINSTALLDRIVER_FLAGS = 3
 DIURFLAG_NO_REMOVE_INF: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DIUNINSTALLDRIVER_FLAGS = 1
 DIURFLAG_RESERVED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DIUNINSTALLDRIVER_FLAGS = 2
+DI_FUNCTION = UInt32
+DIF_SELECTDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 1
+DIF_INSTALLDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 2
+DIF_ASSIGNRESOURCES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 3
+DIF_PROPERTIES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 4
+DIF_REMOVE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 5
+DIF_FIRSTTIMESETUP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 6
+DIF_FOUNDDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 7
+DIF_SELECTCLASSDRIVERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 8
+DIF_VALIDATECLASSDRIVERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 9
+DIF_INSTALLCLASSDRIVERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 10
+DIF_CALCDISKSPACE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 11
+DIF_DESTROYPRIVATEDATA: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 12
+DIF_VALIDATEDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 13
+DIF_DETECT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 15
+DIF_INSTALLWIZARD: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 16
+DIF_DESTROYWIZARDDATA: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 17
+DIF_PROPERTYCHANGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 18
+DIF_ENABLECLASS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 19
+DIF_DETECTVERIFY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 20
+DIF_INSTALLDEVICEFILES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 21
+DIF_UNREMOVE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 22
+DIF_SELECTBESTCOMPATDRV: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 23
+DIF_ALLOW_INSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 24
+DIF_REGISTERDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 25
+DIF_NEWDEVICEWIZARD_PRESELECT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 26
+DIF_NEWDEVICEWIZARD_SELECT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 27
+DIF_NEWDEVICEWIZARD_PREANALYZE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 28
+DIF_NEWDEVICEWIZARD_POSTANALYZE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 29
+DIF_NEWDEVICEWIZARD_FINISHINSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 30
+DIF_UNUSED1: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 31
+DIF_INSTALLINTERFACES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 32
+DIF_DETECTCANCEL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 33
+DIF_REGISTER_COINSTALLERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 34
+DIF_ADDPROPERTYPAGE_ADVANCED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 35
+DIF_ADDPROPERTYPAGE_BASIC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 36
+DIF_RESERVED1: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 37
+DIF_TROUBLESHOOTER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 38
+DIF_POWERMESSAGEWAKE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 39
+DIF_ADDREMOTEPROPERTYPAGE_ADVANCED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 40
+DIF_UPDATEDRIVER_UI: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 41
+DIF_FINISHINSTALL_ACTION: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 42
+DIF_RESERVED2: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 48
+DIF_MOVEDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION = 14
 class DMA_DES(EasyCastStructure):
     DD_Count: UInt32
     DD_Type: UInt32
@@ -2812,7 +2655,7 @@ class DMA_DES(EasyCastStructure):
 class DMA_RANGE(EasyCastStructure):
     DR_Min: UInt32
     DR_Max: UInt32
-    DR_Flags: UInt32
+    DR_Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DD_FLAGS
     _pack_ = 1
 class DMA_RESOURCE(EasyCastStructure):
     DMA_Header: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DMA_DES
@@ -2824,7 +2667,7 @@ if ARCH in 'X64,ARM64':
         Source: win32more.Windows.Win32.Foundation.PSTR
         Win32Error: UInt32
         Flags: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILEPATHS_A(EasyCastStructure):
         Target: win32more.Windows.Win32.Foundation.PSTR
         Source: win32more.Windows.Win32.Foundation.PSTR
@@ -2840,7 +2683,7 @@ if ARCH in 'X64,ARM64':
         DigitalSigner: win32more.Windows.Win32.Foundation.PSTR
         Version: win32more.Windows.Win32.Foundation.PSTR
         CatalogFile: win32more.Windows.Win32.Foundation.PSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILEPATHS_SIGNERINFO_A(EasyCastStructure):
         Target: win32more.Windows.Win32.Foundation.PSTR
         Source: win32more.Windows.Win32.Foundation.PSTR
@@ -2859,7 +2702,7 @@ if ARCH in 'X64,ARM64':
         DigitalSigner: win32more.Windows.Win32.Foundation.PWSTR
         Version: win32more.Windows.Win32.Foundation.PWSTR
         CatalogFile: win32more.Windows.Win32.Foundation.PWSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILEPATHS_SIGNERINFO_W(EasyCastStructure):
         Target: win32more.Windows.Win32.Foundation.PWSTR
         Source: win32more.Windows.Win32.Foundation.PWSTR
@@ -2875,13 +2718,18 @@ if ARCH in 'X64,ARM64':
         Source: win32more.Windows.Win32.Foundation.PWSTR
         Win32Error: UInt32
         Flags: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILEPATHS_W(EasyCastStructure):
         Target: win32more.Windows.Win32.Foundation.PWSTR
         Source: win32more.Windows.Win32.Foundation.PWSTR
         Win32Error: UInt32
         Flags: UInt32
         _pack_ = 1
+FILE_COMPRESSION_TYPE = UInt32
+FILE_COMPRESSION_NONE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE = 0
+FILE_COMPRESSION_WINLZA: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE = 1
+FILE_COMPRESSION_MSZIP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE = 2
+FILE_COMPRESSION_NTCAB: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.FILE_COMPRESSION_TYPE = 3
 if ARCH in 'X64,ARM64':
     class FILE_IN_CABINET_INFO_A(EasyCastStructure):
         NameInCabinet: win32more.Windows.Win32.Foundation.PSTR
@@ -2891,7 +2739,7 @@ if ARCH in 'X64,ARM64':
         DosTime: UInt16
         DosAttribs: UInt16
         FullTargetName: win32more.Windows.Win32.Foundation.CHAR * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILE_IN_CABINET_INFO_A(EasyCastStructure):
         NameInCabinet: win32more.Windows.Win32.Foundation.PSTR
         FileSize: UInt32
@@ -2910,7 +2758,7 @@ if ARCH in 'X64,ARM64':
         DosTime: UInt16
         DosAttribs: UInt16
         FullTargetName: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FILE_IN_CABINET_INFO_W(EasyCastStructure):
         NameInCabinet: win32more.Windows.Win32.Foundation.PWSTR
         FileSize: UInt32
@@ -2938,7 +2786,7 @@ if ARCH in 'X64,ARM64':
         CurrentInf: VoidPtr
         Section: UInt32
         Line: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class INFCONTEXT(EasyCastStructure):
         Inf: VoidPtr
         CurrentInf: VoidPtr
@@ -2976,7 +2824,7 @@ class IO_RANGE(EasyCastStructure):
     IOR_nPorts: UInt32
     IOR_Min: UInt64
     IOR_Max: UInt64
-    IOR_RangeFlags: UInt32
+    IOR_RangeFlags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.IOD_DESFLAGS
     IOR_Alias: UInt64
     _pack_ = 1
 class IO_RESOURCE(EasyCastStructure):
@@ -3008,7 +2856,7 @@ class IRQ_DES_64(EasyCastStructure):
 class IRQ_RANGE(EasyCastStructure):
     IRQR_Min: UInt32
     IRQR_Max: UInt32
-    IRQR_Flags: UInt32
+    IRQR_Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.IRQD_FLAGS
     _pack_ = 1
 class IRQ_RESOURCE_32(EasyCastStructure):
     IRQ_Header: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.IRQ_DES_32
@@ -3078,7 +2926,7 @@ class MEM_RANGE(EasyCastStructure):
     MR_nBytes: UInt32
     MR_Min: UInt64
     MR_Max: UInt64
-    MR_Flags: UInt32
+    MR_Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.MD_FLAGS
     MR_Reserved: UInt32
     _pack_ = 1
 class MEM_RESOURCE(EasyCastStructure):
@@ -3192,9 +3040,192 @@ SPQ_SCAN_PRUNE_DELREN: win32more.Windows.Win32.Devices.DeviceAndDriverInstallati
 SPQ_SCAN_FILE_PRESENCE_WITHOUT_SOURCE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUPSCANFILEQUEUE_FLAGS = 256
 SPQ_SCAN_FILE_COMPARISON: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUPSCANFILEQUEUE_FLAGS = 512
 SPQ_SCAN_ACTIVATE_DRP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUPSCANFILEQUEUE_FLAGS = 1024
-SETUP_DI_BUILD_DRIVER_DRIVER_TYPE = UInt32
-SPDIT_CLASSDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_BUILD_DRIVER_DRIVER_TYPE = 1
-SPDIT_COMPATDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_BUILD_DRIVER_DRIVER_TYPE = 2
+SETUP_DI_DEVICE_CONFIGURATION_FLAGS = UInt32
+CONFIGFLAG_DISABLED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 1
+CONFIGFLAG_REMOVED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 2
+CONFIGFLAG_MANUAL_INSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 4
+CONFIGFLAG_IGNORE_BOOT_LC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 8
+CONFIGFLAG_NET_BOOT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 16
+CONFIGFLAG_REINSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 32
+CONFIGFLAG_FAILEDINSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 64
+CONFIGFLAG_CANTSTOPACHILD: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 128
+CONFIGFLAG_OKREMOVEROM: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 256
+CONFIGFLAG_NOREMOVEEXIT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 512
+CONFIGFLAG_FINISH_INSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 1024
+CONFIGFLAG_NEEDS_FORCED_CONFIG: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 2048
+CONFIGFLAG_NETBOOT_CARD: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 4096
+CONFIGFLAG_PARTIAL_LOG_CONF: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 8192
+CONFIGFLAG_SUPPRESS_SURPRISE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 16384
+CONFIGFLAG_VERIFY_HARDWARE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 32768
+CONFIGFLAG_FINISHINSTALL_UI: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 65536
+CONFIGFLAG_FINISHINSTALL_ACTION: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 131072
+CONFIGFLAG_BOOT_DEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 262144
+CONFIGFLAG_NEEDS_CLASS_CONFIG: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CONFIGURATION_FLAGS = 524288
+SETUP_DI_DEVICE_CREATION_FLAGS = UInt32
+DICD_GENERATE_ID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CREATION_FLAGS = 1
+DICD_INHERIT_CLASSDRVS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_CREATION_FLAGS = 2
+SETUP_DI_DEVICE_INSTALL_FLAGS = UInt32
+DI_SHOWOEM: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 1
+DI_SHOWCOMPAT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 2
+DI_SHOWCLASS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 4
+DI_SHOWALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 7
+DI_NOVCP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 8
+DI_DIDCOMPAT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 16
+DI_DIDCLASS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 32
+DI_AUTOASSIGNRES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 64
+DI_NEEDRESTART: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 128
+DI_NEEDREBOOT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 256
+DI_NOBROWSE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 512
+DI_MULTMFGS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 1024
+DI_DISABLED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 2048
+DI_GENERALPAGE_ADDED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 4096
+DI_RESOURCEPAGE_ADDED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 8192
+DI_PROPERTIES_CHANGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 16384
+DI_INF_IS_SORTED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 32768
+DI_ENUMSINGLEINF: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 65536
+DI_DONOTCALLCONFIGMG: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 131072
+DI_INSTALLDISABLED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 262144
+DI_COMPAT_FROM_CLASS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 524288
+DI_CLASSINSTALLPARAMS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 1048576
+DI_NODI_DEFAULTACTION: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 2097152
+DI_QUIETINSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 8388608
+DI_NOFILECOPY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 16777216
+DI_FORCECOPY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 33554432
+DI_DRIVERPAGE_ADDED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 67108864
+DI_USECI_SELECTSTRINGS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 134217728
+DI_OVERRIDE_INFFLAGS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 268435456
+DI_PROPS_NOCHANGEUSAGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 536870912
+DI_NOSELECTICONS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 1073741824
+DI_NOWRITE_IDS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 2147483648
+DI_UNREMOVEDEVICE_CONFIGSPECIFIC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS = 2
+SETUP_DI_DEVICE_INSTALL_FLAGS_EX = UInt32
+DI_FLAGSEX_RESERVED2: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 1
+DI_FLAGSEX_RESERVED3: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 2
+DI_FLAGSEX_CI_FAILED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 4
+DI_FLAGSEX_FINISHINSTALL_ACTION: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 8
+DI_FLAGSEX_DIDINFOLIST: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 16
+DI_FLAGSEX_DIDCOMPATINFO: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 32
+DI_FLAGSEX_FILTERCLASSES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 64
+DI_FLAGSEX_SETFAILEDINSTALL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 128
+DI_FLAGSEX_DEVICECHANGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 256
+DI_FLAGSEX_ALWAYSWRITEIDS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 512
+DI_FLAGSEX_PROPCHANGE_PENDING: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 1024
+DI_FLAGSEX_ALLOWEXCLUDEDDRVS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 2048
+DI_FLAGSEX_NOUIONQUERYREMOVE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 4096
+DI_FLAGSEX_USECLASSFORCOMPAT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 8192
+DI_FLAGSEX_RESERVED4: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 16384
+DI_FLAGSEX_NO_DRVREG_MODIFY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 32768
+DI_FLAGSEX_IN_SYSTEM_SETUP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 65536
+DI_FLAGSEX_INET_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 131072
+DI_FLAGSEX_APPENDDRIVERLIST: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 262144
+DI_FLAGSEX_PREINSTALLBACKUP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 524288
+DI_FLAGSEX_BACKUPONREPLACE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 1048576
+DI_FLAGSEX_DRIVERLIST_FROM_URL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 2097152
+DI_FLAGSEX_RESERVED1: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 4194304
+DI_FLAGSEX_EXCLUDE_OLD_INET_DRIVERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 8388608
+DI_FLAGSEX_POWERPAGE_ADDED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 16777216
+DI_FLAGSEX_FILTERSIMILARDRIVERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 33554432
+DI_FLAGSEX_INSTALLEDDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 67108864
+DI_FLAGSEX_NO_CLASSLIST_NODE_MERGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 134217728
+DI_FLAGSEX_ALTPLATFORM_DRVSEARCH: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 268435456
+DI_FLAGSEX_RESTART_DEVICE_ONLY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 536870912
+DI_FLAGSEX_RECURSIVESEARCH: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 1073741824
+DI_FLAGSEX_SEARCH_PUBLISHED_INFS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX = 2147483648
+SETUP_DI_DRIVER_INSTALL_FLAGS = UInt32
+DNF_DUPDESC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 1
+DNF_OLDDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 2
+DNF_EXCLUDEFROMLIST: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 4
+DNF_NODRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 8
+DNF_LEGACYINF: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 16
+DNF_CLASS_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 32
+DNF_COMPATIBLE_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 64
+DNF_INET_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 128
+DNF_UNUSED1: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 256
+DNF_UNUSED2: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 512
+DNF_OLD_INET_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 1024
+DNF_BAD_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 2048
+DNF_DUPPROVIDER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 4096
+DNF_INF_IS_SIGNED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 8192
+DNF_OEM_F6_INF: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 16384
+DNF_DUPDRIVERVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 32768
+DNF_BASIC_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 65536
+DNF_AUTHENTICODE_SIGNED: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 131072
+DNF_INSTALLEDDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 262144
+DNF_ALWAYSEXCLUDEFROMLIST: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 524288
+DNF_INBOX_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 1048576
+DNF_REQUESTADDITIONALSOFTWARE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 2097152
+DNF_UNUSED_22: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 4194304
+DNF_UNUSED_23: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 8388608
+DNF_UNUSED_24: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 16777216
+DNF_UNUSED_25: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 33554432
+DNF_UNUSED_26: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 67108864
+DNF_UNUSED_27: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 134217728
+DNF_UNUSED_28: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 268435456
+DNF_UNUSED_29: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 536870912
+DNF_UNUSED_30: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 1073741824
+DNF_UNUSED_31: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS = 2147483648
+SETUP_DI_DRIVER_TYPE = UInt32
+SPDIT_CLASSDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE = 1
+SPDIT_COMPATDRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_TYPE = 2
+SETUP_DI_GET_CLASS_DEVS_FLAGS = UInt32
+DIGCF_DEFAULT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 1
+DIGCF_PRESENT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 2
+DIGCF_ALLCLASSES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 4
+DIGCF_PROFILE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 8
+DIGCF_DEVICEINTERFACE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 16
+DIGCF_INTERFACEDEVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_GET_CLASS_DEVS_FLAGS = 16
+SETUP_DI_PROPERTY_CHANGE_SCOPE = UInt32
+DICS_FLAG_GLOBAL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_PROPERTY_CHANGE_SCOPE = 1
+DICS_FLAG_CONFIGSPECIFIC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_PROPERTY_CHANGE_SCOPE = 2
+DICS_FLAG_CONFIGGENERAL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_PROPERTY_CHANGE_SCOPE = 4
+SETUP_DI_REGISTRY_PROPERTY = UInt32
+SPDRP_DEVICEDESC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 0
+SPDRP_HARDWAREID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 1
+SPDRP_COMPATIBLEIDS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 2
+SPDRP_UNUSED0: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 3
+SPDRP_SERVICE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 4
+SPDRP_UNUSED1: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 5
+SPDRP_UNUSED2: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 6
+SPDRP_CLASS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 7
+SPDRP_CLASSGUID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 8
+SPDRP_DRIVER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 9
+SPDRP_CONFIGFLAGS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 10
+SPDRP_MFG: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 11
+SPDRP_FRIENDLYNAME: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 12
+SPDRP_LOCATION_INFORMATION: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 13
+SPDRP_PHYSICAL_DEVICE_OBJECT_NAME: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 14
+SPDRP_CAPABILITIES: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 15
+SPDRP_UI_NUMBER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 16
+SPDRP_UPPERFILTERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 17
+SPDRP_LOWERFILTERS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 18
+SPDRP_BUSTYPEGUID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 19
+SPDRP_LEGACYBUSTYPE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 20
+SPDRP_BUSNUMBER: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 21
+SPDRP_ENUMERATOR_NAME: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 22
+SPDRP_SECURITY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 23
+SPDRP_SECURITY_SDS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 24
+SPDRP_DEVTYPE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 25
+SPDRP_EXCLUSIVE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 26
+SPDRP_CHARACTERISTICS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 27
+SPDRP_ADDRESS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 28
+SPDRP_UI_NUMBER_DESC_FORMAT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 29
+SPDRP_DEVICE_POWER_DATA: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 30
+SPDRP_REMOVAL_POLICY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 31
+SPDRP_REMOVAL_POLICY_HW_DEFAULT: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 32
+SPDRP_REMOVAL_POLICY_OVERRIDE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 33
+SPDRP_INSTALL_STATE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 34
+SPDRP_LOCATION_PATHS: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 35
+SPDRP_BASE_CONTAINERID: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 36
+SPDRP_MAXIMUM_PROPERTY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REGISTRY_PROPERTY = 37
+SETUP_DI_REMOVE_DEVICE_SCOPE = UInt32
+DI_REMOVEDEVICE_GLOBAL: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REMOVE_DEVICE_SCOPE = 1
+DI_REMOVEDEVICE_CONFIGSPECIFIC: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REMOVE_DEVICE_SCOPE = 2
+SETUP_DI_STATE_CHANGE = UInt32
+DICS_ENABLE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE = 1
+DICS_DISABLE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE = 2
+DICS_PROPCHANGE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE = 3
+DICS_START: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE = 4
+DICS_STOP: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE = 5
 SETUP_FILE_OPERATION = UInt32
 FILEOP_DELETE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_FILE_OPERATION = 2
 FILEOP_COPY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_FILE_OPERATION = 0
@@ -3206,7 +3237,7 @@ if ARCH in 'X64,ARM64':
         SourcePath: win32more.Windows.Win32.Foundation.PSTR
         SourceFile: win32more.Windows.Win32.Foundation.PSTR
         Flags: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SOURCE_MEDIA_A(EasyCastStructure):
         Reserved: win32more.Windows.Win32.Foundation.PSTR
         Tagfile: win32more.Windows.Win32.Foundation.PSTR
@@ -3223,7 +3254,7 @@ if ARCH in 'X64,ARM64':
         SourcePath: win32more.Windows.Win32.Foundation.PWSTR
         SourceFile: win32more.Windows.Win32.Foundation.PWSTR
         Flags: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SOURCE_MEDIA_W(EasyCastStructure):
         Reserved: win32more.Windows.Win32.Foundation.PWSTR
         Tagfile: win32more.Windows.Win32.Foundation.PWSTR
@@ -3259,7 +3290,7 @@ if ARCH in 'X64,ARM64':
         MinorVersion: UInt32
         ProcessorArchitecture: UInt16
         Reserved: UInt16
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ALTPLATFORM_INFO_V1(EasyCastStructure):
         cbSize: UInt32
         Platform: win32more.Windows.Win32.System.Diagnostics.Debug.VER_PLATFORM
@@ -3274,20 +3305,20 @@ if ARCH in 'X64,ARM64':
         Platform: win32more.Windows.Win32.System.Diagnostics.Debug.VER_PLATFORM
         MajorVersion: UInt32
         MinorVersion: UInt32
-        ProcessorArchitecture: UInt16
+        ProcessorArchitecture: win32more.Windows.Win32.System.SystemInformation.PROCESSOR_ARCHITECTURE
         Anonymous: _Anonymous_e__Union
         FirstValidatedMajorVersion: UInt32
         FirstValidatedMinorVersion: UInt32
         class _Anonymous_e__Union(EasyCastUnion):
             Reserved: UInt16
             Flags: UInt16
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ALTPLATFORM_INFO_V2(EasyCastStructure):
         cbSize: UInt32
         Platform: win32more.Windows.Win32.System.Diagnostics.Debug.VER_PLATFORM
         MajorVersion: UInt32
         MinorVersion: UInt32
-        ProcessorArchitecture: UInt16
+        ProcessorArchitecture: win32more.Windows.Win32.System.SystemInformation.PROCESSOR_ARCHITECTURE
         Anonymous: _Anonymous_e__Union
         FirstValidatedMajorVersion: UInt32
         FirstValidatedMinorVersion: UInt32
@@ -3312,7 +3343,7 @@ if ARCH in 'X64,ARM64':
         class _Anonymous_e__Union(EasyCastUnion):
             Reserved: UInt16
             Flags: UInt16
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ALTPLATFORM_INFO_V3(EasyCastStructure):
         cbSize: UInt32
         Platform: UInt32
@@ -3335,7 +3366,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         FullInfPath: win32more.Windows.Win32.Foundation.CHAR * 260
         FilenameOffset: Int32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_BACKUP_QUEUE_PARAMS_V1_A(EasyCastStructure):
         cbSize: UInt32
         FullInfPath: win32more.Windows.Win32.Foundation.CHAR * 260
@@ -3346,7 +3377,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         FullInfPath: Char * 260
         FilenameOffset: Int32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_BACKUP_QUEUE_PARAMS_V1_W(EasyCastStructure):
         cbSize: UInt32
         FullInfPath: Char * 260
@@ -3358,7 +3389,7 @@ if ARCH in 'X64,ARM64':
         FullInfPath: win32more.Windows.Win32.Foundation.CHAR * 260
         FilenameOffset: Int32
         ReinstallInstance: win32more.Windows.Win32.Foundation.CHAR * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_BACKUP_QUEUE_PARAMS_V2_A(EasyCastStructure):
         cbSize: UInt32
         FullInfPath: win32more.Windows.Win32.Foundation.CHAR * 260
@@ -3371,7 +3402,7 @@ if ARCH in 'X64,ARM64':
         FullInfPath: Char * 260
         FilenameOffset: Int32
         ReinstallInstance: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_BACKUP_QUEUE_PARAMS_V2_W(EasyCastStructure):
         cbSize: UInt32
         FullInfPath: Char * 260
@@ -3383,7 +3414,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         ImageList: win32more.Windows.Win32.UI.Controls.HIMAGELIST
         Reserved: UIntPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_CLASSIMAGELIST_DATA(EasyCastStructure):
         cbSize: UInt32
         ImageList: win32more.Windows.Win32.UI.Controls.HIMAGELIST
@@ -3392,11 +3423,11 @@ if ARCH in 'X86':
 if ARCH in 'X64,ARM64':
     class SP_CLASSINSTALL_HEADER(EasyCastStructure):
         cbSize: UInt32
-        InstallFunction: UInt32
-if ARCH in 'X86':
+        InstallFunction: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION
+elif ARCH in 'X86':
     class SP_CLASSINSTALL_HEADER(EasyCastStructure):
         cbSize: UInt32
-        InstallFunction: UInt32
+        InstallFunction: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.DI_FUNCTION
         _pack_ = 1
 SP_COPY_STYLE = UInt32
 SP_COPY_DELETESOURCE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_COPY_STYLE = 1
@@ -3432,7 +3463,7 @@ if ARCH in 'X64,ARM64':
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         DetectProgressNotify: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PDETECT_PROGRESS_NOTIFY
         ProgressNotifyParam: VoidPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DETECTDEVICE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         DetectProgressNotify: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PDETECT_PROGRESS_NOTIFY
@@ -3444,7 +3475,7 @@ if ARCH in 'X64,ARM64':
         InterfaceClassGuid: Guid
         Flags: UInt32
         Reserved: UIntPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVICE_INTERFACE_DATA(EasyCastStructure):
         cbSize: UInt32
         InterfaceClassGuid: Guid
@@ -3455,7 +3486,7 @@ if ARCH in 'X64,ARM64':
     class SP_DEVICE_INTERFACE_DETAIL_DATA_A(EasyCastStructure):
         cbSize: UInt32
         DevicePath: win32more.Windows.Win32.Foundation.CHAR * 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVICE_INTERFACE_DETAIL_DATA_A(EasyCastStructure):
         cbSize: UInt32
         DevicePath: win32more.Windows.Win32.Foundation.CHAR * 1
@@ -3464,7 +3495,7 @@ if ARCH in 'X64,ARM64':
     class SP_DEVICE_INTERFACE_DETAIL_DATA_W(EasyCastStructure):
         cbSize: UInt32
         DevicePath: Char * 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVICE_INTERFACE_DETAIL_DATA_W(EasyCastStructure):
         cbSize: UInt32
         DevicePath: Char * 1
@@ -3475,7 +3506,7 @@ if ARCH in 'X64,ARM64':
         ClassGuid: Guid
         DevInst: UInt32
         Reserved: UIntPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVINFO_DATA(EasyCastStructure):
         cbSize: UInt32
         ClassGuid: Guid
@@ -3488,7 +3519,7 @@ if ARCH in 'X64,ARM64':
         ClassGuid: Guid
         RemoteMachineHandle: win32more.Windows.Win32.Foundation.HANDLE
         RemoteMachineName: win32more.Windows.Win32.Foundation.CHAR * 263
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVINFO_LIST_DETAIL_DATA_A(EasyCastStructure):
         cbSize: UInt32
         ClassGuid: Guid
@@ -3501,7 +3532,7 @@ if ARCH in 'X64,ARM64':
         ClassGuid: Guid
         RemoteMachineHandle: win32more.Windows.Win32.Foundation.HANDLE
         RemoteMachineName: Char * 263
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVINFO_LIST_DETAIL_DATA_W(EasyCastStructure):
         cbSize: UInt32
         ClassGuid: Guid
@@ -3511,8 +3542,8 @@ if ARCH in 'X86':
 if ARCH in 'X64,ARM64':
     class SP_DEVINSTALL_PARAMS_A(EasyCastStructure):
         cbSize: UInt32
-        Flags: UInt32
-        FlagsEx: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS
+        FlagsEx: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX
         hwndParent: win32more.Windows.Win32.Foundation.HWND
         InstallMsgHandler: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PSP_FILE_CALLBACK_A
         InstallMsgHandlerContext: VoidPtr
@@ -3520,11 +3551,11 @@ if ARCH in 'X64,ARM64':
         ClassInstallReserved: UIntPtr
         Reserved: UInt32
         DriverPath: win32more.Windows.Win32.Foundation.CHAR * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVINSTALL_PARAMS_A(EasyCastStructure):
         cbSize: UInt32
-        Flags: UInt32
-        FlagsEx: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS
+        FlagsEx: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX
         hwndParent: win32more.Windows.Win32.Foundation.HWND
         InstallMsgHandler: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PSP_FILE_CALLBACK_A
         InstallMsgHandlerContext: VoidPtr
@@ -3536,8 +3567,8 @@ if ARCH in 'X86':
 if ARCH in 'X64,ARM64':
     class SP_DEVINSTALL_PARAMS_W(EasyCastStructure):
         cbSize: UInt32
-        Flags: UInt32
-        FlagsEx: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS
+        FlagsEx: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX
         hwndParent: win32more.Windows.Win32.Foundation.HWND
         InstallMsgHandler: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PSP_FILE_CALLBACK_W
         InstallMsgHandlerContext: VoidPtr
@@ -3545,11 +3576,11 @@ if ARCH in 'X64,ARM64':
         ClassInstallReserved: UIntPtr
         Reserved: UInt32
         DriverPath: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DEVINSTALL_PARAMS_W(EasyCastStructure):
         cbSize: UInt32
-        Flags: UInt32
-        FlagsEx: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS
+        FlagsEx: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DEVICE_INSTALL_FLAGS_EX
         hwndParent: win32more.Windows.Win32.Foundation.HWND
         InstallMsgHandler: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.PSP_FILE_CALLBACK_W
         InstallMsgHandlerContext: VoidPtr
@@ -3566,7 +3597,7 @@ if ARCH in 'X64,ARM64':
         Description: win32more.Windows.Win32.Foundation.CHAR * 256
         MfgName: win32more.Windows.Win32.Foundation.CHAR * 256
         ProviderName: win32more.Windows.Win32.Foundation.CHAR * 256
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DATA_V1_A(EasyCastStructure):
         cbSize: UInt32
         DriverType: UInt32
@@ -3583,7 +3614,7 @@ if ARCH in 'X64,ARM64':
         Description: Char * 256
         MfgName: Char * 256
         ProviderName: Char * 256
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DATA_V1_W(EasyCastStructure):
         cbSize: UInt32
         DriverType: UInt32
@@ -3602,7 +3633,7 @@ if ARCH in 'X64,ARM64':
         ProviderName: win32more.Windows.Win32.Foundation.CHAR * 256
         DriverDate: win32more.Windows.Win32.Foundation.FILETIME
         DriverVersion: UInt64
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DATA_V2_A(EasyCastStructure):
         cbSize: UInt32
         DriverType: UInt32
@@ -3623,7 +3654,7 @@ if ARCH in 'X64,ARM64':
         ProviderName: Char * 256
         DriverDate: win32more.Windows.Win32.Foundation.FILETIME
         DriverVersion: UInt64
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DATA_V2_W(EasyCastStructure):
         cbSize: UInt32
         DriverType: UInt32
@@ -3645,7 +3676,7 @@ if ARCH in 'X64,ARM64':
         InfFileName: win32more.Windows.Win32.Foundation.CHAR * 260
         DrvDescription: win32more.Windows.Win32.Foundation.CHAR * 256
         HardwareID: win32more.Windows.Win32.Foundation.CHAR * 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DETAIL_DATA_A(EasyCastStructure):
         cbSize: UInt32
         InfDate: win32more.Windows.Win32.Foundation.FILETIME
@@ -3668,7 +3699,7 @@ if ARCH in 'X64,ARM64':
         InfFileName: Char * 260
         DrvDescription: Char * 256
         HardwareID: Char * 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINFO_DETAIL_DATA_W(EasyCastStructure):
         cbSize: UInt32
         InfDate: win32more.Windows.Win32.Foundation.FILETIME
@@ -3684,14 +3715,14 @@ if ARCH in 'X64,ARM64':
     class SP_DRVINSTALL_PARAMS(EasyCastStructure):
         cbSize: UInt32
         Rank: UInt32
-        Flags: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS
         PrivateData: UIntPtr
         Reserved: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_DRVINSTALL_PARAMS(EasyCastStructure):
         cbSize: UInt32
         Rank: UInt32
-        Flags: UInt32
+        Flags: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_DRIVER_INSTALL_FLAGS
         PrivateData: UIntPtr
         Reserved: UInt32
         _pack_ = 1
@@ -3700,7 +3731,7 @@ if ARCH in 'X64,ARM64':
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         ClassGuid: Guid
         EnableMessage: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ENABLECLASS_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         ClassGuid: Guid
@@ -3720,7 +3751,7 @@ if ARCH in 'X64,ARM64':
         CopyStyle: UInt32
         LayoutInf: VoidPtr
         SecurityDescriptor: win32more.Windows.Win32.Foundation.PSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_FILE_COPY_PARAMS_A(EasyCastStructure):
         cbSize: UInt32
         QueueHandle: VoidPtr
@@ -3749,7 +3780,7 @@ if ARCH in 'X64,ARM64':
         CopyStyle: UInt32
         LayoutInf: VoidPtr
         SecurityDescriptor: win32more.Windows.Win32.Foundation.PWSTR
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_FILE_COPY_PARAMS_W(EasyCastStructure):
         cbSize: UInt32
         QueueHandle: VoidPtr
@@ -3769,7 +3800,7 @@ if ARCH in 'X64,ARM64':
         InfStyle: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.INF_STYLE
         InfCount: UInt32
         VersionData: Byte * 1
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INF_INFORMATION(EasyCastStructure):
         InfStyle: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.INF_STYLE
         InfCount: UInt32
@@ -3781,7 +3812,7 @@ if ARCH in 'X64,ARM64':
         CatalogFile: win32more.Windows.Win32.Foundation.CHAR * 260
         DigitalSigner: win32more.Windows.Win32.Foundation.CHAR * 260
         DigitalSignerVersion: win32more.Windows.Win32.Foundation.CHAR * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INF_SIGNER_INFO_V1_A(EasyCastStructure):
         cbSize: UInt32
         CatalogFile: win32more.Windows.Win32.Foundation.CHAR * 260
@@ -3794,7 +3825,7 @@ if ARCH in 'X64,ARM64':
         CatalogFile: Char * 260
         DigitalSigner: Char * 260
         DigitalSignerVersion: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INF_SIGNER_INFO_V1_W(EasyCastStructure):
         cbSize: UInt32
         CatalogFile: Char * 260
@@ -3808,7 +3839,7 @@ if ARCH in 'X64,ARM64':
         DigitalSigner: win32more.Windows.Win32.Foundation.CHAR * 260
         DigitalSignerVersion: win32more.Windows.Win32.Foundation.CHAR * 260
         SignerScore: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INF_SIGNER_INFO_V2_A(EasyCastStructure):
         cbSize: UInt32
         CatalogFile: win32more.Windows.Win32.Foundation.CHAR * 260
@@ -3823,7 +3854,7 @@ if ARCH in 'X64,ARM64':
         DigitalSigner: Char * 260
         DigitalSignerVersion: Char * 260
         SignerScore: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INF_SIGNER_INFO_V2_W(EasyCastStructure):
         cbSize: UInt32
         CatalogFile: Char * 260
@@ -3841,7 +3872,7 @@ if ARCH in 'X64,ARM64':
         PrivateFlags: UInt32
         PrivateData: win32more.Windows.Win32.Foundation.LPARAM
         hwndWizardDlg: win32more.Windows.Win32.Foundation.HWND
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_INSTALLWIZARD_DATA(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         Flags: UInt32
@@ -3859,7 +3890,7 @@ if ARCH in 'X64,ARM64':
         DynamicPages: win32more.Windows.Win32.UI.Controls.HPROPSHEETPAGE * 20
         NumDynamicPages: UInt32
         hwndWizardDlg: win32more.Windows.Win32.Foundation.HWND
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_NEWDEVICEWIZARD_DATA(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         Flags: UInt32
@@ -3872,7 +3903,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         OriginalInfName: win32more.Windows.Win32.Foundation.CHAR * 260
         OriginalCatalogName: win32more.Windows.Win32.Foundation.CHAR * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ORIGINAL_FILE_INFO_A(EasyCastStructure):
         cbSize: UInt32
         OriginalInfName: win32more.Windows.Win32.Foundation.CHAR * 260
@@ -3883,7 +3914,7 @@ if ARCH in 'X64,ARM64':
         cbSize: UInt32
         OriginalInfName: Char * 260
         OriginalCatalogName: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_ORIGINAL_FILE_INFO_W(EasyCastStructure):
         cbSize: UInt32
         OriginalInfName: Char * 260
@@ -3896,7 +3927,7 @@ if ARCH in 'X64,ARM64':
     class SP_POWERMESSAGEWAKE_PARAMS_W(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         PowerMessageWake: Char * 512
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_POWERMESSAGEWAKE_PARAMS_W(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         PowerMessageWake: Char * 512
@@ -3904,14 +3935,14 @@ if ARCH in 'X86':
 if ARCH in 'X64,ARM64':
     class SP_PROPCHANGE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
-        StateChange: UInt32
-        Scope: UInt32
+        StateChange: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE
+        Scope: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_PROPERTY_CHANGE_SCOPE
         HwProfile: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_PROPCHANGE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
-        StateChange: UInt32
-        Scope: UInt32
+        StateChange: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_STATE_CHANGE
+        Scope: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_PROPERTY_CHANGE_SCOPE
         HwProfile: UInt32
         _pack_ = 1
 if ARCH in 'X64,ARM64':
@@ -3920,7 +3951,7 @@ if ARCH in 'X64,ARM64':
         PageRequested: UInt32
         DeviceInfoSet: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.HDEVINFO
         DeviceInfoData: POINTER(win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_DEVINFO_DATA)
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_PROPSHEETPAGE_REQUEST(EasyCastStructure):
         cbSize: UInt32
         PageRequested: UInt32
@@ -3933,7 +3964,7 @@ if ARCH in 'X64,ARM64':
         FileName: win32more.Windows.Win32.Foundation.PSTR
         Win32Error: UInt32
         FailureCode: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_REGISTER_CONTROL_STATUSA(EasyCastStructure):
         cbSize: UInt32
         FileName: win32more.Windows.Win32.Foundation.PSTR
@@ -3946,7 +3977,7 @@ if ARCH in 'X64,ARM64':
         FileName: win32more.Windows.Win32.Foundation.PWSTR
         Win32Error: UInt32
         FailureCode: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_REGISTER_CONTROL_STATUSW(EasyCastStructure):
         cbSize: UInt32
         FileName: win32more.Windows.Win32.Foundation.PWSTR
@@ -3956,12 +3987,12 @@ if ARCH in 'X86':
 if ARCH in 'X64,ARM64':
     class SP_REMOVEDEVICE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
-        Scope: UInt32
+        Scope: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REMOVE_DEVICE_SCOPE
         HwProfile: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_REMOVEDEVICE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
-        Scope: UInt32
+        Scope: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SETUP_DI_REMOVE_DEVICE_SCOPE
         HwProfile: UInt32
         _pack_ = 1
 class SP_SELECTDEVICE_PARAMS_A(EasyCastStructure):
@@ -3978,7 +4009,7 @@ if ARCH in 'X64,ARM64':
         Instructions: Char * 256
         ListLabel: Char * 30
         SubTitle: Char * 256
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_SELECTDEVICE_PARAMS_W(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         Title: Char * 60
@@ -3995,7 +4026,7 @@ if ARCH in 'X64,ARM64':
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         ChmFile: Char * 260
         HtmlTroubleShooter: Char * 260
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_TROUBLESHOOTER_PARAMS_W(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         ChmFile: Char * 260
@@ -4006,19 +4037,19 @@ if ARCH in 'X64,ARM64':
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         Scope: UInt32
         HwProfile: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SP_UNREMOVEDEVICE_PARAMS(EasyCastStructure):
         ClassInstallHeader: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SP_CLASSINSTALL_HEADER
         Scope: UInt32
         HwProfile: UInt32
         _pack_ = 1
 SetupFileLogInfo = Int32
-SetupFileLogInfo_SetupFileLogSourceFilename: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 0
-SetupFileLogInfo_SetupFileLogChecksum: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 1
-SetupFileLogInfo_SetupFileLogDiskTagfile: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 2
-SetupFileLogInfo_SetupFileLogDiskDescription: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 3
-SetupFileLogInfo_SetupFileLogOtherInfo: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 4
-SetupFileLogInfo_SetupFileLogMax: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 5
+SetupFileLogSourceFilename: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 0
+SetupFileLogChecksum: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 1
+SetupFileLogDiskTagfile: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 2
+SetupFileLogDiskDescription: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 3
+SetupFileLogOtherInfo: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 4
+SetupFileLogMax: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.SetupFileLogInfo = 5
 UPDATEDRIVERFORPLUGANDPLAYDEVICES_FLAGS = UInt32
 INSTALLFLAG_FORCE: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.UPDATEDRIVERFORPLUGANDPLAYDEVICES_FLAGS = 1
 INSTALLFLAG_READONLY: win32more.Windows.Win32.Devices.DeviceAndDriverInstallation.UPDATEDRIVERFORPLUGANDPLAYDEVICES_FLAGS = 2

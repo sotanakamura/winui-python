@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Devices.Enumeration.Pnp
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IPnpObject(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Enumeration.Pnp.IPnpObject'
@@ -31,9 +18,9 @@ class IPnpObject(ComPtr):
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     @winrt_commethod(9)
     def Update(self, updateInfo: win32more.Windows.Devices.Enumeration.Pnp.PnpObjectUpdate) -> Void: ...
-    Type = property(get_Type, None)
     Id = property(get_Id, None)
     Properties = property(get_Properties, None)
+    Type = property(get_Type, None)
 class IPnpObjectStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Enumeration.Pnp.IPnpObjectStatics'
@@ -58,9 +45,9 @@ class IPnpObjectUpdate(ComPtr):
     def get_Id(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
-    Type = property(get_Type, None)
     Id = property(get_Id, None)
     Properties = property(get_Properties, None)
+    Type = property(get_Type, None)
 class IPnpObjectWatcher(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Enumeration.Pnp.IPnpObjectWatcher'
@@ -114,9 +101,9 @@ class PnpObject(ComPtr):
     def CreateWatcher(cls: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectStatics, type: win32more.Windows.Devices.Enumeration.Pnp.PnpObjectType, requestedProperties: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Devices.Enumeration.Pnp.PnpObjectWatcher: ...
     @winrt_classmethod
     def CreateWatcherAqsFilter(cls: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectStatics, type: win32more.Windows.Devices.Enumeration.Pnp.PnpObjectType, requestedProperties: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], aqsFilter: WinRT_String) -> win32more.Windows.Devices.Enumeration.Pnp.PnpObjectWatcher: ...
-    Type = property(get_Type, None)
     Id = property(get_Id, None)
     Properties = property(get_Properties, None)
+    Type = property(get_Type, None)
 class PnpObjectCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Enumeration.Pnp.PnpObject]
@@ -132,16 +119,16 @@ class PnpObjectCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Devices.Enumeration.Pnp.PnpObject]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.Devices.Enumeration.Pnp.PnpObject]: ...
     Size = property(get_Size, None)
-PnpObjectType = Int32
-PnpObjectType_Unknown: PnpObjectType = 0
-PnpObjectType_DeviceInterface: PnpObjectType = 1
-PnpObjectType_DeviceContainer: PnpObjectType = 2
-PnpObjectType_Device: PnpObjectType = 3
-PnpObjectType_DeviceInterfaceClass: PnpObjectType = 4
-PnpObjectType_AssociationEndpoint: PnpObjectType = 5
-PnpObjectType_AssociationEndpointContainer: PnpObjectType = 6
-PnpObjectType_AssociationEndpointService: PnpObjectType = 7
-PnpObjectType_DevicePanel: PnpObjectType = 8
+class PnpObjectType(Int32):  # enum
+    Unknown = 0
+    DeviceInterface = 1
+    DeviceContainer = 2
+    Device = 3
+    DeviceInterfaceClass = 4
+    AssociationEndpoint = 5
+    AssociationEndpointContainer = 6
+    AssociationEndpointService = 7
+    DevicePanel = 8
 class PnpObjectUpdate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectUpdate
@@ -152,9 +139,9 @@ class PnpObjectUpdate(ComPtr):
     def get_Id(self: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectUpdate) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectUpdate) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
-    Type = property(get_Type, None)
     Id = property(get_Id, None)
     Properties = property(get_Properties, None)
+    Type = property(get_Type, None)
 class PnpObjectWatcher(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectWatcher
@@ -186,4 +173,6 @@ class PnpObjectWatcher(ComPtr):
     @winrt_mixinmethod
     def Stop(self: win32more.Windows.Devices.Enumeration.Pnp.IPnpObjectWatcher) -> Void: ...
     Status = property(get_Status, None)
+
+
 make_ready(__name__)

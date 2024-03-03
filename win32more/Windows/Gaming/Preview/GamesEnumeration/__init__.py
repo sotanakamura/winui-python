@@ -1,25 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Gaming.Preview.GamesEnumeration
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class GameList(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Preview.GamesEnumeration.GameList'
@@ -43,10 +31,10 @@ class GameList(ComPtr):
     def add_GameUpdated(cls: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameListStatics, handler: win32more.Windows.Gaming.Preview.GamesEnumeration.GameListChangedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_classmethod
     def remove_GameUpdated(cls: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameListStatics, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-GameListCategory = Int32
-GameListCategory_Candidate: GameListCategory = 0
-GameListCategory_ConfirmedBySystem: GameListCategory = 1
-GameListCategory_ConfirmedByUser: GameListCategory = 2
+class GameListCategory(Int32):  # enum
+    Candidate = 0
+    ConfirmedBySystem = 1
+    ConfirmedByUser = 2
 class GameListChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{25f6a421-d8f5-4d91-b40e-53d5e86fde64}')
@@ -81,19 +69,19 @@ class GameListEntry(ComPtr):
     def SetTitleIdAsync(self: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameListEntry2, id: WinRT_String) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def get_GameModeConfiguration(self: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameListEntry2) -> win32more.Windows.Gaming.Preview.GamesEnumeration.GameModeConfiguration: ...
-    DisplayInfo = property(get_DisplayInfo, None)
     Category = property(get_Category, None)
-    Properties = property(get_Properties, None)
+    DisplayInfo = property(get_DisplayInfo, None)
+    GameModeConfiguration = property(get_GameModeConfiguration, None)
+    LaunchParameters = property(get_LaunchParameters, None)
     LaunchableState = property(get_LaunchableState, None)
     LauncherExecutable = property(get_LauncherExecutable, None)
-    LaunchParameters = property(get_LaunchParameters, None)
+    Properties = property(get_Properties, None)
     TitleId = property(get_TitleId, None)
-    GameModeConfiguration = property(get_GameModeConfiguration, None)
-GameListEntryLaunchableState = Int32
-GameListEntryLaunchableState_NotLaunchable: GameListEntryLaunchableState = 0
-GameListEntryLaunchableState_ByLastRunningFullPath: GameListEntryLaunchableState = 1
-GameListEntryLaunchableState_ByUserProvidedPath: GameListEntryLaunchableState = 2
-GameListEntryLaunchableState_ByTile: GameListEntryLaunchableState = 3
+class GameListEntryLaunchableState(Int32):  # enum
+    NotLaunchable = 0
+    ByLastRunningFullPath = 1
+    ByUserProvidedPath = 2
+    ByTile = 3
 class GameListRemovedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{10c5648f-6c8f-4712-9b38-474bc22e76d8}')
@@ -138,15 +126,15 @@ class GameModeConfiguration(ComPtr):
     def put_AffinitizeToExclusiveCpus(self: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameModeConfiguration, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def SaveAsync(self: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameModeConfiguration) -> win32more.Windows.Foundation.IAsyncAction: ...
+    AffinitizeToExclusiveCpus = property(get_AffinitizeToExclusiveCpus, put_AffinitizeToExclusiveCpus)
+    CpuExclusivityMaskHigh = property(get_CpuExclusivityMaskHigh, put_CpuExclusivityMaskHigh)
+    CpuExclusivityMaskLow = property(get_CpuExclusivityMaskLow, put_CpuExclusivityMaskLow)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    RelatedProcessNames = property(get_RelatedProcessNames, None)
-    PercentGpuTimeAllocatedToGame = property(get_PercentGpuTimeAllocatedToGame, put_PercentGpuTimeAllocatedToGame)
+    MaxCpuCount = property(get_MaxCpuCount, put_MaxCpuCount)
     PercentGpuMemoryAllocatedToGame = property(get_PercentGpuMemoryAllocatedToGame, put_PercentGpuMemoryAllocatedToGame)
     PercentGpuMemoryAllocatedToSystemCompositor = property(get_PercentGpuMemoryAllocatedToSystemCompositor, put_PercentGpuMemoryAllocatedToSystemCompositor)
-    MaxCpuCount = property(get_MaxCpuCount, put_MaxCpuCount)
-    CpuExclusivityMaskLow = property(get_CpuExclusivityMaskLow, put_CpuExclusivityMaskLow)
-    CpuExclusivityMaskHigh = property(get_CpuExclusivityMaskHigh, put_CpuExclusivityMaskHigh)
-    AffinitizeToExclusiveCpus = property(get_AffinitizeToExclusiveCpus, put_AffinitizeToExclusiveCpus)
+    PercentGpuTimeAllocatedToGame = property(get_PercentGpuTimeAllocatedToGame, put_PercentGpuTimeAllocatedToGame)
+    RelatedProcessNames = property(get_RelatedProcessNames, None)
 class GameModeUserConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Preview.GamesEnumeration.IGameModeUserConfiguration
@@ -172,8 +160,8 @@ class IGameListEntry(ComPtr):
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     @winrt_commethod(10)
     def SetCategoryAsync(self, value: win32more.Windows.Gaming.Preview.GamesEnumeration.GameListCategory) -> win32more.Windows.Foundation.IAsyncAction: ...
-    DisplayInfo = property(get_DisplayInfo, None)
     Category = property(get_Category, None)
+    DisplayInfo = property(get_DisplayInfo, None)
     Properties = property(get_Properties, None)
 class IGameListEntry2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -195,11 +183,11 @@ class IGameListEntry2(ComPtr):
     def SetTitleIdAsync(self, id: WinRT_String) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(13)
     def get_GameModeConfiguration(self) -> win32more.Windows.Gaming.Preview.GamesEnumeration.GameModeConfiguration: ...
+    GameModeConfiguration = property(get_GameModeConfiguration, None)
+    LaunchParameters = property(get_LaunchParameters, None)
     LaunchableState = property(get_LaunchableState, None)
     LauncherExecutable = property(get_LauncherExecutable, None)
-    LaunchParameters = property(get_LaunchParameters, None)
     TitleId = property(get_TitleId, None)
-    GameModeConfiguration = property(get_GameModeConfiguration, None)
 class IGameListStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Preview.GamesEnumeration.IGameListStatics'
@@ -268,15 +256,15 @@ class IGameModeConfiguration(ComPtr):
     def put_AffinitizeToExclusiveCpus(self, value: Boolean) -> Void: ...
     @winrt_commethod(23)
     def SaveAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
+    AffinitizeToExclusiveCpus = property(get_AffinitizeToExclusiveCpus, put_AffinitizeToExclusiveCpus)
+    CpuExclusivityMaskHigh = property(get_CpuExclusivityMaskHigh, put_CpuExclusivityMaskHigh)
+    CpuExclusivityMaskLow = property(get_CpuExclusivityMaskLow, put_CpuExclusivityMaskLow)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    RelatedProcessNames = property(get_RelatedProcessNames, None)
-    PercentGpuTimeAllocatedToGame = property(get_PercentGpuTimeAllocatedToGame, put_PercentGpuTimeAllocatedToGame)
+    MaxCpuCount = property(get_MaxCpuCount, put_MaxCpuCount)
     PercentGpuMemoryAllocatedToGame = property(get_PercentGpuMemoryAllocatedToGame, put_PercentGpuMemoryAllocatedToGame)
     PercentGpuMemoryAllocatedToSystemCompositor = property(get_PercentGpuMemoryAllocatedToSystemCompositor, put_PercentGpuMemoryAllocatedToSystemCompositor)
-    MaxCpuCount = property(get_MaxCpuCount, put_MaxCpuCount)
-    CpuExclusivityMaskLow = property(get_CpuExclusivityMaskLow, put_CpuExclusivityMaskLow)
-    CpuExclusivityMaskHigh = property(get_CpuExclusivityMaskHigh, put_CpuExclusivityMaskHigh)
-    AffinitizeToExclusiveCpus = property(get_AffinitizeToExclusiveCpus, put_AffinitizeToExclusiveCpus)
+    PercentGpuTimeAllocatedToGame = property(get_PercentGpuTimeAllocatedToGame, put_PercentGpuTimeAllocatedToGame)
+    RelatedProcessNames = property(get_RelatedProcessNames, None)
 class IGameModeUserConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Preview.GamesEnumeration.IGameModeUserConfiguration'
@@ -292,4 +280,6 @@ class IGameModeUserConfigurationStatics(ComPtr):
     _iid_ = Guid('{6e50d97c-66ea-478e-a4a1-f57c0e8d00e7}')
     @winrt_commethod(6)
     def GetDefault(self) -> win32more.Windows.Gaming.Preview.GamesEnumeration.GameModeUserConfiguration: ...
+
+
 make_ready(__name__)

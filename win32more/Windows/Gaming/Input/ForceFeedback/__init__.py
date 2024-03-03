@@ -1,27 +1,21 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Numerics
 import win32more.Windows.Gaming.Input.ForceFeedback
+import win32more.Windows.Win32.System.WinRT
 class ConditionForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect
     _classid_ = 'Windows.Gaming.Input.ForceFeedback.ConditionForceEffect'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Gaming.Input.ForceFeedback.ConditionForceEffect.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Gaming.Input.ForceFeedback.IConditionForceEffectFactory, effectKind: win32more.Windows.Gaming.Input.ForceFeedback.ConditionForceEffectKind) -> win32more.Windows.Gaming.Input.ForceFeedback.ConditionForceEffect: ...
     @winrt_mixinmethod
@@ -39,17 +33,24 @@ class ConditionForceEffect(ComPtr):
     @winrt_mixinmethod
     def SetParameters(self: win32more.Windows.Gaming.Input.ForceFeedback.IConditionForceEffect, direction: win32more.Windows.Foundation.Numerics.Vector3, positiveCoefficient: Single, negativeCoefficient: Single, maxPositiveMagnitude: Single, maxNegativeMagnitude: Single, deadZone: Single, bias: Single) -> Void: ...
     Gain = property(get_Gain, put_Gain)
-    State = property(get_State, None)
     Kind = property(get_Kind, None)
-ConditionForceEffectKind = Int32
-ConditionForceEffectKind_Spring: ConditionForceEffectKind = 0
-ConditionForceEffectKind_Damper: ConditionForceEffectKind = 1
-ConditionForceEffectKind_Inertia: ConditionForceEffectKind = 2
-ConditionForceEffectKind_Friction: ConditionForceEffectKind = 3
+    State = property(get_State, None)
+class ConditionForceEffectKind(Int32):  # enum
+    Spring = 0
+    Damper = 1
+    Inertia = 2
+    Friction = 3
 class ConstantForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect
     _classid_ = 'Windows.Gaming.Input.ForceFeedback.ConstantForceEffect'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Gaming.Input.ForceFeedback.ConstantForceEffect.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Gaming.Input.ForceFeedback.ConstantForceEffect: ...
     @winrt_mixinmethod
@@ -68,20 +69,20 @@ class ConstantForceEffect(ComPtr):
     def SetParametersWithEnvelope(self: win32more.Windows.Gaming.Input.ForceFeedback.IConstantForceEffect, vector: win32more.Windows.Foundation.Numerics.Vector3, attackGain: Single, sustainGain: Single, releaseGain: Single, startDelay: win32more.Windows.Foundation.TimeSpan, attackDuration: win32more.Windows.Foundation.TimeSpan, sustainDuration: win32more.Windows.Foundation.TimeSpan, releaseDuration: win32more.Windows.Foundation.TimeSpan, repeatCount: UInt32) -> Void: ...
     Gain = property(get_Gain, put_Gain)
     State = property(get_State, None)
-ForceFeedbackEffectAxes = UInt32
-ForceFeedbackEffectAxes_None: ForceFeedbackEffectAxes = 0
-ForceFeedbackEffectAxes_X: ForceFeedbackEffectAxes = 1
-ForceFeedbackEffectAxes_Y: ForceFeedbackEffectAxes = 2
-ForceFeedbackEffectAxes_Z: ForceFeedbackEffectAxes = 4
-ForceFeedbackEffectState = Int32
-ForceFeedbackEffectState_Stopped: ForceFeedbackEffectState = 0
-ForceFeedbackEffectState_Running: ForceFeedbackEffectState = 1
-ForceFeedbackEffectState_Paused: ForceFeedbackEffectState = 2
-ForceFeedbackEffectState_Faulted: ForceFeedbackEffectState = 3
-ForceFeedbackLoadEffectResult = Int32
-ForceFeedbackLoadEffectResult_Succeeded: ForceFeedbackLoadEffectResult = 0
-ForceFeedbackLoadEffectResult_EffectStorageFull: ForceFeedbackLoadEffectResult = 1
-ForceFeedbackLoadEffectResult_EffectNotSupported: ForceFeedbackLoadEffectResult = 2
+class ForceFeedbackEffectAxes(UInt32):  # enum
+    None_ = 0
+    X = 1
+    Y = 2
+    Z = 4
+class ForceFeedbackEffectState(Int32):  # enum
+    Stopped = 0
+    Running = 1
+    Paused = 2
+    Faulted = 3
+class ForceFeedbackLoadEffectResult(Int32):  # enum
+    Succeeded = 0
+    EffectStorageFull = 1
+    EffectNotSupported = 2
 class ForceFeedbackMotor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackMotor
@@ -113,8 +114,8 @@ class ForceFeedbackMotor(ComPtr):
     @winrt_mixinmethod
     def TryUnloadEffectAsync(self: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackMotor, effect: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     AreEffectsPaused = property(get_AreEffectsPaused, None)
-    MasterGain = property(get_MasterGain, put_MasterGain)
     IsEnabled = property(get_IsEnabled, None)
+    MasterGain = property(get_MasterGain, put_MasterGain)
     SupportedAxes = property(get_SupportedAxes, None)
 class IConditionForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -186,8 +187,8 @@ class IForceFeedbackMotor(ComPtr):
     @winrt_commethod(18)
     def TryUnloadEffectAsync(self, effect: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     AreEffectsPaused = property(get_AreEffectsPaused, None)
-    MasterGain = property(get_MasterGain, put_MasterGain)
     IsEnabled = property(get_IsEnabled, None)
+    MasterGain = property(get_MasterGain, put_MasterGain)
     SupportedAxes = property(get_SupportedAxes, None)
 class IPeriodicForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -218,6 +219,13 @@ class PeriodicForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect
     _classid_ = 'Windows.Gaming.Input.ForceFeedback.PeriodicForceEffect'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Gaming.Input.ForceFeedback.PeriodicForceEffect.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Gaming.Input.ForceFeedback.IPeriodicForceEffectFactory, effectKind: win32more.Windows.Gaming.Input.ForceFeedback.PeriodicForceEffectKind) -> win32more.Windows.Gaming.Input.ForceFeedback.PeriodicForceEffect: ...
     @winrt_mixinmethod
@@ -237,18 +245,25 @@ class PeriodicForceEffect(ComPtr):
     @winrt_mixinmethod
     def SetParametersWithEnvelope(self: win32more.Windows.Gaming.Input.ForceFeedback.IPeriodicForceEffect, vector: win32more.Windows.Foundation.Numerics.Vector3, frequency: Single, phase: Single, bias: Single, attackGain: Single, sustainGain: Single, releaseGain: Single, startDelay: win32more.Windows.Foundation.TimeSpan, attackDuration: win32more.Windows.Foundation.TimeSpan, sustainDuration: win32more.Windows.Foundation.TimeSpan, releaseDuration: win32more.Windows.Foundation.TimeSpan, repeatCount: UInt32) -> Void: ...
     Gain = property(get_Gain, put_Gain)
-    State = property(get_State, None)
     Kind = property(get_Kind, None)
-PeriodicForceEffectKind = Int32
-PeriodicForceEffectKind_SquareWave: PeriodicForceEffectKind = 0
-PeriodicForceEffectKind_SineWave: PeriodicForceEffectKind = 1
-PeriodicForceEffectKind_TriangleWave: PeriodicForceEffectKind = 2
-PeriodicForceEffectKind_SawtoothWaveUp: PeriodicForceEffectKind = 3
-PeriodicForceEffectKind_SawtoothWaveDown: PeriodicForceEffectKind = 4
+    State = property(get_State, None)
+class PeriodicForceEffectKind(Int32):  # enum
+    SquareWave = 0
+    SineWave = 1
+    TriangleWave = 2
+    SawtoothWaveUp = 3
+    SawtoothWaveDown = 4
 class RampForceEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.Input.ForceFeedback.IForceFeedbackEffect
     _classid_ = 'Windows.Gaming.Input.ForceFeedback.RampForceEffect'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Gaming.Input.ForceFeedback.RampForceEffect.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Gaming.Input.ForceFeedback.RampForceEffect: ...
     @winrt_mixinmethod
@@ -267,4 +282,6 @@ class RampForceEffect(ComPtr):
     def SetParametersWithEnvelope(self: win32more.Windows.Gaming.Input.ForceFeedback.IRampForceEffect, startVector: win32more.Windows.Foundation.Numerics.Vector3, endVector: win32more.Windows.Foundation.Numerics.Vector3, attackGain: Single, sustainGain: Single, releaseGain: Single, startDelay: win32more.Windows.Foundation.TimeSpan, attackDuration: win32more.Windows.Foundation.TimeSpan, sustainDuration: win32more.Windows.Foundation.TimeSpan, releaseDuration: win32more.Windows.Foundation.TimeSpan, repeatCount: UInt32) -> Void: ...
     Gain = property(get_Gain, put_Gain)
     State = property(get_State, None)
+
+
 make_ready(__name__)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Management.MobileDeviceManagementRegistration
 MENROLL_E_DEVICE_MESSAGE_FORMAT_ERROR: win32more.Windows.Win32.Foundation.HRESULT = -2145910783
@@ -42,6 +42,7 @@ MENROLL_E_CERTAUTH_FAILED_TO_FIND_CERT: win32more.Windows.Win32.Foundation.HRESU
 MENROLL_E_EMPTY_MESSAGE: win32more.Windows.Win32.Foundation.HRESULT = -2145910743
 MENROLL_E_USER_CANCELLED: win32more.Windows.Win32.Foundation.HRESULT = -2145910736
 MENROLL_E_MDM_NOT_CONFIGURED: win32more.Windows.Win32.Foundation.HRESULT = -2145910735
+MENROLL_E_CUSTOMSERVERERROR: win32more.Windows.Win32.Foundation.HRESULT = -2145910734
 MDM_REGISTRATION_FACILITY_CODE: UInt32 = 25
 DEVICE_ENROLLER_FACILITY_CODE: UInt32 = 24
 MREGISTER_E_DEVICE_MESSAGE_FORMAT_ERROR: win32more.Windows.Win32.Foundation.HRESULT = -2145845247
@@ -85,8 +86,6 @@ def RegisterDeviceWithManagementUsingAADCredentials(UserToken: win32more.Windows
 def RegisterDeviceWithManagementUsingAADDeviceCredentials() -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('MDMRegistration.dll')
 def RegisterDeviceWithManagementUsingAADDeviceCredentials2(MDMApplicationID: win32more.Windows.Win32.Foundation.PWSTR) -> win32more.Windows.Win32.Foundation.HRESULT: ...
-@winfunctype('MDMRegistration.DLL')
-def RegisterDeviceDualEnrollMmpcUsingAADDeviceCredentials(cchEnrollmentId: UInt32, pszEnrollmentId: win32more.Windows.Win32.Foundation.PWSTR) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('MDMRegistration.dll')
 def RegisterDeviceWithManagement(pszUPN: win32more.Windows.Win32.Foundation.PWSTR, ppszMDMServiceUri: win32more.Windows.Win32.Foundation.PWSTR, ppzsAccessToken: win32more.Windows.Win32.Foundation.PWSTR) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('MDMRegistration.dll')
@@ -114,8 +113,8 @@ class MANAGEMENT_SERVICE_INFO(EasyCastStructure):
     pszMDMServiceUri: win32more.Windows.Win32.Foundation.PWSTR
     pszAuthenticationUri: win32more.Windows.Win32.Foundation.PWSTR
 REGISTRATION_INFORMATION_CLASS = Int32
-REGISTRATION_INFORMATION_CLASS_DeviceRegistrationBasicInfo: win32more.Windows.Win32.Management.MobileDeviceManagementRegistration.REGISTRATION_INFORMATION_CLASS = 1
-REGISTRATION_INFORMATION_CLASS_MaxDeviceInfoClass: win32more.Windows.Win32.Management.MobileDeviceManagementRegistration.REGISTRATION_INFORMATION_CLASS = 2
+DeviceRegistrationBasicInfo: win32more.Windows.Win32.Management.MobileDeviceManagementRegistration.REGISTRATION_INFORMATION_CLASS = 1
+MaxDeviceInfoClass: win32more.Windows.Win32.Management.MobileDeviceManagementRegistration.REGISTRATION_INFORMATION_CLASS = 2
 
 
 make_ready(__name__)

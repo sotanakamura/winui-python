@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.UI.Composition
 import win32more.Windows.UI.Composition.Diagnostics
+import win32more.Windows.Win32.System.WinRT
 class CompositionDebugHeatMaps(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Composition.Diagnostics.ICompositionDebugHeatMaps
@@ -29,16 +16,16 @@ class CompositionDebugHeatMaps(ComPtr):
     def ShowOverdraw(self: win32more.Windows.UI.Composition.Diagnostics.ICompositionDebugHeatMaps, subtree: win32more.Windows.UI.Composition.Visual, contentKinds: win32more.Windows.UI.Composition.Diagnostics.CompositionDebugOverdrawContentKinds) -> Void: ...
     @winrt_mixinmethod
     def ShowRedraw(self: win32more.Windows.UI.Composition.Diagnostics.ICompositionDebugHeatMaps, subtree: win32more.Windows.UI.Composition.Visual) -> Void: ...
-CompositionDebugOverdrawContentKinds = UInt32
-CompositionDebugOverdrawContentKinds_None: CompositionDebugOverdrawContentKinds = 0
-CompositionDebugOverdrawContentKinds_OffscreenRendered: CompositionDebugOverdrawContentKinds = 1
-CompositionDebugOverdrawContentKinds_Colors: CompositionDebugOverdrawContentKinds = 2
-CompositionDebugOverdrawContentKinds_Effects: CompositionDebugOverdrawContentKinds = 4
-CompositionDebugOverdrawContentKinds_Shadows: CompositionDebugOverdrawContentKinds = 8
-CompositionDebugOverdrawContentKinds_Lights: CompositionDebugOverdrawContentKinds = 16
-CompositionDebugOverdrawContentKinds_Surfaces: CompositionDebugOverdrawContentKinds = 32
-CompositionDebugOverdrawContentKinds_SwapChains: CompositionDebugOverdrawContentKinds = 64
-CompositionDebugOverdrawContentKinds_All: CompositionDebugOverdrawContentKinds = 4294967295
+class CompositionDebugOverdrawContentKinds(UInt32):  # enum
+    None_ = 0
+    OffscreenRendered = 1
+    Colors = 2
+    Effects = 4
+    Shadows = 8
+    Lights = 16
+    Surfaces = 32
+    SwapChains = 64
+    All = 4294967295
 class CompositionDebugSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Composition.Diagnostics.ICompositionDebugSettings
@@ -73,4 +60,6 @@ class ICompositionDebugSettingsStatics(ComPtr):
     _iid_ = Guid('{64ec1f1e-6af8-4af8-b814-c870fd5a9505}')
     @winrt_commethod(6)
     def TryGetSettings(self, compositor: win32more.Windows.UI.Composition.Compositor) -> win32more.Windows.UI.Composition.Diagnostics.CompositionDebugSettings: ...
+
+
 make_ready(__name__)

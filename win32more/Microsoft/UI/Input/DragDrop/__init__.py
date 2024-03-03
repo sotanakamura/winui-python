@@ -1,36 +1,23 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI.Content
 import win32more.Microsoft.UI.Input
 import win32more.Microsoft.UI.Input.DragDrop
 import win32more.Windows.ApplicationModel.DataTransfer
 import win32more.Windows.Foundation
 import win32more.Windows.Graphics.Imaging
+import win32more.Windows.Win32.System.WinRT
 class DragDropManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Input.DragDrop.IDragDropManager
     _classid_ = 'Microsoft.UI.Input.DragDrop.DragDropManager'
     @winrt_mixinmethod
+    def add_TargetRequested(self: win32more.Microsoft.UI.Input.DragDrop.IDragDropManager, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Input.DragDrop.DragDropManager, win32more.Microsoft.UI.Input.DragDrop.DropOperationTargetRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
+    @winrt_mixinmethod
     def put_AreConcurrentOperationsEnabled(self: win32more.Microsoft.UI.Input.DragDrop.IDragDropManager, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    @winrt_mixinmethod
-    def add_TargetRequested(self: win32more.Microsoft.UI.Input.DragDrop.IDragDropManager, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Input.DragDrop.DragDropManager, win32more.Microsoft.UI.Input.DragDrop.DropOperationTargetRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_TargetRequested(self: win32more.Microsoft.UI.Input.DragDrop.IDragDropManager, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
@@ -38,48 +25,55 @@ class DragDropManager(ComPtr):
     @winrt_classmethod
     def GetForIsland(cls: win32more.Microsoft.UI.Input.DragDrop.IDragDropManagerStatics, content: win32more.Microsoft.UI.Content.ContentIsland) -> win32more.Microsoft.UI.Input.DragDrop.DragDropManager: ...
     AreConcurrentOperationsEnabled = property(get_AreConcurrentOperationsEnabled, put_AreConcurrentOperationsEnabled)
-DragDropModifiers = UInt32
-DragDropModifiers_None: DragDropModifiers = 0
-DragDropModifiers_Shift: DragDropModifiers = 1
-DragDropModifiers_Control: DragDropModifiers = 2
-DragDropModifiers_Alt: DragDropModifiers = 4
-DragDropModifiers_LeftButton: DragDropModifiers = 8
-DragDropModifiers_MiddleButton: DragDropModifiers = 16
-DragDropModifiers_RightButton: DragDropModifiers = 32
+class DragDropModifiers(UInt32):  # enum
+    None_ = 0
+    Shift = 1
+    Control = 2
+    Alt = 4
+    LeftButton = 8
+    MiddleButton = 16
+    RightButton = 32
 class DragInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Input.DragDrop.IDragInfo
     _classid_ = 'Microsoft.UI.Input.DragDrop.DragInfo'
     @winrt_mixinmethod
-    def get_Modifiers(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Microsoft.UI.Input.DragDrop.DragDropModifiers: ...
+    def get_Position(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def get_Data(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageView: ...
     @winrt_mixinmethod
-    def get_Position(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Windows.Foundation.Point: ...
+    def get_Modifiers(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Microsoft.UI.Input.DragDrop.DragDropModifiers: ...
     @winrt_mixinmethod
     def get_AllowedOperations(self: win32more.Microsoft.UI.Input.DragDrop.IDragInfo) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation: ...
-    Modifiers = property(get_Modifiers, None)
-    Data = property(get_Data, None)
-    Position = property(get_Position, None)
     AllowedOperations = property(get_AllowedOperations, None)
+    Data = property(get_Data, None)
+    Modifiers = property(get_Modifiers, None)
+    Position = property(get_Position, None)
 class DragOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Input.DragDrop.IDragOperation
     _classid_ = 'Microsoft.UI.Input.DragDrop.DragOperation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Input.DragDrop.DragOperation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Input.DragDrop.DragOperation: ...
     @winrt_mixinmethod
-    def get_AllowedOperations(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation: ...
+    def SetDragUIContentFromSoftwareBitmap(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap) -> Void: ...
     @winrt_mixinmethod
     def put_AllowedOperations(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation, value: win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation) -> Void: ...
     @winrt_mixinmethod
-    def get_Data(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackage: ...
+    def get_AllowedOperations(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackageOperation: ...
     @winrt_mixinmethod
     def get_DragUIContentMode(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation) -> win32more.Microsoft.UI.Input.DragDrop.DragUIContentMode: ...
     @winrt_mixinmethod
     def put_DragUIContentMode(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation, value: win32more.Microsoft.UI.Input.DragDrop.DragUIContentMode) -> Void: ...
     @winrt_mixinmethod
-    def SetDragUIContentFromSoftwareBitmap(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap) -> Void: ...
+    def get_Data(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation) -> win32more.Windows.ApplicationModel.DataTransfer.DataPackage: ...
     @winrt_mixinmethod
     def SetDragUIContentFromSoftwareBitmap2(self: win32more.Microsoft.UI.Input.DragDrop.IDragOperation, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap, anchorPoint: win32more.Windows.Foundation.Point) -> Void: ...
     @winrt_mixinmethod
@@ -89,19 +83,19 @@ class DragOperation(ComPtr):
     AllowedOperations = property(get_AllowedOperations, put_AllowedOperations)
     Data = property(get_Data, None)
     DragUIContentMode = property(get_DragUIContentMode, put_DragUIContentMode)
-DragUIContentMode = Int32
-DragUIContentMode_Auto: DragUIContentMode = 0
-DragUIContentMode_Deferred: DragUIContentMode = 1
+class DragUIContentMode(Int32):  # enum
+    Auto = 0
+    Deferred = 1
 class DragUIOverride(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride
     _classid_ = 'Microsoft.UI.Input.DragDrop.DragUIOverride'
     @winrt_mixinmethod
-    def get_IsCaptionVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> Boolean: ...
+    def put_IsGlyphVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def put_Caption(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
-    def get_Caption(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> WinRT_String: ...
+    def get_IsCaptionVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsCaptionVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, value: Boolean) -> Void: ...
     @winrt_mixinmethod
@@ -111,15 +105,15 @@ class DragUIOverride(ComPtr):
     @winrt_mixinmethod
     def get_IsGlyphVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> Boolean: ...
     @winrt_mixinmethod
-    def put_IsGlyphVisible(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, value: Boolean) -> Void: ...
+    def get_Caption(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> WinRT_String: ...
     @winrt_mixinmethod
     def Clear(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride) -> Void: ...
     @winrt_mixinmethod
     def SetContentFromSoftwareBitmap(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap) -> Void: ...
     @winrt_mixinmethod
     def SetContentFromSoftwareBitmap2(self: win32more.Microsoft.UI.Input.DragDrop.IDragUIOverride, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap, anchorPoint: win32more.Windows.Foundation.Point) -> Void: ...
-    IsCaptionVisible = property(get_IsCaptionVisible, put_IsCaptionVisible)
     Caption = property(get_Caption, put_Caption)
+    IsCaptionVisible = property(get_IsCaptionVisible, put_IsCaptionVisible)
     IsContentVisible = property(get_IsContentVisible, put_IsContentVisible)
     IsGlyphVisible = property(get_IsGlyphVisible, put_IsGlyphVisible)
 class DropOperationTargetRequestedEventArgs(ComPtr):
@@ -234,4 +228,6 @@ class IDropOperationTargetRequestedEventArgs(ComPtr):
     _iid_ = Guid('{f61c5b62-720e-59ff-ad0b-e77fc5b8a4a3}')
     @winrt_commethod(6)
     def SetTarget(self, target: win32more.Microsoft.UI.Input.DragDrop.IDropOperationTarget) -> Void: ...
+
+
 make_ready(__name__)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Globalization
 import win32more.Windows.Win32.Graphics.Gdi
@@ -3279,6 +3279,20 @@ def GetDistanceOfClosestLanguageInList(pszLanguage: win32more.Windows.Win32.Foun
 @winfunctype('bcp47mrm.dll')
 def IsWellFormedTag(pszTag: win32more.Windows.Win32.Foundation.PWSTR) -> Byte: ...
 @winfunctype('KERNEL32.dll')
+def GetCalendarSupportedDateRange(Calendar: UInt32, lpCalMinDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME), lpCalMaxDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def GetCalendarDateFormatEx(lpszLocale: win32more.Windows.Win32.Foundation.PWSTR, dwFlags: UInt32, lpCalDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME), lpFormat: win32more.Windows.Win32.Foundation.PWSTR, lpDateStr: win32more.Windows.Win32.Foundation.PWSTR, cchDate: Int32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def ConvertSystemTimeToCalDateTime(lpSysTime: POINTER(win32more.Windows.Win32.Foundation.SYSTEMTIME), calId: UInt32, lpCalDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def UpdateCalendarDayOfWeek(lpCalDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def AdjustCalendarDate(lpCalDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME), calUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT, amount: Int32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def ConvertCalDateTimeToSystemTime(lpCalDateTime: POINTER(win32more.Windows.Win32.Globalization.CALDATETIME), lpSysTime: POINTER(win32more.Windows.Win32.Foundation.SYSTEMTIME)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
+def IsCalendarLeapYear(calId: UInt32, year: UInt32, era: UInt32) -> win32more.Windows.Win32.Foundation.BOOL: ...
+@winfunctype('KERNEL32.dll')
 def FindStringOrdinal(dwFindStringOrdinalFlags: UInt32, lpStringSource: win32more.Windows.Win32.Foundation.PWSTR, cchSource: Int32, lpStringValue: win32more.Windows.Win32.Foundation.PWSTR, cchValue: Int32, bIgnoreCase: win32more.Windows.Win32.Foundation.BOOL) -> Int32: ...
 @winfunctype('KERNEL32.dll')
 def lstrcmpA(lpString1: win32more.Windows.Win32.Foundation.PSTR, lpString2: win32more.Windows.Win32.Foundation.PSTR) -> Int32: ...
@@ -3306,6 +3320,27 @@ def lstrlenA(lpString: win32more.Windows.Win32.Foundation.PSTR) -> Int32: ...
 def lstrlenW(lpString: win32more.Windows.Win32.Foundation.PWSTR) -> Int32: ...
 @winfunctype('ADVAPI32.dll')
 def IsTextUnicode(lpv: VoidPtr, iSize: Int32, lpiResult: POINTER(win32more.Windows.Win32.Globalization.IS_TEXT_UNICODE_RESULT)) -> win32more.Windows.Win32.Foundation.BOOL: ...
+class CALDATETIME(EasyCastStructure):
+    CalId: UInt32
+    Era: UInt32
+    Year: UInt32
+    Month: UInt32
+    Day: UInt32
+    DayOfWeek: UInt32
+    Hour: UInt32
+    Minute: UInt32
+    Second: UInt32
+    Tick: UInt32
+CALDATETIME_DATEUNIT = Int32
+EraUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 0
+YearUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 1
+MonthUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 2
+WeekUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 3
+DayUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 4
+HourUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 5
+MinuteUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 6
+SecondUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 7
+TickUnit: win32more.Windows.Win32.Globalization.CALDATETIME_DATEUNIT = 8
 @winfunctype_pointer
 def CALINFO_ENUMPROCA(param0: win32more.Windows.Win32.Foundation.PSTR) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype_pointer
@@ -4034,11 +4069,11 @@ class NLSVERSIONINFOEX(EasyCastStructure):
     dwEffectiveId: UInt32
     guidCustomVersion: Guid
 NORM_FORM = Int32
-NORM_FORM_NormalizationOther: win32more.Windows.Win32.Globalization.NORM_FORM = 0
-NORM_FORM_NormalizationC: win32more.Windows.Win32.Globalization.NORM_FORM = 1
-NORM_FORM_NormalizationD: win32more.Windows.Win32.Globalization.NORM_FORM = 2
-NORM_FORM_NormalizationKC: win32more.Windows.Win32.Globalization.NORM_FORM = 5
-NORM_FORM_NormalizationKD: win32more.Windows.Win32.Globalization.NORM_FORM = 6
+NormalizationOther: win32more.Windows.Win32.Globalization.NORM_FORM = 0
+NormalizationC: win32more.Windows.Win32.Globalization.NORM_FORM = 1
+NormalizationD: win32more.Windows.Win32.Globalization.NORM_FORM = 2
+NormalizationKC: win32more.Windows.Win32.Globalization.NORM_FORM = 5
+NormalizationKD: win32more.Windows.Win32.Globalization.NORM_FORM = 6
 class NUMBERFMTA(EasyCastStructure):
     NumDigits: UInt32
     LeadingZero: UInt32
@@ -4063,50 +4098,50 @@ class RFC1766INFO(EasyCastStructure):
     wszRfc1766: Char * 6
     wszLocaleName: Char * 32
 SCRIPTCONTF = Int32
-SCRIPTCONTF_sidDefault: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 0
-SCRIPTCONTF_sidMerge: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 1
-SCRIPTCONTF_sidAsciiSym: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 2
-SCRIPTCONTF_sidAsciiLatin: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 3
-SCRIPTCONTF_sidLatin: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 4
-SCRIPTCONTF_sidGreek: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 5
-SCRIPTCONTF_sidCyrillic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 6
-SCRIPTCONTF_sidArmenian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 7
-SCRIPTCONTF_sidHebrew: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 8
-SCRIPTCONTF_sidArabic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 9
-SCRIPTCONTF_sidDevanagari: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 10
-SCRIPTCONTF_sidBengali: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 11
-SCRIPTCONTF_sidGurmukhi: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 12
-SCRIPTCONTF_sidGujarati: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 13
-SCRIPTCONTF_sidOriya: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 14
-SCRIPTCONTF_sidTamil: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 15
-SCRIPTCONTF_sidTelugu: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 16
-SCRIPTCONTF_sidKannada: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 17
-SCRIPTCONTF_sidMalayalam: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 18
-SCRIPTCONTF_sidThai: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 19
-SCRIPTCONTF_sidLao: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 20
-SCRIPTCONTF_sidTibetan: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 21
-SCRIPTCONTF_sidGeorgian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 22
-SCRIPTCONTF_sidHangul: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 23
-SCRIPTCONTF_sidKana: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 24
-SCRIPTCONTF_sidBopomofo: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 25
-SCRIPTCONTF_sidHan: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 26
-SCRIPTCONTF_sidEthiopic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 27
-SCRIPTCONTF_sidCanSyllabic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 28
-SCRIPTCONTF_sidCherokee: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 29
-SCRIPTCONTF_sidYi: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 30
-SCRIPTCONTF_sidBraille: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 31
-SCRIPTCONTF_sidRunic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 32
-SCRIPTCONTF_sidOgham: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 33
-SCRIPTCONTF_sidSinhala: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 34
-SCRIPTCONTF_sidSyriac: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 35
-SCRIPTCONTF_sidBurmese: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 36
-SCRIPTCONTF_sidKhmer: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 37
-SCRIPTCONTF_sidThaana: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 38
-SCRIPTCONTF_sidMongolian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 39
-SCRIPTCONTF_sidUserDefined: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 40
-SCRIPTCONTF_sidLim: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 41
-SCRIPTCONTF_sidFEFirst: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 23
-SCRIPTCONTF_sidFELast: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 26
+sidDefault: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 0
+sidMerge: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 1
+sidAsciiSym: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 2
+sidAsciiLatin: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 3
+sidLatin: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 4
+sidGreek: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 5
+sidCyrillic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 6
+sidArmenian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 7
+sidHebrew: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 8
+sidArabic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 9
+sidDevanagari: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 10
+sidBengali: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 11
+sidGurmukhi: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 12
+sidGujarati: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 13
+sidOriya: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 14
+sidTamil: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 15
+sidTelugu: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 16
+sidKannada: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 17
+sidMalayalam: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 18
+sidThai: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 19
+sidLao: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 20
+sidTibetan: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 21
+sidGeorgian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 22
+sidHangul: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 23
+sidKana: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 24
+sidBopomofo: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 25
+sidHan: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 26
+sidEthiopic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 27
+sidCanSyllabic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 28
+sidCherokee: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 29
+sidYi: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 30
+sidBraille: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 31
+sidRunic: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 32
+sidOgham: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 33
+sidSinhala: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 34
+sidSyriac: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 35
+sidBurmese: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 36
+sidKhmer: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 37
+sidThaana: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 38
+sidMongolian: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 39
+sidUserDefined: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 40
+sidLim: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 41
+sidFEFirst: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 23
+sidFELast: win32more.Windows.Win32.Globalization.SCRIPTCONTF = 26
 SCRIPTFONTCONTF = Int32
 SCRIPTCONTF_FIXED_FONT: win32more.Windows.Win32.Globalization.SCRIPTFONTCONTF = 1
 SCRIPTCONTF_PROPORTIONAL_FONT: win32more.Windows.Win32.Globalization.SCRIPTFONTCONTF = 2

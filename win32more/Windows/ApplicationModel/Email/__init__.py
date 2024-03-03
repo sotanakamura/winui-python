@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Appointments
 import win32more.Windows.ApplicationModel.Email
 import win32more.Windows.Foundation
@@ -22,16 +8,30 @@ import win32more.Windows.Foundation.Collections
 import win32more.Windows.Security.Cryptography.Certificates
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class EmailAttachment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailAttachment
     _classid_ = 'Windows.ApplicationModel.Email.EmailAttachment'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailAttachmentFactory2, fileName: WinRT_String, data: win32more.Windows.Storage.Streams.IRandomAccessStreamReference, mimeType: WinRT_String) -> win32more.Windows.ApplicationModel.Email.EmailAttachment: ...
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailAttachmentFactory, fileName: WinRT_String, data: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> win32more.Windows.ApplicationModel.Email.EmailAttachment: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailAttachment.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Email.EmailAttachment.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Email.EmailAttachment.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailAttachment: ...
+    @winrt_overload
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailAttachmentFactory, fileName: WinRT_String, data: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> win32more.Windows.ApplicationModel.Email.EmailAttachment: ...
+    @Create.register
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailAttachmentFactory2, fileName: WinRT_String, data: win32more.Windows.Storage.Streams.IRandomAccessStreamReference, mimeType: WinRT_String) -> win32more.Windows.ApplicationModel.Email.EmailAttachment: ...
     @winrt_mixinmethod
     def get_FileName(self: win32more.Windows.ApplicationModel.Email.IEmailAttachment) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -68,37 +68,37 @@ class EmailAttachment(ComPtr):
     def get_MimeType(self: win32more.Windows.ApplicationModel.Email.IEmailAttachment2) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_MimeType(self: win32more.Windows.ApplicationModel.Email.IEmailAttachment2, value: WinRT_String) -> Void: ...
-    FileName = property(get_FileName, put_FileName)
-    Data = property(get_Data, put_Data)
-    Id = property(get_Id, None)
     ContentId = property(get_ContentId, put_ContentId)
     ContentLocation = property(get_ContentLocation, put_ContentLocation)
+    Data = property(get_Data, put_Data)
     DownloadState = property(get_DownloadState, put_DownloadState)
     EstimatedDownloadSizeInBytes = property(get_EstimatedDownloadSizeInBytes, put_EstimatedDownloadSizeInBytes)
+    FileName = property(get_FileName, put_FileName)
+    Id = property(get_Id, None)
     IsFromBaseMessage = property(get_IsFromBaseMessage, None)
     IsInline = property(get_IsInline, put_IsInline)
     MimeType = property(get_MimeType, put_MimeType)
-EmailAttachmentDownloadState = Int32
-EmailAttachmentDownloadState_NotDownloaded: EmailAttachmentDownloadState = 0
-EmailAttachmentDownloadState_Downloading: EmailAttachmentDownloadState = 1
-EmailAttachmentDownloadState_Downloaded: EmailAttachmentDownloadState = 2
-EmailAttachmentDownloadState_Failed: EmailAttachmentDownloadState = 3
-EmailBatchStatus = Int32
-EmailBatchStatus_Success: EmailBatchStatus = 0
-EmailBatchStatus_ServerSearchSyncManagerError: EmailBatchStatus = 1
-EmailBatchStatus_ServerSearchUnknownError: EmailBatchStatus = 2
-EmailCertificateValidationStatus = Int32
-EmailCertificateValidationStatus_Success: EmailCertificateValidationStatus = 0
-EmailCertificateValidationStatus_NoMatch: EmailCertificateValidationStatus = 1
-EmailCertificateValidationStatus_InvalidUsage: EmailCertificateValidationStatus = 2
-EmailCertificateValidationStatus_InvalidCertificate: EmailCertificateValidationStatus = 3
-EmailCertificateValidationStatus_Revoked: EmailCertificateValidationStatus = 4
-EmailCertificateValidationStatus_ChainRevoked: EmailCertificateValidationStatus = 5
-EmailCertificateValidationStatus_RevocationServerFailure: EmailCertificateValidationStatus = 6
-EmailCertificateValidationStatus_Expired: EmailCertificateValidationStatus = 7
-EmailCertificateValidationStatus_Untrusted: EmailCertificateValidationStatus = 8
-EmailCertificateValidationStatus_ServerError: EmailCertificateValidationStatus = 9
-EmailCertificateValidationStatus_UnknownFailure: EmailCertificateValidationStatus = 10
+class EmailAttachmentDownloadState(Int32):  # enum
+    NotDownloaded = 0
+    Downloading = 1
+    Downloaded = 2
+    Failed = 3
+class EmailBatchStatus(Int32):  # enum
+    Success = 0
+    ServerSearchSyncManagerError = 1
+    ServerSearchUnknownError = 2
+class EmailCertificateValidationStatus(Int32):  # enum
+    Success = 0
+    NoMatch = 1
+    InvalidUsage = 2
+    InvalidCertificate = 3
+    Revoked = 4
+    ChainRevoked = 5
+    RevocationServerFailure = 6
+    Expired = 7
+    Untrusted = 8
+    ServerError = 9
+    UnknownFailure = 10
 class EmailConversation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailConversation
@@ -133,17 +133,17 @@ class EmailConversation(ComPtr):
     def FindMessagesAsync(self: win32more.Windows.ApplicationModel.Email.IEmailConversation) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Email.EmailMessage]]: ...
     @winrt_mixinmethod
     def FindMessagesWithCountAsync(self: win32more.Windows.ApplicationModel.Email.IEmailConversation, count: UInt32) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Email.EmailMessage]]: ...
-    Id = property(get_Id, None)
-    MailboxId = property(get_MailboxId, None)
     FlagState = property(get_FlagState, None)
     HasAttachment = property(get_HasAttachment, None)
+    Id = property(get_Id, None)
     Importance = property(get_Importance, None)
     LastEmailResponseKind = property(get_LastEmailResponseKind, None)
+    LatestSender = property(get_LatestSender, None)
+    MailboxId = property(get_MailboxId, None)
     MessageCount = property(get_MessageCount, None)
     MostRecentMessageId = property(get_MostRecentMessageId, None)
     MostRecentMessageTime = property(get_MostRecentMessageTime, None)
     Preview = property(get_Preview, None)
-    LatestSender = property(get_LatestSender, None)
     Subject = property(get_Subject, None)
     UnreadMessageCount = property(get_UnreadMessageCount, None)
 class EmailConversationBatch(ComPtr):
@@ -162,11 +162,11 @@ class EmailConversationReader(ComPtr):
     _classid_ = 'Windows.ApplicationModel.Email.EmailConversationReader'
     @winrt_mixinmethod
     def ReadBatchAsync(self: win32more.Windows.ApplicationModel.Email.IEmailConversationReader) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Email.EmailConversationBatch]: ...
-EmailFlagState = Int32
-EmailFlagState_Unflagged: EmailFlagState = 0
-EmailFlagState_Flagged: EmailFlagState = 1
-EmailFlagState_Completed: EmailFlagState = 2
-EmailFlagState_Cleared: EmailFlagState = 3
+class EmailFlagState(Int32):  # enum
+    Unflagged = 0
+    Flagged = 1
+    Completed = 2
+    Cleared = 3
 class EmailFolder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailFolder
@@ -221,22 +221,31 @@ class EmailFolder(ComPtr):
     def TrySaveAsync(self: win32more.Windows.ApplicationModel.Email.IEmailFolder) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_mixinmethod
     def SaveMessageAsync(self: win32more.Windows.ApplicationModel.Email.IEmailFolder, message: win32more.Windows.ApplicationModel.Email.EmailMessage) -> win32more.Windows.Foundation.IAsyncAction: ...
+    DisplayName = property(get_DisplayName, put_DisplayName)
     Id = property(get_Id, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
+    IsSyncEnabled = property(get_IsSyncEnabled, put_IsSyncEnabled)
+    Kind = property(get_Kind, None)
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
     MailboxId = property(get_MailboxId, None)
     ParentFolderId = property(get_ParentFolderId, None)
-    DisplayName = property(get_DisplayName, put_DisplayName)
-    IsSyncEnabled = property(get_IsSyncEnabled, put_IsSyncEnabled)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
-    Kind = property(get_Kind, None)
-EmailImportance = Int32
-EmailImportance_Normal: EmailImportance = 0
-EmailImportance_High: EmailImportance = 1
-EmailImportance_Low: EmailImportance = 2
+    RemoteId = property(get_RemoteId, put_RemoteId)
+class EmailImportance(Int32):  # enum
+    Normal = 0
+    High = 1
+    Low = 2
 class EmailIrmInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailIrmInfo
     _classid_ = 'Windows.ApplicationModel.Email.EmailIrmInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailIrmInfo.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Email.EmailIrmInfo.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailIrmInfo: ...
     @winrt_factorymethod
@@ -305,10 +314,19 @@ class EmailIrmTemplate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplate
     _classid_ = 'Windows.ApplicationModel.Email.EmailIrmTemplate'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplateFactory, id: WinRT_String, name: WinRT_String, description: WinRT_String) -> win32more.Windows.ApplicationModel.Email.EmailIrmTemplate: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailIrmTemplate.CreateInstance(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Email.EmailIrmTemplate.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailIrmTemplate: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplateFactory, id: WinRT_String, name: WinRT_String, description: WinRT_String) -> win32more.Windows.ApplicationModel.Email.EmailIrmTemplate: ...
     @winrt_mixinmethod
     def get_Id(self: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplate) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -321,8 +339,8 @@ class EmailIrmTemplate(ComPtr):
     def get_Name(self: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplate) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Name(self: win32more.Windows.ApplicationModel.Email.IEmailIrmTemplate, value: WinRT_String) -> Void: ...
-    Id = property(get_Id, put_Id)
     Description = property(get_Description, put_Description)
+    Id = property(get_Id, put_Id)
     Name = property(get_Name, put_Name)
 class EmailItemCounts(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -468,19 +486,19 @@ class EmailMailbox(ComPtr):
     ChangeTracker = property(get_ChangeTracker, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
     Id = property(get_Id, None)
-    IsOwnedByCurrentApp = property(get_IsOwnedByCurrentApp, None)
     IsDataEncryptedUnderLock = property(get_IsDataEncryptedUnderLock, None)
+    IsOwnedByCurrentApp = property(get_IsOwnedByCurrentApp, None)
+    LinkedMailboxId = property(get_LinkedMailboxId, None)
     MailAddress = property(get_MailAddress, put_MailAddress)
     MailAddressAliases = property(get_MailAddressAliases, None)
+    NetworkAccountId = property(get_NetworkAccountId, None)
+    NetworkId = property(get_NetworkId, None)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     OtherAppWriteAccess = property(get_OtherAppWriteAccess, put_OtherAppWriteAccess)
     Policies = property(get_Policies, None)
     SourceDisplayName = property(get_SourceDisplayName, None)
     SyncManager = property(get_SyncManager, None)
     UserDataAccountId = property(get_UserDataAccountId, None)
-    LinkedMailboxId = property(get_LinkedMailboxId, None)
-    NetworkAccountId = property(get_NetworkAccountId, None)
-    NetworkId = property(get_NetworkId, None)
 class EmailMailboxAction(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxAction
@@ -489,24 +507,24 @@ class EmailMailboxAction(ComPtr):
     def get_Kind(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxAction) -> win32more.Windows.ApplicationModel.Email.EmailMailboxActionKind: ...
     @winrt_mixinmethod
     def get_ChangeNumber(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxAction) -> UInt64: ...
-    Kind = property(get_Kind, None)
     ChangeNumber = property(get_ChangeNumber, None)
-EmailMailboxActionKind = Int32
-EmailMailboxActionKind_MarkMessageAsSeen: EmailMailboxActionKind = 0
-EmailMailboxActionKind_MarkMessageRead: EmailMailboxActionKind = 1
-EmailMailboxActionKind_ChangeMessageFlagState: EmailMailboxActionKind = 2
-EmailMailboxActionKind_MoveMessage: EmailMailboxActionKind = 3
-EmailMailboxActionKind_SaveDraft: EmailMailboxActionKind = 4
-EmailMailboxActionKind_SendMessage: EmailMailboxActionKind = 5
-EmailMailboxActionKind_CreateResponseReplyMessage: EmailMailboxActionKind = 6
-EmailMailboxActionKind_CreateResponseReplyAllMessage: EmailMailboxActionKind = 7
-EmailMailboxActionKind_CreateResponseForwardMessage: EmailMailboxActionKind = 8
-EmailMailboxActionKind_MoveFolder: EmailMailboxActionKind = 9
-EmailMailboxActionKind_MarkFolderForSyncEnabled: EmailMailboxActionKind = 10
-EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation = Int32
-EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation_None: EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation = 0
-EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation_StrongAlgorithm: EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation = 1
-EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation_AnyAlgorithm: EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation = 2
+    Kind = property(get_Kind, None)
+class EmailMailboxActionKind(Int32):  # enum
+    MarkMessageAsSeen = 0
+    MarkMessageRead = 1
+    ChangeMessageFlagState = 2
+    MoveMessage = 3
+    SaveDraft = 4
+    SendMessage = 5
+    CreateResponseReplyMessage = 6
+    CreateResponseReplyAllMessage = 7
+    CreateResponseForwardMessage = 8
+    MoveFolder = 9
+    MarkFolderForSyncEnabled = 10
+class EmailMailboxAllowedSmimeEncryptionAlgorithmNegotiation(Int32):  # enum
+    None_ = 0
+    StrongAlgorithm = 1
+    AnyAlgorithm = 2
 class EmailMailboxAutoReply(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxAutoReply
@@ -521,13 +539,20 @@ class EmailMailboxAutoReply(ComPtr):
     def put_Response(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxAutoReply, value: WinRT_String) -> Void: ...
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
     Response = property(get_Response, put_Response)
-EmailMailboxAutoReplyMessageResponseKind = Int32
-EmailMailboxAutoReplyMessageResponseKind_Html: EmailMailboxAutoReplyMessageResponseKind = 0
-EmailMailboxAutoReplyMessageResponseKind_PlainText: EmailMailboxAutoReplyMessageResponseKind = 1
+class EmailMailboxAutoReplyMessageResponseKind(Int32):  # enum
+    Html = 0
+    PlainText = 1
 class EmailMailboxAutoReplySettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxAutoReplySettings
     _classid_ = 'Windows.ApplicationModel.Email.EmailMailboxAutoReplySettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReplySettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReplySettings: ...
     @winrt_mixinmethod
@@ -552,12 +577,12 @@ class EmailMailboxAutoReplySettings(ComPtr):
     def get_KnownExternalReply(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxAutoReplySettings) -> win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReply: ...
     @winrt_mixinmethod
     def get_UnknownExternalReply(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxAutoReplySettings) -> win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReply: ...
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    ResponseKind = property(get_ResponseKind, put_ResponseKind)
-    StartTime = property(get_StartTime, put_StartTime)
     EndTime = property(get_EndTime, put_EndTime)
     InternalReply = property(get_InternalReply, None)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
     KnownExternalReply = property(get_KnownExternalReply, None)
+    ResponseKind = property(get_ResponseKind, put_ResponseKind)
+    StartTime = property(get_StartTime, put_StartTime)
     UnknownExternalReply = property(get_UnknownExternalReply, None)
 class EmailMailboxCapabilities(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -619,20 +644,20 @@ class EmailMailboxCapabilities(ComPtr):
     def put_CanDeleteFolder(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxCapabilities3, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def put_CanMoveFolder(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxCapabilities3, value: Boolean) -> Void: ...
+    CanCreateFolder = property(get_CanCreateFolder, put_CanCreateFolder)
+    CanDeleteFolder = property(get_CanDeleteFolder, put_CanDeleteFolder)
+    CanEmptyFolder = property(get_CanEmptyFolder, put_CanEmptyFolder)
     CanForwardMeetings = property(get_CanForwardMeetings, put_CanForwardMeetings)
     CanGetAndSetExternalAutoReplies = property(get_CanGetAndSetExternalAutoReplies, put_CanGetAndSetExternalAutoReplies)
     CanGetAndSetInternalAutoReplies = property(get_CanGetAndSetInternalAutoReplies, put_CanGetAndSetInternalAutoReplies)
-    CanUpdateMeetingResponses = property(get_CanUpdateMeetingResponses, put_CanUpdateMeetingResponses)
+    CanMoveFolder = property(get_CanMoveFolder, put_CanMoveFolder)
+    CanProposeNewTimeForMeetings = property(get_CanProposeNewTimeForMeetings, put_CanProposeNewTimeForMeetings)
+    CanResolveRecipients = property(get_CanResolveRecipients, put_CanResolveRecipients)
     CanServerSearchFolders = property(get_CanServerSearchFolders, put_CanServerSearchFolders)
     CanServerSearchMailbox = property(get_CanServerSearchMailbox, put_CanServerSearchMailbox)
-    CanProposeNewTimeForMeetings = property(get_CanProposeNewTimeForMeetings, put_CanProposeNewTimeForMeetings)
     CanSmartSend = property(get_CanSmartSend, put_CanSmartSend)
-    CanResolveRecipients = property(get_CanResolveRecipients, put_CanResolveRecipients)
+    CanUpdateMeetingResponses = property(get_CanUpdateMeetingResponses, put_CanUpdateMeetingResponses)
     CanValidateCertificates = property(get_CanValidateCertificates, put_CanValidateCertificates)
-    CanEmptyFolder = property(get_CanEmptyFolder, put_CanEmptyFolder)
-    CanCreateFolder = property(get_CanCreateFolder, put_CanCreateFolder)
-    CanDeleteFolder = property(get_CanDeleteFolder, put_CanDeleteFolder)
-    CanMoveFolder = property(get_CanMoveFolder, put_CanMoveFolder)
 class EmailMailboxChange(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxChange
@@ -646,9 +671,9 @@ class EmailMailboxChange(ComPtr):
     @winrt_mixinmethod
     def get_Folder(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxChange) -> win32more.Windows.ApplicationModel.Email.EmailFolder: ...
     ChangeType = property(get_ChangeType, None)
+    Folder = property(get_Folder, None)
     MailboxActions = property(get_MailboxActions, None)
     Message = property(get_Message, None)
-    Folder = property(get_Folder, None)
 class EmailMailboxChangeReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxChangeReader
@@ -672,14 +697,14 @@ class EmailMailboxChangeTracker(ComPtr):
     @winrt_mixinmethod
     def Reset(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxChangeTracker) -> Void: ...
     IsTracking = property(get_IsTracking, None)
-EmailMailboxChangeType = Int32
-EmailMailboxChangeType_MessageCreated: EmailMailboxChangeType = 0
-EmailMailboxChangeType_MessageModified: EmailMailboxChangeType = 1
-EmailMailboxChangeType_MessageDeleted: EmailMailboxChangeType = 2
-EmailMailboxChangeType_FolderCreated: EmailMailboxChangeType = 3
-EmailMailboxChangeType_FolderModified: EmailMailboxChangeType = 4
-EmailMailboxChangeType_FolderDeleted: EmailMailboxChangeType = 5
-EmailMailboxChangeType_ChangeTrackingLost: EmailMailboxChangeType = 6
+class EmailMailboxChangeType(Int32):  # enum
+    MessageCreated = 0
+    MessageModified = 1
+    MessageDeleted = 2
+    FolderCreated = 3
+    FolderModified = 4
+    FolderDeleted = 5
+    ChangeTrackingLost = 6
 class EmailMailboxChangedDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxChangedDeferral
@@ -700,37 +725,37 @@ class EmailMailboxCreateFolderResult(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxCreateFolderResult) -> win32more.Windows.ApplicationModel.Email.EmailMailboxCreateFolderStatus: ...
     @winrt_mixinmethod
     def get_Folder(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxCreateFolderResult) -> win32more.Windows.ApplicationModel.Email.EmailFolder: ...
-    Status = property(get_Status, None)
     Folder = property(get_Folder, None)
-EmailMailboxCreateFolderStatus = Int32
-EmailMailboxCreateFolderStatus_Success: EmailMailboxCreateFolderStatus = 0
-EmailMailboxCreateFolderStatus_NetworkError: EmailMailboxCreateFolderStatus = 1
-EmailMailboxCreateFolderStatus_PermissionsError: EmailMailboxCreateFolderStatus = 2
-EmailMailboxCreateFolderStatus_ServerError: EmailMailboxCreateFolderStatus = 3
-EmailMailboxCreateFolderStatus_UnknownFailure: EmailMailboxCreateFolderStatus = 4
-EmailMailboxCreateFolderStatus_NameCollision: EmailMailboxCreateFolderStatus = 5
-EmailMailboxCreateFolderStatus_ServerRejected: EmailMailboxCreateFolderStatus = 6
-EmailMailboxDeleteFolderStatus = Int32
-EmailMailboxDeleteFolderStatus_Success: EmailMailboxDeleteFolderStatus = 0
-EmailMailboxDeleteFolderStatus_NetworkError: EmailMailboxDeleteFolderStatus = 1
-EmailMailboxDeleteFolderStatus_PermissionsError: EmailMailboxDeleteFolderStatus = 2
-EmailMailboxDeleteFolderStatus_ServerError: EmailMailboxDeleteFolderStatus = 3
-EmailMailboxDeleteFolderStatus_UnknownFailure: EmailMailboxDeleteFolderStatus = 4
-EmailMailboxDeleteFolderStatus_CouldNotDeleteEverything: EmailMailboxDeleteFolderStatus = 5
-EmailMailboxEmptyFolderStatus = Int32
-EmailMailboxEmptyFolderStatus_Success: EmailMailboxEmptyFolderStatus = 0
-EmailMailboxEmptyFolderStatus_NetworkError: EmailMailboxEmptyFolderStatus = 1
-EmailMailboxEmptyFolderStatus_PermissionsError: EmailMailboxEmptyFolderStatus = 2
-EmailMailboxEmptyFolderStatus_ServerError: EmailMailboxEmptyFolderStatus = 3
-EmailMailboxEmptyFolderStatus_UnknownFailure: EmailMailboxEmptyFolderStatus = 4
-EmailMailboxEmptyFolderStatus_CouldNotDeleteEverything: EmailMailboxEmptyFolderStatus = 5
-EmailMailboxOtherAppReadAccess = Int32
-EmailMailboxOtherAppReadAccess_SystemOnly: EmailMailboxOtherAppReadAccess = 0
-EmailMailboxOtherAppReadAccess_Full: EmailMailboxOtherAppReadAccess = 1
-EmailMailboxOtherAppReadAccess_None: EmailMailboxOtherAppReadAccess = 2
-EmailMailboxOtherAppWriteAccess = Int32
-EmailMailboxOtherAppWriteAccess_None: EmailMailboxOtherAppWriteAccess = 0
-EmailMailboxOtherAppWriteAccess_Limited: EmailMailboxOtherAppWriteAccess = 1
+    Status = property(get_Status, None)
+class EmailMailboxCreateFolderStatus(Int32):  # enum
+    Success = 0
+    NetworkError = 1
+    PermissionsError = 2
+    ServerError = 3
+    UnknownFailure = 4
+    NameCollision = 5
+    ServerRejected = 6
+class EmailMailboxDeleteFolderStatus(Int32):  # enum
+    Success = 0
+    NetworkError = 1
+    PermissionsError = 2
+    ServerError = 3
+    UnknownFailure = 4
+    CouldNotDeleteEverything = 5
+class EmailMailboxEmptyFolderStatus(Int32):  # enum
+    Success = 0
+    NetworkError = 1
+    PermissionsError = 2
+    ServerError = 3
+    UnknownFailure = 4
+    CouldNotDeleteEverything = 5
+class EmailMailboxOtherAppReadAccess(Int32):  # enum
+    SystemOnly = 0
+    Full = 1
+    None_ = 2
+class EmailMailboxOtherAppWriteAccess(Int32):  # enum
+    None_ = 0
+    Limited = 1
 class EmailMailboxPolicies(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxPolicies
@@ -759,23 +784,23 @@ class EmailMailboxPolicies(ComPtr):
     def put_MustEncryptSmimeMessages(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxPolicies3, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def put_MustSignSmimeMessages(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxPolicies3, value: Boolean) -> Void: ...
-    AllowedSmimeEncryptionAlgorithmNegotiation = property(get_AllowedSmimeEncryptionAlgorithmNegotiation, put_AllowedSmimeEncryptionAlgorithmNegotiation)
     AllowSmimeSoftCertificates = property(get_AllowSmimeSoftCertificates, put_AllowSmimeSoftCertificates)
-    RequiredSmimeEncryptionAlgorithm = property(get_RequiredSmimeEncryptionAlgorithm, put_RequiredSmimeEncryptionAlgorithm)
-    RequiredSmimeSigningAlgorithm = property(get_RequiredSmimeSigningAlgorithm, put_RequiredSmimeSigningAlgorithm)
+    AllowedSmimeEncryptionAlgorithmNegotiation = property(get_AllowedSmimeEncryptionAlgorithmNegotiation, put_AllowedSmimeEncryptionAlgorithmNegotiation)
     MustEncryptSmimeMessages = property(get_MustEncryptSmimeMessages, put_MustEncryptSmimeMessages)
     MustSignSmimeMessages = property(get_MustSignSmimeMessages, put_MustSignSmimeMessages)
-EmailMailboxSmimeEncryptionAlgorithm = Int32
-EmailMailboxSmimeEncryptionAlgorithm_Any: EmailMailboxSmimeEncryptionAlgorithm = 0
-EmailMailboxSmimeEncryptionAlgorithm_TripleDes: EmailMailboxSmimeEncryptionAlgorithm = 1
-EmailMailboxSmimeEncryptionAlgorithm_Des: EmailMailboxSmimeEncryptionAlgorithm = 2
-EmailMailboxSmimeEncryptionAlgorithm_RC2128Bit: EmailMailboxSmimeEncryptionAlgorithm = 3
-EmailMailboxSmimeEncryptionAlgorithm_RC264Bit: EmailMailboxSmimeEncryptionAlgorithm = 4
-EmailMailboxSmimeEncryptionAlgorithm_RC240Bit: EmailMailboxSmimeEncryptionAlgorithm = 5
-EmailMailboxSmimeSigningAlgorithm = Int32
-EmailMailboxSmimeSigningAlgorithm_Any: EmailMailboxSmimeSigningAlgorithm = 0
-EmailMailboxSmimeSigningAlgorithm_Sha1: EmailMailboxSmimeSigningAlgorithm = 1
-EmailMailboxSmimeSigningAlgorithm_MD5: EmailMailboxSmimeSigningAlgorithm = 2
+    RequiredSmimeEncryptionAlgorithm = property(get_RequiredSmimeEncryptionAlgorithm, put_RequiredSmimeEncryptionAlgorithm)
+    RequiredSmimeSigningAlgorithm = property(get_RequiredSmimeSigningAlgorithm, put_RequiredSmimeSigningAlgorithm)
+class EmailMailboxSmimeEncryptionAlgorithm(Int32):  # enum
+    Any = 0
+    TripleDes = 1
+    Des = 2
+    RC2128Bit = 3
+    RC264Bit = 4
+    RC240Bit = 5
+class EmailMailboxSmimeSigningAlgorithm(Int32):  # enum
+    Any = 0
+    Sha1 = 1
+    MD5 = 2
 class EmailMailboxSyncManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMailboxSyncManager
@@ -798,17 +823,17 @@ class EmailMailboxSyncManager(ComPtr):
     def put_LastSuccessfulSyncTime(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxSyncManager2, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_mixinmethod
     def put_LastAttemptedSyncTime(self: win32more.Windows.ApplicationModel.Email.IEmailMailboxSyncManager2, value: win32more.Windows.Foundation.DateTime) -> Void: ...
-    Status = property(get_Status, put_Status)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
     LastAttemptedSyncTime = property(get_LastAttemptedSyncTime, put_LastAttemptedSyncTime)
-EmailMailboxSyncStatus = Int32
-EmailMailboxSyncStatus_Idle: EmailMailboxSyncStatus = 0
-EmailMailboxSyncStatus_Syncing: EmailMailboxSyncStatus = 1
-EmailMailboxSyncStatus_UpToDate: EmailMailboxSyncStatus = 2
-EmailMailboxSyncStatus_AuthenticationError: EmailMailboxSyncStatus = 3
-EmailMailboxSyncStatus_PolicyError: EmailMailboxSyncStatus = 4
-EmailMailboxSyncStatus_UnknownError: EmailMailboxSyncStatus = 5
-EmailMailboxSyncStatus_ManualAccountRemovalRequired: EmailMailboxSyncStatus = 6
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
+    Status = property(get_Status, put_Status)
+class EmailMailboxSyncStatus(Int32):  # enum
+    Idle = 0
+    Syncing = 1
+    UpToDate = 2
+    AuthenticationError = 3
+    PolicyError = 4
+    UnknownError = 5
+    ManualAccountRemovalRequired = 6
 class EmailManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.EmailManager'
@@ -833,6 +858,13 @@ class EmailMeetingInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMeetingInfo
     _classid_ = 'Windows.ApplicationModel.Email.EmailMeetingInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailMeetingInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailMeetingInfo: ...
     @winrt_mixinmethod
@@ -890,27 +922,34 @@ class EmailMeetingInfo(ComPtr):
     @winrt_mixinmethod
     def get_IsReportedOutOfDateByServer(self: win32more.Windows.ApplicationModel.Email.IEmailMeetingInfo2) -> Boolean: ...
     AllowNewTimeProposal = property(get_AllowNewTimeProposal, put_AllowNewTimeProposal)
-    AppointmentRoamingId = property(get_AppointmentRoamingId, put_AppointmentRoamingId)
     AppointmentOriginalStartTime = property(get_AppointmentOriginalStartTime, put_AppointmentOriginalStartTime)
+    AppointmentRoamingId = property(get_AppointmentRoamingId, put_AppointmentRoamingId)
     Duration = property(get_Duration, put_Duration)
     IsAllDay = property(get_IsAllDay, put_IsAllDay)
+    IsReportedOutOfDateByServer = property(get_IsReportedOutOfDateByServer, None)
     IsResponseRequested = property(get_IsResponseRequested, put_IsResponseRequested)
     Location = property(get_Location, put_Location)
-    ProposedStartTime = property(get_ProposedStartTime, put_ProposedStartTime)
     ProposedDuration = property(get_ProposedDuration, put_ProposedDuration)
-    RecurrenceStartTime = property(get_RecurrenceStartTime, put_RecurrenceStartTime)
+    ProposedStartTime = property(get_ProposedStartTime, put_ProposedStartTime)
     Recurrence = property(get_Recurrence, put_Recurrence)
+    RecurrenceStartTime = property(get_RecurrenceStartTime, put_RecurrenceStartTime)
     RemoteChangeNumber = property(get_RemoteChangeNumber, put_RemoteChangeNumber)
     StartTime = property(get_StartTime, put_StartTime)
-    IsReportedOutOfDateByServer = property(get_IsReportedOutOfDateByServer, None)
-EmailMeetingResponseType = Int32
-EmailMeetingResponseType_Accept: EmailMeetingResponseType = 0
-EmailMeetingResponseType_Decline: EmailMeetingResponseType = 1
-EmailMeetingResponseType_Tentative: EmailMeetingResponseType = 2
+class EmailMeetingResponseType(Int32):  # enum
+    Accept = 0
+    Decline = 1
+    Tentative = 2
 class EmailMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMessage
     _classid_ = 'Windows.ApplicationModel.Email.EmailMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailMessage: ...
     @winrt_mixinmethod
@@ -1033,23 +1072,19 @@ class EmailMessage(ComPtr):
     def get_SentRepresenting(self: win32more.Windows.ApplicationModel.Email.IEmailMessage4) -> win32more.Windows.ApplicationModel.Email.EmailRecipient: ...
     @winrt_mixinmethod
     def put_SentRepresenting(self: win32more.Windows.ApplicationModel.Email.IEmailMessage4, value: win32more.Windows.ApplicationModel.Email.EmailRecipient) -> Void: ...
-    Subject = property(get_Subject, put_Subject)
-    Body = property(get_Body, put_Body)
-    To = property(get_To, None)
-    CC = property(get_CC, None)
-    Bcc = property(get_Bcc, None)
-    Attachments = property(get_Attachments, None)
-    Id = property(get_Id, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    MailboxId = property(get_MailboxId, None)
-    ConversationId = property(get_ConversationId, None)
-    FolderId = property(get_FolderId, None)
     AllowInternetImages = property(get_AllowInternetImages, put_AllowInternetImages)
+    Attachments = property(get_Attachments, None)
+    Bcc = property(get_Bcc, None)
+    Body = property(get_Body, put_Body)
+    CC = property(get_CC, None)
     ChangeNumber = property(get_ChangeNumber, None)
+    ConversationId = property(get_ConversationId, None)
     DownloadState = property(get_DownloadState, put_DownloadState)
     EstimatedDownloadSizeInBytes = property(get_EstimatedDownloadSizeInBytes, put_EstimatedDownloadSizeInBytes)
     FlagState = property(get_FlagState, put_FlagState)
+    FolderId = property(get_FolderId, None)
     HasPartialBodies = property(get_HasPartialBodies, None)
+    Id = property(get_Id, None)
     Importance = property(get_Importance, put_Importance)
     InResponseToMessageId = property(get_InResponseToMessageId, None)
     IrmInfo = property(get_IrmInfo, put_IrmInfo)
@@ -1058,18 +1093,22 @@ class EmailMessage(ComPtr):
     IsSeen = property(get_IsSeen, put_IsSeen)
     IsServerSearchMessage = property(get_IsServerSearchMessage, None)
     IsSmartSendable = property(get_IsSmartSendable, None)
+    LastResponseKind = property(get_LastResponseKind, put_LastResponseKind)
+    MailboxId = property(get_MailboxId, None)
+    MeetingInfo = property(get_MeetingInfo, put_MeetingInfo)
     MessageClass = property(get_MessageClass, put_MessageClass)
     NormalizedSubject = property(get_NormalizedSubject, None)
     OriginalCodePage = property(get_OriginalCodePage, put_OriginalCodePage)
     Preview = property(get_Preview, put_Preview)
-    LastResponseKind = property(get_LastResponseKind, put_LastResponseKind)
+    RemoteId = property(get_RemoteId, put_RemoteId)
+    ReplyTo = property(get_ReplyTo, None)
     Sender = property(get_Sender, put_Sender)
+    SentRepresenting = property(get_SentRepresenting, put_SentRepresenting)
     SentTime = property(get_SentTime, put_SentTime)
-    MeetingInfo = property(get_MeetingInfo, put_MeetingInfo)
     SmimeData = property(get_SmimeData, put_SmimeData)
     SmimeKind = property(get_SmimeKind, put_SmimeKind)
-    ReplyTo = property(get_ReplyTo, None)
-    SentRepresenting = property(get_SentRepresenting, put_SentRepresenting)
+    Subject = property(get_Subject, put_Subject)
+    To = property(get_To, None)
 class EmailMessageBatch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMessageBatch
@@ -1080,47 +1119,58 @@ class EmailMessageBatch(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.Email.IEmailMessageBatch) -> win32more.Windows.ApplicationModel.Email.EmailBatchStatus: ...
     Messages = property(get_Messages, None)
     Status = property(get_Status, None)
-EmailMessageBodyKind = Int32
-EmailMessageBodyKind_Html: EmailMessageBodyKind = 0
-EmailMessageBodyKind_PlainText: EmailMessageBodyKind = 1
-EmailMessageDownloadState = Int32
-EmailMessageDownloadState_PartiallyDownloaded: EmailMessageDownloadState = 0
-EmailMessageDownloadState_Downloading: EmailMessageDownloadState = 1
-EmailMessageDownloadState_Downloaded: EmailMessageDownloadState = 2
-EmailMessageDownloadState_Failed: EmailMessageDownloadState = 3
+class EmailMessageBodyKind(Int32):  # enum
+    Html = 0
+    PlainText = 1
+class EmailMessageDownloadState(Int32):  # enum
+    PartiallyDownloaded = 0
+    Downloading = 1
+    Downloaded = 2
+    Failed = 3
 class EmailMessageReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailMessageReader
     _classid_ = 'Windows.ApplicationModel.Email.EmailMessageReader'
     @winrt_mixinmethod
     def ReadBatchAsync(self: win32more.Windows.ApplicationModel.Email.IEmailMessageReader) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Email.EmailMessageBatch]: ...
-EmailMessageResponseKind = Int32
-EmailMessageResponseKind_None: EmailMessageResponseKind = 0
-EmailMessageResponseKind_Reply: EmailMessageResponseKind = 1
-EmailMessageResponseKind_ReplyAll: EmailMessageResponseKind = 2
-EmailMessageResponseKind_Forward: EmailMessageResponseKind = 3
-EmailMessageSmimeKind = Int32
-EmailMessageSmimeKind_None: EmailMessageSmimeKind = 0
-EmailMessageSmimeKind_ClearSigned: EmailMessageSmimeKind = 1
-EmailMessageSmimeKind_OpaqueSigned: EmailMessageSmimeKind = 2
-EmailMessageSmimeKind_Encrypted: EmailMessageSmimeKind = 3
-EmailQueryKind = Int32
-EmailQueryKind_All: EmailQueryKind = 0
-EmailQueryKind_Important: EmailQueryKind = 1
-EmailQueryKind_Flagged: EmailQueryKind = 2
-EmailQueryKind_Unread: EmailQueryKind = 3
-EmailQueryKind_Read: EmailQueryKind = 4
-EmailQueryKind_Unseen: EmailQueryKind = 5
+class EmailMessageResponseKind(Int32):  # enum
+    None_ = 0
+    Reply = 1
+    ReplyAll = 2
+    Forward = 3
+class EmailMessageSmimeKind(Int32):  # enum
+    None_ = 0
+    ClearSigned = 1
+    OpaqueSigned = 2
+    Encrypted = 3
+class EmailQueryKind(Int32):  # enum
+    All = 0
+    Important = 1
+    Flagged = 2
+    Unread = 3
+    Read = 4
+    Unseen = 5
 class EmailQueryOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailQueryOptions
     _classid_ = 'Windows.ApplicationModel.Email.EmailQueryOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailQueryOptions.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Email.EmailQueryOptions.CreateWithText(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Email.EmailQueryOptions.CreateWithTextAndFields(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_activatemethod
+    def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailQueryOptions: ...
     @winrt_factorymethod
     def CreateWithText(cls: win32more.Windows.ApplicationModel.Email.IEmailQueryOptionsFactory, text: WinRT_String) -> win32more.Windows.ApplicationModel.Email.EmailQueryOptions: ...
     @winrt_factorymethod
     def CreateWithTextAndFields(cls: win32more.Windows.ApplicationModel.Email.IEmailQueryOptionsFactory, text: WinRT_String, fields: win32more.Windows.ApplicationModel.Email.EmailQuerySearchFields) -> win32more.Windows.ApplicationModel.Email.EmailQueryOptions: ...
-    @winrt_activatemethod
-    def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailQueryOptions: ...
     @winrt_mixinmethod
     def get_TextSearch(self: win32more.Windows.ApplicationModel.Email.IEmailQueryOptions) -> win32more.Windows.ApplicationModel.Email.EmailQueryTextSearch: ...
     @winrt_mixinmethod
@@ -1137,26 +1187,26 @@ class EmailQueryOptions(ComPtr):
     def put_Kind(self: win32more.Windows.ApplicationModel.Email.IEmailQueryOptions, value: win32more.Windows.ApplicationModel.Email.EmailQueryKind) -> Void: ...
     @winrt_mixinmethod
     def get_FolderIds(self: win32more.Windows.ApplicationModel.Email.IEmailQueryOptions) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    TextSearch = property(get_TextSearch, None)
+    FolderIds = property(get_FolderIds, None)
+    Kind = property(get_Kind, put_Kind)
     SortDirection = property(get_SortDirection, put_SortDirection)
     SortProperty = property(get_SortProperty, put_SortProperty)
-    Kind = property(get_Kind, put_Kind)
-    FolderIds = property(get_FolderIds, None)
-EmailQuerySearchFields = UInt32
-EmailQuerySearchFields_None: EmailQuerySearchFields = 0
-EmailQuerySearchFields_Subject: EmailQuerySearchFields = 1
-EmailQuerySearchFields_Sender: EmailQuerySearchFields = 2
-EmailQuerySearchFields_Preview: EmailQuerySearchFields = 4
-EmailQuerySearchFields_Recipients: EmailQuerySearchFields = 8
-EmailQuerySearchFields_All: EmailQuerySearchFields = 4294967295
-EmailQuerySearchScope = Int32
-EmailQuerySearchScope_Local: EmailQuerySearchScope = 0
-EmailQuerySearchScope_Server: EmailQuerySearchScope = 1
-EmailQuerySortDirection = Int32
-EmailQuerySortDirection_Descending: EmailQuerySortDirection = 0
-EmailQuerySortDirection_Ascending: EmailQuerySortDirection = 1
-EmailQuerySortProperty = Int32
-EmailQuerySortProperty_Date: EmailQuerySortProperty = 0
+    TextSearch = property(get_TextSearch, None)
+class EmailQuerySearchFields(UInt32):  # enum
+    None_ = 0
+    Subject = 1
+    Sender = 2
+    Preview = 4
+    Recipients = 8
+    All = 4294967295
+class EmailQuerySearchScope(Int32):  # enum
+    Local = 0
+    Server = 1
+class EmailQuerySortDirection(Int32):  # enum
+    Descending = 0
+    Ascending = 1
+class EmailQuerySortProperty(Int32):  # enum
+    Date = 0
 class EmailQueryTextSearch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailQueryTextSearch
@@ -1180,6 +1230,17 @@ class EmailRecipient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailRecipient
     _classid_ = 'Windows.ApplicationModel.Email.EmailRecipient'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailRecipient.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Email.EmailRecipient.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Email.EmailRecipient.CreateWithName(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailRecipient: ...
     @winrt_factorymethod
@@ -1194,12 +1255,19 @@ class EmailRecipient(ComPtr):
     def get_Address(self: win32more.Windows.ApplicationModel.Email.IEmailRecipient) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Address(self: win32more.Windows.ApplicationModel.Email.IEmailRecipient, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, put_Name)
     Address = property(get_Address, put_Address)
+    Name = property(get_Name, put_Name)
 class EmailRecipientResolutionResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailRecipientResolutionResult
     _classid_ = 'Windows.ApplicationModel.Email.EmailRecipientResolutionResult'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Email.EmailRecipientResolutionResult.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Email.EmailRecipientResolutionResult: ...
     @winrt_mixinmethod
@@ -1210,25 +1278,25 @@ class EmailRecipientResolutionResult(ComPtr):
     def put_Status(self: win32more.Windows.ApplicationModel.Email.IEmailRecipientResolutionResult2, value: win32more.Windows.ApplicationModel.Email.EmailRecipientResolutionStatus) -> Void: ...
     @winrt_mixinmethod
     def SetPublicKeys(self: win32more.Windows.ApplicationModel.Email.IEmailRecipientResolutionResult2, value: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Security.Cryptography.Certificates.Certificate]) -> Void: ...
-    Status = property(get_Status, put_Status)
     PublicKeys = property(get_PublicKeys, None)
-EmailRecipientResolutionStatus = Int32
-EmailRecipientResolutionStatus_Success: EmailRecipientResolutionStatus = 0
-EmailRecipientResolutionStatus_RecipientNotFound: EmailRecipientResolutionStatus = 1
-EmailRecipientResolutionStatus_AmbiguousRecipient: EmailRecipientResolutionStatus = 2
-EmailRecipientResolutionStatus_NoCertificate: EmailRecipientResolutionStatus = 3
-EmailRecipientResolutionStatus_CertificateRequestLimitReached: EmailRecipientResolutionStatus = 4
-EmailRecipientResolutionStatus_CannotResolveDistributionList: EmailRecipientResolutionStatus = 5
-EmailRecipientResolutionStatus_ServerError: EmailRecipientResolutionStatus = 6
-EmailRecipientResolutionStatus_UnknownFailure: EmailRecipientResolutionStatus = 7
-EmailSpecialFolderKind = Int32
-EmailSpecialFolderKind_None: EmailSpecialFolderKind = 0
-EmailSpecialFolderKind_Root: EmailSpecialFolderKind = 1
-EmailSpecialFolderKind_Inbox: EmailSpecialFolderKind = 2
-EmailSpecialFolderKind_Outbox: EmailSpecialFolderKind = 3
-EmailSpecialFolderKind_Drafts: EmailSpecialFolderKind = 4
-EmailSpecialFolderKind_DeletedItems: EmailSpecialFolderKind = 5
-EmailSpecialFolderKind_Sent: EmailSpecialFolderKind = 6
+    Status = property(get_Status, put_Status)
+class EmailRecipientResolutionStatus(Int32):  # enum
+    Success = 0
+    RecipientNotFound = 1
+    AmbiguousRecipient = 2
+    NoCertificate = 3
+    CertificateRequestLimitReached = 4
+    CannotResolveDistributionList = 5
+    ServerError = 6
+    UnknownFailure = 7
+class EmailSpecialFolderKind(Int32):  # enum
+    None_ = 0
+    Root = 1
+    Inbox = 2
+    Outbox = 3
+    Drafts = 4
+    DeletedItems = 5
+    Sent = 6
 class EmailStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailStore
@@ -1255,9 +1323,9 @@ class EmailStore(ComPtr):
     def CreateMailboxAsync(self: win32more.Windows.ApplicationModel.Email.IEmailStore, accountName: WinRT_String, accountAddress: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Email.EmailMailbox]: ...
     @winrt_mixinmethod
     def CreateMailboxInAccountAsync(self: win32more.Windows.ApplicationModel.Email.IEmailStore, accountName: WinRT_String, accountAddress: WinRT_String, userDataAccountId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Email.EmailMailbox]: ...
-EmailStoreAccessType = Int32
-EmailStoreAccessType_AppMailboxesReadWrite: EmailStoreAccessType = 0
-EmailStoreAccessType_AllMailboxesLimitedReadWrite: EmailStoreAccessType = 1
+class EmailStoreAccessType(Int32):  # enum
+    AppMailboxesReadWrite = 0
+    AllMailboxesLimitedReadWrite = 1
 class EmailStoreNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Email.IEmailStoreNotificationTriggerDetails
@@ -1274,8 +1342,8 @@ class IEmailAttachment(ComPtr):
     def get_Data(self) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
     @winrt_commethod(9)
     def put_Data(self, value: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> Void: ...
-    FileName = property(get_FileName, put_FileName)
     Data = property(get_Data, put_Data)
+    FileName = property(get_FileName, put_FileName)
 class IEmailAttachment2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailAttachment2'
@@ -1308,11 +1376,11 @@ class IEmailAttachment2(ComPtr):
     def get_MimeType(self) -> WinRT_String: ...
     @winrt_commethod(19)
     def put_MimeType(self, value: WinRT_String) -> Void: ...
-    Id = property(get_Id, None)
     ContentId = property(get_ContentId, put_ContentId)
     ContentLocation = property(get_ContentLocation, put_ContentLocation)
     DownloadState = property(get_DownloadState, put_DownloadState)
     EstimatedDownloadSizeInBytes = property(get_EstimatedDownloadSizeInBytes, put_EstimatedDownloadSizeInBytes)
+    Id = property(get_Id, None)
     IsFromBaseMessage = property(get_IsFromBaseMessage, None)
     IsInline = property(get_IsInline, put_IsInline)
     MimeType = property(get_MimeType, put_MimeType)
@@ -1362,17 +1430,17 @@ class IEmailConversation(ComPtr):
     def FindMessagesAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Email.EmailMessage]]: ...
     @winrt_commethod(20)
     def FindMessagesWithCountAsync(self, count: UInt32) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Email.EmailMessage]]: ...
-    Id = property(get_Id, None)
-    MailboxId = property(get_MailboxId, None)
     FlagState = property(get_FlagState, None)
     HasAttachment = property(get_HasAttachment, None)
+    Id = property(get_Id, None)
     Importance = property(get_Importance, None)
     LastEmailResponseKind = property(get_LastEmailResponseKind, None)
+    LatestSender = property(get_LatestSender, None)
+    MailboxId = property(get_MailboxId, None)
     MessageCount = property(get_MessageCount, None)
     MostRecentMessageId = property(get_MostRecentMessageId, None)
     MostRecentMessageTime = property(get_MostRecentMessageTime, None)
     Preview = property(get_Preview, None)
-    LatestSender = property(get_LatestSender, None)
     Subject = property(get_Subject, None)
     UnreadMessageCount = property(get_UnreadMessageCount, None)
 class IEmailConversationBatch(ComPtr):
@@ -1445,14 +1513,14 @@ class IEmailFolder(ComPtr):
     def TrySaveAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_commethod(30)
     def SaveMessageAsync(self, message: win32more.Windows.ApplicationModel.Email.EmailMessage) -> win32more.Windows.Foundation.IAsyncAction: ...
+    DisplayName = property(get_DisplayName, put_DisplayName)
     Id = property(get_Id, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
+    IsSyncEnabled = property(get_IsSyncEnabled, put_IsSyncEnabled)
+    Kind = property(get_Kind, None)
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
     MailboxId = property(get_MailboxId, None)
     ParentFolderId = property(get_ParentFolderId, None)
-    DisplayName = property(get_DisplayName, put_DisplayName)
-    IsSyncEnabled = property(get_IsSyncEnabled, put_IsSyncEnabled)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
-    Kind = property(get_Kind, None)
+    RemoteId = property(get_RemoteId, put_RemoteId)
 class IEmailIrmInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailIrmInfo'
@@ -1539,8 +1607,8 @@ class IEmailIrmTemplate(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def put_Name(self, value: WinRT_String) -> Void: ...
-    Id = property(get_Id, put_Id)
     Description = property(get_Description, put_Description)
+    Id = property(get_Id, put_Id)
     Name = property(get_Name, put_Name)
 class IEmailIrmTemplateFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1672,8 +1740,8 @@ class IEmailMailbox(ComPtr):
     ChangeTracker = property(get_ChangeTracker, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
     Id = property(get_Id, None)
-    IsOwnedByCurrentApp = property(get_IsOwnedByCurrentApp, None)
     IsDataEncryptedUnderLock = property(get_IsDataEncryptedUnderLock, None)
+    IsOwnedByCurrentApp = property(get_IsOwnedByCurrentApp, None)
     MailAddress = property(get_MailAddress, put_MailAddress)
     MailAddressAliases = property(get_MailAddressAliases, None)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
@@ -1729,8 +1797,8 @@ class IEmailMailboxAction(ComPtr):
     def get_Kind(self) -> win32more.Windows.ApplicationModel.Email.EmailMailboxActionKind: ...
     @winrt_commethod(7)
     def get_ChangeNumber(self) -> UInt64: ...
-    Kind = property(get_Kind, None)
     ChangeNumber = property(get_ChangeNumber, None)
+    Kind = property(get_Kind, None)
 class IEmailMailboxAutoReply(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxAutoReply'
@@ -1771,12 +1839,12 @@ class IEmailMailboxAutoReplySettings(ComPtr):
     def get_KnownExternalReply(self) -> win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReply: ...
     @winrt_commethod(16)
     def get_UnknownExternalReply(self) -> win32more.Windows.ApplicationModel.Email.EmailMailboxAutoReply: ...
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    ResponseKind = property(get_ResponseKind, put_ResponseKind)
-    StartTime = property(get_StartTime, put_StartTime)
     EndTime = property(get_EndTime, put_EndTime)
     InternalReply = property(get_InternalReply, None)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
     KnownExternalReply = property(get_KnownExternalReply, None)
+    ResponseKind = property(get_ResponseKind, put_ResponseKind)
+    StartTime = property(get_StartTime, put_StartTime)
     UnknownExternalReply = property(get_UnknownExternalReply, None)
 class IEmailMailboxCapabilities(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1801,11 +1869,11 @@ class IEmailMailboxCapabilities(ComPtr):
     CanForwardMeetings = property(get_CanForwardMeetings, None)
     CanGetAndSetExternalAutoReplies = property(get_CanGetAndSetExternalAutoReplies, None)
     CanGetAndSetInternalAutoReplies = property(get_CanGetAndSetInternalAutoReplies, None)
-    CanUpdateMeetingResponses = property(get_CanUpdateMeetingResponses, None)
+    CanProposeNewTimeForMeetings = property(get_CanProposeNewTimeForMeetings, None)
     CanServerSearchFolders = property(get_CanServerSearchFolders, None)
     CanServerSearchMailbox = property(get_CanServerSearchMailbox, None)
-    CanProposeNewTimeForMeetings = property(get_CanProposeNewTimeForMeetings, None)
     CanSmartSend = property(get_CanSmartSend, None)
+    CanUpdateMeetingResponses = property(get_CanUpdateMeetingResponses, None)
 class IEmailMailboxCapabilities2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxCapabilities2'
@@ -1822,12 +1890,12 @@ class IEmailMailboxCapabilities2(ComPtr):
     def get_CanDeleteFolder(self) -> Boolean: ...
     @winrt_commethod(11)
     def get_CanMoveFolder(self) -> Boolean: ...
-    CanResolveRecipients = property(get_CanResolveRecipients, None)
-    CanValidateCertificates = property(get_CanValidateCertificates, None)
-    CanEmptyFolder = property(get_CanEmptyFolder, None)
     CanCreateFolder = property(get_CanCreateFolder, None)
     CanDeleteFolder = property(get_CanDeleteFolder, None)
+    CanEmptyFolder = property(get_CanEmptyFolder, None)
     CanMoveFolder = property(get_CanMoveFolder, None)
+    CanResolveRecipients = property(get_CanResolveRecipients, None)
+    CanValidateCertificates = property(get_CanValidateCertificates, None)
 class IEmailMailboxCapabilities3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxCapabilities3'
@@ -1860,20 +1928,20 @@ class IEmailMailboxCapabilities3(ComPtr):
     def put_CanDeleteFolder(self, value: Boolean) -> Void: ...
     @winrt_commethod(19)
     def put_CanMoveFolder(self, value: Boolean) -> Void: ...
+    CanCreateFolder = property(None, put_CanCreateFolder)
+    CanDeleteFolder = property(None, put_CanDeleteFolder)
+    CanEmptyFolder = property(None, put_CanEmptyFolder)
     CanForwardMeetings = property(None, put_CanForwardMeetings)
     CanGetAndSetExternalAutoReplies = property(None, put_CanGetAndSetExternalAutoReplies)
     CanGetAndSetInternalAutoReplies = property(None, put_CanGetAndSetInternalAutoReplies)
-    CanUpdateMeetingResponses = property(None, put_CanUpdateMeetingResponses)
+    CanMoveFolder = property(None, put_CanMoveFolder)
+    CanProposeNewTimeForMeetings = property(None, put_CanProposeNewTimeForMeetings)
+    CanResolveRecipients = property(None, put_CanResolveRecipients)
     CanServerSearchFolders = property(None, put_CanServerSearchFolders)
     CanServerSearchMailbox = property(None, put_CanServerSearchMailbox)
-    CanProposeNewTimeForMeetings = property(None, put_CanProposeNewTimeForMeetings)
     CanSmartSend = property(None, put_CanSmartSend)
-    CanResolveRecipients = property(None, put_CanResolveRecipients)
+    CanUpdateMeetingResponses = property(None, put_CanUpdateMeetingResponses)
     CanValidateCertificates = property(None, put_CanValidateCertificates)
-    CanEmptyFolder = property(None, put_CanEmptyFolder)
-    CanCreateFolder = property(None, put_CanCreateFolder)
-    CanDeleteFolder = property(None, put_CanDeleteFolder)
-    CanMoveFolder = property(None, put_CanMoveFolder)
 class IEmailMailboxChange(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxChange'
@@ -1887,9 +1955,9 @@ class IEmailMailboxChange(ComPtr):
     @winrt_commethod(9)
     def get_Folder(self) -> win32more.Windows.ApplicationModel.Email.EmailFolder: ...
     ChangeType = property(get_ChangeType, None)
+    Folder = property(get_Folder, None)
     MailboxActions = property(get_MailboxActions, None)
     Message = property(get_Message, None)
-    Folder = property(get_Folder, None)
 class IEmailMailboxChangeReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxChangeReader'
@@ -1933,8 +2001,8 @@ class IEmailMailboxCreateFolderResult(ComPtr):
     def get_Status(self) -> win32more.Windows.ApplicationModel.Email.EmailMailboxCreateFolderStatus: ...
     @winrt_commethod(7)
     def get_Folder(self) -> win32more.Windows.ApplicationModel.Email.EmailFolder: ...
-    Status = property(get_Status, None)
     Folder = property(get_Folder, None)
+    Status = property(get_Status, None)
 class IEmailMailboxPolicies(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxPolicies'
@@ -1947,8 +2015,8 @@ class IEmailMailboxPolicies(ComPtr):
     def get_RequiredSmimeEncryptionAlgorithm(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.ApplicationModel.Email.EmailMailboxSmimeEncryptionAlgorithm]: ...
     @winrt_commethod(9)
     def get_RequiredSmimeSigningAlgorithm(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.ApplicationModel.Email.EmailMailboxSmimeSigningAlgorithm]: ...
-    AllowedSmimeEncryptionAlgorithmNegotiation = property(get_AllowedSmimeEncryptionAlgorithmNegotiation, None)
     AllowSmimeSoftCertificates = property(get_AllowSmimeSoftCertificates, None)
+    AllowedSmimeEncryptionAlgorithmNegotiation = property(get_AllowedSmimeEncryptionAlgorithmNegotiation, None)
     RequiredSmimeEncryptionAlgorithm = property(get_RequiredSmimeEncryptionAlgorithm, None)
     RequiredSmimeSigningAlgorithm = property(get_RequiredSmimeSigningAlgorithm, None)
 class IEmailMailboxPolicies2(ComPtr):
@@ -1977,12 +2045,12 @@ class IEmailMailboxPolicies3(ComPtr):
     def put_MustEncryptSmimeMessages(self, value: Boolean) -> Void: ...
     @winrt_commethod(11)
     def put_MustSignSmimeMessages(self, value: Boolean) -> Void: ...
-    AllowedSmimeEncryptionAlgorithmNegotiation = property(None, put_AllowedSmimeEncryptionAlgorithmNegotiation)
     AllowSmimeSoftCertificates = property(None, put_AllowSmimeSoftCertificates)
-    RequiredSmimeEncryptionAlgorithm = property(None, put_RequiredSmimeEncryptionAlgorithm)
-    RequiredSmimeSigningAlgorithm = property(None, put_RequiredSmimeSigningAlgorithm)
+    AllowedSmimeEncryptionAlgorithmNegotiation = property(None, put_AllowedSmimeEncryptionAlgorithmNegotiation)
     MustEncryptSmimeMessages = property(None, put_MustEncryptSmimeMessages)
     MustSignSmimeMessages = property(None, put_MustSignSmimeMessages)
+    RequiredSmimeEncryptionAlgorithm = property(None, put_RequiredSmimeEncryptionAlgorithm)
+    RequiredSmimeSigningAlgorithm = property(None, put_RequiredSmimeSigningAlgorithm)
 class IEmailMailboxSyncManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxSyncManager'
@@ -1999,9 +2067,9 @@ class IEmailMailboxSyncManager(ComPtr):
     def add_SyncStatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.ApplicationModel.Email.EmailMailboxSyncManager, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_SyncStatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Status = property(get_Status, None)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, None)
     LastAttemptedSyncTime = property(get_LastAttemptedSyncTime, None)
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, None)
+    Status = property(get_Status, None)
 class IEmailMailboxSyncManager2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMailboxSyncManager2'
@@ -2012,9 +2080,9 @@ class IEmailMailboxSyncManager2(ComPtr):
     def put_LastSuccessfulSyncTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_commethod(8)
     def put_LastAttemptedSyncTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
-    Status = property(None, put_Status)
-    LastSuccessfulSyncTime = property(None, put_LastSuccessfulSyncTime)
     LastAttemptedSyncTime = property(None, put_LastAttemptedSyncTime)
+    LastSuccessfulSyncTime = property(None, put_LastSuccessfulSyncTime)
+    Status = property(None, put_Status)
 class IEmailManagerForUser(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailManagerForUser'
@@ -2101,16 +2169,16 @@ class IEmailMeetingInfo(ComPtr):
     @winrt_commethod(31)
     def put_StartTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     AllowNewTimeProposal = property(get_AllowNewTimeProposal, put_AllowNewTimeProposal)
-    AppointmentRoamingId = property(get_AppointmentRoamingId, put_AppointmentRoamingId)
     AppointmentOriginalStartTime = property(get_AppointmentOriginalStartTime, put_AppointmentOriginalStartTime)
+    AppointmentRoamingId = property(get_AppointmentRoamingId, put_AppointmentRoamingId)
     Duration = property(get_Duration, put_Duration)
     IsAllDay = property(get_IsAllDay, put_IsAllDay)
     IsResponseRequested = property(get_IsResponseRequested, put_IsResponseRequested)
     Location = property(get_Location, put_Location)
-    ProposedStartTime = property(get_ProposedStartTime, put_ProposedStartTime)
     ProposedDuration = property(get_ProposedDuration, put_ProposedDuration)
-    RecurrenceStartTime = property(get_RecurrenceStartTime, put_RecurrenceStartTime)
+    ProposedStartTime = property(get_ProposedStartTime, put_ProposedStartTime)
     Recurrence = property(get_Recurrence, put_Recurrence)
+    RecurrenceStartTime = property(get_RecurrenceStartTime, put_RecurrenceStartTime)
     RemoteChangeNumber = property(get_RemoteChangeNumber, put_RemoteChangeNumber)
     StartTime = property(get_StartTime, put_StartTime)
 class IEmailMeetingInfo2(ComPtr):
@@ -2140,12 +2208,12 @@ class IEmailMessage(ComPtr):
     def get_Bcc(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.Email.EmailRecipient]: ...
     @winrt_commethod(13)
     def get_Attachments(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.Email.EmailAttachment]: ...
-    Subject = property(get_Subject, put_Subject)
-    Body = property(get_Body, put_Body)
-    To = property(get_To, None)
-    CC = property(get_CC, None)
-    Bcc = property(get_Bcc, None)
     Attachments = property(get_Attachments, None)
+    Bcc = property(get_Bcc, None)
+    Body = property(get_Body, put_Body)
+    CC = property(get_CC, None)
+    Subject = property(get_Subject, put_Subject)
+    To = property(get_To, None)
 class IEmailMessage2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMessage2'
@@ -2240,17 +2308,15 @@ class IEmailMessage2(ComPtr):
     def GetBodyStream(self, type: win32more.Windows.ApplicationModel.Email.EmailMessageBodyKind) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
     @winrt_commethod(50)
     def SetBodyStream(self, type: win32more.Windows.ApplicationModel.Email.EmailMessageBodyKind, stream: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> Void: ...
-    Id = property(get_Id, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    MailboxId = property(get_MailboxId, None)
-    ConversationId = property(get_ConversationId, None)
-    FolderId = property(get_FolderId, None)
     AllowInternetImages = property(get_AllowInternetImages, put_AllowInternetImages)
     ChangeNumber = property(get_ChangeNumber, None)
+    ConversationId = property(get_ConversationId, None)
     DownloadState = property(get_DownloadState, put_DownloadState)
     EstimatedDownloadSizeInBytes = property(get_EstimatedDownloadSizeInBytes, put_EstimatedDownloadSizeInBytes)
     FlagState = property(get_FlagState, put_FlagState)
+    FolderId = property(get_FolderId, None)
     HasPartialBodies = property(get_HasPartialBodies, None)
+    Id = property(get_Id, None)
     Importance = property(get_Importance, put_Importance)
     InResponseToMessageId = property(get_InResponseToMessageId, None)
     IrmInfo = property(get_IrmInfo, put_IrmInfo)
@@ -2259,14 +2325,16 @@ class IEmailMessage2(ComPtr):
     IsSeen = property(get_IsSeen, put_IsSeen)
     IsServerSearchMessage = property(get_IsServerSearchMessage, None)
     IsSmartSendable = property(get_IsSmartSendable, None)
+    LastResponseKind = property(get_LastResponseKind, put_LastResponseKind)
+    MailboxId = property(get_MailboxId, None)
+    MeetingInfo = property(get_MeetingInfo, put_MeetingInfo)
     MessageClass = property(get_MessageClass, put_MessageClass)
     NormalizedSubject = property(get_NormalizedSubject, None)
     OriginalCodePage = property(get_OriginalCodePage, put_OriginalCodePage)
     Preview = property(get_Preview, put_Preview)
-    LastResponseKind = property(get_LastResponseKind, put_LastResponseKind)
+    RemoteId = property(get_RemoteId, put_RemoteId)
     Sender = property(get_Sender, put_Sender)
     SentTime = property(get_SentTime, put_SentTime)
-    MeetingInfo = property(get_MeetingInfo, put_MeetingInfo)
 class IEmailMessage3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailMessage3'
@@ -2329,11 +2397,11 @@ class IEmailQueryOptions(ComPtr):
     def put_Kind(self, value: win32more.Windows.ApplicationModel.Email.EmailQueryKind) -> Void: ...
     @winrt_commethod(13)
     def get_FolderIds(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    TextSearch = property(get_TextSearch, None)
+    FolderIds = property(get_FolderIds, None)
+    Kind = property(get_Kind, put_Kind)
     SortDirection = property(get_SortDirection, put_SortDirection)
     SortProperty = property(get_SortProperty, put_SortProperty)
-    Kind = property(get_Kind, put_Kind)
-    FolderIds = property(get_FolderIds, None)
+    TextSearch = property(get_TextSearch, None)
 class IEmailQueryOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailQueryOptionsFactory'
@@ -2373,8 +2441,8 @@ class IEmailRecipient(ComPtr):
     def get_Address(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Address(self, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, put_Name)
     Address = property(get_Address, put_Address)
+    Name = property(get_Name, put_Name)
 class IEmailRecipientFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailRecipientFactory'
@@ -2391,8 +2459,8 @@ class IEmailRecipientResolutionResult(ComPtr):
     def get_Status(self) -> win32more.Windows.ApplicationModel.Email.EmailRecipientResolutionStatus: ...
     @winrt_commethod(7)
     def get_PublicKeys(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Security.Cryptography.Certificates.Certificate]: ...
-    Status = property(get_Status, None)
     PublicKeys = property(get_PublicKeys, None)
+    Status = property(get_Status, None)
 class IEmailRecipientResolutionResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailRecipientResolutionResult2'
@@ -2432,4 +2500,6 @@ class IEmailStoreNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Email.IEmailStoreNotificationTriggerDetails'
     _iid_ = Guid('{ce17563c-46e6-43c9-96f7-facf7dd710cb}')
+
+
 make_ready(__name__)

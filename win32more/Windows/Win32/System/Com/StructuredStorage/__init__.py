@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security
 import win32more.Windows.Win32.System.Com
@@ -139,6 +139,8 @@ def CreateILockBytesOnHGlobal(hGlobal: win32more.Windows.Win32.Foundation.HGLOBA
 def GetConvertStg(pStg: win32more.Windows.Win32.System.Com.StructuredStorage.IStorage) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('ole32.dll')
 def StgConvertVariantToProperty(pvar: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.PROPVARIANT), CodePage: UInt16, pprop: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.SERIALIZEDPROPERTYVALUE), pcb: POINTER(UInt32), pid: UInt32, fReserved: win32more.Windows.Win32.Foundation.BOOLEAN, pcIndirect: POINTER(UInt32)) -> POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.SERIALIZEDPROPERTYVALUE): ...
+@winfunctype('ole32.dll')
+def StgConvertPropertyToVariant(pprop: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.SERIALIZEDPROPERTYVALUE), CodePage: UInt16, pvar: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.PROPVARIANT), pma: win32more.Windows.Win32.System.Com.StructuredStorage.IMemoryAllocator) -> win32more.Windows.Win32.Foundation.BOOLEAN: ...
 @winfunctype('ole32.dll')
 def StgPropertyLengthAsVariant(pProp: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.SERIALIZEDPROPERTYVALUE), cbProp: UInt32, CodePage: UInt16, bReserved: Byte) -> UInt32: ...
 @winfunctype('OLE32.dll')
@@ -473,6 +475,12 @@ class ILockBytes(ComPtr):
     def UnlockRegion(self, libOffset: UInt64, cb: UInt64, dwLockType: UInt32) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(9)
     def Stat(self, pstatstg: POINTER(win32more.Windows.Win32.System.Com.STATSTG), grfStatFlag: UInt32) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+class IMemoryAllocator(ComPtr):
+    extends: None
+    @commethod(0)
+    def Allocate(self, cbSize: UInt32) -> VoidPtr: ...
+    @commethod(1)
+    def Free(self, pv: VoidPtr) -> Void: ...
 class IPersistStorage(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IPersist
     _iid_ = Guid('{0000010a-0000-0000-c000-000000000046}')

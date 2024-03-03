@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Numerics
 import win32more.Windows.Perception
@@ -22,6 +8,7 @@ import win32more.Windows.Perception.People
 import win32more.Windows.Perception.Spatial
 import win32more.Windows.UI.Input
 import win32more.Windows.UI.Input.Spatial
+import win32more.Windows.Win32.System.WinRT
 class EyesPose(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.People.IEyesPose
@@ -36,36 +23,36 @@ class EyesPose(ComPtr):
     def IsSupported(cls: win32more.Windows.Perception.People.IEyesPoseStatics) -> Boolean: ...
     @winrt_classmethod
     def RequestAccessAsync(cls: win32more.Windows.Perception.People.IEyesPoseStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.UI.Input.GazeInputAccessStatus]: ...
-    IsCalibrationValid = property(get_IsCalibrationValid, None)
     Gaze = property(get_Gaze, None)
+    IsCalibrationValid = property(get_IsCalibrationValid, None)
     UpdateTimestamp = property(get_UpdateTimestamp, None)
-HandJointKind = Int32
-HandJointKind_Palm: HandJointKind = 0
-HandJointKind_Wrist: HandJointKind = 1
-HandJointKind_ThumbMetacarpal: HandJointKind = 2
-HandJointKind_ThumbProximal: HandJointKind = 3
-HandJointKind_ThumbDistal: HandJointKind = 4
-HandJointKind_ThumbTip: HandJointKind = 5
-HandJointKind_IndexMetacarpal: HandJointKind = 6
-HandJointKind_IndexProximal: HandJointKind = 7
-HandJointKind_IndexIntermediate: HandJointKind = 8
-HandJointKind_IndexDistal: HandJointKind = 9
-HandJointKind_IndexTip: HandJointKind = 10
-HandJointKind_MiddleMetacarpal: HandJointKind = 11
-HandJointKind_MiddleProximal: HandJointKind = 12
-HandJointKind_MiddleIntermediate: HandJointKind = 13
-HandJointKind_MiddleDistal: HandJointKind = 14
-HandJointKind_MiddleTip: HandJointKind = 15
-HandJointKind_RingMetacarpal: HandJointKind = 16
-HandJointKind_RingProximal: HandJointKind = 17
-HandJointKind_RingIntermediate: HandJointKind = 18
-HandJointKind_RingDistal: HandJointKind = 19
-HandJointKind_RingTip: HandJointKind = 20
-HandJointKind_LittleMetacarpal: HandJointKind = 21
-HandJointKind_LittleProximal: HandJointKind = 22
-HandJointKind_LittleIntermediate: HandJointKind = 23
-HandJointKind_LittleDistal: HandJointKind = 24
-HandJointKind_LittleTip: HandJointKind = 25
+class HandJointKind(Int32):  # enum
+    Palm = 0
+    Wrist = 1
+    ThumbMetacarpal = 2
+    ThumbProximal = 3
+    ThumbDistal = 4
+    ThumbTip = 5
+    IndexMetacarpal = 6
+    IndexProximal = 7
+    IndexIntermediate = 8
+    IndexDistal = 9
+    IndexTip = 10
+    MiddleMetacarpal = 11
+    MiddleProximal = 12
+    MiddleIntermediate = 13
+    MiddleDistal = 14
+    MiddleTip = 15
+    RingMetacarpal = 16
+    RingProximal = 17
+    RingIntermediate = 18
+    RingDistal = 19
+    RingTip = 20
+    LittleMetacarpal = 21
+    LittleProximal = 22
+    LittleIntermediate = 23
+    LittleDistal = 24
+    LittleTip = 25
 class HandMeshObserver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.People.IHandMeshObserver
@@ -86,12 +73,12 @@ class HandMeshObserver(ComPtr):
     def get_NeutralPoseVersion(self: win32more.Windows.Perception.People.IHandMeshObserver) -> Int32: ...
     @winrt_mixinmethod
     def get_ModelId(self: win32more.Windows.Perception.People.IHandMeshObserver) -> Int32: ...
+    ModelId = property(get_ModelId, None)
+    NeutralPose = property(get_NeutralPose, None)
+    NeutralPoseVersion = property(get_NeutralPoseVersion, None)
     Source = property(get_Source, None)
     TriangleIndexCount = property(get_TriangleIndexCount, None)
     VertexCount = property(get_VertexCount, None)
-    NeutralPose = property(get_NeutralPose, None)
-    NeutralPoseVersion = property(get_NeutralPoseVersion, None)
-    ModelId = property(get_ModelId, None)
 class HandMeshVertex(EasyCastStructure):
     Position: win32more.Windows.Foundation.Numerics.Vector3
     Normal: win32more.Windows.Foundation.Numerics.Vector3
@@ -129,8 +116,8 @@ class HeadPose(ComPtr):
     def get_ForwardDirection(self: win32more.Windows.Perception.People.IHeadPose) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_mixinmethod
     def get_UpDirection(self: win32more.Windows.Perception.People.IHeadPose) -> win32more.Windows.Foundation.Numerics.Vector3: ...
-    Position = property(get_Position, None)
     ForwardDirection = property(get_ForwardDirection, None)
+    Position = property(get_Position, None)
     UpDirection = property(get_UpDirection, None)
 class IEyesPose(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -142,8 +129,8 @@ class IEyesPose(ComPtr):
     def get_Gaze(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Perception.Spatial.SpatialRay]: ...
     @winrt_commethod(8)
     def get_UpdateTimestamp(self) -> win32more.Windows.Perception.PerceptionTimestamp: ...
-    IsCalibrationValid = property(get_IsCalibrationValid, None)
     Gaze = property(get_Gaze, None)
+    IsCalibrationValid = property(get_IsCalibrationValid, None)
     UpdateTimestamp = property(get_UpdateTimestamp, None)
 class IEyesPoseStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -173,12 +160,12 @@ class IHandMeshObserver(ComPtr):
     def get_NeutralPoseVersion(self) -> Int32: ...
     @winrt_commethod(13)
     def get_ModelId(self) -> Int32: ...
+    ModelId = property(get_ModelId, None)
+    NeutralPose = property(get_NeutralPose, None)
+    NeutralPoseVersion = property(get_NeutralPoseVersion, None)
     Source = property(get_Source, None)
     TriangleIndexCount = property(get_TriangleIndexCount, None)
     VertexCount = property(get_VertexCount, None)
-    NeutralPose = property(get_NeutralPose, None)
-    NeutralPoseVersion = property(get_NeutralPoseVersion, None)
-    ModelId = property(get_ModelId, None)
 class IHandMeshVertexState(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.People.IHandMeshVertexState'
@@ -213,15 +200,17 @@ class IHeadPose(ComPtr):
     def get_ForwardDirection(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_commethod(8)
     def get_UpDirection(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
-    Position = property(get_Position, None)
     ForwardDirection = property(get_ForwardDirection, None)
+    Position = property(get_Position, None)
     UpDirection = property(get_UpDirection, None)
 class JointPose(EasyCastStructure):
     Orientation: win32more.Windows.Foundation.Numerics.Quaternion
     Position: win32more.Windows.Foundation.Numerics.Vector3
     Radius: Single
     Accuracy: win32more.Windows.Perception.People.JointPoseAccuracy
-JointPoseAccuracy = Int32
-JointPoseAccuracy_High: JointPoseAccuracy = 0
-JointPoseAccuracy_Approximate: JointPoseAccuracy = 1
+class JointPoseAccuracy(Int32):  # enum
+    High = 0
+    Approximate = 1
+
+
 make_ready(__name__)

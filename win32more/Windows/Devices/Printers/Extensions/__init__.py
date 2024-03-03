@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Printers.Extensions
 import win32more.Windows.Foundation
+import win32more.Windows.Win32.System.WinRT
 ExtensionsContract: UInt32 = 131072
 class IPrint3DWorkflow(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -80,8 +67,8 @@ class IPrintNotificationEventDetails(ComPtr):
     def get_EventData(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def put_EventData(self, value: WinRT_String) -> Void: ...
-    PrinterName = property(get_PrinterName, None)
     EventData = property(get_EventData, put_EventData)
+    PrinterName = property(get_PrinterName, None)
 class IPrintTaskConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.Extensions.IPrintTaskConfiguration'
@@ -141,14 +128,14 @@ class Print3DWorkflow(ComPtr):
     def remove_PrinterChanged(self: win32more.Windows.Devices.Printers.Extensions.IPrint3DWorkflow2, eventCookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     DeviceID = property(get_DeviceID, None)
     IsPrintReady = property(get_IsPrintReady, put_IsPrintReady)
-Print3DWorkflowDetail = Int32
-Print3DWorkflowDetail_Unknown: Print3DWorkflowDetail = 0
-Print3DWorkflowDetail_ModelExceedsPrintBed: Print3DWorkflowDetail = 1
-Print3DWorkflowDetail_UploadFailed: Print3DWorkflowDetail = 2
-Print3DWorkflowDetail_InvalidMaterialSelection: Print3DWorkflowDetail = 3
-Print3DWorkflowDetail_InvalidModel: Print3DWorkflowDetail = 4
-Print3DWorkflowDetail_ModelNotManifold: Print3DWorkflowDetail = 5
-Print3DWorkflowDetail_InvalidPrintTicket: Print3DWorkflowDetail = 6
+class Print3DWorkflowDetail(Int32):  # enum
+    Unknown = 0
+    ModelExceedsPrintBed = 1
+    UploadFailed = 2
+    InvalidMaterialSelection = 3
+    InvalidModel = 4
+    ModelNotManifold = 5
+    InvalidPrintTicket = 6
 class Print3DWorkflowPrintRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.Extensions.IPrint3DWorkflowPrintRequestedEventArgs
@@ -169,12 +156,12 @@ class Print3DWorkflowPrinterChangedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_NewDeviceId(self: win32more.Windows.Devices.Printers.Extensions.IPrint3DWorkflowPrinterChangedEventArgs) -> WinRT_String: ...
     NewDeviceId = property(get_NewDeviceId, None)
-Print3DWorkflowStatus = Int32
-Print3DWorkflowStatus_Abandoned: Print3DWorkflowStatus = 0
-Print3DWorkflowStatus_Canceled: Print3DWorkflowStatus = 1
-Print3DWorkflowStatus_Failed: Print3DWorkflowStatus = 2
-Print3DWorkflowStatus_Slicing: Print3DWorkflowStatus = 3
-Print3DWorkflowStatus_Submitted: Print3DWorkflowStatus = 4
+class Print3DWorkflowStatus(Int32):  # enum
+    Abandoned = 0
+    Canceled = 1
+    Failed = 2
+    Slicing = 3
+    Submitted = 4
 class PrintExtensionContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.Extensions.PrintExtensionContext'
@@ -190,8 +177,8 @@ class PrintNotificationEventDetails(ComPtr):
     def get_EventData(self: win32more.Windows.Devices.Printers.Extensions.IPrintNotificationEventDetails) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_EventData(self: win32more.Windows.Devices.Printers.Extensions.IPrintNotificationEventDetails, value: WinRT_String) -> Void: ...
-    PrinterName = property(get_PrinterName, None)
     EventData = property(get_EventData, put_EventData)
+    PrinterName = property(get_PrinterName, None)
 class PrintTaskConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.Extensions.IPrintTaskConfiguration
@@ -229,4 +216,6 @@ class PrintTaskConfigurationSaveRequestedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Request(self: win32more.Windows.Devices.Printers.Extensions.IPrintTaskConfigurationSaveRequestedEventArgs) -> win32more.Windows.Devices.Printers.Extensions.PrintTaskConfigurationSaveRequest: ...
     Request = property(get_Request, None)
+
+
 make_ready(__name__)

@@ -1,31 +1,18 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Phone.Media.Devices
-AudioRoutingEndpoint = Int32
-AudioRoutingEndpoint_Default: AudioRoutingEndpoint = 0
-AudioRoutingEndpoint_Earpiece: AudioRoutingEndpoint = 1
-AudioRoutingEndpoint_Speakerphone: AudioRoutingEndpoint = 2
-AudioRoutingEndpoint_Bluetooth: AudioRoutingEndpoint = 3
-AudioRoutingEndpoint_WiredHeadset: AudioRoutingEndpoint = 4
-AudioRoutingEndpoint_WiredHeadsetSpeakerOnly: AudioRoutingEndpoint = 5
-AudioRoutingEndpoint_BluetoothWithNoiseAndEchoCancellation: AudioRoutingEndpoint = 6
-AudioRoutingEndpoint_BluetoothPreferred: AudioRoutingEndpoint = 7
+import win32more.Windows.Win32.System.WinRT
+class AudioRoutingEndpoint(Int32):  # enum
+    Default = 0
+    Earpiece = 1
+    Speakerphone = 2
+    Bluetooth = 3
+    WiredHeadset = 4
+    WiredHeadsetSpeakerOnly = 5
+    BluetoothWithNoiseAndEchoCancellation = 6
+    BluetoothPreferred = 7
 class AudioRoutingManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Media.Devices.IAudioRoutingManager
@@ -43,11 +30,11 @@ class AudioRoutingManager(ComPtr):
     @winrt_classmethod
     def GetDefault(cls: win32more.Windows.Phone.Media.Devices.IAudioRoutingManagerStatics) -> win32more.Windows.Phone.Media.Devices.AudioRoutingManager: ...
     AvailableAudioEndpoints = property(get_AvailableAudioEndpoints, None)
-AvailableAudioRoutingEndpoints = UInt32
-AvailableAudioRoutingEndpoints_None: AvailableAudioRoutingEndpoints = 0
-AvailableAudioRoutingEndpoints_Earpiece: AvailableAudioRoutingEndpoints = 1
-AvailableAudioRoutingEndpoints_Speakerphone: AvailableAudioRoutingEndpoints = 2
-AvailableAudioRoutingEndpoints_Bluetooth: AvailableAudioRoutingEndpoints = 4
+class AvailableAudioRoutingEndpoints(UInt32):  # enum
+    None_ = 0
+    Earpiece = 1
+    Speakerphone = 2
+    Bluetooth = 4
 class IAudioRoutingManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Media.Devices.IAudioRoutingManager'
@@ -69,4 +56,6 @@ class IAudioRoutingManagerStatics(ComPtr):
     _iid_ = Guid('{977fb2a4-5590-4a6f-adde-6a3d0ad58250}')
     @winrt_commethod(6)
     def GetDefault(self) -> win32more.Windows.Phone.Media.Devices.AudioRoutingManager: ...
+
+
 make_ready(__name__)

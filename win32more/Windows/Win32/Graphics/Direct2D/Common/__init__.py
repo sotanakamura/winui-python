@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Direct2D.Common
 import win32more.Windows.Win32.Graphics.Dxgi.Common
@@ -81,6 +81,9 @@ D2D1_FIGURE_END_CLOSED: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_FI
 D2D1_FILL_MODE = Int32
 D2D1_FILL_MODE_ALTERNATE: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_FILL_MODE = 0
 D2D1_FILL_MODE_WINDING: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_FILL_MODE = 1
+class D2D1_GRADIENT_STOP(EasyCastStructure):
+    position: Single
+    color: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_COLOR_F
 D2D1_PATH_SEGMENT = Int32
 D2D1_PATH_SEGMENT_NONE: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_PATH_SEGMENT = 0
 D2D1_PATH_SEGMENT_FORCE_UNSTROKED: win32more.Windows.Win32.Graphics.Direct2D.Common.D2D1_PATH_SEGMENT = 1

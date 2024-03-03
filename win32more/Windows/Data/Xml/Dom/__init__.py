@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Data.Xml.Dom
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class DtdEntity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IDtdEntity
@@ -90,24 +77,24 @@ class DtdEntity(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    PublicId = property(get_PublicId, None)
-    SystemId = property(get_SystemId, None)
-    NotationName = property(get_NotationName, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    NotationName = property(get_NotationName, None)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+    PublicId = property(get_PublicId, None)
+    SystemId = property(get_SystemId, None)
 class DtdNotation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IDtdNotation
@@ -176,23 +163,23 @@ class DtdNotation(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    PublicId = property(get_PublicId, None)
-    SystemId = property(get_SystemId, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+    PublicId = property(get_PublicId, None)
+    SystemId = property(get_SystemId, None)
 class IDtdEntity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IDtdEntity'
@@ -203,9 +190,9 @@ class IDtdEntity(ComPtr):
     def get_SystemId(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_commethod(8)
     def get_NotationName(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
+    NotationName = property(get_NotationName, None)
     PublicId = property(get_PublicId, None)
     SystemId = property(get_SystemId, None)
-    NotationName = property(get_NotationName, None)
 class IDtdNotation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IDtdNotation'
@@ -300,9 +287,9 @@ class IXmlDocument(ComPtr):
     @winrt_commethod(22)
     def ImportNode(self, node: win32more.Windows.Data.Xml.Dom.IXmlNode, deep: Boolean) -> win32more.Windows.Data.Xml.Dom.IXmlNode: ...
     Doctype = property(get_Doctype, None)
-    Implementation = property(get_Implementation, None)
     DocumentElement = property(get_DocumentElement, None)
     DocumentUri = property(get_DocumentUri, None)
+    Implementation = property(get_Implementation, None)
 class IXmlDocumentFragment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IXmlDocumentFragment'
@@ -347,8 +334,8 @@ class IXmlDocumentType(ComPtr):
     def get_Entities(self) -> win32more.Windows.Data.Xml.Dom.XmlNamedNodeMap: ...
     @winrt_commethod(8)
     def get_Notations(self) -> win32more.Windows.Data.Xml.Dom.XmlNamedNodeMap: ...
-    Name = property(get_Name, None)
     Entities = property(get_Entities, None)
+    Name = property(get_Name, None)
     Notations = property(get_Notations, None)
 class IXmlDomImplementation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -415,11 +402,11 @@ class IXmlLoadSettings(ComPtr):
     def get_ElementContentWhiteSpace(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_ElementContentWhiteSpace(self, value: Boolean) -> Void: ...
+    ElementContentWhiteSpace = property(get_ElementContentWhiteSpace, put_ElementContentWhiteSpace)
     MaxElementDepth = property(get_MaxElementDepth, put_MaxElementDepth)
     ProhibitDtd = property(get_ProhibitDtd, put_ProhibitDtd)
     ResolveExternals = property(get_ResolveExternals, put_ResolveExternals)
     ValidateOnParse = property(get_ValidateOnParse, put_ValidateOnParse)
-    ElementContentWhiteSpace = property(get_ElementContentWhiteSpace, put_ElementContentWhiteSpace)
 class IXmlNamedNodeMap(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IXmlNamedNodeMap'
@@ -491,20 +478,20 @@ class IXmlNode(ComPtr):
     def Normalize(self) -> Void: ...
     @winrt_commethod(28)
     def put_Prefix(self, value: win32more.Windows.Win32.System.WinRT.IInspectable) -> Void: ...
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
     LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
     LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
     Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class IXmlNodeList(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IXmlNodeList'
@@ -547,28 +534,28 @@ class IXmlProcessingInstruction(ComPtr):
     def get_Data(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def put_Data(self, value: WinRT_String) -> Void: ...
-    Target = property(get_Target, None)
     Data = property(get_Data, put_Data)
+    Target = property(get_Target, None)
 class IXmlText(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Xml.Dom.IXmlText'
     _iid_ = Guid('{f931a4cb-308d-4760-a1d5-43b67450ac7e}')
     @winrt_commethod(6)
     def SplitText(self, offset: UInt32) -> win32more.Windows.Data.Xml.Dom.IXmlText: ...
-NodeType = Int32
-NodeType_Invalid: NodeType = 0
-NodeType_ElementNode: NodeType = 1
-NodeType_AttributeNode: NodeType = 2
-NodeType_TextNode: NodeType = 3
-NodeType_DataSectionNode: NodeType = 4
-NodeType_EntityReferenceNode: NodeType = 5
-NodeType_EntityNode: NodeType = 6
-NodeType_ProcessingInstructionNode: NodeType = 7
-NodeType_CommentNode: NodeType = 8
-NodeType_DocumentNode: NodeType = 9
-NodeType_DocumentTypeNode: NodeType = 10
-NodeType_DocumentFragmentNode: NodeType = 11
-NodeType_NotationNode: NodeType = 12
+class NodeType(Int32):  # enum
+    Invalid = 0
+    ElementNode = 1
+    AttributeNode = 2
+    TextNode = 3
+    DataSectionNode = 4
+    EntityReferenceNode = 5
+    EntityNode = 6
+    ProcessingInstructionNode = 7
+    CommentNode = 8
+    DocumentNode = 9
+    DocumentTypeNode = 10
+    DocumentFragmentNode = 11
+    NotationNode = 12
 class XmlAttribute(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlAttribute
@@ -641,24 +628,24 @@ class XmlAttribute(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, None)
-    Specified = property(get_Specified, None)
-    Value = property(get_Value, put_Value)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    Name = property(get_Name, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+    Specified = property(get_Specified, None)
+    Value = property(get_Value, put_Value)
 class XmlCDataSection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlCDataSection
@@ -741,23 +728,23 @@ class XmlCDataSection(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Data = property(get_Data, put_Data)
-    Length = property(get_Length, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
-    FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
     Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    ChildNodes = property(get_ChildNodes, None)
+    Data = property(get_Data, put_Data)
+    FirstChild = property(get_FirstChild, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    Length = property(get_Length, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlComment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlComment
@@ -838,27 +825,34 @@ class XmlComment(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Data = property(get_Data, put_Data)
-    Length = property(get_Length, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
-    FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
     Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    ChildNodes = property(get_ChildNodes, None)
+    Data = property(get_Data, put_Data)
+    FirstChild = property(get_FirstChild, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    Length = property(get_Length, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlDocument(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlDocument
     _classid_ = 'Windows.Data.Xml.Dom.XmlDocument'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Data.Xml.Dom.XmlDocument.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Data.Xml.Dom.XmlDocument: ...
     @winrt_mixinmethod
@@ -973,25 +967,25 @@ class XmlDocument(ComPtr):
     def LoadFromFileAsync(cls: win32more.Windows.Data.Xml.Dom.IXmlDocumentStatics, file: win32more.Windows.Storage.IStorageFile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Data.Xml.Dom.XmlDocument]: ...
     @winrt_classmethod
     def LoadFromFileWithSettingsAsync(cls: win32more.Windows.Data.Xml.Dom.IXmlDocumentStatics, file: win32more.Windows.Storage.IStorageFile, loadSettings: win32more.Windows.Data.Xml.Dom.XmlLoadSettings) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Data.Xml.Dom.XmlDocument]: ...
+    Attributes = property(get_Attributes, None)
+    ChildNodes = property(get_ChildNodes, None)
     Doctype = property(get_Doctype, None)
-    Implementation = property(get_Implementation, None)
     DocumentElement = property(get_DocumentElement, None)
     DocumentUri = property(get_DocumentUri, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    Implementation = property(get_Implementation, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlDocumentFragment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlDocumentFragment
@@ -1056,21 +1050,21 @@ class XmlDocumentFragment(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlDocumentType(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlDocumentType
@@ -1141,24 +1135,24 @@ class XmlDocumentType(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, None)
-    Entities = property(get_Entities, None)
-    Notations = property(get_Notations, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
-    FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
     Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    ChildNodes = property(get_ChildNodes, None)
+    Entities = property(get_Entities, None)
+    FirstChild = property(get_FirstChild, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    Name = property(get_Name, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    Notations = property(get_Notations, None)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlDomImplementation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlDomImplementation
@@ -1255,22 +1249,22 @@ class XmlElement(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    TagName = property(get_TagName, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+    TagName = property(get_TagName, None)
 class XmlEntityReference(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlEntityReference
@@ -1335,25 +1329,32 @@ class XmlEntityReference(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
+    Attributes = property(get_Attributes, None)
     ChildNodes = property(get_ChildNodes, None)
     FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
-    Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
 class XmlLoadSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlLoadSettings
     _classid_ = 'Windows.Data.Xml.Dom.XmlLoadSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Data.Xml.Dom.XmlLoadSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Data.Xml.Dom.XmlLoadSettings: ...
     @winrt_mixinmethod
@@ -1376,11 +1377,11 @@ class XmlLoadSettings(ComPtr):
     def get_ElementContentWhiteSpace(self: win32more.Windows.Data.Xml.Dom.IXmlLoadSettings) -> Boolean: ...
     @winrt_mixinmethod
     def put_ElementContentWhiteSpace(self: win32more.Windows.Data.Xml.Dom.IXmlLoadSettings, value: Boolean) -> Void: ...
+    ElementContentWhiteSpace = property(get_ElementContentWhiteSpace, put_ElementContentWhiteSpace)
     MaxElementDepth = property(get_MaxElementDepth, put_MaxElementDepth)
     ProhibitDtd = property(get_ProhibitDtd, put_ProhibitDtd)
     ResolveExternals = property(get_ResolveExternals, put_ResolveExternals)
     ValidateOnParse = property(get_ValidateOnParse, put_ValidateOnParse)
-    ElementContentWhiteSpace = property(get_ElementContentWhiteSpace, put_ElementContentWhiteSpace)
 class XmlNamedNodeMap(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlNamedNodeMap
@@ -1503,23 +1504,23 @@ class XmlProcessingInstruction(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Target = property(get_Target, None)
-    Data = property(get_Data, put_Data)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
-    FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
     Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    ChildNodes = property(get_ChildNodes, None)
+    Data = property(get_Data, put_Data)
+    FirstChild = property(get_FirstChild, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+    Target = property(get_Target, None)
 class XmlText(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Xml.Dom.IXmlText
@@ -1602,21 +1603,23 @@ class XmlText(ComPtr):
     def get_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_InnerText(self: win32more.Windows.Data.Xml.Dom.IXmlNodeSerializer, value: WinRT_String) -> Void: ...
-    Data = property(get_Data, put_Data)
-    Length = property(get_Length, None)
-    NodeValue = property(get_NodeValue, put_NodeValue)
-    NodeType = property(get_NodeType, None)
-    NodeName = property(get_NodeName, None)
-    ParentNode = property(get_ParentNode, None)
-    ChildNodes = property(get_ChildNodes, None)
-    FirstChild = property(get_FirstChild, None)
-    LastChild = property(get_LastChild, None)
-    PreviousSibling = property(get_PreviousSibling, None)
-    NextSibling = property(get_NextSibling, None)
     Attributes = property(get_Attributes, None)
-    OwnerDocument = property(get_OwnerDocument, None)
-    NamespaceUri = property(get_NamespaceUri, None)
-    LocalName = property(get_LocalName, None)
-    Prefix = property(get_Prefix, put_Prefix)
+    ChildNodes = property(get_ChildNodes, None)
+    Data = property(get_Data, put_Data)
+    FirstChild = property(get_FirstChild, None)
     InnerText = property(get_InnerText, put_InnerText)
+    LastChild = property(get_LastChild, None)
+    Length = property(get_Length, None)
+    LocalName = property(get_LocalName, None)
+    NamespaceUri = property(get_NamespaceUri, None)
+    NextSibling = property(get_NextSibling, None)
+    NodeName = property(get_NodeName, None)
+    NodeType = property(get_NodeType, None)
+    NodeValue = property(get_NodeValue, put_NodeValue)
+    OwnerDocument = property(get_OwnerDocument, None)
+    ParentNode = property(get_ParentNode, None)
+    Prefix = property(get_Prefix, put_Prefix)
+    PreviousSibling = property(get_PreviousSibling, None)
+
+
 make_ready(__name__)

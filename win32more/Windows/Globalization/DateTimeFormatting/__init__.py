@@ -1,39 +1,45 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Globalization.DateTimeFormatting
+import win32more.Windows.Win32.System.WinRT
 class _DateTimeFormatter_Meta_(ComPtr.__class__):
     pass
 class DateTimeFormatter(ComPtr, metaclass=_DateTimeFormatter_Meta_):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatter
     _classid_ = 'Windows.Globalization.DateTimeFormatting.DateTimeFormatter'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatter(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterLanguages(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterTime(*args)
+        elif len(args) == 4:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterDate(*args)
+        elif len(args) == 5:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterContext(*args)
+        elif len(args) == 8:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterDateTimeLanguages(*args)
+        elif len(args) == 11:
+            return win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter.CreateDateTimeFormatterDateTimeContext(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateDateTimeFormatter(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, formatTemplate: WinRT_String) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
     def CreateDateTimeFormatterLanguages(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, formatTemplate: WinRT_String, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
-    def CreateDateTimeFormatterContext(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, formatTemplate: WinRT_String, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String, calendar: WinRT_String, clock: WinRT_String) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
+    def CreateDateTimeFormatterTime(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, hourFormat: win32more.Windows.Globalization.DateTimeFormatting.HourFormat, minuteFormat: win32more.Windows.Globalization.DateTimeFormatting.MinuteFormat, secondFormat: win32more.Windows.Globalization.DateTimeFormatting.SecondFormat) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
     def CreateDateTimeFormatterDate(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, yearFormat: win32more.Windows.Globalization.DateTimeFormatting.YearFormat, monthFormat: win32more.Windows.Globalization.DateTimeFormatting.MonthFormat, dayFormat: win32more.Windows.Globalization.DateTimeFormatting.DayFormat, dayOfWeekFormat: win32more.Windows.Globalization.DateTimeFormatting.DayOfWeekFormat) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
-    def CreateDateTimeFormatterTime(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, hourFormat: win32more.Windows.Globalization.DateTimeFormatting.HourFormat, minuteFormat: win32more.Windows.Globalization.DateTimeFormatting.MinuteFormat, secondFormat: win32more.Windows.Globalization.DateTimeFormatting.SecondFormat) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
+    def CreateDateTimeFormatterContext(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, formatTemplate: WinRT_String, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], geographicRegion: WinRT_String, calendar: WinRT_String, clock: WinRT_String) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
     def CreateDateTimeFormatterDateTimeLanguages(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterFactory, yearFormat: win32more.Windows.Globalization.DateTimeFormatting.YearFormat, monthFormat: win32more.Windows.Globalization.DateTimeFormatting.MonthFormat, dayFormat: win32more.Windows.Globalization.DateTimeFormatting.DayFormat, dayOfWeekFormat: win32more.Windows.Globalization.DateTimeFormatting.DayOfWeekFormat, hourFormat: win32more.Windows.Globalization.DateTimeFormatting.HourFormat, minuteFormat: win32more.Windows.Globalization.DateTimeFormatting.MinuteFormat, secondFormat: win32more.Windows.Globalization.DateTimeFormatting.SecondFormat, languages: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_factorymethod
@@ -84,37 +90,37 @@ class DateTimeFormatter(ComPtr, metaclass=_DateTimeFormatter_Meta_):
     def get_ShortDate(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterStatics) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
     @winrt_classmethod
     def get_ShortTime(cls: win32more.Windows.Globalization.DateTimeFormatting.IDateTimeFormatterStatics) -> win32more.Windows.Globalization.DateTimeFormatting.DateTimeFormatter: ...
-    Languages = property(get_Languages, None)
-    GeographicRegion = property(get_GeographicRegion, None)
     Calendar = property(get_Calendar, None)
     Clock = property(get_Clock, None)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    Patterns = property(get_Patterns, None)
-    Template = property(get_Template, None)
-    IncludeYear = property(get_IncludeYear, None)
-    IncludeMonth = property(get_IncludeMonth, None)
-    IncludeDayOfWeek = property(get_IncludeDayOfWeek, None)
+    GeographicRegion = property(get_GeographicRegion, None)
     IncludeDay = property(get_IncludeDay, None)
+    IncludeDayOfWeek = property(get_IncludeDayOfWeek, None)
     IncludeHour = property(get_IncludeHour, None)
     IncludeMinute = property(get_IncludeMinute, None)
+    IncludeMonth = property(get_IncludeMonth, None)
     IncludeSecond = property(get_IncludeSecond, None)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    IncludeYear = property(get_IncludeYear, None)
+    Languages = property(get_Languages, None)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    Patterns = property(get_Patterns, None)
     ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    Template = property(get_Template, None)
     _DateTimeFormatter_Meta_.LongDate = property(get_LongDate.__wrapped__, None)
     _DateTimeFormatter_Meta_.LongTime = property(get_LongTime.__wrapped__, None)
     _DateTimeFormatter_Meta_.ShortDate = property(get_ShortDate.__wrapped__, None)
     _DateTimeFormatter_Meta_.ShortTime = property(get_ShortTime.__wrapped__, None)
-DayFormat = Int32
-DayFormat_None: DayFormat = 0
-DayFormat_Default: DayFormat = 1
-DayOfWeekFormat = Int32
-DayOfWeekFormat_None: DayOfWeekFormat = 0
-DayOfWeekFormat_Default: DayOfWeekFormat = 1
-DayOfWeekFormat_Abbreviated: DayOfWeekFormat = 2
-DayOfWeekFormat_Full: DayOfWeekFormat = 3
-HourFormat = Int32
-HourFormat_None: HourFormat = 0
-HourFormat_Default: HourFormat = 1
+class DayFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+class DayOfWeekFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+    Abbreviated = 2
+    Full = 3
+class HourFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
 class IDateTimeFormatter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.DateTimeFormatting.IDateTimeFormatter'
@@ -155,22 +161,22 @@ class IDateTimeFormatter(ComPtr):
     def get_ResolvedLanguage(self) -> WinRT_String: ...
     @winrt_commethod(23)
     def get_ResolvedGeographicRegion(self) -> WinRT_String: ...
-    Languages = property(get_Languages, None)
-    GeographicRegion = property(get_GeographicRegion, None)
     Calendar = property(get_Calendar, None)
     Clock = property(get_Clock, None)
-    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
-    Patterns = property(get_Patterns, None)
-    Template = property(get_Template, None)
-    IncludeYear = property(get_IncludeYear, None)
-    IncludeMonth = property(get_IncludeMonth, None)
-    IncludeDayOfWeek = property(get_IncludeDayOfWeek, None)
+    GeographicRegion = property(get_GeographicRegion, None)
     IncludeDay = property(get_IncludeDay, None)
+    IncludeDayOfWeek = property(get_IncludeDayOfWeek, None)
     IncludeHour = property(get_IncludeHour, None)
     IncludeMinute = property(get_IncludeMinute, None)
+    IncludeMonth = property(get_IncludeMonth, None)
     IncludeSecond = property(get_IncludeSecond, None)
-    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    IncludeYear = property(get_IncludeYear, None)
+    Languages = property(get_Languages, None)
+    NumeralSystem = property(get_NumeralSystem, put_NumeralSystem)
+    Patterns = property(get_Patterns, None)
     ResolvedGeographicRegion = property(get_ResolvedGeographicRegion, None)
+    ResolvedLanguage = property(get_ResolvedLanguage, None)
+    Template = property(get_Template, None)
 class IDateTimeFormatter2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.DateTimeFormatting.IDateTimeFormatter2'
@@ -211,21 +217,23 @@ class IDateTimeFormatterStatics(ComPtr):
     LongTime = property(get_LongTime, None)
     ShortDate = property(get_ShortDate, None)
     ShortTime = property(get_ShortTime, None)
-MinuteFormat = Int32
-MinuteFormat_None: MinuteFormat = 0
-MinuteFormat_Default: MinuteFormat = 1
-MonthFormat = Int32
-MonthFormat_None: MonthFormat = 0
-MonthFormat_Default: MonthFormat = 1
-MonthFormat_Abbreviated: MonthFormat = 2
-MonthFormat_Full: MonthFormat = 3
-MonthFormat_Numeric: MonthFormat = 4
-SecondFormat = Int32
-SecondFormat_None: SecondFormat = 0
-SecondFormat_Default: SecondFormat = 1
-YearFormat = Int32
-YearFormat_None: YearFormat = 0
-YearFormat_Default: YearFormat = 1
-YearFormat_Abbreviated: YearFormat = 2
-YearFormat_Full: YearFormat = 3
+class MinuteFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+class MonthFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+    Abbreviated = 2
+    Full = 3
+    Numeric = 4
+class SecondFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+class YearFormat(Int32):  # enum
+    None_ = 0
+    Default = 1
+    Abbreviated = 2
+    Full = 3
+
+
 make_ready(__name__)

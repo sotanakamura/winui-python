@@ -1,44 +1,31 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.System.Power
 import win32more.Windows.Foundation
-BatteryStatus = Int32
-BatteryStatus_NotPresent: BatteryStatus = 0
-BatteryStatus_Discharging: BatteryStatus = 1
-BatteryStatus_Idle: BatteryStatus = 2
-BatteryStatus_Charging: BatteryStatus = 3
-DisplayStatus = Int32
-DisplayStatus_Off: DisplayStatus = 0
-DisplayStatus_On: DisplayStatus = 1
-DisplayStatus_Dimmed: DisplayStatus = 2
-EffectivePowerMode = Int32
-EffectivePowerMode_BatterySaver: EffectivePowerMode = 0
-EffectivePowerMode_BetterBattery: EffectivePowerMode = 1
-EffectivePowerMode_Balanced: EffectivePowerMode = 2
-EffectivePowerMode_HighPerformance: EffectivePowerMode = 3
-EffectivePowerMode_MaxPerformance: EffectivePowerMode = 4
-EffectivePowerMode_GameMode: EffectivePowerMode = 5
-EffectivePowerMode_MixedReality: EffectivePowerMode = 6
-EnergySaverStatus = Int32
-EnergySaverStatus_Uninitialized: EnergySaverStatus = 0
-EnergySaverStatus_Disabled: EnergySaverStatus = 1
-EnergySaverStatus_Off: EnergySaverStatus = 2
-EnergySaverStatus_On: EnergySaverStatus = 3
+import win32more.Windows.Win32.System.WinRT
+class BatteryStatus(Int32):  # enum
+    NotPresent = 0
+    Discharging = 1
+    Idle = 2
+    Charging = 3
+class DisplayStatus(Int32):  # enum
+    Off = 0
+    On = 1
+    Dimmed = 2
+class EffectivePowerMode(Int32):  # enum
+    BatterySaver = 0
+    BetterBattery = 1
+    Balanced = 2
+    HighPerformance = 3
+    MaxPerformance = 4
+    GameMode = 5
+    MixedReality = 6
+class EnergySaverStatus(Int32):  # enum
+    Uninitialized = 0
+    Disabled = 1
+    Off = 2
+    On = 3
 class IPowerManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.System.Power.IPowerManagerStatics'
@@ -107,16 +94,16 @@ class IPowerManagerStatics(ComPtr):
     def add_SystemSuspendStatusChanged(self, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(37)
     def remove_SystemSuspendStatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    EnergySaverStatus = property(get_EnergySaverStatus, None)
     BatteryStatus = property(get_BatteryStatus, None)
+    DisplayStatus = property(get_DisplayStatus, None)
+    EffectivePowerMode = property(get_EffectivePowerMode, None)
+    EnergySaverStatus = property(get_EnergySaverStatus, None)
+    PowerSourceKind = property(get_PowerSourceKind, None)
     PowerSupplyStatus = property(get_PowerSupplyStatus, None)
     RemainingChargePercent = property(get_RemainingChargePercent, None)
     RemainingDischargeTime = property(get_RemainingDischargeTime, None)
-    PowerSourceKind = property(get_PowerSourceKind, None)
-    DisplayStatus = property(get_DisplayStatus, None)
-    EffectivePowerMode = property(get_EffectivePowerMode, None)
-    UserPresenceStatus = property(get_UserPresenceStatus, None)
     SystemSuspendStatus = property(get_SystemSuspendStatus, None)
+    UserPresenceStatus = property(get_UserPresenceStatus, None)
 class IPowerManagerStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.System.Power.IPowerManagerStatics2'
@@ -195,31 +182,33 @@ class PowerManager(ComPtr, metaclass=_PowerManager_Meta_):
     def add_SystemSuspendStatusChanged(cls: win32more.Microsoft.Windows.System.Power.IPowerManagerStatics, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_classmethod
     def remove_SystemSuspendStatusChanged(cls: win32more.Microsoft.Windows.System.Power.IPowerManagerStatics, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    _PowerManager_Meta_.BatteryStatus = property(get_BatteryStatus.__wrapped__, None)
+    _PowerManager_Meta_.DisplayStatus = property(get_DisplayStatus.__wrapped__, None)
+    _PowerManager_Meta_.EffectivePowerMode = property(get_EffectivePowerMode.__wrapped__, None)
     _PowerManager_Meta_.EffectivePowerMode2 = property(get_EffectivePowerMode2.__wrapped__, None)
     _PowerManager_Meta_.EnergySaverStatus = property(get_EnergySaverStatus.__wrapped__, None)
-    _PowerManager_Meta_.BatteryStatus = property(get_BatteryStatus.__wrapped__, None)
+    _PowerManager_Meta_.PowerSourceKind = property(get_PowerSourceKind.__wrapped__, None)
     _PowerManager_Meta_.PowerSupplyStatus = property(get_PowerSupplyStatus.__wrapped__, None)
     _PowerManager_Meta_.RemainingChargePercent = property(get_RemainingChargePercent.__wrapped__, None)
     _PowerManager_Meta_.RemainingDischargeTime = property(get_RemainingDischargeTime.__wrapped__, None)
-    _PowerManager_Meta_.PowerSourceKind = property(get_PowerSourceKind.__wrapped__, None)
-    _PowerManager_Meta_.DisplayStatus = property(get_DisplayStatus.__wrapped__, None)
-    _PowerManager_Meta_.EffectivePowerMode = property(get_EffectivePowerMode.__wrapped__, None)
-    _PowerManager_Meta_.UserPresenceStatus = property(get_UserPresenceStatus.__wrapped__, None)
     _PowerManager_Meta_.SystemSuspendStatus = property(get_SystemSuspendStatus.__wrapped__, None)
+    _PowerManager_Meta_.UserPresenceStatus = property(get_UserPresenceStatus.__wrapped__, None)
 PowerNotificationsContract: UInt32 = 131072
-PowerSourceKind = Int32
-AC: PowerSourceKind = 0
-DC: PowerSourceKind = 1
-PowerSupplyStatus = Int32
-PowerSupplyStatus_NotPresent: PowerSupplyStatus = 0
-PowerSupplyStatus_Inadequate: PowerSupplyStatus = 1
-PowerSupplyStatus_Adequate: PowerSupplyStatus = 2
-SystemSuspendStatus = Int32
-SystemSuspendStatus_Uninitialized: SystemSuspendStatus = 0
-SystemSuspendStatus_Entering: SystemSuspendStatus = 1
-SystemSuspendStatus_AutoResume: SystemSuspendStatus = 2
-SystemSuspendStatus_ManualResume: SystemSuspendStatus = 3
-UserPresenceStatus = Int32
-UserPresenceStatus_Present: UserPresenceStatus = 0
-UserPresenceStatus_Absent: UserPresenceStatus = 1
+class PowerSourceKind(Int32):  # enum
+    AC = 0
+    DC = 1
+class PowerSupplyStatus(Int32):  # enum
+    NotPresent = 0
+    Inadequate = 1
+    Adequate = 2
+class SystemSuspendStatus(Int32):  # enum
+    Uninitialized = 0
+    Entering = 1
+    AutoResume = 2
+    ManualResume = 3
+class UserPresenceStatus(Int32):  # enum
+    Present = 0
+    Absent = 1
+
+
 make_ready(__name__)

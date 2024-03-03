@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.System.RemoteDesktop.Provider
 import win32more.Windows.UI
+import win32more.Windows.Win32.System.WinRT
 class IPerformLocalActionRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.RemoteDesktop.Provider.IPerformLocalActionRequestedEventArgs'
@@ -124,15 +111,22 @@ class RemoteDesktopConnectionRemoteInfo(ComPtr):
     def IsSwitchSupported(cls: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopConnectionRemoteInfoStatics) -> Boolean: ...
     @winrt_classmethod
     def GetForLaunchUri(cls: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopConnectionRemoteInfoStatics, launchUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.System.RemoteDesktop.Provider.RemoteDesktopConnectionRemoteInfo: ...
-RemoteDesktopConnectionStatus = Int32
-RemoteDesktopConnectionStatus_Connecting: RemoteDesktopConnectionStatus = 0
-RemoteDesktopConnectionStatus_Connected: RemoteDesktopConnectionStatus = 1
-RemoteDesktopConnectionStatus_UserInputNeeded: RemoteDesktopConnectionStatus = 2
-RemoteDesktopConnectionStatus_Disconnected: RemoteDesktopConnectionStatus = 3
+class RemoteDesktopConnectionStatus(Int32):  # enum
+    Connecting = 0
+    Connected = 1
+    UserInputNeeded = 2
+    Disconnected = 3
 class RemoteDesktopInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopInfo
     _classid_ = 'Windows.System.RemoteDesktop.Provider.RemoteDesktopInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.System.RemoteDesktop.Provider.RemoteDesktopInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopInfoFactory, id: WinRT_String, displayName: WinRT_String) -> win32more.Windows.System.RemoteDesktop.Provider.RemoteDesktopInfo: ...
     @winrt_mixinmethod
@@ -141,8 +135,8 @@ class RemoteDesktopInfo(ComPtr):
     def get_Id(self: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopInfo) -> WinRT_String: ...
     DisplayName = property(get_DisplayName, None)
     Id = property(get_Id, None)
-RemoteDesktopLocalAction = Int32
-RemoteDesktopLocalAction_ShowBluetoothSettings: RemoteDesktopLocalAction = 0
+class RemoteDesktopLocalAction(Int32):  # enum
+    ShowBluetoothSettings = 0
 class _RemoteDesktopRegistrar_Meta_(ComPtr.__class__):
     pass
 class RemoteDesktopRegistrar(ComPtr, metaclass=_RemoteDesktopRegistrar_Meta_):
@@ -153,4 +147,6 @@ class RemoteDesktopRegistrar(ComPtr, metaclass=_RemoteDesktopRegistrar_Meta_):
     @winrt_classmethod
     def IsSwitchToLocalSessionEnabled(cls: win32more.Windows.System.RemoteDesktop.Provider.IRemoteDesktopRegistrarStatics) -> Boolean: ...
     _RemoteDesktopRegistrar_Meta_.DesktopInfos = property(get_DesktopInfos.__wrapped__, None)
+
+
 make_ready(__name__)

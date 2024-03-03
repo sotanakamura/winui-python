@@ -1,30 +1,17 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.ExtendedExecution.Foreground
 import win32more.Windows.Foundation
-ExtendedExecutionForegroundReason = Int32
-ExtendedExecutionForegroundReason_Unspecified: ExtendedExecutionForegroundReason = 0
-ExtendedExecutionForegroundReason_SavingData: ExtendedExecutionForegroundReason = 1
-ExtendedExecutionForegroundReason_BackgroundAudio: ExtendedExecutionForegroundReason = 2
-ExtendedExecutionForegroundReason_Unconstrained: ExtendedExecutionForegroundReason = 3
-ExtendedExecutionForegroundResult = Int32
-ExtendedExecutionForegroundResult_Allowed: ExtendedExecutionForegroundResult = 0
-ExtendedExecutionForegroundResult_Denied: ExtendedExecutionForegroundResult = 1
+import win32more.Windows.Win32.System.WinRT
+class ExtendedExecutionForegroundReason(Int32):  # enum
+    Unspecified = 0
+    SavingData = 1
+    BackgroundAudio = 2
+    Unconstrained = 3
+class ExtendedExecutionForegroundResult(Int32):  # enum
+    Allowed = 0
+    Denied = 1
 class ExtendedExecutionForegroundRevokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.IExtendedExecutionForegroundRevokedEventArgs
@@ -32,13 +19,20 @@ class ExtendedExecutionForegroundRevokedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Reason(self: win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.IExtendedExecutionForegroundRevokedEventArgs) -> win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.ExtendedExecutionForegroundRevokedReason: ...
     Reason = property(get_Reason, None)
-ExtendedExecutionForegroundRevokedReason = Int32
-ExtendedExecutionForegroundRevokedReason_Resumed: ExtendedExecutionForegroundRevokedReason = 0
-ExtendedExecutionForegroundRevokedReason_SystemPolicy: ExtendedExecutionForegroundRevokedReason = 1
+class ExtendedExecutionForegroundRevokedReason(Int32):  # enum
+    Resumed = 0
+    SystemPolicy = 1
 class ExtendedExecutionForegroundSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.IExtendedExecutionForegroundSession
     _classid_ = 'Windows.ApplicationModel.ExtendedExecution.Foreground.ExtendedExecutionForegroundSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.ExtendedExecutionForegroundSession.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.ExtendedExecutionForegroundSession: ...
     @winrt_mixinmethod
@@ -86,4 +80,6 @@ class IExtendedExecutionForegroundSession(ComPtr):
     def put_Reason(self, value: win32more.Windows.ApplicationModel.ExtendedExecution.Foreground.ExtendedExecutionForegroundReason) -> Void: ...
     Description = property(get_Description, put_Description)
     Reason = property(get_Reason, put_Reason)
+
+
 make_ready(__name__)

@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.HumanInterfaceDevice
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class HidBooleanControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidBooleanControl
@@ -36,11 +23,11 @@ class HidBooleanControl(ComPtr):
     def put_IsActive(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidBooleanControl, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_ControlDescription(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidBooleanControl) -> win32more.Windows.Devices.HumanInterfaceDevice.HidBooleanControlDescription: ...
-    Id = property(get_Id, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    IsActive = property(get_IsActive, put_IsActive)
     ControlDescription = property(get_ControlDescription, None)
+    Id = property(get_Id, None)
+    IsActive = property(get_IsActive, put_IsActive)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class HidBooleanControlDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidBooleanControlDescription
@@ -60,12 +47,12 @@ class HidBooleanControlDescription(ComPtr):
     @winrt_mixinmethod
     def get_IsAbsolute(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidBooleanControlDescription2) -> Boolean: ...
     Id = property(get_Id, None)
+    IsAbsolute = property(get_IsAbsolute, None)
+    ParentCollections = property(get_ParentCollections, None)
     ReportId = property(get_ReportId, None)
     ReportType = property(get_ReportType, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
-    ParentCollections = property(get_ParentCollections, None)
-    IsAbsolute = property(get_IsAbsolute, None)
+    UsagePage = property(get_UsagePage, None)
 class HidCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidCollection
@@ -80,17 +67,17 @@ class HidCollection(ComPtr):
     def get_UsageId(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidCollection) -> UInt32: ...
     Id = property(get_Id, None)
     Type = property(get_Type, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
-HidCollectionType = Int32
-HidCollectionType_Physical: HidCollectionType = 0
-HidCollectionType_Application: HidCollectionType = 1
-HidCollectionType_Logical: HidCollectionType = 2
-HidCollectionType_Report: HidCollectionType = 3
-HidCollectionType_NamedArray: HidCollectionType = 4
-HidCollectionType_UsageSwitch: HidCollectionType = 5
-HidCollectionType_UsageModifier: HidCollectionType = 6
-HidCollectionType_Other: HidCollectionType = 7
+    UsagePage = property(get_UsagePage, None)
+class HidCollectionType(Int32):  # enum
+    Physical = 0
+    Application = 1
+    Logical = 2
+    Report = 3
+    NamedArray = 4
+    UsageSwitch = 5
+    UsageModifier = 6
+    Other = 7
 class HidDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidDevice
@@ -141,11 +128,11 @@ class HidDevice(ComPtr):
     def GetDeviceSelectorVidPid(cls: win32more.Windows.Devices.HumanInterfaceDevice.IHidDeviceStatics, usagePage: UInt16, usageId: UInt16, vendorId: UInt16, productId: UInt16) -> WinRT_String: ...
     @winrt_classmethod
     def FromIdAsync(cls: win32more.Windows.Devices.HumanInterfaceDevice.IHidDeviceStatics, deviceId: WinRT_String, accessMode: win32more.Windows.Storage.FileAccessMode) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.HumanInterfaceDevice.HidDevice]: ...
-    VendorId = property(get_VendorId, None)
     ProductId = property(get_ProductId, None)
-    Version = property(get_Version, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
+    VendorId = property(get_VendorId, None)
+    Version = property(get_Version, None)
 class HidFeatureReport(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidFeatureReport
@@ -164,8 +151,8 @@ class HidFeatureReport(ComPtr):
     def GetNumericControl(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidFeatureReport, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_mixinmethod
     def GetNumericControlByDescription(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidFeatureReport, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
     Data = property(get_Data, put_Data)
+    Id = property(get_Id, None)
 class HidInputReport(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidInputReport
@@ -186,9 +173,9 @@ class HidInputReport(ComPtr):
     def GetNumericControl(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidInputReport, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_mixinmethod
     def GetNumericControlByDescription(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidInputReport, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
-    Data = property(get_Data, None)
     ActivatedBooleanControls = property(get_ActivatedBooleanControls, None)
+    Data = property(get_Data, None)
+    Id = property(get_Id, None)
     TransitionedBooleanControls = property(get_TransitionedBooleanControls, None)
 class HidInputReportReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -219,13 +206,13 @@ class HidNumericControl(ComPtr):
     def put_ScaledValue(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidNumericControl, value: Int64) -> Void: ...
     @winrt_mixinmethod
     def get_ControlDescription(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidNumericControl) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription: ...
+    ControlDescription = property(get_ControlDescription, None)
     Id = property(get_Id, None)
     IsGrouped = property(get_IsGrouped, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    Value = property(get_Value, put_Value)
     ScaledValue = property(get_ScaledValue, put_ScaledValue)
-    ControlDescription = property(get_ControlDescription, None)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
+    Value = property(get_Value, put_Value)
 class HidNumericControlDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidNumericControlDescription
@@ -262,22 +249,22 @@ class HidNumericControlDescription(ComPtr):
     def get_HasNull(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidNumericControlDescription) -> Boolean: ...
     @winrt_mixinmethod
     def get_ParentCollections(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidNumericControlDescription) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidCollection]: ...
-    Id = property(get_Id, None)
-    ReportId = property(get_ReportId, None)
-    ReportType = property(get_ReportType, None)
-    ReportSize = property(get_ReportSize, None)
-    ReportCount = property(get_ReportCount, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    LogicalMinimum = property(get_LogicalMinimum, None)
-    LogicalMaximum = property(get_LogicalMaximum, None)
-    PhysicalMinimum = property(get_PhysicalMinimum, None)
-    PhysicalMaximum = property(get_PhysicalMaximum, None)
-    UnitExponent = property(get_UnitExponent, None)
-    Unit = property(get_Unit, None)
-    IsAbsolute = property(get_IsAbsolute, None)
     HasNull = property(get_HasNull, None)
+    Id = property(get_Id, None)
+    IsAbsolute = property(get_IsAbsolute, None)
+    LogicalMaximum = property(get_LogicalMaximum, None)
+    LogicalMinimum = property(get_LogicalMinimum, None)
     ParentCollections = property(get_ParentCollections, None)
+    PhysicalMaximum = property(get_PhysicalMaximum, None)
+    PhysicalMinimum = property(get_PhysicalMinimum, None)
+    ReportCount = property(get_ReportCount, None)
+    ReportId = property(get_ReportId, None)
+    ReportSize = property(get_ReportSize, None)
+    ReportType = property(get_ReportType, None)
+    Unit = property(get_Unit, None)
+    UnitExponent = property(get_UnitExponent, None)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class HidOutputReport(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.HumanInterfaceDevice.IHidOutputReport
@@ -296,12 +283,12 @@ class HidOutputReport(ComPtr):
     def GetNumericControl(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidOutputReport, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_mixinmethod
     def GetNumericControlByDescription(self: win32more.Windows.Devices.HumanInterfaceDevice.IHidOutputReport, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
     Data = property(get_Data, put_Data)
-HidReportType = Int32
-HidReportType_Input: HidReportType = 0
-HidReportType_Output: HidReportType = 1
-HidReportType_Feature: HidReportType = 2
+    Id = property(get_Id, None)
+class HidReportType(Int32):  # enum
+    Input = 0
+    Output = 1
+    Feature = 2
 class IHidBooleanControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidBooleanControl'
@@ -318,11 +305,11 @@ class IHidBooleanControl(ComPtr):
     def put_IsActive(self, value: Boolean) -> Void: ...
     @winrt_commethod(11)
     def get_ControlDescription(self) -> win32more.Windows.Devices.HumanInterfaceDevice.HidBooleanControlDescription: ...
-    Id = property(get_Id, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    IsActive = property(get_IsActive, put_IsActive)
     ControlDescription = property(get_ControlDescription, None)
+    Id = property(get_Id, None)
+    IsActive = property(get_IsActive, put_IsActive)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class IHidBooleanControlDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidBooleanControlDescription'
@@ -340,11 +327,11 @@ class IHidBooleanControlDescription(ComPtr):
     @winrt_commethod(11)
     def get_ParentCollections(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidCollection]: ...
     Id = property(get_Id, None)
+    ParentCollections = property(get_ParentCollections, None)
     ReportId = property(get_ReportId, None)
     ReportType = property(get_ReportType, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
-    ParentCollections = property(get_ParentCollections, None)
+    UsagePage = property(get_UsagePage, None)
 class IHidBooleanControlDescription2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidBooleanControlDescription2'
@@ -366,8 +353,8 @@ class IHidCollection(ComPtr):
     def get_UsageId(self) -> UInt32: ...
     Id = property(get_Id, None)
     Type = property(get_Type, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class IHidDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidDevice'
@@ -410,11 +397,11 @@ class IHidDevice(ComPtr):
     def add_InputReportReceived(self, reportHandler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.HumanInterfaceDevice.HidDevice, win32more.Windows.Devices.HumanInterfaceDevice.HidInputReportReceivedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(24)
     def remove_InputReportReceived(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    VendorId = property(get_VendorId, None)
     ProductId = property(get_ProductId, None)
-    Version = property(get_Version, None)
-    UsagePage = property(get_UsagePage, None)
     UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
+    VendorId = property(get_VendorId, None)
+    Version = property(get_Version, None)
 class IHidDeviceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidDeviceStatics'
@@ -443,8 +430,8 @@ class IHidFeatureReport(ComPtr):
     def GetNumericControl(self, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_commethod(12)
     def GetNumericControlByDescription(self, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
     Data = property(get_Data, put_Data)
+    Id = property(get_Id, None)
 class IHidInputReport(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidInputReport'
@@ -465,9 +452,9 @@ class IHidInputReport(ComPtr):
     def GetNumericControl(self, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_commethod(13)
     def GetNumericControlByDescription(self, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
-    Data = property(get_Data, None)
     ActivatedBooleanControls = property(get_ActivatedBooleanControls, None)
+    Data = property(get_Data, None)
+    Id = property(get_Id, None)
     TransitionedBooleanControls = property(get_TransitionedBooleanControls, None)
 class IHidInputReportReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -498,13 +485,13 @@ class IHidNumericControl(ComPtr):
     def put_ScaledValue(self, value: Int64) -> Void: ...
     @winrt_commethod(14)
     def get_ControlDescription(self) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription: ...
+    ControlDescription = property(get_ControlDescription, None)
     Id = property(get_Id, None)
     IsGrouped = property(get_IsGrouped, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    Value = property(get_Value, put_Value)
     ScaledValue = property(get_ScaledValue, put_ScaledValue)
-    ControlDescription = property(get_ControlDescription, None)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
+    Value = property(get_Value, put_Value)
 class IHidNumericControlDescription(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidNumericControlDescription'
@@ -541,22 +528,22 @@ class IHidNumericControlDescription(ComPtr):
     def get_HasNull(self) -> Boolean: ...
     @winrt_commethod(21)
     def get_ParentCollections(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidCollection]: ...
-    Id = property(get_Id, None)
-    ReportId = property(get_ReportId, None)
-    ReportType = property(get_ReportType, None)
-    ReportSize = property(get_ReportSize, None)
-    ReportCount = property(get_ReportCount, None)
-    UsagePage = property(get_UsagePage, None)
-    UsageId = property(get_UsageId, None)
-    LogicalMinimum = property(get_LogicalMinimum, None)
-    LogicalMaximum = property(get_LogicalMaximum, None)
-    PhysicalMinimum = property(get_PhysicalMinimum, None)
-    PhysicalMaximum = property(get_PhysicalMaximum, None)
-    UnitExponent = property(get_UnitExponent, None)
-    Unit = property(get_Unit, None)
-    IsAbsolute = property(get_IsAbsolute, None)
     HasNull = property(get_HasNull, None)
+    Id = property(get_Id, None)
+    IsAbsolute = property(get_IsAbsolute, None)
+    LogicalMaximum = property(get_LogicalMaximum, None)
+    LogicalMinimum = property(get_LogicalMinimum, None)
     ParentCollections = property(get_ParentCollections, None)
+    PhysicalMaximum = property(get_PhysicalMaximum, None)
+    PhysicalMinimum = property(get_PhysicalMinimum, None)
+    ReportCount = property(get_ReportCount, None)
+    ReportId = property(get_ReportId, None)
+    ReportSize = property(get_ReportSize, None)
+    ReportType = property(get_ReportType, None)
+    Unit = property(get_Unit, None)
+    UnitExponent = property(get_UnitExponent, None)
+    UsageId = property(get_UsageId, None)
+    UsagePage = property(get_UsagePage, None)
 class IHidOutputReport(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.HumanInterfaceDevice.IHidOutputReport'
@@ -575,6 +562,8 @@ class IHidOutputReport(ComPtr):
     def GetNumericControl(self, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
     @winrt_commethod(12)
     def GetNumericControlByDescription(self, controlDescription: win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription) -> win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControl: ...
-    Id = property(get_Id, None)
     Data = property(get_Data, put_Data)
+    Id = property(get_Id, None)
+
+
 make_ready(__name__)

@@ -1,32 +1,20 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.ApplicationModel.Contacts.Provider
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
-AddContactResult = Int32
-AddContactResult_Added: AddContactResult = 0
-AddContactResult_AlreadyAdded: AddContactResult = 1
-AddContactResult_Unavailable: AddContactResult = 2
+import win32more.Windows.Win32.System.WinRT
+class AddContactResult(Int32):  # enum
+    Added = 0
+    AlreadyAdded = 1
+    Unavailable = 2
 class ContactPickerUI(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI
     _classid_ = 'Windows.ApplicationModel.Contacts.Provider.ContactPickerUI'
+    @winrt_overload
     @winrt_mixinmethod
     def AddContact(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI, id: WinRT_String, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.ApplicationModel.Contacts.Provider.AddContactResult: ...
     @winrt_mixinmethod
@@ -41,13 +29,14 @@ class ContactPickerUI(ComPtr):
     def add_ContactRemoved(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.ApplicationModel.Contacts.Provider.ContactPickerUI, win32more.Windows.ApplicationModel.Contacts.Provider.ContactRemovedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_ContactRemoved(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    @AddContact.register
     @winrt_mixinmethod
-    def AddContact_2(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI2, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.ApplicationModel.Contacts.Provider.AddContactResult: ...
+    def AddContact(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI2, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.ApplicationModel.Contacts.Provider.AddContactResult: ...
     @winrt_mixinmethod
     def get_DesiredFieldsWithContactFieldType(self: win32more.Windows.ApplicationModel.Contacts.Provider.IContactPickerUI2) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.Contacts.ContactFieldType]: ...
     DesiredFields = property(get_DesiredFields, None)
-    SelectionMode = property(get_SelectionMode, None)
     DesiredFieldsWithContactFieldType = property(get_DesiredFieldsWithContactFieldType, None)
+    SelectionMode = property(get_SelectionMode, None)
 class ContactRemovedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.Provider.IContactRemovedEventArgs
@@ -91,4 +80,6 @@ class IContactRemovedEventArgs(ComPtr):
     @winrt_commethod(6)
     def get_Id(self) -> WinRT_String: ...
     Id = property(get_Id, None)
+
+
 make_ready(__name__)

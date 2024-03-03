@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.ProcessStatus
 PSAPI_VERSION: UInt32 = 2
@@ -168,6 +168,20 @@ class PROCESS_MEMORY_COUNTERS_EX(EasyCastStructure):
     PagefileUsage: UIntPtr
     PeakPagefileUsage: UIntPtr
     PrivateUsage: UIntPtr
+class PROCESS_MEMORY_COUNTERS_EX2(EasyCastStructure):
+    cb: UInt32
+    PageFaultCount: UInt32
+    PeakWorkingSetSize: UIntPtr
+    WorkingSetSize: UIntPtr
+    QuotaPeakPagedPoolUsage: UIntPtr
+    QuotaPagedPoolUsage: UIntPtr
+    QuotaPeakNonPagedPoolUsage: UIntPtr
+    QuotaNonPagedPoolUsage: UIntPtr
+    PagefileUsage: UIntPtr
+    PeakPagefileUsage: UIntPtr
+    PrivateUsage: UIntPtr
+    PrivateWorkingSetSize: UIntPtr
+    SharedCommitUsage: UInt64
 class PSAPI_WORKING_SET_BLOCK(EasyCastUnion):
     Flags: UIntPtr
     Anonymous: _Anonymous_e__Struct

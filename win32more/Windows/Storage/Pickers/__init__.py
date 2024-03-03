@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Pickers
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class FileExtensionVector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[WinRT_String]
@@ -55,6 +42,13 @@ class FileOpenPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Pickers.IFileOpenPicker
     _classid_ = 'Windows.Storage.Pickers.FileOpenPicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Pickers.FileOpenPicker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Pickers.FileOpenPicker: ...
     @winrt_mixinmethod
@@ -63,6 +57,7 @@ class FileOpenPicker(ComPtr):
     def PickSingleFileAndContinue(self: win32more.Windows.Storage.Pickers.IFileOpenPicker2) -> Void: ...
     @winrt_mixinmethod
     def PickMultipleFilesAndContinue(self: win32more.Windows.Storage.Pickers.IFileOpenPicker2) -> Void: ...
+    @winrt_overload
     @winrt_mixinmethod
     def PickSingleFileAsync(self: win32more.Windows.Storage.Pickers.IFileOpenPickerWithOperationId, pickerOperationId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
     @winrt_mixinmethod
@@ -83,8 +78,9 @@ class FileOpenPicker(ComPtr):
     def put_CommitButtonText(self: win32more.Windows.Storage.Pickers.IFileOpenPicker, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def get_FileTypeFilter(self: win32more.Windows.Storage.Pickers.IFileOpenPicker) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
+    @PickSingleFileAsync.register
     @winrt_mixinmethod
-    def PickSingleFileAsync_2(self: win32more.Windows.Storage.Pickers.IFileOpenPicker) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
+    def PickSingleFileAsync(self: win32more.Windows.Storage.Pickers.IFileOpenPicker) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
     @winrt_mixinmethod
     def PickMultipleFilesAsync(self: win32more.Windows.Storage.Pickers.IFileOpenPicker) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Storage.StorageFile]]: ...
     @winrt_mixinmethod
@@ -93,13 +89,13 @@ class FileOpenPicker(ComPtr):
     def CreateForUser(cls: win32more.Windows.Storage.Pickers.IFileOpenPickerStatics2, user: win32more.Windows.System.User) -> win32more.Windows.Storage.Pickers.FileOpenPicker: ...
     @winrt_classmethod
     def ResumePickSingleFileAsync(cls: win32more.Windows.Storage.Pickers.IFileOpenPickerStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
+    CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
     ContinuationData = property(get_ContinuationData, None)
-    ViewMode = property(get_ViewMode, put_ViewMode)
+    FileTypeFilter = property(get_FileTypeFilter, None)
     SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
     SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
-    CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    FileTypeFilter = property(get_FileTypeFilter, None)
     User = property(get_User, None)
+    ViewMode = property(get_ViewMode, put_ViewMode)
 class FilePickerFileTypesOrderedMap(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IMap[WinRT_String, win32more.Windows.Foundation.Collections.IVector[WinRT_String]]
@@ -140,6 +136,13 @@ class FileSavePicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Pickers.IFileSavePicker
     _classid_ = 'Windows.Storage.Pickers.FileSavePicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Pickers.FileSavePicker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Pickers.FileSavePicker: ...
     @winrt_mixinmethod
@@ -182,20 +185,27 @@ class FileSavePicker(ComPtr):
     def get_User(self: win32more.Windows.Storage.Pickers.IFileSavePicker4) -> win32more.Windows.System.User: ...
     @winrt_classmethod
     def CreateForUser(cls: win32more.Windows.Storage.Pickers.IFileSavePickerStatics, user: win32more.Windows.System.User) -> win32more.Windows.Storage.Pickers.FileSavePicker: ...
-    ContinuationData = property(get_ContinuationData, None)
-    EnterpriseId = property(get_EnterpriseId, put_EnterpriseId)
-    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
-    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    FileTypeChoices = property(get_FileTypeChoices, None)
+    ContinuationData = property(get_ContinuationData, None)
     DefaultFileExtension = property(get_DefaultFileExtension, put_DefaultFileExtension)
-    SuggestedSaveFile = property(get_SuggestedSaveFile, put_SuggestedSaveFile)
+    EnterpriseId = property(get_EnterpriseId, put_EnterpriseId)
+    FileTypeChoices = property(get_FileTypeChoices, None)
+    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
     SuggestedFileName = property(get_SuggestedFileName, put_SuggestedFileName)
+    SuggestedSaveFile = property(get_SuggestedSaveFile, put_SuggestedSaveFile)
+    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
     User = property(get_User, None)
 class FolderPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Pickers.IFolderPicker
     _classid_ = 'Windows.Storage.Pickers.FolderPicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Pickers.FolderPicker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Pickers.FolderPicker: ...
     @winrt_mixinmethod
@@ -226,13 +236,13 @@ class FolderPicker(ComPtr):
     def get_User(self: win32more.Windows.Storage.Pickers.IFolderPicker3) -> win32more.Windows.System.User: ...
     @winrt_classmethod
     def CreateForUser(cls: win32more.Windows.Storage.Pickers.IFolderPickerStatics, user: win32more.Windows.System.User) -> win32more.Windows.Storage.Pickers.FolderPicker: ...
+    CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
     ContinuationData = property(get_ContinuationData, None)
-    ViewMode = property(get_ViewMode, put_ViewMode)
+    FileTypeFilter = property(get_FileTypeFilter, None)
     SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
     SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
-    CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    FileTypeFilter = property(get_FileTypeFilter, None)
     User = property(get_User, None)
+    ViewMode = property(get_ViewMode, put_ViewMode)
 class IFileOpenPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.IFileOpenPicker'
@@ -259,11 +269,11 @@ class IFileOpenPicker(ComPtr):
     def PickSingleFileAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
     @winrt_commethod(16)
     def PickMultipleFilesAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Storage.StorageFile]]: ...
-    ViewMode = property(get_ViewMode, put_ViewMode)
-    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
-    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
     FileTypeFilter = property(get_FileTypeFilter, None)
+    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
+    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
+    ViewMode = property(get_ViewMode, put_ViewMode)
 class IFileOpenPicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.IFileOpenPicker2'
@@ -332,13 +342,13 @@ class IFileSavePicker(ComPtr):
     def put_SuggestedFileName(self, value: WinRT_String) -> Void: ...
     @winrt_commethod(19)
     def PickSaveFileAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFile]: ...
-    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
-    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    FileTypeChoices = property(get_FileTypeChoices, None)
     DefaultFileExtension = property(get_DefaultFileExtension, put_DefaultFileExtension)
-    SuggestedSaveFile = property(get_SuggestedSaveFile, put_SuggestedSaveFile)
+    FileTypeChoices = property(get_FileTypeChoices, None)
+    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
     SuggestedFileName = property(get_SuggestedFileName, put_SuggestedFileName)
+    SuggestedSaveFile = property(get_SuggestedSaveFile, put_SuggestedSaveFile)
+    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
 class IFileSavePicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.IFileSavePicker2'
@@ -394,11 +404,11 @@ class IFolderPicker(ComPtr):
     def get_FileTypeFilter(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     @winrt_commethod(15)
     def PickSingleFolderAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageFolder]: ...
-    ViewMode = property(get_ViewMode, put_ViewMode)
-    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
-    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
     FileTypeFilter = property(get_FileTypeFilter, None)
+    SettingsIdentifier = property(get_SettingsIdentifier, put_SettingsIdentifier)
+    SuggestedStartLocation = property(get_SuggestedStartLocation, put_SuggestedStartLocation)
+    ViewMode = property(get_ViewMode, put_ViewMode)
 class IFolderPicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.IFolderPicker2'
@@ -421,18 +431,20 @@ class IFolderPickerStatics(ComPtr):
     _iid_ = Guid('{9be34740-7ca1-5942-a3c8-46f2551ecff3}')
     @winrt_commethod(6)
     def CreateForUser(self, user: win32more.Windows.System.User) -> win32more.Windows.Storage.Pickers.FolderPicker: ...
-PickerLocationId = Int32
-PickerLocationId_DocumentsLibrary: PickerLocationId = 0
-PickerLocationId_ComputerFolder: PickerLocationId = 1
-PickerLocationId_Desktop: PickerLocationId = 2
-PickerLocationId_Downloads: PickerLocationId = 3
-PickerLocationId_HomeGroup: PickerLocationId = 4
-PickerLocationId_MusicLibrary: PickerLocationId = 5
-PickerLocationId_PicturesLibrary: PickerLocationId = 6
-PickerLocationId_VideosLibrary: PickerLocationId = 7
-PickerLocationId_Objects3D: PickerLocationId = 8
-PickerLocationId_Unspecified: PickerLocationId = 9
-PickerViewMode = Int32
-PickerViewMode_List: PickerViewMode = 0
-PickerViewMode_Thumbnail: PickerViewMode = 1
+class PickerLocationId(Int32):  # enum
+    DocumentsLibrary = 0
+    ComputerFolder = 1
+    Desktop = 2
+    Downloads = 3
+    HomeGroup = 4
+    MusicLibrary = 5
+    PicturesLibrary = 6
+    VideosLibrary = 7
+    Objects3D = 8
+    Unspecified = 9
+class PickerViewMode(Int32):  # enum
+    List = 0
+    Thumbnail = 1
+
+
 make_ready(__name__)

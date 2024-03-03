@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Sensors.Custom
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class CustomSensor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sensors.Custom.ICustomSensor
@@ -46,11 +33,11 @@ class CustomSensor(ComPtr):
     def GetDeviceSelector(cls: win32more.Windows.Devices.Sensors.Custom.ICustomSensorStatics, interfaceId: Guid) -> WinRT_String: ...
     @winrt_classmethod
     def FromIdAsync(cls: win32more.Windows.Devices.Sensors.Custom.ICustomSensorStatics, sensorId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Sensors.Custom.CustomSensor]: ...
+    DeviceId = property(get_DeviceId, None)
+    MaxBatchSize = property(get_MaxBatchSize, None)
     MinimumReportInterval = property(get_MinimumReportInterval, None)
     ReportInterval = property(get_ReportInterval, put_ReportInterval)
-    DeviceId = property(get_DeviceId, None)
     ReportLatency = property(get_ReportLatency, put_ReportLatency)
-    MaxBatchSize = property(get_MaxBatchSize, None)
 class CustomSensorReading(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sensors.Custom.ICustomSensorReading
@@ -61,9 +48,9 @@ class CustomSensorReading(ComPtr):
     def get_Properties(self: win32more.Windows.Devices.Sensors.Custom.ICustomSensorReading) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
     @winrt_mixinmethod
     def get_PerformanceCount(self: win32more.Windows.Devices.Sensors.Custom.ICustomSensorReading2) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
-    Timestamp = property(get_Timestamp, None)
-    Properties = property(get_Properties, None)
     PerformanceCount = property(get_PerformanceCount, None)
+    Properties = property(get_Properties, None)
+    Timestamp = property(get_Timestamp, None)
 class CustomSensorReadingChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sensors.Custom.ICustomSensorReadingChangedEventArgs
@@ -89,9 +76,9 @@ class ICustomSensor(ComPtr):
     def add_ReadingChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.Sensors.Custom.CustomSensor, win32more.Windows.Devices.Sensors.Custom.CustomSensorReadingChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(12)
     def remove_ReadingChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    DeviceId = property(get_DeviceId, None)
     MinimumReportInterval = property(get_MinimumReportInterval, None)
     ReportInterval = property(get_ReportInterval, put_ReportInterval)
-    DeviceId = property(get_DeviceId, None)
 class ICustomSensor2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sensors.Custom.ICustomSensor2'
@@ -102,8 +89,8 @@ class ICustomSensor2(ComPtr):
     def get_ReportLatency(self) -> UInt32: ...
     @winrt_commethod(8)
     def get_MaxBatchSize(self) -> UInt32: ...
-    ReportLatency = property(get_ReportLatency, put_ReportLatency)
     MaxBatchSize = property(get_MaxBatchSize, None)
+    ReportLatency = property(get_ReportLatency, put_ReportLatency)
 class ICustomSensorReading(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sensors.Custom.ICustomSensorReading'
@@ -112,8 +99,8 @@ class ICustomSensorReading(ComPtr):
     def get_Timestamp(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(7)
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]: ...
-    Timestamp = property(get_Timestamp, None)
     Properties = property(get_Properties, None)
+    Timestamp = property(get_Timestamp, None)
 class ICustomSensorReading2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sensors.Custom.ICustomSensorReading2'
@@ -136,4 +123,6 @@ class ICustomSensorStatics(ComPtr):
     def GetDeviceSelector(self, interfaceId: Guid) -> WinRT_String: ...
     @winrt_commethod(7)
     def FromIdAsync(self, sensorId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Sensors.Custom.CustomSensor]: ...
+
+
 make_ready(__name__)

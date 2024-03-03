@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Appointments
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.ApplicationModel.Email
@@ -24,6 +10,7 @@ import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class IUserDataAccount(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.IUserDataAccount'
@@ -56,12 +43,12 @@ class IUserDataAccount(ComPtr):
     def FindContactListsAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactList]]: ...
     @winrt_commethod(19)
     def FindContactAnnotationListsAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactAnnotationList]]: ...
-    Id = property(get_Id, None)
-    UserDisplayName = property(get_UserDisplayName, put_UserDisplayName)
-    OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
-    Icon = property(get_Icon, None)
     DeviceAccountTypeId = property(get_DeviceAccountTypeId, None)
+    Icon = property(get_Icon, None)
+    Id = property(get_Id, None)
+    OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     PackageFamilyName = property(get_PackageFamilyName, None)
+    UserDisplayName = property(get_UserDisplayName, put_UserDisplayName)
 class IUserDataAccount2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.IUserDataAccount2'
@@ -82,8 +69,8 @@ class IUserDataAccount3(ComPtr):
     def get_DisplayName(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def put_DisplayName(self, value: WinRT_String) -> Void: ...
-    ExplictReadAccessPackageFamilyNames = property(get_ExplictReadAccessPackageFamilyNames, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
+    ExplictReadAccessPackageFamilyNames = property(get_ExplictReadAccessPackageFamilyNames, None)
 class IUserDataAccount4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.IUserDataAccount4'
@@ -105,9 +92,9 @@ class IUserDataAccount4(ComPtr):
     @winrt_commethod(13)
     def put_Icon(self, value: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> Void: ...
     CanShowCreateContactGroup = property(get_CanShowCreateContactGroup, put_CanShowCreateContactGroup)
-    ProviderProperties = property(get_ProviderProperties, None)
-    IsProtectedUnderLock = property(None, put_IsProtectedUnderLock)
     Icon = property(None, put_Icon)
+    IsProtectedUnderLock = property(None, put_IsProtectedUnderLock)
+    ProviderProperties = property(get_ProviderProperties, None)
 class IUserDataAccountManagerForUser(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.IUserDataAccountManagerForUser'
@@ -225,22 +212,22 @@ class UserDataAccount(ComPtr):
     def put_IsProtectedUnderLock(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccount4, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def put_Icon(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccount4, value: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> Void: ...
-    Id = property(get_Id, None)
-    UserDisplayName = property(get_UserDisplayName, put_UserDisplayName)
-    OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
-    Icon = property(get_Icon, put_Icon)
-    DeviceAccountTypeId = property(get_DeviceAccountTypeId, None)
-    PackageFamilyName = property(get_PackageFamilyName, None)
-    EnterpriseId = property(get_EnterpriseId, None)
-    IsProtectedUnderLock = property(get_IsProtectedUnderLock, put_IsProtectedUnderLock)
-    ExplictReadAccessPackageFamilyNames = property(get_ExplictReadAccessPackageFamilyNames, None)
-    DisplayName = property(get_DisplayName, put_DisplayName)
     CanShowCreateContactGroup = property(get_CanShowCreateContactGroup, put_CanShowCreateContactGroup)
+    DeviceAccountTypeId = property(get_DeviceAccountTypeId, None)
+    DisplayName = property(get_DisplayName, put_DisplayName)
+    EnterpriseId = property(get_EnterpriseId, None)
+    ExplictReadAccessPackageFamilyNames = property(get_ExplictReadAccessPackageFamilyNames, None)
+    Icon = property(get_Icon, put_Icon)
+    Id = property(get_Id, None)
+    IsProtectedUnderLock = property(get_IsProtectedUnderLock, put_IsProtectedUnderLock)
+    OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
+    PackageFamilyName = property(get_PackageFamilyName, None)
     ProviderProperties = property(get_ProviderProperties, None)
-UserDataAccountContentKinds = UInt32
-UserDataAccountContentKinds_Email: UserDataAccountContentKinds = 1
-UserDataAccountContentKinds_Contact: UserDataAccountContentKinds = 2
-UserDataAccountContentKinds_Appointment: UserDataAccountContentKinds = 4
+    UserDisplayName = property(get_UserDisplayName, put_UserDisplayName)
+class UserDataAccountContentKinds(UInt32):  # enum
+    Email = 1
+    Contact = 2
+    Appointment = 4
 class UserDataAccountManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.UserDataAccountManager'
@@ -263,10 +250,10 @@ class UserDataAccountManagerForUser(ComPtr):
     @winrt_mixinmethod
     def get_User(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountManagerForUser) -> win32more.Windows.System.User: ...
     User = property(get_User, None)
-UserDataAccountOtherAppReadAccess = Int32
-UserDataAccountOtherAppReadAccess_SystemOnly: UserDataAccountOtherAppReadAccess = 0
-UserDataAccountOtherAppReadAccess_Full: UserDataAccountOtherAppReadAccess = 1
-UserDataAccountOtherAppReadAccess_None: UserDataAccountOtherAppReadAccess = 2
+class UserDataAccountOtherAppReadAccess(Int32):  # enum
+    SystemOnly = 0
+    Full = 1
+    None_ = 2
 class UserDataAccountStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountStore
@@ -285,13 +272,15 @@ class UserDataAccountStore(ComPtr):
     def remove_StoreChanged(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountStore2, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def CreateAccountWithPackageRelativeAppIdAndEnterpriseIdAsync(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountStore3, userDisplayName: WinRT_String, packageRelativeAppId: WinRT_String, enterpriseId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.UserDataAccounts.UserDataAccount]: ...
-UserDataAccountStoreAccessType = Int32
-UserDataAccountStoreAccessType_AllAccountsReadOnly: UserDataAccountStoreAccessType = 0
-UserDataAccountStoreAccessType_AppAccountsReadWrite: UserDataAccountStoreAccessType = 1
+class UserDataAccountStoreAccessType(Int32):  # enum
+    AllAccountsReadOnly = 0
+    AppAccountsReadWrite = 1
 class UserDataAccountStoreChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountStoreChangedEventArgs
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.UserDataAccountStoreChangedEventArgs'
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.ApplicationModel.UserDataAccounts.IUserDataAccountStoreChangedEventArgs) -> win32more.Windows.Foundation.Deferral: ...
+
+
 make_ready(__name__)

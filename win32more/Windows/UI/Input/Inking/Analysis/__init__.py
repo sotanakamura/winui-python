@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.UI.Input.Inking
 import win32more.Windows.UI.Input.Inking.Analysis
+import win32more.Windows.Win32.System.WinRT
 class IInkAnalysisInkBullet(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Input.Inking.Analysis.IInkAnalysisInkBullet'
@@ -36,8 +23,8 @@ class IInkAnalysisInkDrawing(ComPtr):
     def get_Center(self) -> win32more.Windows.Foundation.Point: ...
     @winrt_commethod(8)
     def get_Points(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Foundation.Point]: ...
-    DrawingKind = property(get_DrawingKind, None)
     Center = property(get_Center, None)
+    DrawingKind = property(get_DrawingKind, None)
     Points = property(get_Points, None)
 class IInkAnalysisInkWord(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -57,8 +44,8 @@ class IInkAnalysisLine(ComPtr):
     def get_RecognizedText(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_IndentLevel(self) -> Int32: ...
-    RecognizedText = property(get_RecognizedText, None)
     IndentLevel = property(get_IndentLevel, None)
+    RecognizedText = property(get_RecognizedText, None)
 class IInkAnalysisListItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Input.Inking.Analysis.IInkAnalysisListItem'
@@ -84,12 +71,12 @@ class IInkAnalysisNode(ComPtr):
     def get_Parent(self) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_commethod(12)
     def GetStrokeIds(self) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class IInkAnalysisParagraph(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Input.Inking.Analysis.IInkAnalysisParagraph'
@@ -152,22 +139,22 @@ class IInkAnalyzerFactory(ComPtr):
     _iid_ = Guid('{29138686-1963-49d8-9589-e14384c769e3}')
     @winrt_commethod(6)
     def CreateAnalyzer(self) -> win32more.Windows.UI.Input.Inking.Analysis.InkAnalyzer: ...
-InkAnalysisDrawingKind = Int32
-InkAnalysisDrawingKind_Drawing: InkAnalysisDrawingKind = 0
-InkAnalysisDrawingKind_Circle: InkAnalysisDrawingKind = 1
-InkAnalysisDrawingKind_Ellipse: InkAnalysisDrawingKind = 2
-InkAnalysisDrawingKind_Triangle: InkAnalysisDrawingKind = 3
-InkAnalysisDrawingKind_IsoscelesTriangle: InkAnalysisDrawingKind = 4
-InkAnalysisDrawingKind_EquilateralTriangle: InkAnalysisDrawingKind = 5
-InkAnalysisDrawingKind_RightTriangle: InkAnalysisDrawingKind = 6
-InkAnalysisDrawingKind_Quadrilateral: InkAnalysisDrawingKind = 7
-InkAnalysisDrawingKind_Rectangle: InkAnalysisDrawingKind = 8
-InkAnalysisDrawingKind_Square: InkAnalysisDrawingKind = 9
-InkAnalysisDrawingKind_Diamond: InkAnalysisDrawingKind = 10
-InkAnalysisDrawingKind_Trapezoid: InkAnalysisDrawingKind = 11
-InkAnalysisDrawingKind_Parallelogram: InkAnalysisDrawingKind = 12
-InkAnalysisDrawingKind_Pentagon: InkAnalysisDrawingKind = 13
-InkAnalysisDrawingKind_Hexagon: InkAnalysisDrawingKind = 14
+class InkAnalysisDrawingKind(Int32):  # enum
+    Drawing = 0
+    Circle = 1
+    Ellipse = 2
+    Triangle = 3
+    IsoscelesTriangle = 4
+    EquilateralTriangle = 5
+    RightTriangle = 6
+    Quadrilateral = 7
+    Rectangle = 8
+    Square = 9
+    Diamond = 10
+    Trapezoid = 11
+    Parallelogram = 12
+    Pentagon = 13
+    Hexagon = 14
 class InkAnalysisInkBullet(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisInkBullet
@@ -188,13 +175,13 @@ class InkAnalysisInkBullet(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalysisInkDrawing(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisInkDrawing
@@ -219,15 +206,15 @@ class InkAnalysisInkDrawing(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    DrawingKind = property(get_DrawingKind, None)
+    BoundingRect = property(get_BoundingRect, None)
     Center = property(get_Center, None)
-    Points = property(get_Points, None)
+    Children = property(get_Children, None)
+    DrawingKind = property(get_DrawingKind, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    Points = property(get_Points, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalysisInkWord(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisInkWord
@@ -250,14 +237,14 @@ class InkAnalysisInkWord(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
-    TextAlternates = property(get_TextAlternates, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
+    TextAlternates = property(get_TextAlternates, None)
 class InkAnalysisLine(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisLine
@@ -280,14 +267,14 @@ class InkAnalysisLine(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
-    IndentLevel = property(get_IndentLevel, None)
-    Id = property(get_Id, None)
-    Kind = property(get_Kind, None)
     BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
     Children = property(get_Children, None)
+    Id = property(get_Id, None)
+    IndentLevel = property(get_IndentLevel, None)
+    Kind = property(get_Kind, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalysisListItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisListItem
@@ -308,13 +295,13 @@ class InkAnalysisListItem(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalysisNode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode
@@ -333,22 +320,22 @@ class InkAnalysisNode(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
-InkAnalysisNodeKind = Int32
-InkAnalysisNodeKind_UnclassifiedInk: InkAnalysisNodeKind = 0
-InkAnalysisNodeKind_Root: InkAnalysisNodeKind = 1
-InkAnalysisNodeKind_WritingRegion: InkAnalysisNodeKind = 2
-InkAnalysisNodeKind_Paragraph: InkAnalysisNodeKind = 3
-InkAnalysisNodeKind_Line: InkAnalysisNodeKind = 4
-InkAnalysisNodeKind_InkWord: InkAnalysisNodeKind = 5
-InkAnalysisNodeKind_InkBullet: InkAnalysisNodeKind = 6
-InkAnalysisNodeKind_InkDrawing: InkAnalysisNodeKind = 7
-InkAnalysisNodeKind_ListItem: InkAnalysisNodeKind = 8
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
+class InkAnalysisNodeKind(Int32):  # enum
+    UnclassifiedInk = 0
+    Root = 1
+    WritingRegion = 2
+    Paragraph = 3
+    Line = 4
+    InkWord = 5
+    InkBullet = 6
+    InkDrawing = 7
+    ListItem = 8
 class InkAnalysisParagraph(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisParagraph
@@ -369,13 +356,13 @@ class InkAnalysisParagraph(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalysisResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisResult
@@ -405,20 +392,20 @@ class InkAnalysisRoot(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
-InkAnalysisStatus = Int32
-InkAnalysisStatus_Updated: InkAnalysisStatus = 0
-InkAnalysisStatus_Unchanged: InkAnalysisStatus = 1
-InkAnalysisStrokeKind = Int32
-InkAnalysisStrokeKind_Auto: InkAnalysisStrokeKind = 0
-InkAnalysisStrokeKind_Writing: InkAnalysisStrokeKind = 1
-InkAnalysisStrokeKind_Drawing: InkAnalysisStrokeKind = 2
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
+class InkAnalysisStatus(Int32):  # enum
+    Updated = 0
+    Unchanged = 1
+class InkAnalysisStrokeKind(Int32):  # enum
+    Auto = 0
+    Writing = 1
+    Drawing = 2
 class InkAnalysisWritingRegion(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisWritingRegion
@@ -439,17 +426,24 @@ class InkAnalysisWritingRegion(ComPtr):
     def get_Parent(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode: ...
     @winrt_mixinmethod
     def GetStrokeIds(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalysisNode) -> win32more.Windows.Foundation.Collections.IVectorView[UInt32]: ...
-    RecognizedText = property(get_RecognizedText, None)
+    BoundingRect = property(get_BoundingRect, None)
+    Children = property(get_Children, None)
     Id = property(get_Id, None)
     Kind = property(get_Kind, None)
-    BoundingRect = property(get_BoundingRect, None)
-    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
-    Children = property(get_Children, None)
     Parent = property(get_Parent, None)
+    RecognizedText = property(get_RecognizedText, None)
+    RotatedBoundingRect = property(get_RotatedBoundingRect, None)
 class InkAnalyzer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalyzer
     _classid_ = 'Windows.UI.Input.Inking.Analysis.InkAnalyzer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Inking.Analysis.InkAnalyzer.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Inking.Analysis.InkAnalyzer: ...
     @winrt_mixinmethod
@@ -474,4 +468,6 @@ class InkAnalyzer(ComPtr):
     def AnalyzeAsync(self: win32more.Windows.UI.Input.Inking.Analysis.IInkAnalyzer) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.UI.Input.Inking.Analysis.InkAnalysisResult]: ...
     AnalysisRoot = property(get_AnalysisRoot, None)
     IsAnalyzing = property(get_IsAnalyzing, None)
+
+
 make_ready(__name__)

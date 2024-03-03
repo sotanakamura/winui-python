@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Background
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -24,6 +10,7 @@ import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
 import win32more.Windows.UI.Notifications
 import win32more.Windows.Web
+import win32more.Windows.Win32.System.WinRT
 class BackgroundDownloadProgress(EasyCastStructure):
     BytesReceived: UInt64
     TotalBytesToReceive: UInt64
@@ -34,10 +21,19 @@ class BackgroundDownloader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloader
     _classid_ = 'Windows.Networking.BackgroundTransfer.BackgroundDownloader'
-    @winrt_factorymethod
-    def CreateWithCompletionGroup(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloaderFactory, completionGroup: win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundDownloader: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundDownloader.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundDownloader.CreateWithCompletionGroup(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundDownloader: ...
+    @winrt_factorymethod
+    def CreateWithCompletionGroup(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloaderFactory, completionGroup: win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundDownloader: ...
     @winrt_mixinmethod
     def CreateDownload(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloader, uri: win32more.Windows.Foundation.Uri, resultFile: win32more.Windows.Storage.IStorageFile) -> win32more.Windows.Networking.BackgroundTransfer.DownloadOperation: ...
     @winrt_mixinmethod
@@ -96,24 +92,31 @@ class BackgroundDownloader(ComPtr):
     def GetCurrentDownloadsAsync(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloaderStaticMethods) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Networking.BackgroundTransfer.DownloadOperation]]: ...
     @winrt_classmethod
     def GetCurrentDownloadsForGroupAsync(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundDownloaderStaticMethods, group: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Networking.BackgroundTransfer.DownloadOperation]]: ...
-    ServerCredential = property(get_ServerCredential, put_ServerCredential)
-    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
-    Method = property(get_Method, put_Method)
-    Group = property(get_Group, put_Group)
-    CostPolicy = property(get_CostPolicy, put_CostPolicy)
-    TransferGroup = property(get_TransferGroup, put_TransferGroup)
-    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
-    FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
-    SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
-    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
     CompletionGroup = property(get_CompletionGroup, None)
-BackgroundTransferBehavior = Int32
-BackgroundTransferBehavior_Parallel: BackgroundTransferBehavior = 0
-BackgroundTransferBehavior_Serialized: BackgroundTransferBehavior = 1
+    CostPolicy = property(get_CostPolicy, put_CostPolicy)
+    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
+    FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
+    Group = property(get_Group, put_Group)
+    Method = property(get_Method, put_Method)
+    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
+    ServerCredential = property(get_ServerCredential, put_ServerCredential)
+    SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
+    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    TransferGroup = property(get_TransferGroup, put_TransferGroup)
+class BackgroundTransferBehavior(Int32):  # enum
+    Parallel = 0
+    Serialized = 1
 class BackgroundTransferCompletionGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroup
     _classid_ = 'Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup: ...
     @winrt_mixinmethod
@@ -122,8 +125,8 @@ class BackgroundTransferCompletionGroup(ComPtr):
     def get_IsEnabled(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroup) -> Boolean: ...
     @winrt_mixinmethod
     def Enable(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroup) -> Void: ...
-    Trigger = property(get_Trigger, None)
     IsEnabled = property(get_IsEnabled, None)
+    Trigger = property(get_Trigger, None)
 class BackgroundTransferCompletionGroupTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroupTriggerDetails
@@ -138,6 +141,17 @@ class BackgroundTransferContentPart(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferContentPart
     _classid_ = 'Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart.CreateWithName(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart.CreateWithNameAndFileName(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart: ...
     @winrt_factorymethod
@@ -150,10 +164,10 @@ class BackgroundTransferContentPart(ComPtr):
     def SetText(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferContentPart, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def SetFile(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferContentPart, value: win32more.Windows.Storage.IStorageFile) -> Void: ...
-BackgroundTransferCostPolicy = Int32
-BackgroundTransferCostPolicy_Default: BackgroundTransferCostPolicy = 0
-BackgroundTransferCostPolicy_UnrestrictedOnly: BackgroundTransferCostPolicy = 1
-BackgroundTransferCostPolicy_Always: BackgroundTransferCostPolicy = 2
+class BackgroundTransferCostPolicy(Int32):  # enum
+    Default = 0
+    UnrestrictedOnly = 1
+    Always = 2
 class BackgroundTransferError(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.BackgroundTransferError'
@@ -176,10 +190,10 @@ class BackgroundTransferGroup(ComPtr):
     def CreateGroup(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferGroupStatics, name: WinRT_String) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferGroup: ...
     Name = property(get_Name, None)
     TransferBehavior = property(get_TransferBehavior, put_TransferBehavior)
-BackgroundTransferPriority = Int32
-BackgroundTransferPriority_Default: BackgroundTransferPriority = 0
-BackgroundTransferPriority_High: BackgroundTransferPriority = 1
-BackgroundTransferPriority_Low: BackgroundTransferPriority = 2
+class BackgroundTransferPriority(Int32):  # enum
+    Default = 0
+    High = 1
+    Low = 2
 class BackgroundTransferRangesDownloadedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferRangesDownloadedEventArgs
@@ -190,19 +204,19 @@ class BackgroundTransferRangesDownloadedEventArgs(ComPtr):
     def get_AddedRanges(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferRangesDownloadedEventArgs) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferFileRange]: ...
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundTransferRangesDownloadedEventArgs) -> win32more.Windows.Foundation.Deferral: ...
-    WasDownloadRestarted = property(get_WasDownloadRestarted, None)
     AddedRanges = property(get_AddedRanges, None)
-BackgroundTransferStatus = Int32
-BackgroundTransferStatus_Idle: BackgroundTransferStatus = 0
-BackgroundTransferStatus_Running: BackgroundTransferStatus = 1
-BackgroundTransferStatus_PausedByApplication: BackgroundTransferStatus = 2
-BackgroundTransferStatus_PausedCostedNetwork: BackgroundTransferStatus = 3
-BackgroundTransferStatus_PausedNoNetwork: BackgroundTransferStatus = 4
-BackgroundTransferStatus_Completed: BackgroundTransferStatus = 5
-BackgroundTransferStatus_Canceled: BackgroundTransferStatus = 6
-BackgroundTransferStatus_Error: BackgroundTransferStatus = 7
-BackgroundTransferStatus_PausedRecoverableWebErrorStatus: BackgroundTransferStatus = 8
-BackgroundTransferStatus_PausedSystemPolicy: BackgroundTransferStatus = 32
+    WasDownloadRestarted = property(get_WasDownloadRestarted, None)
+class BackgroundTransferStatus(Int32):  # enum
+    Idle = 0
+    Running = 1
+    PausedByApplication = 2
+    PausedCostedNetwork = 3
+    PausedNoNetwork = 4
+    Completed = 5
+    Canceled = 6
+    Error = 7
+    PausedRecoverableWebErrorStatus = 8
+    PausedSystemPolicy = 32
 class BackgroundUploadProgress(EasyCastStructure):
     BytesReceived: UInt64
     BytesSent: UInt64
@@ -215,10 +229,19 @@ class BackgroundUploader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploader
     _classid_ = 'Windows.Networking.BackgroundTransfer.BackgroundUploader'
-    @winrt_factorymethod
-    def CreateWithCompletionGroup(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploaderFactory, completionGroup: win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundUploader: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundUploader.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Networking.BackgroundTransfer.BackgroundUploader.CreateWithCompletionGroup(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundUploader: ...
+    @winrt_factorymethod
+    def CreateWithCompletionGroup(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploaderFactory, completionGroup: win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCompletionGroup) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundUploader: ...
     @winrt_mixinmethod
     def CreateUpload(self: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploader, uri: win32more.Windows.Foundation.Uri, sourceFile: win32more.Windows.Storage.IStorageFile) -> win32more.Windows.Networking.BackgroundTransfer.UploadOperation: ...
     @winrt_mixinmethod
@@ -281,17 +304,17 @@ class BackgroundUploader(ComPtr):
     def GetCurrentUploadsAsync(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploaderStaticMethods) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Networking.BackgroundTransfer.UploadOperation]]: ...
     @winrt_classmethod
     def GetCurrentUploadsForGroupAsync(cls: win32more.Windows.Networking.BackgroundTransfer.IBackgroundUploaderStaticMethods, group: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Networking.BackgroundTransfer.UploadOperation]]: ...
-    ServerCredential = property(get_ServerCredential, put_ServerCredential)
-    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
-    Method = property(get_Method, put_Method)
-    Group = property(get_Group, put_Group)
-    CostPolicy = property(get_CostPolicy, put_CostPolicy)
-    TransferGroup = property(get_TransferGroup, put_TransferGroup)
-    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
-    FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
-    SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
-    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
     CompletionGroup = property(get_CompletionGroup, None)
+    CostPolicy = property(get_CostPolicy, put_CostPolicy)
+    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
+    FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
+    Group = property(get_Group, put_Group)
+    Method = property(get_Method, put_Method)
+    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
+    ServerCredential = property(get_ServerCredential, put_ServerCredential)
+    SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
+    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    TransferGroup = property(get_TransferGroup, put_TransferGroup)
 class _ContentPrefetcher_Meta_(ComPtr.__class__):
     pass
 class ContentPrefetcher(ComPtr, metaclass=_ContentPrefetcher_Meta_):
@@ -305,9 +328,9 @@ class ContentPrefetcher(ComPtr, metaclass=_ContentPrefetcher_Meta_):
     def put_IndirectContentUri(cls: win32more.Windows.Networking.BackgroundTransfer.IContentPrefetcher, value: win32more.Windows.Foundation.Uri) -> Void: ...
     @winrt_classmethod
     def get_IndirectContentUri(cls: win32more.Windows.Networking.BackgroundTransfer.IContentPrefetcher) -> win32more.Windows.Foundation.Uri: ...
-    _ContentPrefetcher_Meta_.LastSuccessfulPrefetchTime = property(get_LastSuccessfulPrefetchTime.__wrapped__, None)
     _ContentPrefetcher_Meta_.ContentUris = property(get_ContentUris.__wrapped__, None)
     _ContentPrefetcher_Meta_.IndirectContentUri = property(get_IndirectContentUri.__wrapped__, put_IndirectContentUri.__wrapped__)
+    _ContentPrefetcher_Meta_.LastSuccessfulPrefetchTime = property(get_LastSuccessfulPrefetchTime.__wrapped__, None)
 class DownloadOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IDownloadOperation
@@ -370,18 +393,18 @@ class DownloadOperation(ComPtr):
     def SetRequestHeader(self: win32more.Windows.Networking.BackgroundTransfer.IDownloadOperation5, headerName: WinRT_String, headerValue: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def RemoveRequestHeader(self: win32more.Windows.Networking.BackgroundTransfer.IDownloadOperation5, headerName: WinRT_String) -> Void: ...
-    ResultFile = property(get_ResultFile, None)
-    Progress = property(get_Progress, None)
-    Guid = property(get_Guid, None)
-    RequestedUri = property(get_RequestedUri, put_RequestedUri)
-    Method = property(get_Method, None)
-    Group = property(get_Group, None)
     CostPolicy = property(get_CostPolicy, put_CostPolicy)
-    Priority = property(get_Priority, put_Priority)
-    TransferGroup = property(get_TransferGroup, None)
-    IsRandomAccessRequired = property(get_IsRandomAccessRequired, put_IsRandomAccessRequired)
-    RecoverableWebErrorStatuses = property(get_RecoverableWebErrorStatuses, None)
     CurrentWebErrorStatus = property(get_CurrentWebErrorStatus, None)
+    Group = property(get_Group, None)
+    Guid = property(get_Guid, None)
+    IsRandomAccessRequired = property(get_IsRandomAccessRequired, put_IsRandomAccessRequired)
+    Method = property(get_Method, None)
+    Priority = property(get_Priority, put_Priority)
+    Progress = property(get_Progress, None)
+    RecoverableWebErrorStatuses = property(get_RecoverableWebErrorStatuses, None)
+    RequestedUri = property(get_RequestedUri, put_RequestedUri)
+    ResultFile = property(get_ResultFile, None)
+    TransferGroup = property(get_TransferGroup, None)
 class IBackgroundDownloader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundDownloader'
@@ -416,11 +439,11 @@ class IBackgroundDownloader2(ComPtr):
     def get_FailureTileNotification(self) -> win32more.Windows.UI.Notifications.TileNotification: ...
     @winrt_commethod(15)
     def put_FailureTileNotification(self, value: win32more.Windows.UI.Notifications.TileNotification) -> Void: ...
-    TransferGroup = property(get_TransferGroup, put_TransferGroup)
-    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
     FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
     SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
-    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
+    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    TransferGroup = property(get_TransferGroup, put_TransferGroup)
 class IBackgroundDownloader3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundDownloader3'
@@ -480,11 +503,11 @@ class IBackgroundTransferBase(ComPtr):
     def get_CostPolicy(self) -> win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCostPolicy: ...
     @winrt_commethod(16)
     def put_CostPolicy(self, value: win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferCostPolicy) -> Void: ...
-    ServerCredential = property(get_ServerCredential, put_ServerCredential)
-    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
-    Method = property(get_Method, put_Method)
-    Group = property(get_Group, put_Group)
     CostPolicy = property(get_CostPolicy, put_CostPolicy)
+    Group = property(get_Group, put_Group)
+    Method = property(get_Method, put_Method)
+    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
+    ServerCredential = property(get_ServerCredential, put_ServerCredential)
 class IBackgroundTransferCompletionGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroup'
@@ -495,8 +518,8 @@ class IBackgroundTransferCompletionGroup(ComPtr):
     def get_IsEnabled(self) -> Boolean: ...
     @winrt_commethod(8)
     def Enable(self) -> Void: ...
-    Trigger = property(get_Trigger, None)
     IsEnabled = property(get_IsEnabled, None)
+    Trigger = property(get_Trigger, None)
 class IBackgroundTransferCompletionGroupTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundTransferCompletionGroupTriggerDetails'
@@ -569,11 +592,11 @@ class IBackgroundTransferOperation(ComPtr):
     def GetResultStreamAt(self, position: UInt64) -> win32more.Windows.Storage.Streams.IInputStream: ...
     @winrt_commethod(13)
     def GetResponseInformation(self) -> win32more.Windows.Networking.BackgroundTransfer.ResponseInformation: ...
-    Guid = property(get_Guid, None)
-    RequestedUri = property(get_RequestedUri, None)
-    Method = property(get_Method, None)
-    Group = property(get_Group, None)
     CostPolicy = property(get_CostPolicy, put_CostPolicy)
+    Group = property(get_Group, None)
+    Guid = property(get_Guid, None)
+    Method = property(get_Method, None)
+    RequestedUri = property(get_RequestedUri, None)
 class IBackgroundTransferOperationPriority(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundTransferOperationPriority'
@@ -593,8 +616,8 @@ class IBackgroundTransferRangesDownloadedEventArgs(ComPtr):
     def get_AddedRanges(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Networking.BackgroundTransfer.BackgroundTransferFileRange]: ...
     @winrt_commethod(8)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
-    WasDownloadRestarted = property(get_WasDownloadRestarted, None)
     AddedRanges = property(get_AddedRanges, None)
+    WasDownloadRestarted = property(get_WasDownloadRestarted, None)
 class IBackgroundUploader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundUploader'
@@ -633,11 +656,11 @@ class IBackgroundUploader2(ComPtr):
     def get_FailureTileNotification(self) -> win32more.Windows.UI.Notifications.TileNotification: ...
     @winrt_commethod(15)
     def put_FailureTileNotification(self, value: win32more.Windows.UI.Notifications.TileNotification) -> Void: ...
-    TransferGroup = property(get_TransferGroup, put_TransferGroup)
-    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
     FailureToastNotification = property(get_FailureToastNotification, put_FailureToastNotification)
     SuccessTileNotification = property(get_SuccessTileNotification, put_SuccessTileNotification)
-    FailureTileNotification = property(get_FailureTileNotification, put_FailureTileNotification)
+    SuccessToastNotification = property(get_SuccessToastNotification, put_SuccessToastNotification)
+    TransferGroup = property(get_TransferGroup, put_TransferGroup)
 class IBackgroundUploader3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IBackgroundUploader3'
@@ -706,8 +729,8 @@ class IDownloadOperation(ComPtr):
     def Pause(self) -> Void: ...
     @winrt_commethod(11)
     def Resume(self) -> Void: ...
-    ResultFile = property(get_ResultFile, None)
     Progress = property(get_Progress, None)
+    ResultFile = property(get_ResultFile, None)
 class IDownloadOperation2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IDownloadOperation2'
@@ -737,10 +760,10 @@ class IDownloadOperation3(ComPtr):
     def get_RecoverableWebErrorStatuses(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Web.WebErrorStatus]: ...
     @winrt_commethod(14)
     def get_CurrentWebErrorStatus(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Web.WebErrorStatus]: ...
-    IsRandomAccessRequired = property(get_IsRandomAccessRequired, put_IsRandomAccessRequired)
-    RequestedUri = property(None, put_RequestedUri)
-    RecoverableWebErrorStatuses = property(get_RecoverableWebErrorStatuses, None)
     CurrentWebErrorStatus = property(get_CurrentWebErrorStatus, None)
+    IsRandomAccessRequired = property(get_IsRandomAccessRequired, put_IsRandomAccessRequired)
+    RecoverableWebErrorStatuses = property(get_RecoverableWebErrorStatuses, None)
+    RequestedUri = property(None, put_RequestedUri)
 class IDownloadOperation4(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IDownloadOperation4'
@@ -767,10 +790,10 @@ class IResponseInformation(ComPtr):
     def get_StatusCode(self) -> UInt32: ...
     @winrt_commethod(9)
     def get_Headers(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, WinRT_String]: ...
-    IsResumable = property(get_IsResumable, None)
     ActualUri = property(get_ActualUri, None)
-    StatusCode = property(get_StatusCode, None)
     Headers = property(get_Headers, None)
+    IsResumable = property(get_IsResumable, None)
+    StatusCode = property(get_StatusCode, None)
 class IUnconstrainedTransferRequestResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IUnconstrainedTransferRequestResult'
@@ -790,8 +813,8 @@ class IUploadOperation(ComPtr):
     def StartAsync(self) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Networking.BackgroundTransfer.UploadOperation, win32more.Windows.Networking.BackgroundTransfer.UploadOperation]: ...
     @winrt_commethod(9)
     def AttachAsync(self) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Networking.BackgroundTransfer.UploadOperation, win32more.Windows.Networking.BackgroundTransfer.UploadOperation]: ...
-    SourceFile = property(get_SourceFile, None)
     Progress = property(get_Progress, None)
+    SourceFile = property(get_SourceFile, None)
 class IUploadOperation2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.BackgroundTransfer.IUploadOperation2'
@@ -825,10 +848,10 @@ class ResponseInformation(ComPtr):
     def get_StatusCode(self: win32more.Windows.Networking.BackgroundTransfer.IResponseInformation) -> UInt32: ...
     @winrt_mixinmethod
     def get_Headers(self: win32more.Windows.Networking.BackgroundTransfer.IResponseInformation) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, WinRT_String]: ...
-    IsResumable = property(get_IsResumable, None)
     ActualUri = property(get_ActualUri, None)
-    StatusCode = property(get_StatusCode, None)
     Headers = property(get_Headers, None)
+    IsResumable = property(get_IsResumable, None)
+    StatusCode = property(get_StatusCode, None)
 class UnconstrainedTransferRequestResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.BackgroundTransfer.IUnconstrainedTransferRequestResult
@@ -876,13 +899,15 @@ class UploadOperation(ComPtr):
     def SetRequestHeader(self: win32more.Windows.Networking.BackgroundTransfer.IUploadOperation4, headerName: WinRT_String, headerValue: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def RemoveRequestHeader(self: win32more.Windows.Networking.BackgroundTransfer.IUploadOperation4, headerName: WinRT_String) -> Void: ...
-    SourceFile = property(get_SourceFile, None)
-    Progress = property(get_Progress, None)
-    Guid = property(get_Guid, None)
-    RequestedUri = property(get_RequestedUri, None)
-    Method = property(get_Method, None)
-    Group = property(get_Group, None)
     CostPolicy = property(get_CostPolicy, put_CostPolicy)
+    Group = property(get_Group, None)
+    Guid = property(get_Guid, None)
+    Method = property(get_Method, None)
     Priority = property(get_Priority, put_Priority)
+    Progress = property(get_Progress, None)
+    RequestedUri = property(get_RequestedUri, None)
+    SourceFile = property(get_SourceFile, None)
     TransferGroup = property(get_TransferGroup, None)
+
+
 make_ready(__name__)

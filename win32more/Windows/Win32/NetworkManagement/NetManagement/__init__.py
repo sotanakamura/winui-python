@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Data.Xml.MsXml
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.NetworkManagement.NetManagement
@@ -1035,6 +1035,10 @@ NETLOG_PassThruFilterError_Request_AdminOverride: UInt32 = 5834
 NETLOG_PassThruFilterError_Request_Blocked: UInt32 = 5835
 NETLOG_NetlogonRpcBacklogLimitSet: UInt32 = 5836
 NETLOG_NetlogonRpcBacklogLimitFailure: UInt32 = 5837
+NETLOG_NetlogonRpcSigningClient: UInt32 = 5838
+NETLOG_NetlogonRpcSigningTrust: UInt32 = 5839
+NETLOG_NetlogonRc4Allowed: UInt32 = 5840
+NETLOG_NetlogonRc4Denied: UInt32 = 5841
 NETSETUP_ACCT_DELETE: UInt32 = 4
 NETSETUP_DNS_NAME_CHANGES_ONLY: UInt32 = 4096
 NETSETUP_INSTALL_INVOCATION: UInt32 = 262144
@@ -2979,14 +2983,14 @@ class MPR_PROTOCOL_0(EasyCastStructure):
 class MSA_INFO_0(EasyCastStructure):
     State: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE
 MSA_INFO_LEVEL = Int32
-MSA_INFO_LEVEL_MsaInfoLevel0: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_LEVEL = 0
-MSA_INFO_LEVEL_MsaInfoLevelMax: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_LEVEL = 1
+MsaInfoLevel0: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_LEVEL = 0
+MsaInfoLevelMax: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_LEVEL = 1
 MSA_INFO_STATE = Int32
-MSA_INFO_STATE_MsaInfoNotExist: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 1
-MSA_INFO_STATE_MsaInfoNotService: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 2
-MSA_INFO_STATE_MsaInfoCannotInstall: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 3
-MSA_INFO_STATE_MsaInfoCanInstall: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 4
-MSA_INFO_STATE_MsaInfoInstalled: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 5
+MsaInfoNotExist: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 1
+MsaInfoNotService: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 2
+MsaInfoCannotInstall: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 3
+MsaInfoCanInstall: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 4
+MsaInfoInstalled: win32more.Windows.Win32.NetworkManagement.NetManagement.MSA_INFO_STATE = 5
 class MSG_INFO_0(EasyCastStructure):
     msgi0_name: win32more.Windows.Win32.Foundation.PWSTR
 class MSG_INFO_1(EasyCastStructure):
@@ -3019,17 +3023,17 @@ class NETLOGON_INFO_4(EasyCastStructure):
     netlog4_trusted_dc_name: win32more.Windows.Win32.Foundation.PWSTR
     netlog4_trusted_domain_name: win32more.Windows.Win32.Foundation.PWSTR
 NETSETUP_JOIN_STATUS = Int32
-NETSETUP_JOIN_STATUS_NetSetupUnknownStatus: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 0
-NETSETUP_JOIN_STATUS_NetSetupUnjoined: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 1
-NETSETUP_JOIN_STATUS_NetSetupWorkgroupName: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 2
-NETSETUP_JOIN_STATUS_NetSetupDomainName: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 3
+NetSetupUnknownStatus: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 0
+NetSetupUnjoined: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 1
+NetSetupWorkgroupName: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 2
+NetSetupDomainName: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_JOIN_STATUS = 3
 NETSETUP_NAME_TYPE = Int32
-NETSETUP_NAME_TYPE_NetSetupUnknown: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 0
-NETSETUP_NAME_TYPE_NetSetupMachine: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 1
-NETSETUP_NAME_TYPE_NetSetupWorkgroup: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 2
-NETSETUP_NAME_TYPE_NetSetupDomain: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 3
-NETSETUP_NAME_TYPE_NetSetupNonExistentDomain: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 4
-NETSETUP_NAME_TYPE_NetSetupDnsMachine: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 5
+NetSetupUnknown: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 0
+NetSetupMachine: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 1
+NetSetupWorkgroup: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 2
+NetSetupDomain: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 3
+NetSetupNonExistentDomain: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 4
+NetSetupDnsMachine: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_NAME_TYPE = 5
 NETSETUP_PROVISION = UInt32
 NETSETUP_PROVISION_DOWNLEVEL_PRIV_SUPPORT: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_PROVISION = 1
 NETSETUP_PROVISION_REUSE_ACCOUNT: win32more.Windows.Win32.NetworkManagement.NetManagement.NETSETUP_PROVISION = 2
@@ -3065,10 +3069,10 @@ NSF_WINNT_SVR_UPGRADE: win32more.Windows.Win32.NetworkManagement.NetManagement.N
 NSF_WINNT_SBS_UPGRADE: win32more.Windows.Win32.NetworkManagement.NetManagement.NETWORK_UPGRADE_TYPE = 256
 NSF_COMPONENT_UPDATE: win32more.Windows.Win32.NetworkManagement.NetManagement.NETWORK_UPGRADE_TYPE = 512
 NET_COMPUTER_NAME_TYPE = Int32
-NET_COMPUTER_NAME_TYPE_NetPrimaryComputerName: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 0
-NET_COMPUTER_NAME_TYPE_NetAlternateComputerNames: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 1
-NET_COMPUTER_NAME_TYPE_NetAllComputerNames: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 2
-NET_COMPUTER_NAME_TYPE_NetComputerNameTypeMax: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 3
+NetPrimaryComputerName: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 0
+NetAlternateComputerNames: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 1
+NetAllComputerNames: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 2
+NetComputerNameTypeMax: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_COMPUTER_NAME_TYPE = 3
 class NET_DISPLAY_GROUP(EasyCastStructure):
     grpi3_name: win32more.Windows.Win32.Foundation.PWSTR
     grpi3_comment: win32more.Windows.Win32.Foundation.PWSTR
@@ -3177,9 +3181,9 @@ class NET_VALIDATE_PASSWORD_RESET_INPUT_ARG(EasyCastStructure):
     PasswordMustChangeAtNextLogon: win32more.Windows.Win32.Foundation.BOOLEAN
     ClearLockout: win32more.Windows.Win32.Foundation.BOOLEAN
 NET_VALIDATE_PASSWORD_TYPE = Int32
-NET_VALIDATE_PASSWORD_TYPE_NetValidateAuthentication: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 1
-NET_VALIDATE_PASSWORD_TYPE_NetValidatePasswordChange: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 2
-NET_VALIDATE_PASSWORD_TYPE_NetValidatePasswordReset: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 3
+NetValidateAuthentication: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 1
+NetValidatePasswordChange: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 2
+NetValidatePasswordReset: win32more.Windows.Win32.NetworkManagement.NetManagement.NET_VALIDATE_PASSWORD_TYPE = 3
 class NET_VALIDATE_PERSISTED_FIELDS(EasyCastStructure):
     PresentFields: UInt32
     PasswordLastSet: win32more.Windows.Win32.Foundation.FILETIME

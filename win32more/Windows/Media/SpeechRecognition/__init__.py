@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Globalization
 import win32more.Windows.Media.SpeechRecognition
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.WinRT
 class ISpeechContinuousRecognitionCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechContinuousRecognitionCompletedEventArgs'
@@ -89,9 +76,9 @@ class ISpeechRecognitionConstraint(ComPtr):
     @winrt_commethod(12)
     def put_Probability(self, value: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability) -> Void: ...
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    Probability = property(get_Probability, put_Probability)
     Tag = property(get_Tag, put_Tag)
     Type = property(get_Type, None)
-    Probability = property(get_Probability, put_Probability)
 class ISpeechRecognitionGrammarFileConstraint(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechRecognitionGrammarFileConstraint'
@@ -163,13 +150,13 @@ class ISpeechRecognitionResult(ComPtr):
     def get_RulePath(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_commethod(13)
     def get_RawConfidence(self) -> Double: ...
+    Confidence = property(get_Confidence, None)
+    Constraint = property(get_Constraint, None)
+    RawConfidence = property(get_RawConfidence, None)
+    RulePath = property(get_RulePath, None)
+    SemanticInterpretation = property(get_SemanticInterpretation, None)
     Status = property(get_Status, None)
     Text = property(get_Text, None)
-    Confidence = property(get_Confidence, None)
-    SemanticInterpretation = property(get_SemanticInterpretation, None)
-    Constraint = property(get_Constraint, None)
-    RulePath = property(get_RulePath, None)
-    RawConfidence = property(get_RawConfidence, None)
 class ISpeechRecognitionResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechRecognitionResult2'
@@ -178,8 +165,8 @@ class ISpeechRecognitionResult2(ComPtr):
     def get_PhraseStartTime(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(7)
     def get_PhraseDuration(self) -> win32more.Windows.Foundation.TimeSpan: ...
-    PhraseStartTime = property(get_PhraseStartTime, None)
     PhraseDuration = property(get_PhraseDuration, None)
+    PhraseStartTime = property(get_PhraseStartTime, None)
 class ISpeechRecognitionSemanticInterpretation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechRecognitionSemanticInterpretation'
@@ -235,8 +222,8 @@ class ISpeechRecognizer(ComPtr):
     def add_StateChanged(self, stateChangedHandler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.SpeechRecognition.SpeechRecognizer, win32more.Windows.Media.SpeechRecognition.SpeechRecognizerStateChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(16)
     def remove_StateChanged(self, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    CurrentLanguage = property(get_CurrentLanguage, None)
     Constraints = property(get_Constraints, None)
+    CurrentLanguage = property(get_CurrentLanguage, None)
     Timeouts = property(get_Timeouts, None)
     UIOptions = property(get_UIOptions, None)
 class ISpeechRecognizer2(ComPtr):
@@ -278,9 +265,9 @@ class ISpeechRecognizerStatics(ComPtr):
     def get_SupportedTopicLanguages(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Globalization.Language]: ...
     @winrt_commethod(8)
     def get_SupportedGrammarLanguages(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Globalization.Language]: ...
-    SystemSpeechLanguage = property(get_SystemSpeechLanguage, None)
-    SupportedTopicLanguages = property(get_SupportedTopicLanguages, None)
     SupportedGrammarLanguages = property(get_SupportedGrammarLanguages, None)
+    SupportedTopicLanguages = property(get_SupportedTopicLanguages, None)
+    SystemSpeechLanguage = property(get_SystemSpeechLanguage, None)
 class ISpeechRecognizerStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechRecognizerStatics2'
@@ -303,9 +290,9 @@ class ISpeechRecognizerTimeouts(ComPtr):
     def get_BabbleTimeout(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(11)
     def put_BabbleTimeout(self, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-    InitialSilenceTimeout = property(get_InitialSilenceTimeout, put_InitialSilenceTimeout)
-    EndSilenceTimeout = property(get_EndSilenceTimeout, put_EndSilenceTimeout)
     BabbleTimeout = property(get_BabbleTimeout, put_BabbleTimeout)
+    EndSilenceTimeout = property(get_EndSilenceTimeout, put_EndSilenceTimeout)
+    InitialSilenceTimeout = property(get_InitialSilenceTimeout, put_InitialSilenceTimeout)
 class ISpeechRecognizerUIOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.SpeechRecognition.ISpeechRecognizerUIOptions'
@@ -326,8 +313,8 @@ class ISpeechRecognizerUIOptions(ComPtr):
     def get_ShowConfirmation(self) -> Boolean: ...
     @winrt_commethod(13)
     def put_ShowConfirmation(self, value: Boolean) -> Void: ...
-    ExampleText = property(get_ExampleText, put_ExampleText)
     AudiblePrompt = property(get_AudiblePrompt, put_AudiblePrompt)
+    ExampleText = property(get_ExampleText, put_ExampleText)
     IsReadBackEnabled = property(get_IsReadBackEnabled, put_IsReadBackEnabled)
     ShowConfirmation = property(get_ShowConfirmation, put_ShowConfirmation)
 class IVoiceCommandManager(ComPtr):
@@ -358,9 +345,9 @@ class SpeechContinuousRecognitionCompletedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.Media.SpeechRecognition.ISpeechContinuousRecognitionCompletedEventArgs) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus: ...
     Status = property(get_Status, None)
-SpeechContinuousRecognitionMode = Int32
-SpeechContinuousRecognitionMode_Default: SpeechContinuousRecognitionMode = 0
-SpeechContinuousRecognitionMode_PauseOnRecognition: SpeechContinuousRecognitionMode = 1
+class SpeechContinuousRecognitionMode(Int32):  # enum
+    Default = 0
+    PauseOnRecognition = 1
 class SpeechContinuousRecognitionResultGeneratedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechContinuousRecognitionResultGeneratedEventArgs
@@ -397,14 +384,14 @@ class SpeechContinuousRecognitionSession(ComPtr):
     @winrt_mixinmethod
     def remove_ResultGenerated(self: win32more.Windows.Media.SpeechRecognition.ISpeechContinuousRecognitionSession, value: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     AutoStopSilenceTimeout = property(get_AutoStopSilenceTimeout, put_AutoStopSilenceTimeout)
-SpeechRecognitionAudioProblem = Int32
-SpeechRecognitionAudioProblem_None: SpeechRecognitionAudioProblem = 0
-SpeechRecognitionAudioProblem_TooNoisy: SpeechRecognitionAudioProblem = 1
-SpeechRecognitionAudioProblem_NoSignal: SpeechRecognitionAudioProblem = 2
-SpeechRecognitionAudioProblem_TooLoud: SpeechRecognitionAudioProblem = 3
-SpeechRecognitionAudioProblem_TooQuiet: SpeechRecognitionAudioProblem = 4
-SpeechRecognitionAudioProblem_TooFast: SpeechRecognitionAudioProblem = 5
-SpeechRecognitionAudioProblem_TooSlow: SpeechRecognitionAudioProblem = 6
+class SpeechRecognitionAudioProblem(Int32):  # enum
+    None_ = 0
+    TooNoisy = 1
+    NoSignal = 2
+    TooLoud = 3
+    TooQuiet = 4
+    TooFast = 5
+    TooSlow = 6
 class SpeechRecognitionCompilationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionCompilationResult
@@ -412,24 +399,33 @@ class SpeechRecognitionCompilationResult(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionCompilationResult) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionResultStatus: ...
     Status = property(get_Status, None)
-SpeechRecognitionConfidence = Int32
-SpeechRecognitionConfidence_High: SpeechRecognitionConfidence = 0
-SpeechRecognitionConfidence_Medium: SpeechRecognitionConfidence = 1
-SpeechRecognitionConfidence_Low: SpeechRecognitionConfidence = 2
-SpeechRecognitionConfidence_Rejected: SpeechRecognitionConfidence = 3
-SpeechRecognitionConstraintProbability = Int32
-SpeechRecognitionConstraintProbability_Default: SpeechRecognitionConstraintProbability = 0
-SpeechRecognitionConstraintProbability_Min: SpeechRecognitionConstraintProbability = 1
-SpeechRecognitionConstraintProbability_Max: SpeechRecognitionConstraintProbability = 2
-SpeechRecognitionConstraintType = Int32
-SpeechRecognitionConstraintType_Topic: SpeechRecognitionConstraintType = 0
-SpeechRecognitionConstraintType_List: SpeechRecognitionConstraintType = 1
-SpeechRecognitionConstraintType_Grammar: SpeechRecognitionConstraintType = 2
-SpeechRecognitionConstraintType_VoiceCommandDefinition: SpeechRecognitionConstraintType = 3
+class SpeechRecognitionConfidence(Int32):  # enum
+    High = 0
+    Medium = 1
+    Low = 2
+    Rejected = 3
+class SpeechRecognitionConstraintProbability(Int32):  # enum
+    Default = 0
+    Min = 1
+    Max = 2
+class SpeechRecognitionConstraintType(Int32):  # enum
+    Topic = 0
+    List = 1
+    Grammar = 2
+    VoiceCommandDefinition = 3
 class SpeechRecognitionGrammarFileConstraint(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionGrammarFileConstraint
     _classid_ = 'Windows.Media.SpeechRecognition.SpeechRecognitionGrammarFileConstraint'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionGrammarFileConstraint.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionGrammarFileConstraint.CreateWithTag(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionGrammarFileConstraintFactory, file: win32more.Windows.Storage.StorageFile) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionGrammarFileConstraint: ...
     @winrt_factorymethod
@@ -452,9 +448,9 @@ class SpeechRecognitionGrammarFileConstraint(ComPtr):
     def put_Probability(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint, value: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability) -> Void: ...
     GrammarFile = property(get_GrammarFile, None)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    Probability = property(get_Probability, put_Probability)
     Tag = property(get_Tag, put_Tag)
     Type = property(get_Type, None)
-    Probability = property(get_Probability, put_Probability)
 class SpeechRecognitionHypothesis(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionHypothesis
@@ -473,6 +469,15 @@ class SpeechRecognitionListConstraint(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionListConstraint
     _classid_ = 'Windows.Media.SpeechRecognition.SpeechRecognitionListConstraint'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionListConstraint.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionListConstraint.CreateWithTag(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionListConstraintFactory, commands: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionListConstraint: ...
     @winrt_factorymethod
@@ -495,9 +500,9 @@ class SpeechRecognitionListConstraint(ComPtr):
     def put_Probability(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint, value: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability) -> Void: ...
     Commands = property(get_Commands, None)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    Probability = property(get_Probability, put_Probability)
     Tag = property(get_Tag, put_Tag)
     Type = property(get_Type, None)
-    Probability = property(get_Probability, put_Probability)
 class SpeechRecognitionQualityDegradingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionQualityDegradingEventArgs
@@ -529,31 +534,31 @@ class SpeechRecognitionResult(ComPtr):
     def get_PhraseStartTime(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionResult2) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_PhraseDuration(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionResult2) -> win32more.Windows.Foundation.TimeSpan: ...
+    Confidence = property(get_Confidence, None)
+    Constraint = property(get_Constraint, None)
+    PhraseDuration = property(get_PhraseDuration, None)
+    PhraseStartTime = property(get_PhraseStartTime, None)
+    RawConfidence = property(get_RawConfidence, None)
+    RulePath = property(get_RulePath, None)
+    SemanticInterpretation = property(get_SemanticInterpretation, None)
     Status = property(get_Status, None)
     Text = property(get_Text, None)
-    Confidence = property(get_Confidence, None)
-    SemanticInterpretation = property(get_SemanticInterpretation, None)
-    Constraint = property(get_Constraint, None)
-    RulePath = property(get_RulePath, None)
-    RawConfidence = property(get_RawConfidence, None)
-    PhraseStartTime = property(get_PhraseStartTime, None)
-    PhraseDuration = property(get_PhraseDuration, None)
-SpeechRecognitionResultStatus = Int32
-SpeechRecognitionResultStatus_Success: SpeechRecognitionResultStatus = 0
-SpeechRecognitionResultStatus_TopicLanguageNotSupported: SpeechRecognitionResultStatus = 1
-SpeechRecognitionResultStatus_GrammarLanguageMismatch: SpeechRecognitionResultStatus = 2
-SpeechRecognitionResultStatus_GrammarCompilationFailure: SpeechRecognitionResultStatus = 3
-SpeechRecognitionResultStatus_AudioQualityFailure: SpeechRecognitionResultStatus = 4
-SpeechRecognitionResultStatus_UserCanceled: SpeechRecognitionResultStatus = 5
-SpeechRecognitionResultStatus_Unknown: SpeechRecognitionResultStatus = 6
-SpeechRecognitionResultStatus_TimeoutExceeded: SpeechRecognitionResultStatus = 7
-SpeechRecognitionResultStatus_PauseLimitExceeded: SpeechRecognitionResultStatus = 8
-SpeechRecognitionResultStatus_NetworkFailure: SpeechRecognitionResultStatus = 9
-SpeechRecognitionResultStatus_MicrophoneUnavailable: SpeechRecognitionResultStatus = 10
-SpeechRecognitionScenario = Int32
-SpeechRecognitionScenario_WebSearch: SpeechRecognitionScenario = 0
-SpeechRecognitionScenario_Dictation: SpeechRecognitionScenario = 1
-SpeechRecognitionScenario_FormFilling: SpeechRecognitionScenario = 2
+class SpeechRecognitionResultStatus(Int32):  # enum
+    Success = 0
+    TopicLanguageNotSupported = 1
+    GrammarLanguageMismatch = 2
+    GrammarCompilationFailure = 3
+    AudioQualityFailure = 4
+    UserCanceled = 5
+    Unknown = 6
+    TimeoutExceeded = 7
+    PauseLimitExceeded = 8
+    NetworkFailure = 9
+    MicrophoneUnavailable = 10
+class SpeechRecognitionScenario(Int32):  # enum
+    WebSearch = 0
+    Dictation = 1
+    FormFilling = 2
 class SpeechRecognitionSemanticInterpretation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionSemanticInterpretation
@@ -565,6 +570,15 @@ class SpeechRecognitionTopicConstraint(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionTopicConstraint
     _classid_ = 'Windows.Media.SpeechRecognition.SpeechRecognitionTopicConstraint'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionTopicConstraint.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognitionTopicConstraint.CreateWithTag(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionTopicConstraintFactory, scenario: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionScenario, topicHint: WinRT_String) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionTopicConstraint: ...
     @winrt_factorymethod
@@ -587,12 +601,12 @@ class SpeechRecognitionTopicConstraint(ComPtr):
     def get_Probability(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability: ...
     @winrt_mixinmethod
     def put_Probability(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint, value: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability) -> Void: ...
-    Scenario = property(get_Scenario, None)
-    TopicHint = property(get_TopicHint, None)
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    Tag = property(get_Tag, put_Tag)
-    Type = property(get_Type, None)
     Probability = property(get_Probability, put_Probability)
+    Scenario = property(get_Scenario, None)
+    Tag = property(get_Tag, put_Tag)
+    TopicHint = property(get_TopicHint, None)
+    Type = property(get_Type, None)
 class SpeechRecognitionVoiceCommandDefinitionConstraint(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionVoiceCommandDefinitionConstraint
@@ -612,15 +626,24 @@ class SpeechRecognitionVoiceCommandDefinitionConstraint(ComPtr):
     @winrt_mixinmethod
     def put_Probability(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint, value: win32more.Windows.Media.SpeechRecognition.SpeechRecognitionConstraintProbability) -> Void: ...
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    Probability = property(get_Probability, put_Probability)
     Tag = property(get_Tag, put_Tag)
     Type = property(get_Type, None)
-    Probability = property(get_Probability, put_Probability)
 class _SpeechRecognizer_Meta_(ComPtr.__class__):
     pass
 class SpeechRecognizer(ComPtr, metaclass=_SpeechRecognizer_Meta_):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizer
     _classid_ = 'Windows.Media.SpeechRecognition.SpeechRecognizer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognizer.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Media.SpeechRecognition.SpeechRecognizer.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.SpeechRecognition.SpeechRecognizer: ...
     @winrt_factorymethod
@@ -667,23 +690,23 @@ class SpeechRecognizer(ComPtr, metaclass=_SpeechRecognizer_Meta_):
     def get_SupportedTopicLanguages(cls: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerStatics) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Globalization.Language]: ...
     @winrt_classmethod
     def get_SupportedGrammarLanguages(cls: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerStatics) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Globalization.Language]: ...
-    CurrentLanguage = property(get_CurrentLanguage, None)
     Constraints = property(get_Constraints, None)
+    ContinuousRecognitionSession = property(get_ContinuousRecognitionSession, None)
+    CurrentLanguage = property(get_CurrentLanguage, None)
+    State = property(get_State, None)
     Timeouts = property(get_Timeouts, None)
     UIOptions = property(get_UIOptions, None)
-    ContinuousRecognitionSession = property(get_ContinuousRecognitionSession, None)
-    State = property(get_State, None)
-    _SpeechRecognizer_Meta_.SystemSpeechLanguage = property(get_SystemSpeechLanguage.__wrapped__, None)
-    _SpeechRecognizer_Meta_.SupportedTopicLanguages = property(get_SupportedTopicLanguages.__wrapped__, None)
     _SpeechRecognizer_Meta_.SupportedGrammarLanguages = property(get_SupportedGrammarLanguages.__wrapped__, None)
-SpeechRecognizerState = Int32
-SpeechRecognizerState_Idle: SpeechRecognizerState = 0
-SpeechRecognizerState_Capturing: SpeechRecognizerState = 1
-SpeechRecognizerState_Processing: SpeechRecognizerState = 2
-SpeechRecognizerState_SoundStarted: SpeechRecognizerState = 3
-SpeechRecognizerState_SoundEnded: SpeechRecognizerState = 4
-SpeechRecognizerState_SpeechDetected: SpeechRecognizerState = 5
-SpeechRecognizerState_Paused: SpeechRecognizerState = 6
+    _SpeechRecognizer_Meta_.SupportedTopicLanguages = property(get_SupportedTopicLanguages.__wrapped__, None)
+    _SpeechRecognizer_Meta_.SystemSpeechLanguage = property(get_SystemSpeechLanguage.__wrapped__, None)
+class SpeechRecognizerState(Int32):  # enum
+    Idle = 0
+    Capturing = 1
+    Processing = 2
+    SoundStarted = 3
+    SoundEnded = 4
+    SpeechDetected = 5
+    Paused = 6
 class SpeechRecognizerStateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerStateChangedEventArgs
@@ -707,9 +730,9 @@ class SpeechRecognizerTimeouts(ComPtr):
     def get_BabbleTimeout(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerTimeouts) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def put_BabbleTimeout(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerTimeouts, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-    InitialSilenceTimeout = property(get_InitialSilenceTimeout, put_InitialSilenceTimeout)
-    EndSilenceTimeout = property(get_EndSilenceTimeout, put_EndSilenceTimeout)
     BabbleTimeout = property(get_BabbleTimeout, put_BabbleTimeout)
+    EndSilenceTimeout = property(get_EndSilenceTimeout, put_EndSilenceTimeout)
+    InitialSilenceTimeout = property(get_InitialSilenceTimeout, put_InitialSilenceTimeout)
 class SpeechRecognizerUIOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerUIOptions
@@ -730,8 +753,8 @@ class SpeechRecognizerUIOptions(ComPtr):
     def get_ShowConfirmation(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerUIOptions) -> Boolean: ...
     @winrt_mixinmethod
     def put_ShowConfirmation(self: win32more.Windows.Media.SpeechRecognition.ISpeechRecognizerUIOptions, value: Boolean) -> Void: ...
-    ExampleText = property(get_ExampleText, put_ExampleText)
     AudiblePrompt = property(get_AudiblePrompt, put_AudiblePrompt)
+    ExampleText = property(get_ExampleText, put_ExampleText)
     IsReadBackEnabled = property(get_IsReadBackEnabled, put_IsReadBackEnabled)
     ShowConfirmation = property(get_ShowConfirmation, put_ShowConfirmation)
 class _VoiceCommandManager_Meta_(ComPtr.__class__):
@@ -756,4 +779,6 @@ class VoiceCommandSet(ComPtr):
     def SetPhraseListAsync(self: win32more.Windows.Media.SpeechRecognition.IVoiceCommandSet, phraseListName: WinRT_String, phraseList: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Foundation.IAsyncAction: ...
     Language = property(get_Language, None)
     Name = property(get_Name, None)
+
+
 make_ready(__name__)

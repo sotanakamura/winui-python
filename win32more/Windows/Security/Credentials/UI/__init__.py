@@ -1,31 +1,18 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Security.Credentials.UI
 import win32more.Windows.Storage.Streams
-AuthenticationProtocol = Int32
-AuthenticationProtocol_Basic: AuthenticationProtocol = 0
-AuthenticationProtocol_Digest: AuthenticationProtocol = 1
-AuthenticationProtocol_Ntlm: AuthenticationProtocol = 2
-AuthenticationProtocol_Kerberos: AuthenticationProtocol = 3
-AuthenticationProtocol_Negotiate: AuthenticationProtocol = 4
-AuthenticationProtocol_CredSsp: AuthenticationProtocol = 5
-AuthenticationProtocol_Custom: AuthenticationProtocol = 6
+import win32more.Windows.Win32.System.WinRT
+class AuthenticationProtocol(Int32):  # enum
+    Basic = 0
+    Digest = 1
+    Ntlm = 2
+    Kerberos = 3
+    Negotiate = 4
+    CredSsp = 5
+    Custom = 6
 class CredentialPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.UI.CredentialPicker'
@@ -39,6 +26,13 @@ class CredentialPickerOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.UI.ICredentialPickerOptions
     _classid_ = 'Windows.Security.Credentials.UI.CredentialPickerOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Security.Credentials.UI.CredentialPickerOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Security.Credentials.UI.CredentialPickerOptions: ...
     @winrt_mixinmethod
@@ -81,16 +75,16 @@ class CredentialPickerOptions(ComPtr):
     def put_CredentialSaveOption(self: win32more.Windows.Security.Credentials.UI.ICredentialPickerOptions, value: win32more.Windows.Security.Credentials.UI.CredentialSaveOption) -> Void: ...
     @winrt_mixinmethod
     def get_CredentialSaveOption(self: win32more.Windows.Security.Credentials.UI.ICredentialPickerOptions) -> win32more.Windows.Security.Credentials.UI.CredentialSaveOption: ...
-    Caption = property(get_Caption, put_Caption)
-    Message = property(get_Message, put_Message)
-    ErrorCode = property(get_ErrorCode, put_ErrorCode)
-    TargetName = property(get_TargetName, put_TargetName)
-    AuthenticationProtocol = property(get_AuthenticationProtocol, put_AuthenticationProtocol)
-    CustomAuthenticationProtocol = property(get_CustomAuthenticationProtocol, put_CustomAuthenticationProtocol)
-    PreviousCredential = property(get_PreviousCredential, put_PreviousCredential)
     AlwaysDisplayDialog = property(get_AlwaysDisplayDialog, put_AlwaysDisplayDialog)
+    AuthenticationProtocol = property(get_AuthenticationProtocol, put_AuthenticationProtocol)
     CallerSavesCredential = property(get_CallerSavesCredential, put_CallerSavesCredential)
+    Caption = property(get_Caption, put_Caption)
     CredentialSaveOption = property(get_CredentialSaveOption, put_CredentialSaveOption)
+    CustomAuthenticationProtocol = property(get_CustomAuthenticationProtocol, put_CustomAuthenticationProtocol)
+    ErrorCode = property(get_ErrorCode, put_ErrorCode)
+    Message = property(get_Message, put_Message)
+    PreviousCredential = property(get_PreviousCredential, put_PreviousCredential)
+    TargetName = property(get_TargetName, put_TargetName)
 class CredentialPickerResults(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.UI.ICredentialPickerResults
@@ -109,17 +103,17 @@ class CredentialPickerResults(ComPtr):
     def get_CredentialUserName(self: win32more.Windows.Security.Credentials.UI.ICredentialPickerResults) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_CredentialPassword(self: win32more.Windows.Security.Credentials.UI.ICredentialPickerResults) -> WinRT_String: ...
-    ErrorCode = property(get_ErrorCode, None)
-    CredentialSaveOption = property(get_CredentialSaveOption, None)
-    CredentialSaved = property(get_CredentialSaved, None)
     Credential = property(get_Credential, None)
     CredentialDomainName = property(get_CredentialDomainName, None)
-    CredentialUserName = property(get_CredentialUserName, None)
     CredentialPassword = property(get_CredentialPassword, None)
-CredentialSaveOption = Int32
-CredentialSaveOption_Unselected: CredentialSaveOption = 0
-CredentialSaveOption_Selected: CredentialSaveOption = 1
-CredentialSaveOption_Hidden: CredentialSaveOption = 2
+    CredentialSaveOption = property(get_CredentialSaveOption, None)
+    CredentialSaved = property(get_CredentialSaved, None)
+    CredentialUserName = property(get_CredentialUserName, None)
+    ErrorCode = property(get_ErrorCode, None)
+class CredentialSaveOption(Int32):  # enum
+    Unselected = 0
+    Selected = 1
+    Hidden = 2
 class ICredentialPickerOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.UI.ICredentialPickerOptions'
@@ -164,16 +158,16 @@ class ICredentialPickerOptions(ComPtr):
     def put_CredentialSaveOption(self, value: win32more.Windows.Security.Credentials.UI.CredentialSaveOption) -> Void: ...
     @winrt_commethod(25)
     def get_CredentialSaveOption(self) -> win32more.Windows.Security.Credentials.UI.CredentialSaveOption: ...
-    Caption = property(get_Caption, put_Caption)
-    Message = property(get_Message, put_Message)
-    ErrorCode = property(get_ErrorCode, put_ErrorCode)
-    TargetName = property(get_TargetName, put_TargetName)
-    AuthenticationProtocol = property(get_AuthenticationProtocol, put_AuthenticationProtocol)
-    CustomAuthenticationProtocol = property(get_CustomAuthenticationProtocol, put_CustomAuthenticationProtocol)
-    PreviousCredential = property(get_PreviousCredential, put_PreviousCredential)
     AlwaysDisplayDialog = property(get_AlwaysDisplayDialog, put_AlwaysDisplayDialog)
+    AuthenticationProtocol = property(get_AuthenticationProtocol, put_AuthenticationProtocol)
     CallerSavesCredential = property(get_CallerSavesCredential, put_CallerSavesCredential)
+    Caption = property(get_Caption, put_Caption)
     CredentialSaveOption = property(get_CredentialSaveOption, put_CredentialSaveOption)
+    CustomAuthenticationProtocol = property(get_CustomAuthenticationProtocol, put_CustomAuthenticationProtocol)
+    ErrorCode = property(get_ErrorCode, put_ErrorCode)
+    Message = property(get_Message, put_Message)
+    PreviousCredential = property(get_PreviousCredential, put_PreviousCredential)
+    TargetName = property(get_TargetName, put_TargetName)
 class ICredentialPickerResults(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.UI.ICredentialPickerResults'
@@ -192,13 +186,13 @@ class ICredentialPickerResults(ComPtr):
     def get_CredentialUserName(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def get_CredentialPassword(self) -> WinRT_String: ...
-    ErrorCode = property(get_ErrorCode, None)
-    CredentialSaveOption = property(get_CredentialSaveOption, None)
-    CredentialSaved = property(get_CredentialSaved, None)
     Credential = property(get_Credential, None)
     CredentialDomainName = property(get_CredentialDomainName, None)
-    CredentialUserName = property(get_CredentialUserName, None)
     CredentialPassword = property(get_CredentialPassword, None)
+    CredentialSaveOption = property(get_CredentialSaveOption, None)
+    CredentialSaved = property(get_CredentialSaved, None)
+    CredentialUserName = property(get_CredentialUserName, None)
+    ErrorCode = property(get_ErrorCode, None)
 class ICredentialPickerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.UI.ICredentialPickerStatics'
@@ -217,14 +211,14 @@ class IUserConsentVerifierStatics(ComPtr):
     def CheckAvailabilityAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Credentials.UI.UserConsentVerifierAvailability]: ...
     @winrt_commethod(7)
     def RequestVerificationAsync(self, message: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Credentials.UI.UserConsentVerificationResult]: ...
-UserConsentVerificationResult = Int32
-UserConsentVerificationResult_Verified: UserConsentVerificationResult = 0
-UserConsentVerificationResult_DeviceNotPresent: UserConsentVerificationResult = 1
-UserConsentVerificationResult_NotConfiguredForUser: UserConsentVerificationResult = 2
-UserConsentVerificationResult_DisabledByPolicy: UserConsentVerificationResult = 3
-UserConsentVerificationResult_DeviceBusy: UserConsentVerificationResult = 4
-UserConsentVerificationResult_RetriesExhausted: UserConsentVerificationResult = 5
-UserConsentVerificationResult_Canceled: UserConsentVerificationResult = 6
+class UserConsentVerificationResult(Int32):  # enum
+    Verified = 0
+    DeviceNotPresent = 1
+    NotConfiguredForUser = 2
+    DisabledByPolicy = 3
+    DeviceBusy = 4
+    RetriesExhausted = 5
+    Canceled = 6
 class UserConsentVerifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.UI.UserConsentVerifier'
@@ -232,10 +226,12 @@ class UserConsentVerifier(ComPtr):
     def CheckAvailabilityAsync(cls: win32more.Windows.Security.Credentials.UI.IUserConsentVerifierStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Credentials.UI.UserConsentVerifierAvailability]: ...
     @winrt_classmethod
     def RequestVerificationAsync(cls: win32more.Windows.Security.Credentials.UI.IUserConsentVerifierStatics, message: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Credentials.UI.UserConsentVerificationResult]: ...
-UserConsentVerifierAvailability = Int32
-UserConsentVerifierAvailability_Available: UserConsentVerifierAvailability = 0
-UserConsentVerifierAvailability_DeviceNotPresent: UserConsentVerifierAvailability = 1
-UserConsentVerifierAvailability_NotConfiguredForUser: UserConsentVerifierAvailability = 2
-UserConsentVerifierAvailability_DisabledByPolicy: UserConsentVerifierAvailability = 3
-UserConsentVerifierAvailability_DeviceBusy: UserConsentVerifierAvailability = 4
+class UserConsentVerifierAvailability(Int32):  # enum
+    Available = 0
+    DeviceNotPresent = 1
+    NotConfiguredForUser = 2
+    DisabledByPolicy = 3
+    DeviceBusy = 4
+
+
 make_ready(__name__)

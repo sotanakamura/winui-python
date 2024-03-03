@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel
 import win32more.Windows.ApplicationModel.AppService
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.System
 import win32more.Windows.System.RemoteSystems
+import win32more.Windows.Win32.System.WinRT
 class AppServiceCatalog(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.AppService.AppServiceCatalog'
@@ -33,15 +20,22 @@ class AppServiceClosedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.ApplicationModel.AppService.IAppServiceClosedEventArgs) -> win32more.Windows.ApplicationModel.AppService.AppServiceClosedStatus: ...
     Status = property(get_Status, None)
-AppServiceClosedStatus = Int32
-AppServiceClosedStatus_Completed: AppServiceClosedStatus = 0
-AppServiceClosedStatus_Canceled: AppServiceClosedStatus = 1
-AppServiceClosedStatus_ResourceLimitsExceeded: AppServiceClosedStatus = 2
-AppServiceClosedStatus_Unknown: AppServiceClosedStatus = 3
+class AppServiceClosedStatus(Int32):  # enum
+    Completed = 0
+    Canceled = 1
+    ResourceLimitsExceeded = 2
+    Unknown = 3
 class AppServiceConnection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.AppService.IAppServiceConnection
     _classid_ = 'Windows.ApplicationModel.AppService.AppServiceConnection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.AppService.AppServiceConnection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.AppService.AppServiceConnection: ...
     @winrt_mixinmethod
@@ -77,19 +71,19 @@ class AppServiceConnection(ComPtr):
     AppServiceName = property(get_AppServiceName, put_AppServiceName)
     PackageFamilyName = property(get_PackageFamilyName, put_PackageFamilyName)
     User = property(get_User, put_User)
-AppServiceConnectionStatus = Int32
-AppServiceConnectionStatus_Success: AppServiceConnectionStatus = 0
-AppServiceConnectionStatus_AppNotInstalled: AppServiceConnectionStatus = 1
-AppServiceConnectionStatus_AppUnavailable: AppServiceConnectionStatus = 2
-AppServiceConnectionStatus_AppServiceUnavailable: AppServiceConnectionStatus = 3
-AppServiceConnectionStatus_Unknown: AppServiceConnectionStatus = 4
-AppServiceConnectionStatus_RemoteSystemUnavailable: AppServiceConnectionStatus = 5
-AppServiceConnectionStatus_RemoteSystemNotSupportedByApp: AppServiceConnectionStatus = 6
-AppServiceConnectionStatus_NotAuthorized: AppServiceConnectionStatus = 7
-AppServiceConnectionStatus_AuthenticationError: AppServiceConnectionStatus = 8
-AppServiceConnectionStatus_NetworkNotAvailable: AppServiceConnectionStatus = 9
-AppServiceConnectionStatus_DisabledByPolicy: AppServiceConnectionStatus = 10
-AppServiceConnectionStatus_WebServiceUnavailable: AppServiceConnectionStatus = 11
+class AppServiceConnectionStatus(Int32):  # enum
+    Success = 0
+    AppNotInstalled = 1
+    AppUnavailable = 2
+    AppServiceUnavailable = 3
+    Unknown = 4
+    RemoteSystemUnavailable = 5
+    RemoteSystemNotSupportedByApp = 6
+    NotAuthorized = 7
+    AuthenticationError = 8
+    NetworkNotAvailable = 9
+    DisabledByPolicy = 10
+    WebServiceUnavailable = 11
 class AppServiceDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.AppService.IAppServiceDeferral
@@ -124,18 +118,18 @@ class AppServiceResponse(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.AppService.IAppServiceResponse) -> win32more.Windows.ApplicationModel.AppService.AppServiceResponseStatus: ...
     Message = property(get_Message, None)
     Status = property(get_Status, None)
-AppServiceResponseStatus = Int32
-AppServiceResponseStatus_Success: AppServiceResponseStatus = 0
-AppServiceResponseStatus_Failure: AppServiceResponseStatus = 1
-AppServiceResponseStatus_ResourceLimitsExceeded: AppServiceResponseStatus = 2
-AppServiceResponseStatus_Unknown: AppServiceResponseStatus = 3
-AppServiceResponseStatus_RemoteSystemUnavailable: AppServiceResponseStatus = 4
-AppServiceResponseStatus_MessageSizeTooLarge: AppServiceResponseStatus = 5
-AppServiceResponseStatus_AppUnavailable: AppServiceResponseStatus = 6
-AppServiceResponseStatus_AuthenticationError: AppServiceResponseStatus = 7
-AppServiceResponseStatus_NetworkNotAvailable: AppServiceResponseStatus = 8
-AppServiceResponseStatus_DisabledByPolicy: AppServiceResponseStatus = 9
-AppServiceResponseStatus_WebServiceUnavailable: AppServiceResponseStatus = 10
+class AppServiceResponseStatus(Int32):  # enum
+    Success = 0
+    Failure = 1
+    ResourceLimitsExceeded = 2
+    Unknown = 3
+    RemoteSystemUnavailable = 4
+    MessageSizeTooLarge = 5
+    AppUnavailable = 6
+    AuthenticationError = 7
+    NetworkNotAvailable = 8
+    DisabledByPolicy = 9
+    WebServiceUnavailable = 10
 class AppServiceTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.AppService.IAppServiceTriggerDetails
@@ -152,11 +146,11 @@ class AppServiceTriggerDetails(ComPtr):
     def CheckCallerForCapabilityAsync(self: win32more.Windows.ApplicationModel.AppService.IAppServiceTriggerDetails3, capabilityName: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_mixinmethod
     def get_CallerRemoteConnectionToken(self: win32more.Windows.ApplicationModel.AppService.IAppServiceTriggerDetails4) -> WinRT_String: ...
-    Name = property(get_Name, None)
-    CallerPackageFamilyName = property(get_CallerPackageFamilyName, None)
     AppServiceConnection = property(get_AppServiceConnection, None)
-    IsRemoteSystemConnection = property(get_IsRemoteSystemConnection, None)
+    CallerPackageFamilyName = property(get_CallerPackageFamilyName, None)
     CallerRemoteConnectionToken = property(get_CallerRemoteConnectionToken, None)
+    IsRemoteSystemConnection = property(get_IsRemoteSystemConnection, None)
+    Name = property(get_Name, None)
 class IAppServiceCatalogStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.AppService.IAppServiceCatalogStatics'
@@ -257,9 +251,9 @@ class IAppServiceTriggerDetails(ComPtr):
     def get_CallerPackageFamilyName(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_AppServiceConnection(self) -> win32more.Windows.ApplicationModel.AppService.AppServiceConnection: ...
-    Name = property(get_Name, None)
-    CallerPackageFamilyName = property(get_CallerPackageFamilyName, None)
     AppServiceConnection = property(get_AppServiceConnection, None)
+    CallerPackageFamilyName = property(get_CallerPackageFamilyName, None)
+    Name = property(get_Name, None)
 class IAppServiceTriggerDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.AppService.IAppServiceTriggerDetails2'
@@ -300,20 +294,22 @@ class StatelessAppServiceResponse(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.AppService.IStatelessAppServiceResponse) -> win32more.Windows.ApplicationModel.AppService.StatelessAppServiceResponseStatus: ...
     Message = property(get_Message, None)
     Status = property(get_Status, None)
-StatelessAppServiceResponseStatus = Int32
-StatelessAppServiceResponseStatus_Success: StatelessAppServiceResponseStatus = 0
-StatelessAppServiceResponseStatus_AppNotInstalled: StatelessAppServiceResponseStatus = 1
-StatelessAppServiceResponseStatus_AppUnavailable: StatelessAppServiceResponseStatus = 2
-StatelessAppServiceResponseStatus_AppServiceUnavailable: StatelessAppServiceResponseStatus = 3
-StatelessAppServiceResponseStatus_RemoteSystemUnavailable: StatelessAppServiceResponseStatus = 4
-StatelessAppServiceResponseStatus_RemoteSystemNotSupportedByApp: StatelessAppServiceResponseStatus = 5
-StatelessAppServiceResponseStatus_NotAuthorized: StatelessAppServiceResponseStatus = 6
-StatelessAppServiceResponseStatus_ResourceLimitsExceeded: StatelessAppServiceResponseStatus = 7
-StatelessAppServiceResponseStatus_MessageSizeTooLarge: StatelessAppServiceResponseStatus = 8
-StatelessAppServiceResponseStatus_Failure: StatelessAppServiceResponseStatus = 9
-StatelessAppServiceResponseStatus_Unknown: StatelessAppServiceResponseStatus = 10
-StatelessAppServiceResponseStatus_AuthenticationError: StatelessAppServiceResponseStatus = 11
-StatelessAppServiceResponseStatus_NetworkNotAvailable: StatelessAppServiceResponseStatus = 12
-StatelessAppServiceResponseStatus_DisabledByPolicy: StatelessAppServiceResponseStatus = 13
-StatelessAppServiceResponseStatus_WebServiceUnavailable: StatelessAppServiceResponseStatus = 14
+class StatelessAppServiceResponseStatus(Int32):  # enum
+    Success = 0
+    AppNotInstalled = 1
+    AppUnavailable = 2
+    AppServiceUnavailable = 3
+    RemoteSystemUnavailable = 4
+    RemoteSystemNotSupportedByApp = 5
+    NotAuthorized = 6
+    ResourceLimitsExceeded = 7
+    MessageSizeTooLarge = 8
+    Failure = 9
+    Unknown = 10
+    AuthenticationError = 11
+    NetworkNotAvailable = 12
+    DisabledByPolicy = 13
+    WebServiceUnavailable = 14
+
+
 make_ready(__name__)

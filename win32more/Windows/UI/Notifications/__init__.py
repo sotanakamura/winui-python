@@ -1,32 +1,26 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel
 import win32more.Windows.Data.Xml.Dom
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.System
 import win32more.Windows.UI.Notifications
-AdaptiveNotificationContentKind = Int32
-AdaptiveNotificationContentKind_Text: AdaptiveNotificationContentKind = 0
+import win32more.Windows.Win32.System.WinRT
+class AdaptiveNotificationContentKind(Int32):  # enum
+    Text = 0
 class AdaptiveNotificationText(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IAdaptiveNotificationText
     _classid_ = 'Windows.UI.Notifications.AdaptiveNotificationText'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Notifications.AdaptiveNotificationText.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Notifications.AdaptiveNotificationText: ...
     @winrt_mixinmethod
@@ -41,14 +35,21 @@ class AdaptiveNotificationText(ComPtr):
     def get_Kind(self: win32more.Windows.UI.Notifications.IAdaptiveNotificationContent) -> win32more.Windows.UI.Notifications.AdaptiveNotificationContentKind: ...
     @winrt_mixinmethod
     def get_Hints(self: win32more.Windows.UI.Notifications.IAdaptiveNotificationContent) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
-    Text = property(get_Text, put_Text)
-    Language = property(get_Language, put_Language)
-    Kind = property(get_Kind, None)
     Hints = property(get_Hints, None)
+    Kind = property(get_Kind, None)
+    Language = property(get_Language, put_Language)
+    Text = property(get_Text, put_Text)
 class BadgeNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IBadgeNotification
     _classid_ = 'Windows.UI.Notifications.BadgeNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Notifications.BadgeNotification.CreateBadgeNotification(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateBadgeNotification(cls: win32more.Windows.UI.Notifications.IBadgeNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument) -> win32more.Windows.UI.Notifications.BadgeNotification: ...
     @winrt_mixinmethod
@@ -59,9 +60,9 @@ class BadgeNotification(ComPtr):
     def get_ExpirationTime(self: win32more.Windows.UI.Notifications.IBadgeNotification) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     Content = property(get_Content, None)
     ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
-BadgeTemplateType = Int32
-BadgeTemplateType_BadgeGlyph: BadgeTemplateType = 0
-BadgeTemplateType_BadgeNumber: BadgeTemplateType = 1
+class BadgeTemplateType(Int32):  # enum
+    BadgeGlyph = 0
+    BadgeNumber = 1
 class BadgeUpdateManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.BadgeUpdateManager'
@@ -110,8 +111,8 @@ class IAdaptiveNotificationContent(ComPtr):
     def get_Kind(self) -> win32more.Windows.UI.Notifications.AdaptiveNotificationContentKind: ...
     @winrt_commethod(7)
     def get_Hints(self) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
-    Kind = property(get_Kind, None)
     Hints = property(get_Hints, None)
+    Kind = property(get_Kind, None)
 class IAdaptiveNotificationText(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IAdaptiveNotificationText'
@@ -124,8 +125,8 @@ class IAdaptiveNotificationText(ComPtr):
     def get_Language(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Language(self, value: WinRT_String) -> Void: ...
-    Text = property(get_Text, put_Text)
     Language = property(get_Language, put_Language)
+    Text = property(get_Text, put_Text)
 class IBadgeNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IBadgeNotification'
@@ -205,12 +206,12 @@ class IKnownAdaptiveNotificationHintsStatics(ComPtr):
     def get_TextStacking(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_Align(self) -> WinRT_String: ...
-    Style = property(get_Style, None)
-    Wrap = property(get_Wrap, None)
+    Align = property(get_Align, None)
     MaxLines = property(get_MaxLines, None)
     MinLines = property(get_MinLines, None)
+    Style = property(get_Style, None)
     TextStacking = property(get_TextStacking, None)
-    Align = property(get_Align, None)
+    Wrap = property(get_Wrap, None)
 class IKnownAdaptiveNotificationTextStylesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IKnownAdaptiveNotificationTextStylesStatics'
@@ -253,25 +254,25 @@ class IKnownAdaptiveNotificationTextStylesStatics(ComPtr):
     def get_HeaderSubtle(self) -> WinRT_String: ...
     @winrt_commethod(24)
     def get_HeaderNumeralSubtle(self) -> WinRT_String: ...
-    Caption = property(get_Caption, None)
-    Body = property(get_Body, None)
     Base = property(get_Base, None)
-    Subtitle = property(get_Subtitle, None)
-    Title = property(get_Title, None)
-    Subheader = property(get_Subheader, None)
-    Header = property(get_Header, None)
-    TitleNumeral = property(get_TitleNumeral, None)
-    SubheaderNumeral = property(get_SubheaderNumeral, None)
-    HeaderNumeral = property(get_HeaderNumeral, None)
-    CaptionSubtle = property(get_CaptionSubtle, None)
-    BodySubtle = property(get_BodySubtle, None)
     BaseSubtle = property(get_BaseSubtle, None)
-    SubtitleSubtle = property(get_SubtitleSubtle, None)
-    TitleSubtle = property(get_TitleSubtle, None)
-    SubheaderSubtle = property(get_SubheaderSubtle, None)
-    SubheaderNumeralSubtle = property(get_SubheaderNumeralSubtle, None)
-    HeaderSubtle = property(get_HeaderSubtle, None)
+    Body = property(get_Body, None)
+    BodySubtle = property(get_BodySubtle, None)
+    Caption = property(get_Caption, None)
+    CaptionSubtle = property(get_CaptionSubtle, None)
+    Header = property(get_Header, None)
+    HeaderNumeral = property(get_HeaderNumeral, None)
     HeaderNumeralSubtle = property(get_HeaderNumeralSubtle, None)
+    HeaderSubtle = property(get_HeaderSubtle, None)
+    Subheader = property(get_Subheader, None)
+    SubheaderNumeral = property(get_SubheaderNumeral, None)
+    SubheaderNumeralSubtle = property(get_SubheaderNumeralSubtle, None)
+    SubheaderSubtle = property(get_SubheaderSubtle, None)
+    Subtitle = property(get_Subtitle, None)
+    SubtitleSubtle = property(get_SubtitleSubtle, None)
+    Title = property(get_Title, None)
+    TitleNumeral = property(get_TitleNumeral, None)
+    TitleSubtle = property(get_TitleSubtle, None)
 class IKnownNotificationBindingsStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IKnownNotificationBindingsStatics'
@@ -309,9 +310,9 @@ class INotificationBinding(ComPtr):
     def get_Hints(self) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
     @winrt_commethod(11)
     def GetTextElements(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.UI.Notifications.AdaptiveNotificationText]: ...
-    Template = property(get_Template, put_Template)
-    Language = property(get_Language, put_Language)
     Hints = property(get_Hints, None)
+    Language = property(get_Language, put_Language)
+    Template = property(get_Template, put_Template)
 class INotificationData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.INotificationData'
@@ -322,8 +323,8 @@ class INotificationData(ComPtr):
     def get_SequenceNumber(self) -> UInt32: ...
     @winrt_commethod(8)
     def put_SequenceNumber(self, value: UInt32) -> Void: ...
-    Values = property(get_Values, None)
     SequenceNumber = property(get_SequenceNumber, put_SequenceNumber)
+    Values = property(get_Values, None)
 class INotificationDataFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.INotificationDataFactory'
@@ -344,8 +345,8 @@ class INotificationVisual(ComPtr):
     def get_Bindings(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Notifications.NotificationBinding]: ...
     @winrt_commethod(9)
     def GetBinding(self, templateName: WinRT_String) -> win32more.Windows.UI.Notifications.NotificationBinding: ...
-    Language = property(get_Language, put_Language)
     Bindings = property(get_Bindings, None)
+    Language = property(get_Language, put_Language)
 class IScheduledTileNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IScheduledTileNotification'
@@ -369,8 +370,8 @@ class IScheduledTileNotification(ComPtr):
     Content = property(get_Content, None)
     DeliveryTime = property(get_DeliveryTime, None)
     ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
-    Tag = property(get_Tag, put_Tag)
     Id = property(get_Id, put_Id)
+    Tag = property(get_Tag, put_Tag)
 class IScheduledTileNotificationFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IScheduledTileNotificationFactory'
@@ -395,9 +396,9 @@ class IScheduledToastNotification(ComPtr):
     def get_Id(self) -> WinRT_String: ...
     Content = property(get_Content, None)
     DeliveryTime = property(get_DeliveryTime, None)
-    SnoozeInterval = property(get_SnoozeInterval, None)
-    MaximumSnoozeCount = property(get_MaximumSnoozeCount, None)
     Id = property(get_Id, put_Id)
+    MaximumSnoozeCount = property(get_MaximumSnoozeCount, None)
+    SnoozeInterval = property(get_SnoozeInterval, None)
 class IScheduledToastNotification2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IScheduledToastNotification2'
@@ -414,9 +415,9 @@ class IScheduledToastNotification2(ComPtr):
     def put_SuppressPopup(self, value: Boolean) -> Void: ...
     @winrt_commethod(11)
     def get_SuppressPopup(self) -> Boolean: ...
-    Tag = property(get_Tag, put_Tag)
     Group = property(get_Group, put_Group)
     SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
+    Tag = property(get_Tag, put_Tag)
 class IScheduledToastNotification3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IScheduledToastNotification3'
@@ -641,10 +642,10 @@ class IToastCollection(ComPtr):
     def get_Icon(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(12)
     def put_Icon(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Id = property(get_Id, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    LaunchArgs = property(get_LaunchArgs, put_LaunchArgs)
     Icon = property(get_Icon, put_Icon)
+    Id = property(get_Id, None)
+    LaunchArgs = property(get_LaunchArgs, put_LaunchArgs)
 class IToastCollectionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IToastCollectionFactory'
@@ -669,8 +670,8 @@ class IToastCollectionManager(ComPtr):
     def get_User(self) -> win32more.Windows.System.User: ...
     @winrt_commethod(12)
     def get_AppId(self) -> WinRT_String: ...
-    User = property(get_User, None)
     AppId = property(get_AppId, None)
+    User = property(get_User, None)
 class IToastDismissedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IToastDismissedEventArgs'
@@ -725,9 +726,9 @@ class IToastNotification2(ComPtr):
     def put_SuppressPopup(self, value: Boolean) -> Void: ...
     @winrt_commethod(11)
     def get_SuppressPopup(self) -> Boolean: ...
-    Tag = property(get_Tag, put_Tag)
     Group = property(get_Group, put_Group)
     SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
+    Tag = property(get_Tag, put_Tag)
 class IToastNotification3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IToastNotification3'
@@ -934,10 +935,10 @@ class IUserNotification(ComPtr):
     def get_Id(self) -> UInt32: ...
     @winrt_commethod(9)
     def get_CreationTime(self) -> win32more.Windows.Foundation.DateTime: ...
-    Notification = property(get_Notification, None)
     AppInfo = property(get_AppInfo, None)
-    Id = property(get_Id, None)
     CreationTime = property(get_CreationTime, None)
+    Id = property(get_Id, None)
+    Notification = property(get_Notification, None)
 class IUserNotificationChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.IUserNotificationChangedEventArgs'
@@ -965,12 +966,12 @@ class KnownAdaptiveNotificationHints(ComPtr, metaclass=_KnownAdaptiveNotificatio
     def get_TextStacking(cls: win32more.Windows.UI.Notifications.IKnownAdaptiveNotificationHintsStatics) -> WinRT_String: ...
     @winrt_classmethod
     def get_Align(cls: win32more.Windows.UI.Notifications.IKnownAdaptiveNotificationHintsStatics) -> WinRT_String: ...
-    _KnownAdaptiveNotificationHints_Meta_.Style = property(get_Style.__wrapped__, None)
-    _KnownAdaptiveNotificationHints_Meta_.Wrap = property(get_Wrap.__wrapped__, None)
+    _KnownAdaptiveNotificationHints_Meta_.Align = property(get_Align.__wrapped__, None)
     _KnownAdaptiveNotificationHints_Meta_.MaxLines = property(get_MaxLines.__wrapped__, None)
     _KnownAdaptiveNotificationHints_Meta_.MinLines = property(get_MinLines.__wrapped__, None)
+    _KnownAdaptiveNotificationHints_Meta_.Style = property(get_Style.__wrapped__, None)
     _KnownAdaptiveNotificationHints_Meta_.TextStacking = property(get_TextStacking.__wrapped__, None)
-    _KnownAdaptiveNotificationHints_Meta_.Align = property(get_Align.__wrapped__, None)
+    _KnownAdaptiveNotificationHints_Meta_.Wrap = property(get_Wrap.__wrapped__, None)
 class _KnownAdaptiveNotificationTextStyles_Meta_(ComPtr.__class__):
     pass
 class KnownAdaptiveNotificationTextStyles(ComPtr, metaclass=_KnownAdaptiveNotificationTextStyles_Meta_):
@@ -1014,25 +1015,25 @@ class KnownAdaptiveNotificationTextStyles(ComPtr, metaclass=_KnownAdaptiveNotifi
     def get_HeaderSubtle(cls: win32more.Windows.UI.Notifications.IKnownAdaptiveNotificationTextStylesStatics) -> WinRT_String: ...
     @winrt_classmethod
     def get_HeaderNumeralSubtle(cls: win32more.Windows.UI.Notifications.IKnownAdaptiveNotificationTextStylesStatics) -> WinRT_String: ...
-    _KnownAdaptiveNotificationTextStyles_Meta_.Caption = property(get_Caption.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.Body = property(get_Body.__wrapped__, None)
     _KnownAdaptiveNotificationTextStyles_Meta_.Base = property(get_Base.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.Subtitle = property(get_Subtitle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.Title = property(get_Title.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.Subheader = property(get_Subheader.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.Header = property(get_Header.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.TitleNumeral = property(get_TitleNumeral.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderNumeral = property(get_SubheaderNumeral.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.HeaderNumeral = property(get_HeaderNumeral.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.CaptionSubtle = property(get_CaptionSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.BodySubtle = property(get_BodySubtle.__wrapped__, None)
     _KnownAdaptiveNotificationTextStyles_Meta_.BaseSubtle = property(get_BaseSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.SubtitleSubtle = property(get_SubtitleSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.TitleSubtle = property(get_TitleSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderSubtle = property(get_SubheaderSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderNumeralSubtle = property(get_SubheaderNumeralSubtle.__wrapped__, None)
-    _KnownAdaptiveNotificationTextStyles_Meta_.HeaderSubtle = property(get_HeaderSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Body = property(get_Body.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.BodySubtle = property(get_BodySubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Caption = property(get_Caption.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.CaptionSubtle = property(get_CaptionSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Header = property(get_Header.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.HeaderNumeral = property(get_HeaderNumeral.__wrapped__, None)
     _KnownAdaptiveNotificationTextStyles_Meta_.HeaderNumeralSubtle = property(get_HeaderNumeralSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.HeaderSubtle = property(get_HeaderSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Subheader = property(get_Subheader.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderNumeral = property(get_SubheaderNumeral.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderNumeralSubtle = property(get_SubheaderNumeralSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.SubheaderSubtle = property(get_SubheaderSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Subtitle = property(get_Subtitle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.SubtitleSubtle = property(get_SubtitleSubtle.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.Title = property(get_Title.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.TitleNumeral = property(get_TitleNumeral.__wrapped__, None)
+    _KnownAdaptiveNotificationTextStyles_Meta_.TitleSubtle = property(get_TitleSubtle.__wrapped__, None)
 class _KnownNotificationBindings_Meta_(ComPtr.__class__):
     pass
 class KnownNotificationBindings(ComPtr, metaclass=_KnownNotificationBindings_Meta_):
@@ -1045,6 +1046,13 @@ class Notification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.INotification
     _classid_ = 'Windows.UI.Notifications.Notification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Notifications.Notification.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Notifications.Notification: ...
     @winrt_mixinmethod
@@ -1073,43 +1081,54 @@ class NotificationBinding(ComPtr):
     def get_Hints(self: win32more.Windows.UI.Notifications.INotificationBinding) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
     @winrt_mixinmethod
     def GetTextElements(self: win32more.Windows.UI.Notifications.INotificationBinding) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.UI.Notifications.AdaptiveNotificationText]: ...
-    Template = property(get_Template, put_Template)
-    Language = property(get_Language, put_Language)
     Hints = property(get_Hints, None)
+    Language = property(get_Language, put_Language)
+    Template = property(get_Template, put_Template)
 class NotificationData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.INotificationData
     _classid_ = 'Windows.UI.Notifications.NotificationData'
-    @winrt_factorymethod
-    def CreateNotificationData(cls: win32more.Windows.UI.Notifications.INotificationDataFactory, initialValues: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, WinRT_String]], sequenceNumber: UInt32) -> win32more.Windows.UI.Notifications.NotificationData: ...
-    @winrt_factorymethod
-    def CreateNotificationData(cls: win32more.Windows.UI.Notifications.INotificationDataFactory, initialValues: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, WinRT_String]]) -> win32more.Windows.UI.Notifications.NotificationData: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Notifications.NotificationData.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Notifications.NotificationData.CreateNotificationDataWithValues(*args)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Notifications.NotificationData.CreateNotificationDataWithValuesAndSequenceNumber(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Notifications.NotificationData: ...
+    @winrt_factorymethod
+    def CreateNotificationDataWithValues(cls: win32more.Windows.UI.Notifications.INotificationDataFactory, initialValues: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, WinRT_String]]) -> win32more.Windows.UI.Notifications.NotificationData: ...
+    @winrt_factorymethod
+    def CreateNotificationDataWithValuesAndSequenceNumber(cls: win32more.Windows.UI.Notifications.INotificationDataFactory, initialValues: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, WinRT_String]], sequenceNumber: UInt32) -> win32more.Windows.UI.Notifications.NotificationData: ...
     @winrt_mixinmethod
     def get_Values(self: win32more.Windows.UI.Notifications.INotificationData) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
     @winrt_mixinmethod
     def get_SequenceNumber(self: win32more.Windows.UI.Notifications.INotificationData) -> UInt32: ...
     @winrt_mixinmethod
     def put_SequenceNumber(self: win32more.Windows.UI.Notifications.INotificationData, value: UInt32) -> Void: ...
-    Values = property(get_Values, None)
     SequenceNumber = property(get_SequenceNumber, put_SequenceNumber)
-NotificationKinds = UInt32
-NotificationKinds_Unknown: NotificationKinds = 0
-NotificationKinds_Toast: NotificationKinds = 1
-NotificationMirroring = Int32
-NotificationMirroring_Allowed: NotificationMirroring = 0
-NotificationMirroring_Disabled: NotificationMirroring = 1
-NotificationSetting = Int32
-NotificationSetting_Enabled: NotificationSetting = 0
-NotificationSetting_DisabledForApplication: NotificationSetting = 1
-NotificationSetting_DisabledForUser: NotificationSetting = 2
-NotificationSetting_DisabledByGroupPolicy: NotificationSetting = 3
-NotificationSetting_DisabledByManifest: NotificationSetting = 4
-NotificationUpdateResult = Int32
-NotificationUpdateResult_Succeeded: NotificationUpdateResult = 0
-NotificationUpdateResult_Failed: NotificationUpdateResult = 1
-NotificationUpdateResult_NotificationNotFound: NotificationUpdateResult = 2
+    Values = property(get_Values, None)
+class NotificationKinds(UInt32):  # enum
+    Unknown = 0
+    Toast = 1
+class NotificationMirroring(Int32):  # enum
+    Allowed = 0
+    Disabled = 1
+class NotificationSetting(Int32):  # enum
+    Enabled = 0
+    DisabledForApplication = 1
+    DisabledForUser = 2
+    DisabledByGroupPolicy = 3
+    DisabledByManifest = 4
+class NotificationUpdateResult(Int32):  # enum
+    Succeeded = 0
+    Failed = 1
+    NotificationNotFound = 2
 class NotificationVisual(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.INotificationVisual
@@ -1122,18 +1141,25 @@ class NotificationVisual(ComPtr):
     def get_Bindings(self: win32more.Windows.UI.Notifications.INotificationVisual) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Notifications.NotificationBinding]: ...
     @winrt_mixinmethod
     def GetBinding(self: win32more.Windows.UI.Notifications.INotificationVisual, templateName: WinRT_String) -> win32more.Windows.UI.Notifications.NotificationBinding: ...
-    Language = property(get_Language, put_Language)
     Bindings = property(get_Bindings, None)
-PeriodicUpdateRecurrence = Int32
-PeriodicUpdateRecurrence_HalfHour: PeriodicUpdateRecurrence = 0
-PeriodicUpdateRecurrence_Hour: PeriodicUpdateRecurrence = 1
-PeriodicUpdateRecurrence_SixHours: PeriodicUpdateRecurrence = 2
-PeriodicUpdateRecurrence_TwelveHours: PeriodicUpdateRecurrence = 3
-PeriodicUpdateRecurrence_Daily: PeriodicUpdateRecurrence = 4
+    Language = property(get_Language, put_Language)
+class PeriodicUpdateRecurrence(Int32):  # enum
+    HalfHour = 0
+    Hour = 1
+    SixHours = 2
+    TwelveHours = 3
+    Daily = 4
 class ScheduledTileNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IScheduledTileNotification
     _classid_ = 'Windows.UI.Notifications.ScheduledTileNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Notifications.ScheduledTileNotification.CreateScheduledTileNotification(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateScheduledTileNotification(cls: win32more.Windows.UI.Notifications.IScheduledTileNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument, deliveryTime: win32more.Windows.Foundation.DateTime) -> win32more.Windows.UI.Notifications.ScheduledTileNotification: ...
     @winrt_mixinmethod
@@ -1155,12 +1181,21 @@ class ScheduledTileNotification(ComPtr):
     Content = property(get_Content, None)
     DeliveryTime = property(get_DeliveryTime, None)
     ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
-    Tag = property(get_Tag, put_Tag)
     Id = property(get_Id, put_Id)
+    Tag = property(get_Tag, put_Tag)
 class ScheduledToastNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IScheduledToastNotification
     _classid_ = 'Windows.UI.Notifications.ScheduledToastNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Notifications.ScheduledToastNotification.CreateScheduledToastNotification(*args)
+        elif len(args) == 4:
+            return win32more.Windows.UI.Notifications.ScheduledToastNotification.CreateScheduledToastNotificationRecurring(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateScheduledToastNotification(cls: win32more.Windows.UI.Notifications.IScheduledToastNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument, deliveryTime: win32more.Windows.Foundation.DateTime) -> win32more.Windows.UI.Notifications.ScheduledToastNotification: ...
     @winrt_factorymethod
@@ -1203,15 +1238,15 @@ class ScheduledToastNotification(ComPtr):
     def put_ExpirationTime(self: win32more.Windows.UI.Notifications.IScheduledToastNotification4, value: win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]) -> Void: ...
     Content = property(get_Content, None)
     DeliveryTime = property(get_DeliveryTime, None)
-    SnoozeInterval = property(get_SnoozeInterval, None)
-    MaximumSnoozeCount = property(get_MaximumSnoozeCount, None)
-    Id = property(get_Id, put_Id)
-    Tag = property(get_Tag, put_Tag)
+    ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
     Group = property(get_Group, put_Group)
-    SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
+    Id = property(get_Id, put_Id)
+    MaximumSnoozeCount = property(get_MaximumSnoozeCount, None)
     NotificationMirroring = property(get_NotificationMirroring, put_NotificationMirroring)
     RemoteId = property(get_RemoteId, put_RemoteId)
-    ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
+    SnoozeInterval = property(get_SnoozeInterval, None)
+    SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
+    Tag = property(get_Tag, put_Tag)
 class ScheduledToastNotificationShowingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IScheduledToastNotificationShowingEventArgs
@@ -1237,6 +1272,13 @@ class TileFlyoutNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.ITileFlyoutNotification
     _classid_ = 'Windows.UI.Notifications.TileFlyoutNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Notifications.TileFlyoutNotification.CreateTileFlyoutNotification(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateTileFlyoutNotification(cls: win32more.Windows.UI.Notifications.ITileFlyoutNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument) -> win32more.Windows.UI.Notifications.TileFlyoutNotification: ...
     @winrt_mixinmethod
@@ -1247,8 +1289,8 @@ class TileFlyoutNotification(ComPtr):
     def get_ExpirationTime(self: win32more.Windows.UI.Notifications.ITileFlyoutNotification) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     Content = property(get_Content, None)
     ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
-TileFlyoutTemplateType = Int32
-TileFlyoutTemplateType_TileFlyoutTemplate01: TileFlyoutTemplateType = 0
+class TileFlyoutTemplateType(Int32):  # enum
+    TileFlyoutTemplate01 = 0
 class TileFlyoutUpdateManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.TileFlyoutUpdateManager'
@@ -1281,6 +1323,13 @@ class TileNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.ITileNotification
     _classid_ = 'Windows.UI.Notifications.TileNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Notifications.TileNotification.CreateTileNotification(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateTileNotification(cls: win32more.Windows.UI.Notifications.ITileNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument) -> win32more.Windows.UI.Notifications.TileNotification: ...
     @winrt_mixinmethod
@@ -1296,133 +1345,133 @@ class TileNotification(ComPtr):
     Content = property(get_Content, None)
     ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
     Tag = property(get_Tag, put_Tag)
-TileTemplateType = Int32
-TileTemplateType_TileSquareImage: TileTemplateType = 0
-TileTemplateType_TileSquareBlock: TileTemplateType = 1
-TileTemplateType_TileSquareText01: TileTemplateType = 2
-TileTemplateType_TileSquareText02: TileTemplateType = 3
-TileTemplateType_TileSquareText03: TileTemplateType = 4
-TileTemplateType_TileSquareText04: TileTemplateType = 5
-TileTemplateType_TileSquarePeekImageAndText01: TileTemplateType = 6
-TileTemplateType_TileSquarePeekImageAndText02: TileTemplateType = 7
-TileTemplateType_TileSquarePeekImageAndText03: TileTemplateType = 8
-TileTemplateType_TileSquarePeekImageAndText04: TileTemplateType = 9
-TileTemplateType_TileWideImage: TileTemplateType = 10
-TileTemplateType_TileWideImageCollection: TileTemplateType = 11
-TileTemplateType_TileWideImageAndText01: TileTemplateType = 12
-TileTemplateType_TileWideImageAndText02: TileTemplateType = 13
-TileTemplateType_TileWideBlockAndText01: TileTemplateType = 14
-TileTemplateType_TileWideBlockAndText02: TileTemplateType = 15
-TileTemplateType_TileWidePeekImageCollection01: TileTemplateType = 16
-TileTemplateType_TileWidePeekImageCollection02: TileTemplateType = 17
-TileTemplateType_TileWidePeekImageCollection03: TileTemplateType = 18
-TileTemplateType_TileWidePeekImageCollection04: TileTemplateType = 19
-TileTemplateType_TileWidePeekImageCollection05: TileTemplateType = 20
-TileTemplateType_TileWidePeekImageCollection06: TileTemplateType = 21
-TileTemplateType_TileWidePeekImageAndText01: TileTemplateType = 22
-TileTemplateType_TileWidePeekImageAndText02: TileTemplateType = 23
-TileTemplateType_TileWidePeekImage01: TileTemplateType = 24
-TileTemplateType_TileWidePeekImage02: TileTemplateType = 25
-TileTemplateType_TileWidePeekImage03: TileTemplateType = 26
-TileTemplateType_TileWidePeekImage04: TileTemplateType = 27
-TileTemplateType_TileWidePeekImage05: TileTemplateType = 28
-TileTemplateType_TileWidePeekImage06: TileTemplateType = 29
-TileTemplateType_TileWideSmallImageAndText01: TileTemplateType = 30
-TileTemplateType_TileWideSmallImageAndText02: TileTemplateType = 31
-TileTemplateType_TileWideSmallImageAndText03: TileTemplateType = 32
-TileTemplateType_TileWideSmallImageAndText04: TileTemplateType = 33
-TileTemplateType_TileWideSmallImageAndText05: TileTemplateType = 34
-TileTemplateType_TileWideText01: TileTemplateType = 35
-TileTemplateType_TileWideText02: TileTemplateType = 36
-TileTemplateType_TileWideText03: TileTemplateType = 37
-TileTemplateType_TileWideText04: TileTemplateType = 38
-TileTemplateType_TileWideText05: TileTemplateType = 39
-TileTemplateType_TileWideText06: TileTemplateType = 40
-TileTemplateType_TileWideText07: TileTemplateType = 41
-TileTemplateType_TileWideText08: TileTemplateType = 42
-TileTemplateType_TileWideText09: TileTemplateType = 43
-TileTemplateType_TileWideText10: TileTemplateType = 44
-TileTemplateType_TileWideText11: TileTemplateType = 45
-TileTemplateType_TileSquare150x150Image: TileTemplateType = 0
-TileTemplateType_TileSquare150x150Block: TileTemplateType = 1
-TileTemplateType_TileSquare150x150Text01: TileTemplateType = 2
-TileTemplateType_TileSquare150x150Text02: TileTemplateType = 3
-TileTemplateType_TileSquare150x150Text03: TileTemplateType = 4
-TileTemplateType_TileSquare150x150Text04: TileTemplateType = 5
-TileTemplateType_TileSquare150x150PeekImageAndText01: TileTemplateType = 6
-TileTemplateType_TileSquare150x150PeekImageAndText02: TileTemplateType = 7
-TileTemplateType_TileSquare150x150PeekImageAndText03: TileTemplateType = 8
-TileTemplateType_TileSquare150x150PeekImageAndText04: TileTemplateType = 9
-TileTemplateType_TileWide310x150Image: TileTemplateType = 10
-TileTemplateType_TileWide310x150ImageCollection: TileTemplateType = 11
-TileTemplateType_TileWide310x150ImageAndText01: TileTemplateType = 12
-TileTemplateType_TileWide310x150ImageAndText02: TileTemplateType = 13
-TileTemplateType_TileWide310x150BlockAndText01: TileTemplateType = 14
-TileTemplateType_TileWide310x150BlockAndText02: TileTemplateType = 15
-TileTemplateType_TileWide310x150PeekImageCollection01: TileTemplateType = 16
-TileTemplateType_TileWide310x150PeekImageCollection02: TileTemplateType = 17
-TileTemplateType_TileWide310x150PeekImageCollection03: TileTemplateType = 18
-TileTemplateType_TileWide310x150PeekImageCollection04: TileTemplateType = 19
-TileTemplateType_TileWide310x150PeekImageCollection05: TileTemplateType = 20
-TileTemplateType_TileWide310x150PeekImageCollection06: TileTemplateType = 21
-TileTemplateType_TileWide310x150PeekImageAndText01: TileTemplateType = 22
-TileTemplateType_TileWide310x150PeekImageAndText02: TileTemplateType = 23
-TileTemplateType_TileWide310x150PeekImage01: TileTemplateType = 24
-TileTemplateType_TileWide310x150PeekImage02: TileTemplateType = 25
-TileTemplateType_TileWide310x150PeekImage03: TileTemplateType = 26
-TileTemplateType_TileWide310x150PeekImage04: TileTemplateType = 27
-TileTemplateType_TileWide310x150PeekImage05: TileTemplateType = 28
-TileTemplateType_TileWide310x150PeekImage06: TileTemplateType = 29
-TileTemplateType_TileWide310x150SmallImageAndText01: TileTemplateType = 30
-TileTemplateType_TileWide310x150SmallImageAndText02: TileTemplateType = 31
-TileTemplateType_TileWide310x150SmallImageAndText03: TileTemplateType = 32
-TileTemplateType_TileWide310x150SmallImageAndText04: TileTemplateType = 33
-TileTemplateType_TileWide310x150SmallImageAndText05: TileTemplateType = 34
-TileTemplateType_TileWide310x150Text01: TileTemplateType = 35
-TileTemplateType_TileWide310x150Text02: TileTemplateType = 36
-TileTemplateType_TileWide310x150Text03: TileTemplateType = 37
-TileTemplateType_TileWide310x150Text04: TileTemplateType = 38
-TileTemplateType_TileWide310x150Text05: TileTemplateType = 39
-TileTemplateType_TileWide310x150Text06: TileTemplateType = 40
-TileTemplateType_TileWide310x150Text07: TileTemplateType = 41
-TileTemplateType_TileWide310x150Text08: TileTemplateType = 42
-TileTemplateType_TileWide310x150Text09: TileTemplateType = 43
-TileTemplateType_TileWide310x150Text10: TileTemplateType = 44
-TileTemplateType_TileWide310x150Text11: TileTemplateType = 45
-TileTemplateType_TileSquare310x310BlockAndText01: TileTemplateType = 46
-TileTemplateType_TileSquare310x310BlockAndText02: TileTemplateType = 47
-TileTemplateType_TileSquare310x310Image: TileTemplateType = 48
-TileTemplateType_TileSquare310x310ImageAndText01: TileTemplateType = 49
-TileTemplateType_TileSquare310x310ImageAndText02: TileTemplateType = 50
-TileTemplateType_TileSquare310x310ImageAndTextOverlay01: TileTemplateType = 51
-TileTemplateType_TileSquare310x310ImageAndTextOverlay02: TileTemplateType = 52
-TileTemplateType_TileSquare310x310ImageAndTextOverlay03: TileTemplateType = 53
-TileTemplateType_TileSquare310x310ImageCollectionAndText01: TileTemplateType = 54
-TileTemplateType_TileSquare310x310ImageCollectionAndText02: TileTemplateType = 55
-TileTemplateType_TileSquare310x310ImageCollection: TileTemplateType = 56
-TileTemplateType_TileSquare310x310SmallImagesAndTextList01: TileTemplateType = 57
-TileTemplateType_TileSquare310x310SmallImagesAndTextList02: TileTemplateType = 58
-TileTemplateType_TileSquare310x310SmallImagesAndTextList03: TileTemplateType = 59
-TileTemplateType_TileSquare310x310SmallImagesAndTextList04: TileTemplateType = 60
-TileTemplateType_TileSquare310x310Text01: TileTemplateType = 61
-TileTemplateType_TileSquare310x310Text02: TileTemplateType = 62
-TileTemplateType_TileSquare310x310Text03: TileTemplateType = 63
-TileTemplateType_TileSquare310x310Text04: TileTemplateType = 64
-TileTemplateType_TileSquare310x310Text05: TileTemplateType = 65
-TileTemplateType_TileSquare310x310Text06: TileTemplateType = 66
-TileTemplateType_TileSquare310x310Text07: TileTemplateType = 67
-TileTemplateType_TileSquare310x310Text08: TileTemplateType = 68
-TileTemplateType_TileSquare310x310TextList01: TileTemplateType = 69
-TileTemplateType_TileSquare310x310TextList02: TileTemplateType = 70
-TileTemplateType_TileSquare310x310TextList03: TileTemplateType = 71
-TileTemplateType_TileSquare310x310SmallImageAndText01: TileTemplateType = 72
-TileTemplateType_TileSquare310x310SmallImagesAndTextList05: TileTemplateType = 73
-TileTemplateType_TileSquare310x310Text09: TileTemplateType = 74
-TileTemplateType_TileSquare71x71IconWithBadge: TileTemplateType = 75
-TileTemplateType_TileSquare150x150IconWithBadge: TileTemplateType = 76
-TileTemplateType_TileWide310x150IconWithBadgeAndText: TileTemplateType = 77
-TileTemplateType_TileSquare71x71Image: TileTemplateType = 78
-TileTemplateType_TileTall150x310Image: TileTemplateType = 79
+class TileTemplateType(Int32):  # enum
+    TileSquareImage = 0
+    TileSquareBlock = 1
+    TileSquareText01 = 2
+    TileSquareText02 = 3
+    TileSquareText03 = 4
+    TileSquareText04 = 5
+    TileSquarePeekImageAndText01 = 6
+    TileSquarePeekImageAndText02 = 7
+    TileSquarePeekImageAndText03 = 8
+    TileSquarePeekImageAndText04 = 9
+    TileWideImage = 10
+    TileWideImageCollection = 11
+    TileWideImageAndText01 = 12
+    TileWideImageAndText02 = 13
+    TileWideBlockAndText01 = 14
+    TileWideBlockAndText02 = 15
+    TileWidePeekImageCollection01 = 16
+    TileWidePeekImageCollection02 = 17
+    TileWidePeekImageCollection03 = 18
+    TileWidePeekImageCollection04 = 19
+    TileWidePeekImageCollection05 = 20
+    TileWidePeekImageCollection06 = 21
+    TileWidePeekImageAndText01 = 22
+    TileWidePeekImageAndText02 = 23
+    TileWidePeekImage01 = 24
+    TileWidePeekImage02 = 25
+    TileWidePeekImage03 = 26
+    TileWidePeekImage04 = 27
+    TileWidePeekImage05 = 28
+    TileWidePeekImage06 = 29
+    TileWideSmallImageAndText01 = 30
+    TileWideSmallImageAndText02 = 31
+    TileWideSmallImageAndText03 = 32
+    TileWideSmallImageAndText04 = 33
+    TileWideSmallImageAndText05 = 34
+    TileWideText01 = 35
+    TileWideText02 = 36
+    TileWideText03 = 37
+    TileWideText04 = 38
+    TileWideText05 = 39
+    TileWideText06 = 40
+    TileWideText07 = 41
+    TileWideText08 = 42
+    TileWideText09 = 43
+    TileWideText10 = 44
+    TileWideText11 = 45
+    TileSquare150x150Image = 0
+    TileSquare150x150Block = 1
+    TileSquare150x150Text01 = 2
+    TileSquare150x150Text02 = 3
+    TileSquare150x150Text03 = 4
+    TileSquare150x150Text04 = 5
+    TileSquare150x150PeekImageAndText01 = 6
+    TileSquare150x150PeekImageAndText02 = 7
+    TileSquare150x150PeekImageAndText03 = 8
+    TileSquare150x150PeekImageAndText04 = 9
+    TileWide310x150Image = 10
+    TileWide310x150ImageCollection = 11
+    TileWide310x150ImageAndText01 = 12
+    TileWide310x150ImageAndText02 = 13
+    TileWide310x150BlockAndText01 = 14
+    TileWide310x150BlockAndText02 = 15
+    TileWide310x150PeekImageCollection01 = 16
+    TileWide310x150PeekImageCollection02 = 17
+    TileWide310x150PeekImageCollection03 = 18
+    TileWide310x150PeekImageCollection04 = 19
+    TileWide310x150PeekImageCollection05 = 20
+    TileWide310x150PeekImageCollection06 = 21
+    TileWide310x150PeekImageAndText01 = 22
+    TileWide310x150PeekImageAndText02 = 23
+    TileWide310x150PeekImage01 = 24
+    TileWide310x150PeekImage02 = 25
+    TileWide310x150PeekImage03 = 26
+    TileWide310x150PeekImage04 = 27
+    TileWide310x150PeekImage05 = 28
+    TileWide310x150PeekImage06 = 29
+    TileWide310x150SmallImageAndText01 = 30
+    TileWide310x150SmallImageAndText02 = 31
+    TileWide310x150SmallImageAndText03 = 32
+    TileWide310x150SmallImageAndText04 = 33
+    TileWide310x150SmallImageAndText05 = 34
+    TileWide310x150Text01 = 35
+    TileWide310x150Text02 = 36
+    TileWide310x150Text03 = 37
+    TileWide310x150Text04 = 38
+    TileWide310x150Text05 = 39
+    TileWide310x150Text06 = 40
+    TileWide310x150Text07 = 41
+    TileWide310x150Text08 = 42
+    TileWide310x150Text09 = 43
+    TileWide310x150Text10 = 44
+    TileWide310x150Text11 = 45
+    TileSquare310x310BlockAndText01 = 46
+    TileSquare310x310BlockAndText02 = 47
+    TileSquare310x310Image = 48
+    TileSquare310x310ImageAndText01 = 49
+    TileSquare310x310ImageAndText02 = 50
+    TileSquare310x310ImageAndTextOverlay01 = 51
+    TileSquare310x310ImageAndTextOverlay02 = 52
+    TileSquare310x310ImageAndTextOverlay03 = 53
+    TileSquare310x310ImageCollectionAndText01 = 54
+    TileSquare310x310ImageCollectionAndText02 = 55
+    TileSquare310x310ImageCollection = 56
+    TileSquare310x310SmallImagesAndTextList01 = 57
+    TileSquare310x310SmallImagesAndTextList02 = 58
+    TileSquare310x310SmallImagesAndTextList03 = 59
+    TileSquare310x310SmallImagesAndTextList04 = 60
+    TileSquare310x310Text01 = 61
+    TileSquare310x310Text02 = 62
+    TileSquare310x310Text03 = 63
+    TileSquare310x310Text04 = 64
+    TileSquare310x310Text05 = 65
+    TileSquare310x310Text06 = 66
+    TileSquare310x310Text07 = 67
+    TileSquare310x310Text08 = 68
+    TileSquare310x310TextList01 = 69
+    TileSquare310x310TextList02 = 70
+    TileSquare310x310TextList03 = 71
+    TileSquare310x310SmallImageAndText01 = 72
+    TileSquare310x310SmallImagesAndTextList05 = 73
+    TileSquare310x310Text09 = 74
+    TileSquare71x71IconWithBadge = 75
+    TileSquare150x150IconWithBadge = 76
+    TileWide310x150IconWithBadgeAndText = 77
+    TileSquare71x71Image = 78
+    TileTall150x310Image = 79
 class TileUpdateManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Notifications.TileUpdateManager'
@@ -1498,6 +1547,13 @@ class ToastCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastCollection
     _classid_ = 'Windows.UI.Notifications.ToastCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 4:
+            return win32more.Windows.UI.Notifications.ToastCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Notifications.IToastCollectionFactory, collectionId: WinRT_String, displayName: WinRT_String, launchArgs: WinRT_String, iconUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.UI.Notifications.ToastCollection: ...
     @winrt_mixinmethod
@@ -1514,10 +1570,10 @@ class ToastCollection(ComPtr):
     def get_Icon(self: win32more.Windows.UI.Notifications.IToastCollection) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def put_Icon(self: win32more.Windows.UI.Notifications.IToastCollection, value: win32more.Windows.Foundation.Uri) -> Void: ...
-    Id = property(get_Id, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    LaunchArgs = property(get_LaunchArgs, put_LaunchArgs)
     Icon = property(get_Icon, put_Icon)
+    Id = property(get_Id, None)
+    LaunchArgs = property(get_LaunchArgs, put_LaunchArgs)
 class ToastCollectionManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastCollectionManager
@@ -1536,12 +1592,12 @@ class ToastCollectionManager(ComPtr):
     def get_User(self: win32more.Windows.UI.Notifications.IToastCollectionManager) -> win32more.Windows.System.User: ...
     @winrt_mixinmethod
     def get_AppId(self: win32more.Windows.UI.Notifications.IToastCollectionManager) -> WinRT_String: ...
-    User = property(get_User, None)
     AppId = property(get_AppId, None)
-ToastDismissalReason = Int32
-ToastDismissalReason_UserCanceled: ToastDismissalReason = 0
-ToastDismissalReason_ApplicationHidden: ToastDismissalReason = 1
-ToastDismissalReason_TimedOut: ToastDismissalReason = 2
+    User = property(get_User, None)
+class ToastDismissalReason(Int32):  # enum
+    UserCanceled = 0
+    ApplicationHidden = 1
+    TimedOut = 2
 class ToastDismissedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastDismissedEventArgs
@@ -1556,15 +1612,22 @@ class ToastFailedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_ErrorCode(self: win32more.Windows.UI.Notifications.IToastFailedEventArgs) -> win32more.Windows.Foundation.HResult: ...
     ErrorCode = property(get_ErrorCode, None)
-ToastHistoryChangedType = Int32
-ToastHistoryChangedType_Cleared: ToastHistoryChangedType = 0
-ToastHistoryChangedType_Removed: ToastHistoryChangedType = 1
-ToastHistoryChangedType_Expired: ToastHistoryChangedType = 2
-ToastHistoryChangedType_Added: ToastHistoryChangedType = 3
+class ToastHistoryChangedType(Int32):  # enum
+    Cleared = 0
+    Removed = 1
+    Expired = 2
+    Added = 3
 class ToastNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastNotification
     _classid_ = 'Windows.UI.Notifications.ToastNotification'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Notifications.ToastNotification.CreateToastNotification(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateToastNotification(cls: win32more.Windows.UI.Notifications.IToastNotificationFactory, content: win32more.Windows.Data.Xml.Dom.XmlDocument) -> win32more.Windows.UI.Notifications.ToastNotification: ...
     @winrt_mixinmethod
@@ -1618,15 +1681,15 @@ class ToastNotification(ComPtr):
     @winrt_mixinmethod
     def put_ExpiresOnReboot(self: win32more.Windows.UI.Notifications.IToastNotification6, value: Boolean) -> Void: ...
     Content = property(get_Content, None)
-    ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
-    Tag = property(get_Tag, put_Tag)
-    Group = property(get_Group, put_Group)
-    SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
-    NotificationMirroring = property(get_NotificationMirroring, put_NotificationMirroring)
-    RemoteId = property(get_RemoteId, put_RemoteId)
     Data = property(get_Data, put_Data)
-    Priority = property(get_Priority, put_Priority)
+    ExpirationTime = property(get_ExpirationTime, put_ExpirationTime)
     ExpiresOnReboot = property(get_ExpiresOnReboot, put_ExpiresOnReboot)
+    Group = property(get_Group, put_Group)
+    NotificationMirroring = property(get_NotificationMirroring, put_NotificationMirroring)
+    Priority = property(get_Priority, put_Priority)
+    RemoteId = property(get_RemoteId, put_RemoteId)
+    SuppressPopup = property(get_SuppressPopup, put_SuppressPopup)
+    Tag = property(get_Tag, put_Tag)
 class ToastNotificationActionTriggerDetail(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastNotificationActionTriggerDetail
@@ -1716,15 +1779,15 @@ class ToastNotificationManagerForUser(ComPtr):
     @winrt_mixinmethod
     def remove_NotificationModeChanged(self: win32more.Windows.UI.Notifications.IToastNotificationManagerForUser3, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     History = property(get_History, None)
-    User = property(get_User, None)
     NotificationMode = property(get_NotificationMode, None)
-ToastNotificationMode = Int32
-ToastNotificationMode_Unrestricted: ToastNotificationMode = 0
-ToastNotificationMode_PriorityOnly: ToastNotificationMode = 1
-ToastNotificationMode_AlarmsOnly: ToastNotificationMode = 2
-ToastNotificationPriority = Int32
-ToastNotificationPriority_Default: ToastNotificationPriority = 0
-ToastNotificationPriority_High: ToastNotificationPriority = 1
+    User = property(get_User, None)
+class ToastNotificationMode(Int32):  # enum
+    Unrestricted = 0
+    PriorityOnly = 1
+    AlarmsOnly = 2
+class ToastNotificationPriority(Int32):  # enum
+    Default = 0
+    High = 1
 class ToastNotifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IToastNotifier
@@ -1750,15 +1813,15 @@ class ToastNotifier(ComPtr):
     @winrt_mixinmethod
     def remove_ScheduledToastNotificationShowing(self: win32more.Windows.UI.Notifications.IToastNotifier3, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Setting = property(get_Setting, None)
-ToastTemplateType = Int32
-ToastTemplateType_ToastImageAndText01: ToastTemplateType = 0
-ToastTemplateType_ToastImageAndText02: ToastTemplateType = 1
-ToastTemplateType_ToastImageAndText03: ToastTemplateType = 2
-ToastTemplateType_ToastImageAndText04: ToastTemplateType = 3
-ToastTemplateType_ToastText01: ToastTemplateType = 4
-ToastTemplateType_ToastText02: ToastTemplateType = 5
-ToastTemplateType_ToastText03: ToastTemplateType = 6
-ToastTemplateType_ToastText04: ToastTemplateType = 7
+class ToastTemplateType(Int32):  # enum
+    ToastImageAndText01 = 0
+    ToastImageAndText02 = 1
+    ToastImageAndText03 = 2
+    ToastImageAndText04 = 3
+    ToastText01 = 4
+    ToastText02 = 5
+    ToastText03 = 6
+    ToastText04 = 7
 class UserNotification(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IUserNotification
@@ -1771,10 +1834,10 @@ class UserNotification(ComPtr):
     def get_Id(self: win32more.Windows.UI.Notifications.IUserNotification) -> UInt32: ...
     @winrt_mixinmethod
     def get_CreationTime(self: win32more.Windows.UI.Notifications.IUserNotification) -> win32more.Windows.Foundation.DateTime: ...
-    Notification = property(get_Notification, None)
     AppInfo = property(get_AppInfo, None)
-    Id = property(get_Id, None)
     CreationTime = property(get_CreationTime, None)
+    Id = property(get_Id, None)
+    Notification = property(get_Notification, None)
 class UserNotificationChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Notifications.IUserNotificationChangedEventArgs
@@ -1785,7 +1848,9 @@ class UserNotificationChangedEventArgs(ComPtr):
     def get_UserNotificationId(self: win32more.Windows.UI.Notifications.IUserNotificationChangedEventArgs) -> UInt32: ...
     ChangeKind = property(get_ChangeKind, None)
     UserNotificationId = property(get_UserNotificationId, None)
-UserNotificationChangedKind = Int32
-UserNotificationChangedKind_Added: UserNotificationChangedKind = 0
-UserNotificationChangedKind_Removed: UserNotificationChangedKind = 1
+class UserNotificationChangedKind(Int32):  # enum
+    Added = 0
+    Removed = 1
+
+
 make_ready(__name__)

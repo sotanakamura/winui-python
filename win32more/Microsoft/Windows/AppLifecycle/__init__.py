@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.AppLifecycle
 import win32more.Windows.ApplicationModel.Core
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class ActivationRegistrationManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.AppLifecycle.ActivationRegistrationManager'
@@ -42,8 +29,8 @@ class AppActivationArguments(ComPtr):
     def get_Kind(self: win32more.Microsoft.Windows.AppLifecycle.IAppActivationArguments) -> win32more.Microsoft.Windows.AppLifecycle.ExtendedActivationKind: ...
     @winrt_mixinmethod
     def get_Data(self: win32more.Microsoft.Windows.AppLifecycle.IAppActivationArguments) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Kind = property(get_Kind, None)
     Data = property(get_Data, None)
+    Kind = property(get_Kind, None)
 class AppInstance(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.AppLifecycle.IAppInstance
@@ -72,57 +59,57 @@ class AppInstance(ComPtr):
     def GetInstances(cls: win32more.Microsoft.Windows.AppLifecycle.IAppInstanceStatics) -> win32more.Windows.Foundation.Collections.IVector[win32more.Microsoft.Windows.AppLifecycle.AppInstance]: ...
     @winrt_classmethod
     def FindOrRegisterForKey(cls: win32more.Microsoft.Windows.AppLifecycle.IAppInstanceStatics, key: WinRT_String) -> win32more.Microsoft.Windows.AppLifecycle.AppInstance: ...
-    Key = property(get_Key, None)
     IsCurrent = property(get_IsCurrent, None)
+    Key = property(get_Key, None)
     ProcessId = property(get_ProcessId, None)
 AppLifecycleContract: UInt32 = 131072
-ExtendedActivationKind = Int32
-ExtendedActivationKind_Launch: ExtendedActivationKind = 0
-ExtendedActivationKind_Search: ExtendedActivationKind = 1
-ExtendedActivationKind_ShareTarget: ExtendedActivationKind = 2
-ExtendedActivationKind_File: ExtendedActivationKind = 3
-ExtendedActivationKind_Protocol: ExtendedActivationKind = 4
-ExtendedActivationKind_FileOpenPicker: ExtendedActivationKind = 5
-ExtendedActivationKind_FileSavePicker: ExtendedActivationKind = 6
-ExtendedActivationKind_CachedFileUpdater: ExtendedActivationKind = 7
-ExtendedActivationKind_ContactPicker: ExtendedActivationKind = 8
-ExtendedActivationKind_Device: ExtendedActivationKind = 9
-ExtendedActivationKind_PrintTaskSettings: ExtendedActivationKind = 10
-ExtendedActivationKind_CameraSettings: ExtendedActivationKind = 11
-ExtendedActivationKind_RestrictedLaunch: ExtendedActivationKind = 12
-ExtendedActivationKind_AppointmentsProvider: ExtendedActivationKind = 13
-ExtendedActivationKind_Contact: ExtendedActivationKind = 14
-ExtendedActivationKind_LockScreenCall: ExtendedActivationKind = 15
-ExtendedActivationKind_VoiceCommand: ExtendedActivationKind = 16
-ExtendedActivationKind_LockScreen: ExtendedActivationKind = 17
-ExtendedActivationKind_PickerReturned: ExtendedActivationKind = 1000
-ExtendedActivationKind_WalletAction: ExtendedActivationKind = 1001
-ExtendedActivationKind_PickFileContinuation: ExtendedActivationKind = 1002
-ExtendedActivationKind_PickSaveFileContinuation: ExtendedActivationKind = 1003
-ExtendedActivationKind_PickFolderContinuation: ExtendedActivationKind = 1004
-ExtendedActivationKind_WebAuthenticationBrokerContinuation: ExtendedActivationKind = 1005
-ExtendedActivationKind_WebAccountProvider: ExtendedActivationKind = 1006
-ExtendedActivationKind_ComponentUI: ExtendedActivationKind = 1007
-ExtendedActivationKind_ProtocolForResults: ExtendedActivationKind = 1009
-ExtendedActivationKind_ToastNotification: ExtendedActivationKind = 1010
-ExtendedActivationKind_Print3DWorkflow: ExtendedActivationKind = 1011
-ExtendedActivationKind_DialReceiver: ExtendedActivationKind = 1012
-ExtendedActivationKind_DevicePairing: ExtendedActivationKind = 1013
-ExtendedActivationKind_UserDataAccountsProvider: ExtendedActivationKind = 1014
-ExtendedActivationKind_FilePickerExperience: ExtendedActivationKind = 1015
-ExtendedActivationKind_LockScreenComponent: ExtendedActivationKind = 1016
-ExtendedActivationKind_ContactPanel: ExtendedActivationKind = 1017
-ExtendedActivationKind_PrintWorkflowForegroundTask: ExtendedActivationKind = 1018
-ExtendedActivationKind_GameUIProvider: ExtendedActivationKind = 1019
-ExtendedActivationKind_StartupTask: ExtendedActivationKind = 1020
-ExtendedActivationKind_CommandLineLaunch: ExtendedActivationKind = 1021
-ExtendedActivationKind_BarcodeScannerProvider: ExtendedActivationKind = 1022
-ExtendedActivationKind_PrintSupportJobUI: ExtendedActivationKind = 1023
-ExtendedActivationKind_PrintSupportSettingsUI: ExtendedActivationKind = 1024
-ExtendedActivationKind_PhoneCallActivation: ExtendedActivationKind = 1025
-ExtendedActivationKind_VpnForeground: ExtendedActivationKind = 1026
-ExtendedActivationKind_Push: ExtendedActivationKind = 5000
-ExtendedActivationKind_AppNotification: ExtendedActivationKind = 5001
+class ExtendedActivationKind(Int32):  # enum
+    Launch = 0
+    Search = 1
+    ShareTarget = 2
+    File = 3
+    Protocol = 4
+    FileOpenPicker = 5
+    FileSavePicker = 6
+    CachedFileUpdater = 7
+    ContactPicker = 8
+    Device = 9
+    PrintTaskSettings = 10
+    CameraSettings = 11
+    RestrictedLaunch = 12
+    AppointmentsProvider = 13
+    Contact = 14
+    LockScreenCall = 15
+    VoiceCommand = 16
+    LockScreen = 17
+    PickerReturned = 1000
+    WalletAction = 1001
+    PickFileContinuation = 1002
+    PickSaveFileContinuation = 1003
+    PickFolderContinuation = 1004
+    WebAuthenticationBrokerContinuation = 1005
+    WebAccountProvider = 1006
+    ComponentUI = 1007
+    ProtocolForResults = 1009
+    ToastNotification = 1010
+    Print3DWorkflow = 1011
+    DialReceiver = 1012
+    DevicePairing = 1013
+    UserDataAccountsProvider = 1014
+    FilePickerExperience = 1015
+    LockScreenComponent = 1016
+    ContactPanel = 1017
+    PrintWorkflowForegroundTask = 1018
+    GameUIProvider = 1019
+    StartupTask = 1020
+    CommandLineLaunch = 1021
+    BarcodeScannerProvider = 1022
+    PrintSupportJobUI = 1023
+    PrintSupportSettingsUI = 1024
+    PhoneCallActivation = 1025
+    VpnForeground = 1026
+    Push = 5000
+    AppNotification = 5001
 class IActivationRegistrationManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.AppLifecycle.IActivationRegistrationManagerStatics'
@@ -147,8 +134,8 @@ class IAppActivationArguments(ComPtr):
     def get_Kind(self) -> win32more.Microsoft.Windows.AppLifecycle.ExtendedActivationKind: ...
     @winrt_commethod(7)
     def get_Data(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Kind = property(get_Kind, None)
     Data = property(get_Data, None)
+    Kind = property(get_Kind, None)
 class IAppInstance(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.AppLifecycle.IAppInstance'
@@ -169,8 +156,8 @@ class IAppInstance(ComPtr):
     def get_IsCurrent(self) -> Boolean: ...
     @winrt_commethod(13)
     def get_ProcessId(self) -> UInt32: ...
-    Key = property(get_Key, None)
     IsCurrent = property(get_IsCurrent, None)
+    Key = property(get_Key, None)
     ProcessId = property(get_ProcessId, None)
 class IAppInstanceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -188,4 +175,6 @@ class IAppInstanceStatics2(ComPtr):
     _iid_ = Guid('{fe9f1885-7160-5397-ba9b-5890b24fdc04}')
     @winrt_commethod(6)
     def Restart(self, arguments: WinRT_String) -> win32more.Windows.ApplicationModel.Core.AppRestartFailureReason: ...
+
+
 make_ready(__name__)

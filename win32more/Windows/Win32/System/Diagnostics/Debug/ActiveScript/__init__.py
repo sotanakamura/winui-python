@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.Com
 import win32more.Windows.Win32.System.Diagnostics.Debug
@@ -1504,9 +1504,9 @@ class JsDebugPropertyInfo(EasyCastStructure):
     value: win32more.Windows.Win32.Foundation.BSTR
     fullName: win32more.Windows.Win32.Foundation.BSTR
     attr: win32more.Windows.Win32.System.Diagnostics.Debug.ActiveScript.JS_PROPERTY_ATTRIBUTES
-JsDebugReadMemoryFlags = Int32
-JsDebugReadMemoryFlags_None: win32more.Windows.Win32.System.Diagnostics.Debug.ActiveScript.JsDebugReadMemoryFlags = 0
-JsDebugReadMemoryFlags_JsDebugAllowPartialRead: win32more.Windows.Win32.System.Diagnostics.Debug.ActiveScript.JsDebugReadMemoryFlags = 1
+class JsDebugReadMemoryFlags(Int32):  # enum
+    None_ = 0
+    JsDebugAllowPartialRead = 1
 MachineDebugManager_DEBUG = Guid('{49769cec-3a55-4bb0-b697-88fede77e8ea}')
 MachineDebugManager_RETAIL = Guid('{0c0a3666-30c9-11d0-8f20-00805f2cd064}')
 PROFILER_EVENT_MASK = Int32

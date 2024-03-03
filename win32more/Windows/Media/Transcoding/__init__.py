@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Core
@@ -22,6 +8,7 @@ import win32more.Windows.Media.MediaProperties
 import win32more.Windows.Media.Transcoding
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IMediaTranscoder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Transcoding.IMediaTranscoder'
@@ -56,10 +43,10 @@ class IMediaTranscoder(ComPtr):
     def PrepareFileTranscodeAsync(self, source: win32more.Windows.Storage.IStorageFile, destination: win32more.Windows.Storage.IStorageFile, profile: win32more.Windows.Media.MediaProperties.MediaEncodingProfile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Transcoding.PrepareTranscodeResult]: ...
     @winrt_commethod(20)
     def PrepareStreamTranscodeAsync(self, source: win32more.Windows.Storage.Streams.IRandomAccessStream, destination: win32more.Windows.Storage.Streams.IRandomAccessStream, profile: win32more.Windows.Media.MediaProperties.MediaEncodingProfile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Transcoding.PrepareTranscodeResult]: ...
-    TrimStartTime = property(get_TrimStartTime, put_TrimStartTime)
-    TrimStopTime = property(get_TrimStopTime, put_TrimStopTime)
     AlwaysReencode = property(get_AlwaysReencode, put_AlwaysReencode)
     HardwareAccelerationEnabled = property(get_HardwareAccelerationEnabled, put_HardwareAccelerationEnabled)
+    TrimStartTime = property(get_TrimStartTime, put_TrimStartTime)
+    TrimStopTime = property(get_TrimStopTime, put_TrimStopTime)
 class IMediaTranscoder2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Transcoding.IMediaTranscoder2'
@@ -87,6 +74,13 @@ class MediaTranscoder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Transcoding.IMediaTranscoder
     _classid_ = 'Windows.Media.Transcoding.MediaTranscoder'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Transcoding.MediaTranscoder.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Transcoding.MediaTranscoder: ...
     @winrt_mixinmethod
@@ -125,14 +119,14 @@ class MediaTranscoder(ComPtr):
     def put_VideoProcessingAlgorithm(self: win32more.Windows.Media.Transcoding.IMediaTranscoder2, value: win32more.Windows.Media.Transcoding.MediaVideoProcessingAlgorithm) -> Void: ...
     @winrt_mixinmethod
     def get_VideoProcessingAlgorithm(self: win32more.Windows.Media.Transcoding.IMediaTranscoder2) -> win32more.Windows.Media.Transcoding.MediaVideoProcessingAlgorithm: ...
-    TrimStartTime = property(get_TrimStartTime, put_TrimStartTime)
-    TrimStopTime = property(get_TrimStopTime, put_TrimStopTime)
     AlwaysReencode = property(get_AlwaysReencode, put_AlwaysReencode)
     HardwareAccelerationEnabled = property(get_HardwareAccelerationEnabled, put_HardwareAccelerationEnabled)
+    TrimStartTime = property(get_TrimStartTime, put_TrimStartTime)
+    TrimStopTime = property(get_TrimStopTime, put_TrimStopTime)
     VideoProcessingAlgorithm = property(get_VideoProcessingAlgorithm, put_VideoProcessingAlgorithm)
-MediaVideoProcessingAlgorithm = Int32
-MediaVideoProcessingAlgorithm_Default: MediaVideoProcessingAlgorithm = 0
-MediaVideoProcessingAlgorithm_MrfCrf444: MediaVideoProcessingAlgorithm = 1
+class MediaVideoProcessingAlgorithm(Int32):  # enum
+    Default = 0
+    MrfCrf444 = 1
 class PrepareTranscodeResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Transcoding.IPrepareTranscodeResult
@@ -145,9 +139,11 @@ class PrepareTranscodeResult(ComPtr):
     def TranscodeAsync(self: win32more.Windows.Media.Transcoding.IPrepareTranscodeResult) -> win32more.Windows.Foundation.IAsyncActionWithProgress[Double]: ...
     CanTranscode = property(get_CanTranscode, None)
     FailureReason = property(get_FailureReason, None)
-TranscodeFailureReason = Int32
-TranscodeFailureReason_None: TranscodeFailureReason = 0
-TranscodeFailureReason_Unknown: TranscodeFailureReason = 1
-TranscodeFailureReason_InvalidProfile: TranscodeFailureReason = 2
-TranscodeFailureReason_CodecNotFound: TranscodeFailureReason = 3
+class TranscodeFailureReason(Int32):  # enum
+    None_ = 0
+    Unknown = 1
+    InvalidProfile = 2
+    CodecNotFound = 3
+
+
 make_ready(__name__)

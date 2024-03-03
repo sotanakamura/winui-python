@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Globalization
@@ -22,10 +8,11 @@ import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
 import win32more.Windows.System.UserProfile
-AccountPictureKind = Int32
-AccountPictureKind_SmallImage: AccountPictureKind = 0
-AccountPictureKind_LargeImage: AccountPictureKind = 1
-AccountPictureKind_Video: AccountPictureKind = 2
+import win32more.Windows.Win32.System.WinRT
+class AccountPictureKind(Int32):  # enum
+    SmallImage = 0
+    LargeImage = 1
+    Video = 2
 class _AdvertisingManager_Meta_(ComPtr.__class__):
     pass
 class AdvertisingManager(ComPtr, metaclass=_AdvertisingManager_Meta_):
@@ -120,8 +107,8 @@ class GlobalizationPreferences(ComPtr, metaclass=_GlobalizationPreferences_Meta_
     _GlobalizationPreferences_Meta_.Calendars = property(get_Calendars.__wrapped__, None)
     _GlobalizationPreferences_Meta_.Clocks = property(get_Clocks.__wrapped__, None)
     _GlobalizationPreferences_Meta_.Currencies = property(get_Currencies.__wrapped__, None)
-    _GlobalizationPreferences_Meta_.Languages = property(get_Languages.__wrapped__, None)
     _GlobalizationPreferences_Meta_.HomeGeographicRegion = property(get_HomeGeographicRegion.__wrapped__, None)
+    _GlobalizationPreferences_Meta_.Languages = property(get_Languages.__wrapped__, None)
     _GlobalizationPreferences_Meta_.WeekStartsOn = property(get_WeekStartsOn.__wrapped__, None)
 class GlobalizationPreferencesForUser(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -141,12 +128,12 @@ class GlobalizationPreferencesForUser(ComPtr):
     def get_HomeGeographicRegion(self: win32more.Windows.System.UserProfile.IGlobalizationPreferencesForUser) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_WeekStartsOn(self: win32more.Windows.System.UserProfile.IGlobalizationPreferencesForUser) -> win32more.Windows.Globalization.DayOfWeek: ...
-    User = property(get_User, None)
     Calendars = property(get_Calendars, None)
     Clocks = property(get_Clocks, None)
     Currencies = property(get_Currencies, None)
-    Languages = property(get_Languages, None)
     HomeGeographicRegion = property(get_HomeGeographicRegion, None)
+    Languages = property(get_Languages, None)
+    User = property(get_User, None)
     WeekStartsOn = property(get_WeekStartsOn, None)
 class IAdvertisingManagerForUser(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -238,12 +225,12 @@ class IGlobalizationPreferencesForUser(ComPtr):
     def get_HomeGeographicRegion(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def get_WeekStartsOn(self) -> win32more.Windows.Globalization.DayOfWeek: ...
-    User = property(get_User, None)
     Calendars = property(get_Calendars, None)
     Clocks = property(get_Clocks, None)
     Currencies = property(get_Currencies, None)
-    Languages = property(get_Languages, None)
     HomeGeographicRegion = property(get_HomeGeographicRegion, None)
+    Languages = property(get_Languages, None)
+    User = property(get_User, None)
     WeekStartsOn = property(get_WeekStartsOn, None)
 class IGlobalizationPreferencesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -264,8 +251,8 @@ class IGlobalizationPreferencesStatics(ComPtr):
     Calendars = property(get_Calendars, None)
     Clocks = property(get_Clocks, None)
     Currencies = property(get_Currencies, None)
-    Languages = property(get_Languages, None)
     HomeGeographicRegion = property(get_HomeGeographicRegion, None)
+    Languages = property(get_Languages, None)
     WeekStartsOn = property(get_WeekStartsOn, None)
 class IGlobalizationPreferencesStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -373,17 +360,17 @@ class LockScreen(ComPtr, metaclass=_LockScreen_Meta_):
     @winrt_classmethod
     def SetImageStreamAsync(cls: win32more.Windows.System.UserProfile.ILockScreenStatics, value: win32more.Windows.Storage.Streams.IRandomAccessStream) -> win32more.Windows.Foundation.IAsyncAction: ...
     _LockScreen_Meta_.OriginalImageFile = property(get_OriginalImageFile.__wrapped__, None)
-SetAccountPictureResult = Int32
-SetAccountPictureResult_Success: SetAccountPictureResult = 0
-SetAccountPictureResult_ChangeDisabled: SetAccountPictureResult = 1
-SetAccountPictureResult_LargeOrDynamicError: SetAccountPictureResult = 2
-SetAccountPictureResult_VideoFrameSizeError: SetAccountPictureResult = 3
-SetAccountPictureResult_FileSizeError: SetAccountPictureResult = 4
-SetAccountPictureResult_Failure: SetAccountPictureResult = 5
-SetImageFeedResult = Int32
-SetImageFeedResult_Success: SetImageFeedResult = 0
-SetImageFeedResult_ChangeDisabled: SetImageFeedResult = 1
-SetImageFeedResult_UserCanceled: SetImageFeedResult = 2
+class SetAccountPictureResult(Int32):  # enum
+    Success = 0
+    ChangeDisabled = 1
+    LargeOrDynamicError = 2
+    VideoFrameSizeError = 3
+    FileSizeError = 4
+    Failure = 5
+class SetImageFeedResult(Int32):  # enum
+    Success = 0
+    ChangeDisabled = 1
+    UserCanceled = 2
 class _UserInformation_Meta_(ComPtr.__class__):
     pass
 class UserInformation(ComPtr, metaclass=_UserInformation_Meta_):
@@ -438,4 +425,6 @@ class UserProfilePersonalizationSettings(ComPtr, metaclass=_UserProfilePersonali
     @winrt_classmethod
     def IsSupported(cls: win32more.Windows.System.UserProfile.IUserProfilePersonalizationSettingsStatics) -> Boolean: ...
     _UserProfilePersonalizationSettings_Meta_.Current = property(get_Current.__wrapped__, None)
+
+
 make_ready(__name__)

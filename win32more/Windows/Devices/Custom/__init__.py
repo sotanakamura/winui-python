@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Custom
 import win32more.Windows.Foundation
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class CustomDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Custom.ICustomDevice
@@ -37,13 +24,13 @@ class CustomDevice(ComPtr):
     InputStream = property(get_InputStream, None)
     OutputStream = property(get_OutputStream, None)
 CustomDeviceContract: UInt32 = 65536
-DeviceAccessMode = Int32
-DeviceAccessMode_Read: DeviceAccessMode = 0
-DeviceAccessMode_Write: DeviceAccessMode = 1
-DeviceAccessMode_ReadWrite: DeviceAccessMode = 2
-DeviceSharingMode = Int32
-DeviceSharingMode_Shared: DeviceSharingMode = 0
-DeviceSharingMode_Exclusive: DeviceSharingMode = 1
+class DeviceAccessMode(Int32):  # enum
+    Read = 0
+    Write = 1
+    ReadWrite = 2
+class DeviceSharingMode(Int32):  # enum
+    Shared = 0
+    Exclusive = 1
 class ICustomDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Custom.ICustomDevice'
@@ -82,9 +69,9 @@ class IIOControlCode(ComPtr):
     def get_ControlCode(self) -> UInt32: ...
     AccessMode = property(get_AccessMode, None)
     BufferingMethod = property(get_BufferingMethod, None)
-    Function = property(get_Function, None)
-    DeviceType = property(get_DeviceType, None)
     ControlCode = property(get_ControlCode, None)
+    DeviceType = property(get_DeviceType, None)
+    Function = property(get_Function, None)
 class IIOControlCodeFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Custom.IIOControlCodeFactory'
@@ -98,20 +85,27 @@ class IKnownDeviceTypesStatics(ComPtr):
     @winrt_commethod(6)
     def get_Unknown(self) -> UInt16: ...
     Unknown = property(get_Unknown, None)
-IOControlAccessMode = Int32
-IOControlAccessMode_Any: IOControlAccessMode = 0
-IOControlAccessMode_Read: IOControlAccessMode = 1
-IOControlAccessMode_Write: IOControlAccessMode = 2
-IOControlAccessMode_ReadWrite: IOControlAccessMode = 3
-IOControlBufferingMethod = Int32
-IOControlBufferingMethod_Buffered: IOControlBufferingMethod = 0
-IOControlBufferingMethod_DirectInput: IOControlBufferingMethod = 1
-IOControlBufferingMethod_DirectOutput: IOControlBufferingMethod = 2
-IOControlBufferingMethod_Neither: IOControlBufferingMethod = 3
+class IOControlAccessMode(Int32):  # enum
+    Any = 0
+    Read = 1
+    Write = 2
+    ReadWrite = 3
+class IOControlBufferingMethod(Int32):  # enum
+    Buffered = 0
+    DirectInput = 1
+    DirectOutput = 2
+    Neither = 3
 class IOControlCode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Custom.IIOControlCode
     _classid_ = 'Windows.Devices.Custom.IOControlCode'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 4:
+            return win32more.Windows.Devices.Custom.IOControlCode.CreateIOControlCode(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateIOControlCode(cls: win32more.Windows.Devices.Custom.IIOControlCodeFactory, deviceType: UInt16, function: UInt16, accessMode: win32more.Windows.Devices.Custom.IOControlAccessMode, bufferingMethod: win32more.Windows.Devices.Custom.IOControlBufferingMethod) -> win32more.Windows.Devices.Custom.IOControlCode: ...
     @winrt_mixinmethod
@@ -126,9 +120,9 @@ class IOControlCode(ComPtr):
     def get_ControlCode(self: win32more.Windows.Devices.Custom.IIOControlCode) -> UInt32: ...
     AccessMode = property(get_AccessMode, None)
     BufferingMethod = property(get_BufferingMethod, None)
-    Function = property(get_Function, None)
-    DeviceType = property(get_DeviceType, None)
     ControlCode = property(get_ControlCode, None)
+    DeviceType = property(get_DeviceType, None)
+    Function = property(get_Function, None)
 class _KnownDeviceTypes_Meta_(ComPtr.__class__):
     pass
 class KnownDeviceTypes(ComPtr, metaclass=_KnownDeviceTypes_Meta_):
@@ -137,4 +131,6 @@ class KnownDeviceTypes(ComPtr, metaclass=_KnownDeviceTypes_Meta_):
     @winrt_classmethod
     def get_Unknown(cls: win32more.Windows.Devices.Custom.IKnownDeviceTypesStatics) -> UInt16: ...
     _KnownDeviceTypes_Meta_.Unknown = property(get_Unknown.__wrapped__, None)
+
+
 make_ready(__name__)

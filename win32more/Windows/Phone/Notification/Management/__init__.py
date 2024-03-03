@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Appointments
 import win32more.Windows.ApplicationModel.Email
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Phone.Notification.Management
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class _AccessoryManager_Meta_(ComPtr.__class__):
     pass
 class AccessoryManager(ComPtr, metaclass=_AccessoryManager_Meta_):
@@ -152,34 +139,34 @@ class AccessoryManager(ComPtr, metaclass=_AccessoryManager_Meta_):
     def GetUserConsent(cls: win32more.Windows.Phone.Notification.Management.IAccessoryManager) -> Boolean: ...
     @winrt_classmethod
     def GetAppIcon(cls: win32more.Windows.Phone.Notification.Management.IAccessoryManager, appId: WinRT_String) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
-    _AccessoryManager_Meta_.SpeedDialList = property(get_SpeedDialList.__wrapped__, None)
-    _AccessoryManager_Meta_.IsPhonePinLocked = property(get_IsPhonePinLocked.__wrapped__, None)
-    _AccessoryManager_Meta_.VolumeInfo = property(get_VolumeInfo.__wrapped__, None)
-    _AccessoryManager_Meta_.PhoneLineDetails = property(get_PhoneLineDetails.__wrapped__, None)
-    _AccessoryManager_Meta_.PhoneMute = property(get_PhoneMute.__wrapped__, put_PhoneMute.__wrapped__)
-    _AccessoryManager_Meta_.PhoneCallAudioEndpoint = property(get_PhoneCallAudioEndpoint.__wrapped__, put_PhoneCallAudioEndpoint.__wrapped__)
-    _AccessoryManager_Meta_.MediaPlaybackCapabilities = property(get_MediaPlaybackCapabilities.__wrapped__, None)
-    _AccessoryManager_Meta_.MediaPlaybackStatus = property(get_MediaPlaybackStatus.__wrapped__, None)
+    _AccessoryManager_Meta_.BatterySaverState = property(get_BatterySaverState.__wrapped__, None)
     _AccessoryManager_Meta_.DoNotDisturbEnabled = property(get_DoNotDisturbEnabled.__wrapped__, None)
     _AccessoryManager_Meta_.DrivingModeEnabled = property(get_DrivingModeEnabled.__wrapped__, None)
-    _AccessoryManager_Meta_.BatterySaverState = property(get_BatterySaverState.__wrapped__, None)
-AccessoryNotificationType = UInt32
-AccessoryNotificationType_None: AccessoryNotificationType = 0
-AccessoryNotificationType_Phone: AccessoryNotificationType = 1
-AccessoryNotificationType_Email: AccessoryNotificationType = 2
-AccessoryNotificationType_Reminder: AccessoryNotificationType = 4
-AccessoryNotificationType_Alarm: AccessoryNotificationType = 8
-AccessoryNotificationType_Toast: AccessoryNotificationType = 16
-AccessoryNotificationType_AppUninstalled: AccessoryNotificationType = 32
-AccessoryNotificationType_Dnd: AccessoryNotificationType = 64
-AccessoryNotificationType_DrivingMode: AccessoryNotificationType = 128
-AccessoryNotificationType_BatterySaver: AccessoryNotificationType = 256
-AccessoryNotificationType_Media: AccessoryNotificationType = 512
-AccessoryNotificationType_CortanaTile: AccessoryNotificationType = 1024
-AccessoryNotificationType_ToastCleared: AccessoryNotificationType = 2048
-AccessoryNotificationType_CalendarChanged: AccessoryNotificationType = 4096
-AccessoryNotificationType_VolumeChanged: AccessoryNotificationType = 8192
-AccessoryNotificationType_EmailReadStatusChanged: AccessoryNotificationType = 16384
+    _AccessoryManager_Meta_.IsPhonePinLocked = property(get_IsPhonePinLocked.__wrapped__, None)
+    _AccessoryManager_Meta_.MediaPlaybackCapabilities = property(get_MediaPlaybackCapabilities.__wrapped__, None)
+    _AccessoryManager_Meta_.MediaPlaybackStatus = property(get_MediaPlaybackStatus.__wrapped__, None)
+    _AccessoryManager_Meta_.PhoneCallAudioEndpoint = property(get_PhoneCallAudioEndpoint.__wrapped__, put_PhoneCallAudioEndpoint.__wrapped__)
+    _AccessoryManager_Meta_.PhoneLineDetails = property(get_PhoneLineDetails.__wrapped__, None)
+    _AccessoryManager_Meta_.PhoneMute = property(get_PhoneMute.__wrapped__, put_PhoneMute.__wrapped__)
+    _AccessoryManager_Meta_.SpeedDialList = property(get_SpeedDialList.__wrapped__, None)
+    _AccessoryManager_Meta_.VolumeInfo = property(get_VolumeInfo.__wrapped__, None)
+class AccessoryNotificationType(UInt32):  # enum
+    None_ = 0
+    Phone = 1
+    Email = 2
+    Reminder = 4
+    Alarm = 8
+    Toast = 16
+    AppUninstalled = 32
+    Dnd = 64
+    DrivingMode = 128
+    BatterySaver = 256
+    Media = 512
+    CortanaTile = 1024
+    ToastCleared = 2048
+    CalendarChanged = 4096
+    VolumeChanged = 8192
+    EmailReadStatusChanged = 16384
 class AlarmNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IAlarmNotificationTriggerDetails
@@ -206,16 +193,16 @@ class AlarmNotificationTriggerDetails(ComPtr):
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_InstanceId(self: win32more.Windows.Phone.Notification.Management.IAlarmNotificationTriggerDetails2) -> WinRT_String: ...
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AlarmId = property(get_AlarmId, None)
-    Title = property(get_Title, None)
-    Timestamp = property(get_Timestamp, None)
-    ReminderState = property(get_ReminderState, None)
-    TimeCreated = property(get_TimeCreated, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
-    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
     InstanceId = property(get_InstanceId, None)
+    ReminderState = property(get_ReminderState, None)
+    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
 class AppNotificationInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IAppNotificationInfo
@@ -236,14 +223,14 @@ class BinaryId(ComPtr):
     def get_Length(self: win32more.Windows.Phone.Notification.Management.IBinaryId) -> UInt32: ...
     Id = property(get_Id, None)
     Length = property(get_Length, None)
-CalendarChangedEvent = Int32
-CalendarChangedEvent_LostEvents: CalendarChangedEvent = 0
-CalendarChangedEvent_AppointmentAdded: CalendarChangedEvent = 1
-CalendarChangedEvent_AppointmentChanged: CalendarChangedEvent = 2
-CalendarChangedEvent_AppointmentDeleted: CalendarChangedEvent = 3
-CalendarChangedEvent_CalendarAdded: CalendarChangedEvent = 4
-CalendarChangedEvent_CalendarChanged: CalendarChangedEvent = 5
-CalendarChangedEvent_CalendarDeleted: CalendarChangedEvent = 6
+class CalendarChangedEvent(Int32):  # enum
+    LostEvents = 0
+    AppointmentAdded = 1
+    AppointmentChanged = 2
+    AppointmentDeleted = 3
+    CalendarAdded = 4
+    CalendarChanged = 5
+    CalendarDeleted = 6
 class CalendarChangedNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.ICalendarChangedNotificationTriggerDetails
@@ -264,13 +251,13 @@ class CalendarChangedNotificationTriggerDetails(ComPtr):
     def get_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails) -> Boolean: ...
     @winrt_mixinmethod
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
-    EventType = property(get_EventType, None)
-    ItemId = property(get_ItemId, None)
-    TimeCreated = property(get_TimeCreated, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    EventType = property(get_EventType, None)
+    ItemId = property(get_ItemId, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
 class CortanaTileNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.ICortanaTileNotificationTriggerDetails
@@ -307,21 +294,21 @@ class CortanaTileNotificationTriggerDetails(ComPtr):
     def get_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails) -> Boolean: ...
     @winrt_mixinmethod
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
-    TileId = property(get_TileId, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    AppDisplayName = property(get_AppDisplayName, None)
+    AppId = property(get_AppId, None)
     Content = property(get_Content, None)
+    EmphasizedText = property(get_EmphasizedText, None)
     LargeContent1 = property(get_LargeContent1, None)
     LargeContent2 = property(get_LargeContent2, None)
-    EmphasizedText = property(get_EmphasizedText, None)
     NonWrappedSmallContent1 = property(get_NonWrappedSmallContent1, None)
     NonWrappedSmallContent2 = property(get_NonWrappedSmallContent2, None)
     NonWrappedSmallContent3 = property(get_NonWrappedSmallContent3, None)
     NonWrappedSmallContent4 = property(get_NonWrappedSmallContent4, None)
     Source = property(get_Source, None)
-    TimeCreated = property(get_TimeCreated, None)
-    AppDisplayName = property(get_AppDisplayName, None)
-    AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TileId = property(get_TileId, None)
+    TimeCreated = property(get_TimeCreated, None)
 class EmailAccountInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IEmailAccountInfo
@@ -372,18 +359,18 @@ class EmailNotificationTriggerDetails(ComPtr):
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_MessageEntryId(self: win32more.Windows.Phone.Notification.Management.IEmailNotificationTriggerDetails2) -> win32more.Windows.Phone.Notification.Management.BinaryId: ...
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AccountName = property(get_AccountName, None)
-    ParentFolderName = property(get_ParentFolderName, None)
-    SenderName = property(get_SenderName, None)
-    SenderAddress = property(get_SenderAddress, None)
-    EmailMessage = property(get_EmailMessage, None)
-    Timestamp = property(get_Timestamp, None)
-    TimeCreated = property(get_TimeCreated, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
-    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    EmailMessage = property(get_EmailMessage, None)
     MessageEntryId = property(get_MessageEntryId, None)
+    ParentFolderName = property(get_ParentFolderName, None)
+    SenderAddress = property(get_SenderAddress, None)
+    SenderName = property(get_SenderName, None)
+    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
+    Timestamp = property(get_Timestamp, None)
 class EmailReadNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IEmailReadNotificationTriggerDetails
@@ -408,15 +395,15 @@ class EmailReadNotificationTriggerDetails(ComPtr):
     def get_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails) -> Boolean: ...
     @winrt_mixinmethod
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AccountName = property(get_AccountName, None)
-    ParentFolderName = property(get_ParentFolderName, None)
-    MessageEntryId = property(get_MessageEntryId, None)
-    IsRead = property(get_IsRead, None)
-    TimeCreated = property(get_TimeCreated, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    IsRead = property(get_IsRead, None)
+    MessageEntryId = property(get_MessageEntryId, None)
+    ParentFolderName = property(get_ParentFolderName, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
 class IAccessoryManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IAccessoryManager'
@@ -509,14 +496,14 @@ class IAccessoryManager(ComPtr):
     def GetUserConsent(self) -> Boolean: ...
     @winrt_commethod(49)
     def GetAppIcon(self, appId: WinRT_String) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
-    PhoneLineDetails = property(get_PhoneLineDetails, None)
-    PhoneMute = property(get_PhoneMute, put_PhoneMute)
-    PhoneCallAudioEndpoint = property(get_PhoneCallAudioEndpoint, put_PhoneCallAudioEndpoint)
-    MediaPlaybackCapabilities = property(get_MediaPlaybackCapabilities, None)
-    MediaPlaybackStatus = property(get_MediaPlaybackStatus, None)
+    BatterySaverState = property(get_BatterySaverState, None)
     DoNotDisturbEnabled = property(get_DoNotDisturbEnabled, None)
     DrivingModeEnabled = property(get_DrivingModeEnabled, None)
-    BatterySaverState = property(get_BatterySaverState, None)
+    MediaPlaybackCapabilities = property(get_MediaPlaybackCapabilities, None)
+    MediaPlaybackStatus = property(get_MediaPlaybackStatus, None)
+    PhoneCallAudioEndpoint = property(get_PhoneCallAudioEndpoint, put_PhoneCallAudioEndpoint)
+    PhoneLineDetails = property(get_PhoneLineDetails, None)
+    PhoneMute = property(get_PhoneMute, put_PhoneMute)
 class IAccessoryManager2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IAccessoryManager2'
@@ -551,8 +538,8 @@ class IAccessoryManager2(ComPtr):
     def EnableEmailNotificationFolderFilter(self, emailAccount: WinRT_String, folders: win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]) -> Void: ...
     @winrt_commethod(20)
     def UpdateEmailReadStatus(self, messageEntryId: win32more.Windows.Phone.Notification.Management.BinaryId, isRead: Boolean) -> Void: ...
-    SpeedDialList = property(get_SpeedDialList, None)
     IsPhonePinLocked = property(get_IsPhonePinLocked, None)
+    SpeedDialList = property(get_SpeedDialList, None)
     VolumeInfo = property(get_VolumeInfo, None)
 class IAccessoryManager3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -582,11 +569,11 @@ class IAccessoryNotificationTriggerDetails(ComPtr):
     def get_StartedProcessing(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_StartedProcessing(self, value: Boolean) -> Void: ...
-    TimeCreated = property(get_TimeCreated, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
 class IAlarmNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IAlarmNotificationTriggerDetails'
@@ -600,9 +587,9 @@ class IAlarmNotificationTriggerDetails(ComPtr):
     @winrt_commethod(9)
     def get_ReminderState(self) -> win32more.Windows.Phone.Notification.Management.ReminderState: ...
     AlarmId = property(get_AlarmId, None)
-    Title = property(get_Title, None)
-    Timestamp = property(get_Timestamp, None)
     ReminderState = property(get_ReminderState, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
 class IAlarmNotificationTriggerDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IAlarmNotificationTriggerDetails2'
@@ -664,16 +651,16 @@ class ICortanaTileNotificationTriggerDetails(ComPtr):
     def get_NonWrappedSmallContent4(self) -> WinRT_String: ...
     @winrt_commethod(15)
     def get_Source(self) -> WinRT_String: ...
-    TileId = property(get_TileId, None)
     Content = property(get_Content, None)
+    EmphasizedText = property(get_EmphasizedText, None)
     LargeContent1 = property(get_LargeContent1, None)
     LargeContent2 = property(get_LargeContent2, None)
-    EmphasizedText = property(get_EmphasizedText, None)
     NonWrappedSmallContent1 = property(get_NonWrappedSmallContent1, None)
     NonWrappedSmallContent2 = property(get_NonWrappedSmallContent2, None)
     NonWrappedSmallContent3 = property(get_NonWrappedSmallContent3, None)
     NonWrappedSmallContent4 = property(get_NonWrappedSmallContent4, None)
     Source = property(get_Source, None)
+    TileId = property(get_TileId, None)
 class IEmailAccountInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IEmailAccountInfo'
@@ -711,10 +698,10 @@ class IEmailNotificationTriggerDetails(ComPtr):
     @winrt_commethod(11)
     def get_Timestamp(self) -> win32more.Windows.Foundation.DateTime: ...
     AccountName = property(get_AccountName, None)
-    ParentFolderName = property(get_ParentFolderName, None)
-    SenderName = property(get_SenderName, None)
-    SenderAddress = property(get_SenderAddress, None)
     EmailMessage = property(get_EmailMessage, None)
+    ParentFolderName = property(get_ParentFolderName, None)
+    SenderAddress = property(get_SenderAddress, None)
+    SenderName = property(get_SenderName, None)
     Timestamp = property(get_Timestamp, None)
 class IEmailNotificationTriggerDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -736,9 +723,9 @@ class IEmailReadNotificationTriggerDetails(ComPtr):
     @winrt_commethod(9)
     def get_IsRead(self) -> Boolean: ...
     AccountName = property(get_AccountName, None)
-    ParentFolderName = property(get_ParentFolderName, None)
-    MessageEntryId = property(get_MessageEntryId, None)
     IsRead = property(get_IsRead, None)
+    MessageEntryId = property(get_MessageEntryId, None)
+    ParentFolderName = property(get_ParentFolderName, None)
 class IMediaControlsTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IMediaControlsTriggerDetails'
@@ -747,8 +734,8 @@ class IMediaControlsTriggerDetails(ComPtr):
     def get_PlaybackStatus(self) -> win32more.Windows.Phone.Notification.Management.PlaybackStatus: ...
     @winrt_commethod(7)
     def get_MediaMetadata(self) -> win32more.Windows.Phone.Notification.Management.MediaMetadata: ...
-    PlaybackStatus = property(get_PlaybackStatus, None)
     MediaMetadata = property(get_MediaMetadata, None)
+    PlaybackStatus = property(get_PlaybackStatus, None)
 class IMediaMetadata(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IMediaMetadata'
@@ -767,13 +754,13 @@ class IMediaMetadata(ComPtr):
     def get_Duration(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(12)
     def get_Thumbnail(self) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
-    Title = property(get_Title, None)
-    Subtitle = property(get_Subtitle, None)
-    Artist = property(get_Artist, None)
     Album = property(get_Album, None)
-    Track = property(get_Track, None)
+    Artist = property(get_Artist, None)
     Duration = property(get_Duration, None)
+    Subtitle = property(get_Subtitle, None)
     Thumbnail = property(get_Thumbnail, None)
+    Title = property(get_Title, None)
+    Track = property(get_Track, None)
 class IPhoneCallDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IPhoneCallDetails'
@@ -802,18 +789,18 @@ class IPhoneCallDetails(ComPtr):
     def get_ContactName(self) -> WinRT_String: ...
     @winrt_commethod(17)
     def get_PresetTextResponses(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Phone.Notification.Management.TextResponse]: ...
-    PhoneLine = property(get_PhoneLine, None)
-    CallId = property(get_CallId, None)
-    CallTransport = property(get_CallTransport, None)
-    CallMediaType = property(get_CallMediaType, None)
     CallDirection = property(get_CallDirection, None)
-    State = property(get_State, None)
+    CallId = property(get_CallId, None)
+    CallMediaType = property(get_CallMediaType, None)
+    CallTransport = property(get_CallTransport, None)
     ConferenceCallId = property(get_ConferenceCallId, None)
-    StartTime = property(get_StartTime, None)
-    EndTime = property(get_EndTime, None)
-    PhoneNumber = property(get_PhoneNumber, None)
     ContactName = property(get_ContactName, None)
+    EndTime = property(get_EndTime, None)
+    PhoneLine = property(get_PhoneLine, None)
+    PhoneNumber = property(get_PhoneNumber, None)
     PresetTextResponses = property(get_PresetTextResponses, None)
+    StartTime = property(get_StartTime, None)
+    State = property(get_State, None)
 class IPhoneLineDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IPhoneLineDetails'
@@ -830,12 +817,12 @@ class IPhoneLineDetails(ComPtr):
     def get_VoicemailCount(self) -> UInt32: ...
     @winrt_commethod(11)
     def get_RegistrationState(self) -> win32more.Windows.Phone.Notification.Management.PhoneLineRegistrationState: ...
-    LineId = property(get_LineId, None)
-    DisplayName = property(get_DisplayName, None)
-    LineNumber = property(get_LineNumber, None)
     DefaultOutgoingLine = property(get_DefaultOutgoingLine, None)
-    VoicemailCount = property(get_VoicemailCount, None)
+    DisplayName = property(get_DisplayName, None)
+    LineId = property(get_LineId, None)
+    LineNumber = property(get_LineNumber, None)
     RegistrationState = property(get_RegistrationState, None)
+    VoicemailCount = property(get_VoicemailCount, None)
 class IPhoneLineDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IPhoneLineDetails2'
@@ -853,9 +840,9 @@ class IPhoneNotificationTriggerDetails(ComPtr):
     def get_CallDetails(self) -> win32more.Windows.Phone.Notification.Management.PhoneCallDetails: ...
     @winrt_commethod(8)
     def get_PhoneLineChangedId(self) -> Guid: ...
-    PhoneNotificationType = property(get_PhoneNotificationType, None)
     CallDetails = property(get_CallDetails, None)
     PhoneLineChangedId = property(get_PhoneLineChangedId, None)
+    PhoneNotificationType = property(get_PhoneNotificationType, None)
 class IReminderNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IReminderNotificationTriggerDetails'
@@ -874,13 +861,13 @@ class IReminderNotificationTriggerDetails(ComPtr):
     def get_Appointment(self) -> win32more.Windows.ApplicationModel.Appointments.Appointment: ...
     @winrt_commethod(12)
     def get_ReminderState(self) -> win32more.Windows.Phone.Notification.Management.ReminderState: ...
-    ReminderId = property(get_ReminderId, None)
-    Title = property(get_Title, None)
+    Appointment = property(get_Appointment, None)
     Description = property(get_Description, None)
     Details = property(get_Details, None)
-    Timestamp = property(get_Timestamp, None)
-    Appointment = property(get_Appointment, None)
+    ReminderId = property(get_ReminderId, None)
     ReminderState = property(get_ReminderState, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
 class IReminderNotificationTriggerDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IReminderNotificationTriggerDetails2'
@@ -898,9 +885,9 @@ class ISpeedDialEntry(ComPtr):
     def get_NumberType(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_ContactName(self) -> WinRT_String: ...
-    PhoneNumber = property(get_PhoneNumber, None)
-    NumberType = property(get_NumberType, None)
     ContactName = property(get_ContactName, None)
+    NumberType = property(get_NumberType, None)
+    PhoneNumber = property(get_PhoneNumber, None)
 class ITextResponse(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.ITextResponse'
@@ -909,8 +896,8 @@ class ITextResponse(ComPtr):
     def get_Id(self) -> UInt32: ...
     @winrt_commethod(7)
     def get_Content(self) -> WinRT_String: ...
-    Id = property(get_Id, None)
     Content = property(get_Content, None)
+    Id = property(get_Id, None)
 class IToastNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IToastNotificationTriggerDetails'
@@ -925,11 +912,11 @@ class IToastNotificationTriggerDetails(ComPtr):
     def get_Text4(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_SuppressPopup(self) -> Boolean: ...
+    SuppressPopup = property(get_SuppressPopup, None)
     Text1 = property(get_Text1, None)
     Text2 = property(get_Text2, None)
     Text3 = property(get_Text3, None)
     Text4 = property(get_Text4, None)
-    SuppressPopup = property(get_SuppressPopup, None)
 class IToastNotificationTriggerDetails2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Phone.Notification.Management.IToastNotificationTriggerDetails2'
@@ -951,11 +938,11 @@ class IVolumeInfo(ComPtr):
     def get_IsMuted(self) -> Boolean: ...
     @winrt_commethod(10)
     def get_IsVibrateEnabled(self) -> win32more.Windows.Phone.Notification.Management.VibrateState: ...
-    SystemVolume = property(get_SystemVolume, None)
     CallVolume = property(get_CallVolume, None)
-    MediaVolume = property(get_MediaVolume, None)
     IsMuted = property(get_IsMuted, None)
     IsVibrateEnabled = property(get_IsVibrateEnabled, None)
+    MediaVolume = property(get_MediaVolume, None)
+    SystemVolume = property(get_SystemVolume, None)
 class MediaControlsTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IMediaControlsTriggerDetails
@@ -976,13 +963,13 @@ class MediaControlsTriggerDetails(ComPtr):
     def get_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails) -> Boolean: ...
     @winrt_mixinmethod
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
-    PlaybackStatus = property(get_PlaybackStatus, None)
-    MediaMetadata = property(get_MediaMetadata, None)
-    TimeCreated = property(get_TimeCreated, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    MediaMetadata = property(get_MediaMetadata, None)
+    PlaybackStatus = property(get_PlaybackStatus, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
 class MediaMetadata(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IMediaMetadata
@@ -1001,17 +988,17 @@ class MediaMetadata(ComPtr):
     def get_Duration(self: win32more.Windows.Phone.Notification.Management.IMediaMetadata) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def get_Thumbnail(self: win32more.Windows.Phone.Notification.Management.IMediaMetadata) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
-    Title = property(get_Title, None)
-    Subtitle = property(get_Subtitle, None)
-    Artist = property(get_Artist, None)
     Album = property(get_Album, None)
-    Track = property(get_Track, None)
+    Artist = property(get_Artist, None)
     Duration = property(get_Duration, None)
+    Subtitle = property(get_Subtitle, None)
     Thumbnail = property(get_Thumbnail, None)
-PhoneCallAudioEndpoint = Int32
-PhoneCallAudioEndpoint_Default: PhoneCallAudioEndpoint = 0
-PhoneCallAudioEndpoint_Speaker: PhoneCallAudioEndpoint = 1
-PhoneCallAudioEndpoint_Handsfree: PhoneCallAudioEndpoint = 2
+    Title = property(get_Title, None)
+    Track = property(get_Track, None)
+class PhoneCallAudioEndpoint(Int32):  # enum
+    Default = 0
+    Speaker = 1
+    Handsfree = 2
 class PhoneCallDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IPhoneCallDetails
@@ -1040,30 +1027,30 @@ class PhoneCallDetails(ComPtr):
     def get_ContactName(self: win32more.Windows.Phone.Notification.Management.IPhoneCallDetails) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_PresetTextResponses(self: win32more.Windows.Phone.Notification.Management.IPhoneCallDetails) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Phone.Notification.Management.TextResponse]: ...
-    PhoneLine = property(get_PhoneLine, None)
-    CallId = property(get_CallId, None)
-    CallTransport = property(get_CallTransport, None)
-    CallMediaType = property(get_CallMediaType, None)
     CallDirection = property(get_CallDirection, None)
-    State = property(get_State, None)
+    CallId = property(get_CallId, None)
+    CallMediaType = property(get_CallMediaType, None)
+    CallTransport = property(get_CallTransport, None)
     ConferenceCallId = property(get_ConferenceCallId, None)
-    StartTime = property(get_StartTime, None)
-    EndTime = property(get_EndTime, None)
-    PhoneNumber = property(get_PhoneNumber, None)
     ContactName = property(get_ContactName, None)
+    EndTime = property(get_EndTime, None)
+    PhoneLine = property(get_PhoneLine, None)
+    PhoneNumber = property(get_PhoneNumber, None)
     PresetTextResponses = property(get_PresetTextResponses, None)
-PhoneCallDirection = Int32
-PhoneCallDirection_Incoming: PhoneCallDirection = 0
-PhoneCallDirection_Outgoing: PhoneCallDirection = 1
-PhoneCallState = Int32
-PhoneCallState_Unknown: PhoneCallState = 0
-PhoneCallState_Ringing: PhoneCallState = 1
-PhoneCallState_Talking: PhoneCallState = 2
-PhoneCallState_Held: PhoneCallState = 3
-PhoneCallState_Ended: PhoneCallState = 4
-PhoneCallTransport = Int32
-PhoneCallTransport_Cellular: PhoneCallTransport = 0
-PhoneCallTransport_Voip: PhoneCallTransport = 1
+    StartTime = property(get_StartTime, None)
+    State = property(get_State, None)
+class PhoneCallDirection(Int32):  # enum
+    Incoming = 0
+    Outgoing = 1
+class PhoneCallState(Int32):  # enum
+    Unknown = 0
+    Ringing = 1
+    Talking = 2
+    Held = 3
+    Ended = 4
+class PhoneCallTransport(Int32):  # enum
+    Cellular = 0
+    Voip = 1
 class PhoneLineDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IPhoneLineDetails
@@ -1082,20 +1069,20 @@ class PhoneLineDetails(ComPtr):
     def get_RegistrationState(self: win32more.Windows.Phone.Notification.Management.IPhoneLineDetails) -> win32more.Windows.Phone.Notification.Management.PhoneLineRegistrationState: ...
     @winrt_mixinmethod
     def get_MissedCallCount(self: win32more.Windows.Phone.Notification.Management.IPhoneLineDetails2) -> UInt32: ...
-    LineId = property(get_LineId, None)
-    DisplayName = property(get_DisplayName, None)
-    LineNumber = property(get_LineNumber, None)
     DefaultOutgoingLine = property(get_DefaultOutgoingLine, None)
-    VoicemailCount = property(get_VoicemailCount, None)
-    RegistrationState = property(get_RegistrationState, None)
+    DisplayName = property(get_DisplayName, None)
+    LineId = property(get_LineId, None)
+    LineNumber = property(get_LineNumber, None)
     MissedCallCount = property(get_MissedCallCount, None)
-PhoneLineRegistrationState = Int32
-PhoneLineRegistrationState_Disconnected: PhoneLineRegistrationState = 0
-PhoneLineRegistrationState_Home: PhoneLineRegistrationState = 1
-PhoneLineRegistrationState_Roaming: PhoneLineRegistrationState = 2
-PhoneMediaType = Int32
-PhoneMediaType_AudioOnly: PhoneMediaType = 0
-PhoneMediaType_AudioVideo: PhoneMediaType = 1
+    RegistrationState = property(get_RegistrationState, None)
+    VoicemailCount = property(get_VoicemailCount, None)
+class PhoneLineRegistrationState(Int32):  # enum
+    Disconnected = 0
+    Home = 1
+    Roaming = 2
+class PhoneMediaType(Int32):  # enum
+    AudioOnly = 0
+    AudioVideo = 1
 class PhoneNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IPhoneNotificationTriggerDetails
@@ -1118,49 +1105,49 @@ class PhoneNotificationTriggerDetails(ComPtr):
     def get_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails) -> Boolean: ...
     @winrt_mixinmethod
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
-    PhoneNotificationType = property(get_PhoneNotificationType, None)
-    CallDetails = property(get_CallDetails, None)
-    PhoneLineChangedId = property(get_PhoneLineChangedId, None)
-    TimeCreated = property(get_TimeCreated, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    CallDetails = property(get_CallDetails, None)
+    PhoneLineChangedId = property(get_PhoneLineChangedId, None)
+    PhoneNotificationType = property(get_PhoneNotificationType, None)
     StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
-PhoneNotificationType = Int32
-PhoneNotificationType_NewCall: PhoneNotificationType = 0
-PhoneNotificationType_CallChanged: PhoneNotificationType = 1
-PhoneNotificationType_LineChanged: PhoneNotificationType = 2
-PhoneNotificationType_PhoneCallAudioEndpointChanged: PhoneNotificationType = 3
-PhoneNotificationType_PhoneMuteChanged: PhoneNotificationType = 4
-PlaybackCapability = UInt32
-PlaybackCapability_None: PlaybackCapability = 0
-PlaybackCapability_Play: PlaybackCapability = 1
-PlaybackCapability_Pause: PlaybackCapability = 2
-PlaybackCapability_Stop: PlaybackCapability = 4
-PlaybackCapability_Record: PlaybackCapability = 8
-PlaybackCapability_FastForward: PlaybackCapability = 16
-PlaybackCapability_Rewind: PlaybackCapability = 32
-PlaybackCapability_Next: PlaybackCapability = 64
-PlaybackCapability_Previous: PlaybackCapability = 128
-PlaybackCapability_ChannelUp: PlaybackCapability = 256
-PlaybackCapability_ChannelDown: PlaybackCapability = 512
-PlaybackCommand = Int32
-PlaybackCommand_Play: PlaybackCommand = 0
-PlaybackCommand_Pause: PlaybackCommand = 1
-PlaybackCommand_Stop: PlaybackCommand = 2
-PlaybackCommand_Record: PlaybackCommand = 3
-PlaybackCommand_FastForward: PlaybackCommand = 4
-PlaybackCommand_Rewind: PlaybackCommand = 5
-PlaybackCommand_Next: PlaybackCommand = 6
-PlaybackCommand_Previous: PlaybackCommand = 7
-PlaybackCommand_ChannelUp: PlaybackCommand = 8
-PlaybackCommand_ChannelDown: PlaybackCommand = 9
-PlaybackStatus = Int32
-PlaybackStatus_None: PlaybackStatus = 0
-PlaybackStatus_TrackChanged: PlaybackStatus = 1
-PlaybackStatus_Stopped: PlaybackStatus = 2
-PlaybackStatus_Playing: PlaybackStatus = 3
-PlaybackStatus_Paused: PlaybackStatus = 4
+    TimeCreated = property(get_TimeCreated, None)
+class PhoneNotificationType(Int32):  # enum
+    NewCall = 0
+    CallChanged = 1
+    LineChanged = 2
+    PhoneCallAudioEndpointChanged = 3
+    PhoneMuteChanged = 4
+class PlaybackCapability(UInt32):  # enum
+    None_ = 0
+    Play = 1
+    Pause = 2
+    Stop = 4
+    Record = 8
+    FastForward = 16
+    Rewind = 32
+    Next = 64
+    Previous = 128
+    ChannelUp = 256
+    ChannelDown = 512
+class PlaybackCommand(Int32):  # enum
+    Play = 0
+    Pause = 1
+    Stop = 2
+    Record = 3
+    FastForward = 4
+    Rewind = 5
+    Next = 6
+    Previous = 7
+    ChannelUp = 8
+    ChannelDown = 9
+class PlaybackStatus(Int32):  # enum
+    None_ = 0
+    TrackChanged = 1
+    Stopped = 2
+    Playing = 3
+    Paused = 4
 class ReminderNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IReminderNotificationTriggerDetails
@@ -1193,23 +1180,23 @@ class ReminderNotificationTriggerDetails(ComPtr):
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_InstanceId(self: win32more.Windows.Phone.Notification.Management.IReminderNotificationTriggerDetails2) -> WinRT_String: ...
-    ReminderId = property(get_ReminderId, None)
-    Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    Details = property(get_Details, None)
-    Timestamp = property(get_Timestamp, None)
-    Appointment = property(get_Appointment, None)
-    ReminderState = property(get_ReminderState, None)
-    TimeCreated = property(get_TimeCreated, None)
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
     AppDisplayName = property(get_AppDisplayName, None)
     AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
-    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    Appointment = property(get_Appointment, None)
+    Description = property(get_Description, None)
+    Details = property(get_Details, None)
     InstanceId = property(get_InstanceId, None)
-ReminderState = Int32
-ReminderState_Active: ReminderState = 0
-ReminderState_Snoozed: ReminderState = 1
-ReminderState_Dismissed: ReminderState = 2
+    ReminderId = property(get_ReminderId, None)
+    ReminderState = property(get_ReminderState, None)
+    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    TimeCreated = property(get_TimeCreated, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
+class ReminderState(Int32):  # enum
+    Active = 0
+    Snoozed = 1
+    Dismissed = 2
 class SpeedDialEntry(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.ISpeedDialEntry
@@ -1220,9 +1207,9 @@ class SpeedDialEntry(ComPtr):
     def get_NumberType(self: win32more.Windows.Phone.Notification.Management.ISpeedDialEntry) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_ContactName(self: win32more.Windows.Phone.Notification.Management.ISpeedDialEntry) -> WinRT_String: ...
-    PhoneNumber = property(get_PhoneNumber, None)
-    NumberType = property(get_NumberType, None)
     ContactName = property(get_ContactName, None)
+    NumberType = property(get_NumberType, None)
+    PhoneNumber = property(get_PhoneNumber, None)
 class TextResponse(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.ITextResponse
@@ -1231,8 +1218,8 @@ class TextResponse(ComPtr):
     def get_Id(self: win32more.Windows.Phone.Notification.Management.ITextResponse) -> UInt32: ...
     @winrt_mixinmethod
     def get_Content(self: win32more.Windows.Phone.Notification.Management.ITextResponse) -> WinRT_String: ...
-    Id = property(get_Id, None)
     Content = property(get_Content, None)
+    Id = property(get_Id, None)
 class ToastNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IToastNotificationTriggerDetails
@@ -1261,22 +1248,22 @@ class ToastNotificationTriggerDetails(ComPtr):
     def put_StartedProcessing(self: win32more.Windows.Phone.Notification.Management.IAccessoryNotificationTriggerDetails, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_InstanceId(self: win32more.Windows.Phone.Notification.Management.IToastNotificationTriggerDetails2) -> WinRT_String: ...
+    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
+    AppDisplayName = property(get_AppDisplayName, None)
+    AppId = property(get_AppId, None)
+    InstanceId = property(get_InstanceId, None)
+    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
+    SuppressPopup = property(get_SuppressPopup, None)
     Text1 = property(get_Text1, None)
     Text2 = property(get_Text2, None)
     Text3 = property(get_Text3, None)
     Text4 = property(get_Text4, None)
-    SuppressPopup = property(get_SuppressPopup, None)
     TimeCreated = property(get_TimeCreated, None)
-    AppDisplayName = property(get_AppDisplayName, None)
-    AppId = property(get_AppId, None)
-    AccessoryNotificationType = property(get_AccessoryNotificationType, None)
-    StartedProcessing = property(get_StartedProcessing, put_StartedProcessing)
-    InstanceId = property(get_InstanceId, None)
-VibrateState = Int32
-VibrateState_RingerOffVibrateOff: VibrateState = 0
-VibrateState_RingerOffVibrateOn: VibrateState = 1
-VibrateState_RingerOnVibrateOff: VibrateState = 2
-VibrateState_RingerOnVibrateOn: VibrateState = 3
+class VibrateState(Int32):  # enum
+    RingerOffVibrateOff = 0
+    RingerOffVibrateOn = 1
+    RingerOnVibrateOff = 2
+    RingerOnVibrateOn = 3
 class VolumeInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Phone.Notification.Management.IVolumeInfo
@@ -1291,9 +1278,11 @@ class VolumeInfo(ComPtr):
     def get_IsMuted(self: win32more.Windows.Phone.Notification.Management.IVolumeInfo) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsVibrateEnabled(self: win32more.Windows.Phone.Notification.Management.IVolumeInfo) -> win32more.Windows.Phone.Notification.Management.VibrateState: ...
-    SystemVolume = property(get_SystemVolume, None)
     CallVolume = property(get_CallVolume, None)
-    MediaVolume = property(get_MediaVolume, None)
     IsMuted = property(get_IsMuted, None)
     IsVibrateEnabled = property(get_IsVibrateEnabled, None)
+    MediaVolume = property(get_MediaVolume, None)
+    SystemVolume = property(get_SystemVolume, None)
+
+
 make_ready(__name__)

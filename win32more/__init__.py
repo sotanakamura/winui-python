@@ -9,6 +9,7 @@ from ctypes import (
     Array,
     Structure,
     Union,
+    WinError,
     _CFuncPtr,
     c_bool,
     c_byte,
@@ -45,8 +46,6 @@ elif "(amd64)" in sys.version.lower():
 else:
     ARCH = "X86"
 
-MissingType = c_void_p
-
 Byte = c_ubyte
 SByte = c_byte
 Char = c_wchar
@@ -69,9 +68,11 @@ Void = None
 
 # FIXME: How to manage com reference count?  ContextManager style?
 class ComPtr(c_void_p):
-    def __init__(self, value=None, own=False):
-        super().__init__(value)
+    def __new__(cls, value=None, own=False):
+        self = super().__new__(cls)
+        self.value = value
         self._own = own
+        return self
 
     def __del__(self):
         if self and getattr(self, "_own", False):
@@ -79,12 +80,30 @@ class ComPtr(c_void_p):
 
     @classmethod
     def __commit__(struct):
-        struct._hints_ = get_hints(struct)
+        struct._hints_ = get_type_hints_with_patch(struct)
         if struct._hints_["extends"] is None:
             return struct
         # Generic class have multiple base class (Generic[], ComPtr).
         struct.__bases__ = tuple(struct._hints_["extends"] if t is ComPtr else t for t in struct.__bases__)
         return struct
+
+    def as_(self, cls):
+        is_generic_alias = not isinstance(cls, type)
+        if is_generic_alias:
+            from win32more._winrt import _ro_get_parameterized_type_instance_iid
+
+            iid = _ro_get_parameterized_type_instance_iid(cls)
+        elif "_iid_" in cls.__dict__:
+            iid = cls._iid_
+        elif "default_interface" in cls._hints_:
+            iid = cls._hints_["default_interface"]._iid_
+        else:
+            raise RuntimeError("no _iid_ found")
+        instance = cls(own=True)
+        hr = self.QueryInterface(pointer(iid), pointer(instance))
+        if FAILED(hr):
+            raise WinError(hr)
+        return instance
 
 
 # to avoid auto conversion to str when struct.member access and function() result.
@@ -119,10 +138,10 @@ class EasyCastBase:
     def __commit__(struct):
         # FIXME: not work for Union.
         # if hasattr(cls, "_fields_"):
-        if "_fields_" in dir(struct):
+        if "_fields_" in struct.__dict__:
             return struct
 
-        hints = get_hints(struct)
+        hints = get_type_hints_with_patch(struct)
 
         anonymous = [hint for hint in hints.keys() if re.match(r"^Anonymous\d*$", hint)]
         if anonymous:
@@ -217,12 +236,18 @@ def get_type_hints(prototype, **kwargs):
     return hints
 
 
-def get_hints(struct, patch_return=False):
-    hints = {}
-    for hint, type_ in get_type_hints(struct).items():
-        if not patch_return or hint == "return":
-            type_ = _patch_char_p(type_)
-        hints[hint] = type_
+def get_type_hints_with_patch(prototype):
+    hints = get_type_hints(prototype)
+    for name, type_ in hints.items():
+        hints[name] = _patch_char_p(type_)
+    return hints
+
+
+def get_type_hints_with_patch_return_only(prototype):
+    hints = get_type_hints(prototype)
+    for name, type_ in hints.items():
+        if name == "return":
+            hints[name] = _patch_char_p(type_)
     return hints
 
 
@@ -268,6 +293,23 @@ class Guid(EasyCastStructure):
     def __str__(self):
         return f"{{{self.Data1:08x}-{self.Data2:04x}-{self.Data3:04x}-{self.Data4[0]:02x}{self.Data4[1]:02x}-{self.Data4[2]:02x}{self.Data4[3]:02x}{self.Data4[4]:02x}{self.Data4[5]:02x}{self.Data4[6]:02x}{self.Data4[7]:02x}}}"
 
+    def __eq__(self, other):
+        if not isinstance(other, Guid):
+            raise ValueError(f"cannot compare with {type(other)}")
+        return (
+            self.Data1 == other.Data1
+            and self.Data2 == other.Data2
+            and self.Data3 == other.Data3
+            and self.Data4[0] == other.Data4[0]
+            and self.Data4[1] == other.Data4[1]
+            and self.Data4[2] == other.Data4[2]
+            and self.Data4[3] == other.Data4[3]
+            and self.Data4[4] == other.Data4[4]
+            and self.Data4[5] == other.Data4[5]
+            and self.Data4[6] == other.Data4[6]
+            and self.Data4[7] == other.Data4[7]
+        )
+
 
 def SUCCEEDED(hr):
     return hr >= 0
@@ -279,7 +321,7 @@ def FAILED(hr):
 
 class ForeignFunction:
     def __init__(self, prototype, factory):
-        hints = get_hints(prototype, patch_return=True)
+        hints = get_type_hints_with_patch_return_only(prototype)
         restype = hints.pop("return")
         argtypes = list(hints.values())
         types = [restype] + argtypes
@@ -309,7 +351,7 @@ class ForeignFunction:
 
 class ComMethod:
     def __init__(self, prototype, factory):
-        hints = get_hints(prototype, patch_return=True)
+        hints = get_type_hints_with_patch_return_only(prototype)
         restype = hints.pop("return")
         argtypes = list(hints.values())
         types = [restype] + argtypes
@@ -404,7 +446,7 @@ class BaseFuncType:
         self._kind = kind
 
     def __commit__(self):
-        types = list(get_hints(self._fn).values())
+        types = list(get_type_hints_with_patch(self._fn).values())
         types = types[-1:] + types[:-1]
         return self._kind(*types)
 
@@ -434,11 +476,18 @@ class GetAttr:
 
 
 class ConstantLazyLoader:
-    def __init__(self, prototype):
-        self._prototype = prototype
+    def __init__(self, *args, **kwargs):
+        self._args = args
+        self._kwargs = kwargs
+        self.__annotations__ = {}
+
+    def __set_name__(self, owner, name):
+        self.__dict__[__name__] = owner.__dict__[__name__]  # = sys.modules["win32more"]
+        self.__annotations__["self"] = owner.__annotations__[name]
 
     def __commit__(self):
-        return self._prototype()
+        cls = get_type_hints(self)["self"]
+        return cls(*self._args, **self._kwargs)
 
 
 class CustomGet(dict):
@@ -447,7 +496,7 @@ class CustomGet(dict):
         super().__init__(*args, **kwargs)
 
     def __getitem__(self, key):
-        mapping = getattr(self._mod, '__dict__', {})
+        mapping = getattr(self._mod, "__dict__", {})
         if key in mapping:
             return mapping[key]
         elif isinstance(self._mod, types.ModuleType):
@@ -461,8 +510,9 @@ def make_ready(mod: str) -> None:
 
     for name in dir(obj):
         prototype = getattr(obj, name)
-        if isinstance(prototype, types.FunctionType) and prototype.__module__ == mod:
-            setattr(obj, f"_unused_{name}", ConstantLazyLoader(prototype))
+        if isinstance(prototype, ConstantLazyLoader):
+            prototype.__set_name__(obj, name)
+            setattr(obj, f"_unused_{name}", prototype)
             delattr(obj, name)
         elif isinstance(prototype, BaseFuncType):
             setattr(obj, f"_unused_{name}", prototype)

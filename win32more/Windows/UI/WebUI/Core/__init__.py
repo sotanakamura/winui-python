@@ -1,24 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.UI
 import win32more.Windows.UI.WebUI.Core
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class IWebUICommandBar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.WebUI.Core.IWebUICommandBar'
@@ -65,15 +53,15 @@ class IWebUICommandBar(ComPtr):
     def add_SizeChanged(self, handler: win32more.Windows.UI.WebUI.Core.SizeChangedEventHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(26)
     def remove_SizeChanged(self, value: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Visible = property(get_Visible, put_Visible)
-    Opacity = property(get_Opacity, put_Opacity)
-    ForegroundColor = property(get_ForegroundColor, put_ForegroundColor)
     BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     ClosedDisplayMode = property(get_ClosedDisplayMode, put_ClosedDisplayMode)
+    ForegroundColor = property(get_ForegroundColor, put_ForegroundColor)
     IsOpen = property(get_IsOpen, put_IsOpen)
-    Size = property(get_Size, None)
+    Opacity = property(get_Opacity, put_Opacity)
     PrimaryCommands = property(get_PrimaryCommands, None)
     SecondaryCommands = property(get_SecondaryCommands, None)
+    Size = property(get_Size, None)
+    Visible = property(get_Visible, put_Visible)
 class IWebUICommandBarBitmapIcon(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.WebUI.Core.IWebUICommandBarBitmapIcon'
@@ -139,10 +127,10 @@ class IWebUICommandBarIconButton(ComPtr):
     @winrt_commethod(17)
     def remove_ItemInvoked(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Enabled = property(get_Enabled, put_Enabled)
-    Label = property(get_Label, put_Label)
-    IsToggleButton = property(get_IsToggleButton, put_IsToggleButton)
-    IsChecked = property(get_IsChecked, put_IsChecked)
     Icon = property(get_Icon, put_Icon)
+    IsChecked = property(get_IsChecked, put_IsChecked)
+    IsToggleButton = property(get_IsToggleButton, put_IsToggleButton)
+    Label = property(get_Label, put_Label)
 class IWebUICommandBarItemInvokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.WebUI.Core.IWebUICommandBarItemInvokedEventArgs'
@@ -238,36 +226,52 @@ class WebUICommandBar(ComPtr):
     def remove_SizeChanged(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBar, value: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_classmethod
     def GetForCurrentView(cls: win32more.Windows.UI.WebUI.Core.IWebUICommandBarStatics) -> win32more.Windows.UI.WebUI.Core.WebUICommandBar: ...
-    Visible = property(get_Visible, put_Visible)
-    Opacity = property(get_Opacity, put_Opacity)
-    ForegroundColor = property(get_ForegroundColor, put_ForegroundColor)
     BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     ClosedDisplayMode = property(get_ClosedDisplayMode, put_ClosedDisplayMode)
+    ForegroundColor = property(get_ForegroundColor, put_ForegroundColor)
     IsOpen = property(get_IsOpen, put_IsOpen)
-    Size = property(get_Size, None)
+    Opacity = property(get_Opacity, put_Opacity)
     PrimaryCommands = property(get_PrimaryCommands, None)
     SecondaryCommands = property(get_SecondaryCommands, None)
+    Size = property(get_Size, None)
+    Visible = property(get_Visible, put_Visible)
 class WebUICommandBarBitmapIcon(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.WebUI.Core.IWebUICommandBarBitmapIcon
     _classid_ = 'Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.UI.WebUI.Core.IWebUICommandBarBitmapIconFactory, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.UI.WebUI.Core.IWebUICommandBarBitmapIconFactory, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarBitmapIcon: ...
     @winrt_mixinmethod
     def get_Uri(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBarBitmapIcon) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def put_Uri(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBarBitmapIcon, value: win32more.Windows.Foundation.Uri) -> Void: ...
     Uri = property(get_Uri, put_Uri)
-WebUICommandBarClosedDisplayMode = Int32
-WebUICommandBarClosedDisplayMode_Default: WebUICommandBarClosedDisplayMode = 0
-WebUICommandBarClosedDisplayMode_Minimal: WebUICommandBarClosedDisplayMode = 1
-WebUICommandBarClosedDisplayMode_Compact: WebUICommandBarClosedDisplayMode = 2
+class WebUICommandBarClosedDisplayMode(Int32):  # enum
+    Default = 0
+    Minimal = 1
+    Compact = 2
 class WebUICommandBarConfirmationButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.WebUI.Core.IWebUICommandBarConfirmationButton
     _classid_ = 'Windows.UI.WebUI.Core.WebUICommandBarConfirmationButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarConfirmationButton.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarConfirmationButton: ...
     @winrt_mixinmethod
@@ -284,6 +288,13 @@ class WebUICommandBarIconButton(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.WebUI.Core.IWebUICommandBarIconButton
     _classid_ = 'Windows.UI.WebUI.Core.WebUICommandBarIconButton'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarIconButton.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarIconButton: ...
     @winrt_mixinmethod
@@ -311,10 +322,10 @@ class WebUICommandBarIconButton(ComPtr):
     @winrt_mixinmethod
     def remove_ItemInvoked(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBarIconButton, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Enabled = property(get_Enabled, put_Enabled)
-    Label = property(get_Label, put_Label)
-    IsToggleButton = property(get_IsToggleButton, put_IsToggleButton)
-    IsChecked = property(get_IsChecked, put_IsChecked)
     Icon = property(get_Icon, put_Icon)
+    IsChecked = property(get_IsChecked, put_IsChecked)
+    IsToggleButton = property(get_IsToggleButton, put_IsToggleButton)
+    Label = property(get_Label, put_Label)
 class WebUICommandBarItemInvokedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.WebUI.Core.IWebUICommandBarItemInvokedEventArgs
@@ -333,13 +344,24 @@ class WebUICommandBarSymbolIcon(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.WebUI.Core.IWebUICommandBarSymbolIcon
     _classid_ = 'Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.UI.WebUI.Core.IWebUICommandBarSymbolIconFactory, symbol: WinRT_String) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.UI.WebUI.Core.IWebUICommandBarSymbolIconFactory, symbol: WinRT_String) -> win32more.Windows.UI.WebUI.Core.WebUICommandBarSymbolIcon: ...
     @winrt_mixinmethod
     def get_Symbol(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBarSymbolIcon) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Symbol(self: win32more.Windows.UI.WebUI.Core.IWebUICommandBarSymbolIcon, value: WinRT_String) -> Void: ...
     Symbol = property(get_Symbol, put_Symbol)
+
+
 make_ready(__name__)

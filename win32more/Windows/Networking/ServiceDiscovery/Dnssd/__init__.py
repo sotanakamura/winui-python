@@ -1,30 +1,24 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Networking
 import win32more.Windows.Networking.Connectivity
 import win32more.Windows.Networking.ServiceDiscovery.Dnssd
 import win32more.Windows.Networking.Sockets
+import win32more.Windows.Win32.System.WinRT
 class DnssdRegistrationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.ServiceDiscovery.Dnssd.IDnssdRegistrationResult
     _classid_ = 'Windows.Networking.ServiceDiscovery.Dnssd.DnssdRegistrationResult'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Networking.ServiceDiscovery.Dnssd.DnssdRegistrationResult.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Networking.ServiceDiscovery.Dnssd.DnssdRegistrationResult: ...
     @winrt_mixinmethod
@@ -35,18 +29,25 @@ class DnssdRegistrationResult(ComPtr):
     def get_HasInstanceNameChanged(self: win32more.Windows.Networking.ServiceDiscovery.Dnssd.IDnssdRegistrationResult) -> Boolean: ...
     @winrt_mixinmethod
     def ToString(self: win32more.Windows.Foundation.IStringable) -> WinRT_String: ...
-    Status = property(get_Status, None)
-    IPAddress = property(get_IPAddress, None)
     HasInstanceNameChanged = property(get_HasInstanceNameChanged, None)
-DnssdRegistrationStatus = Int32
-DnssdRegistrationStatus_Success: DnssdRegistrationStatus = 0
-DnssdRegistrationStatus_InvalidServiceName: DnssdRegistrationStatus = 1
-DnssdRegistrationStatus_ServerError: DnssdRegistrationStatus = 2
-DnssdRegistrationStatus_SecurityError: DnssdRegistrationStatus = 3
+    IPAddress = property(get_IPAddress, None)
+    Status = property(get_Status, None)
+class DnssdRegistrationStatus(Int32):  # enum
+    Success = 0
+    InvalidServiceName = 1
+    ServerError = 2
+    SecurityError = 3
 class DnssdServiceInstance(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.ServiceDiscovery.Dnssd.IDnssdServiceInstance
     _classid_ = 'Windows.Networking.ServiceDiscovery.Dnssd.DnssdServiceInstance'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Networking.ServiceDiscovery.Dnssd.DnssdServiceInstance.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Networking.ServiceDiscovery.Dnssd.IDnssdServiceInstanceFactory, dnssdServiceInstanceName: WinRT_String, hostName: win32more.Windows.Networking.HostName, port: UInt16) -> win32more.Windows.Networking.ServiceDiscovery.Dnssd.DnssdServiceInstance: ...
     @winrt_mixinmethod
@@ -85,8 +86,8 @@ class DnssdServiceInstance(ComPtr):
     HostName = property(get_HostName, put_HostName)
     Port = property(get_Port, put_Port)
     Priority = property(get_Priority, put_Priority)
-    Weight = property(get_Weight, put_Weight)
     TextAttributes = property(get_TextAttributes, None)
+    Weight = property(get_Weight, put_Weight)
 class DnssdServiceInstanceCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Networking.ServiceDiscovery.Dnssd.DnssdServiceInstance]
@@ -125,13 +126,13 @@ class DnssdServiceWatcher(ComPtr):
     @winrt_mixinmethod
     def Stop(self: win32more.Windows.Networking.ServiceDiscovery.Dnssd.IDnssdServiceWatcher) -> Void: ...
     Status = property(get_Status, None)
-DnssdServiceWatcherStatus = Int32
-DnssdServiceWatcherStatus_Created: DnssdServiceWatcherStatus = 0
-DnssdServiceWatcherStatus_Started: DnssdServiceWatcherStatus = 1
-DnssdServiceWatcherStatus_EnumerationCompleted: DnssdServiceWatcherStatus = 2
-DnssdServiceWatcherStatus_Stopping: DnssdServiceWatcherStatus = 3
-DnssdServiceWatcherStatus_Stopped: DnssdServiceWatcherStatus = 4
-DnssdServiceWatcherStatus_Aborted: DnssdServiceWatcherStatus = 5
+class DnssdServiceWatcherStatus(Int32):  # enum
+    Created = 0
+    Started = 1
+    EnumerationCompleted = 2
+    Stopping = 3
+    Stopped = 4
+    Aborted = 5
 class IDnssdRegistrationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.ServiceDiscovery.Dnssd.IDnssdRegistrationResult'
@@ -142,9 +143,9 @@ class IDnssdRegistrationResult(ComPtr):
     def get_IPAddress(self) -> win32more.Windows.Networking.HostName: ...
     @winrt_commethod(8)
     def get_HasInstanceNameChanged(self) -> Boolean: ...
-    Status = property(get_Status, None)
-    IPAddress = property(get_IPAddress, None)
     HasInstanceNameChanged = property(get_HasInstanceNameChanged, None)
+    IPAddress = property(get_IPAddress, None)
+    Status = property(get_Status, None)
 class IDnssdServiceInstance(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.ServiceDiscovery.Dnssd.IDnssdServiceInstance'
@@ -183,8 +184,8 @@ class IDnssdServiceInstance(ComPtr):
     HostName = property(get_HostName, put_HostName)
     Port = property(get_Port, put_Port)
     Priority = property(get_Priority, put_Priority)
-    Weight = property(get_Weight, put_Weight)
     TextAttributes = property(get_TextAttributes, None)
+    Weight = property(get_Weight, put_Weight)
 class IDnssdServiceInstanceFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.ServiceDiscovery.Dnssd.IDnssdServiceInstanceFactory'
@@ -214,4 +215,6 @@ class IDnssdServiceWatcher(ComPtr):
     @winrt_commethod(14)
     def Stop(self) -> Void: ...
     Status = property(get_Status, None)
+
+
 make_ready(__name__)

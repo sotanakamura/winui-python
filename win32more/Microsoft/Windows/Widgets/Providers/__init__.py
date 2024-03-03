@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.Widgets
 import win32more.Microsoft.Windows.Widgets.Providers
 import win32more.Windows.Foundation
+import win32more.Windows.Win32.System.WinRT
 class IWidgetActionInvokedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetActionInvokedArgs'
@@ -30,10 +17,10 @@ class IWidgetActionInvokedArgs(ComPtr):
     def get_Data(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def get_CustomState(self) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
-    Verb = property(get_Verb, None)
-    Data = property(get_Data, None)
     CustomState = property(get_CustomState, None)
+    Data = property(get_Data, None)
+    Verb = property(get_Verb, None)
+    WidgetContext = property(get_WidgetContext, None)
 class IWidgetAnalyticsInfoReportedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetAnalyticsInfoReportedArgs'
@@ -42,8 +29,8 @@ class IWidgetAnalyticsInfoReportedArgs(ComPtr):
     def get_WidgetContext(self) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_commethod(7)
     def get_AnalyticsJson(self) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     AnalyticsJson = property(get_AnalyticsJson, None)
+    WidgetContext = property(get_WidgetContext, None)
 class IWidgetContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetContext'
@@ -56,10 +43,10 @@ class IWidgetContext(ComPtr):
     def get_Size(self) -> win32more.Microsoft.Windows.Widgets.WidgetSize: ...
     @winrt_commethod(9)
     def get_IsActive(self) -> Boolean: ...
-    Id = property(get_Id, None)
     DefinitionId = property(get_DefinitionId, None)
-    Size = property(get_Size, None)
+    Id = property(get_Id, None)
     IsActive = property(get_IsActive, None)
+    Size = property(get_Size, None)
 class IWidgetContextChangedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetContextChangedArgs'
@@ -75,8 +62,8 @@ class IWidgetCustomizationRequestedArgs(ComPtr):
     def get_WidgetContext(self) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_commethod(7)
     def get_CustomState(self) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     CustomState = property(get_CustomState, None)
+    WidgetContext = property(get_WidgetContext, None)
 class IWidgetErrorInfoReportedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetErrorInfoReportedArgs'
@@ -85,8 +72,8 @@ class IWidgetErrorInfoReportedArgs(ComPtr):
     def get_WidgetContext(self) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_commethod(7)
     def get_ErrorJson(self) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     ErrorJson = property(get_ErrorJson, None)
+    WidgetContext = property(get_WidgetContext, None)
 class IWidgetInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetInfo'
@@ -101,11 +88,11 @@ class IWidgetInfo(ComPtr):
     def get_CustomState(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_LastUpdateTime(self) -> win32more.Windows.Foundation.DateTime: ...
-    WidgetContext = property(get_WidgetContext, None)
-    Template = property(get_Template, None)
-    Data = property(get_Data, None)
     CustomState = property(get_CustomState, None)
+    Data = property(get_Data, None)
     LastUpdateTime = property(get_LastUpdateTime, None)
+    Template = property(get_Template, None)
+    WidgetContext = property(get_WidgetContext, None)
 class IWidgetManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetManager'
@@ -178,10 +165,10 @@ class IWidgetUpdateRequestOptions(ComPtr):
     def get_CustomState(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def put_CustomState(self, value: WinRT_String) -> Void: ...
-    WidgetId = property(get_WidgetId, None)
-    Template = property(get_Template, put_Template)
-    Data = property(get_Data, put_Data)
     CustomState = property(get_CustomState, put_CustomState)
+    Data = property(get_Data, put_Data)
+    Template = property(get_Template, put_Template)
+    WidgetId = property(get_WidgetId, None)
 class IWidgetUpdateRequestOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.Widgets.Providers.IWidgetUpdateRequestOptionsFactory'
@@ -207,10 +194,10 @@ class WidgetActionInvokedArgs(ComPtr):
     def get_Data(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetActionInvokedArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_CustomState(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetActionInvokedArgs) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
-    Verb = property(get_Verb, None)
-    Data = property(get_Data, None)
     CustomState = property(get_CustomState, None)
+    Data = property(get_Data, None)
+    Verb = property(get_Verb, None)
+    WidgetContext = property(get_WidgetContext, None)
 class WidgetAnalyticsInfoReportedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetAnalyticsInfoReportedArgs
@@ -219,8 +206,8 @@ class WidgetAnalyticsInfoReportedArgs(ComPtr):
     def get_WidgetContext(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetAnalyticsInfoReportedArgs) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_mixinmethod
     def get_AnalyticsJson(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetAnalyticsInfoReportedArgs) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     AnalyticsJson = property(get_AnalyticsJson, None)
+    WidgetContext = property(get_WidgetContext, None)
 class WidgetContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetContext
@@ -233,10 +220,10 @@ class WidgetContext(ComPtr):
     def get_Size(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetContext) -> win32more.Microsoft.Windows.Widgets.WidgetSize: ...
     @winrt_mixinmethod
     def get_IsActive(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetContext) -> Boolean: ...
-    Id = property(get_Id, None)
     DefinitionId = property(get_DefinitionId, None)
-    Size = property(get_Size, None)
+    Id = property(get_Id, None)
     IsActive = property(get_IsActive, None)
+    Size = property(get_Size, None)
 class WidgetContextChangedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetContextChangedArgs
@@ -252,8 +239,8 @@ class WidgetCustomizationRequestedArgs(ComPtr):
     def get_WidgetContext(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetCustomizationRequestedArgs) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_mixinmethod
     def get_CustomState(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetCustomizationRequestedArgs) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     CustomState = property(get_CustomState, None)
+    WidgetContext = property(get_WidgetContext, None)
 class WidgetErrorInfoReportedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetErrorInfoReportedArgs
@@ -262,8 +249,8 @@ class WidgetErrorInfoReportedArgs(ComPtr):
     def get_WidgetContext(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetErrorInfoReportedArgs) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetContext: ...
     @winrt_mixinmethod
     def get_ErrorJson(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetErrorInfoReportedArgs) -> WinRT_String: ...
-    WidgetContext = property(get_WidgetContext, None)
     ErrorJson = property(get_ErrorJson, None)
+    WidgetContext = property(get_WidgetContext, None)
 class WidgetInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetInfo
@@ -278,11 +265,11 @@ class WidgetInfo(ComPtr):
     def get_CustomState(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetInfo) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_LastUpdateTime(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetInfo) -> win32more.Windows.Foundation.DateTime: ...
-    WidgetContext = property(get_WidgetContext, None)
-    Template = property(get_Template, None)
-    Data = property(get_Data, None)
     CustomState = property(get_CustomState, None)
+    Data = property(get_Data, None)
     LastUpdateTime = property(get_LastUpdateTime, None)
+    Template = property(get_Template, None)
+    WidgetContext = property(get_WidgetContext, None)
 class WidgetManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetManager
@@ -305,6 +292,13 @@ class WidgetUpdateRequestOptions(ComPtr, metaclass=_WidgetUpdateRequestOptions_M
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.Widgets.Providers.IWidgetUpdateRequestOptions
     _classid_ = 'Microsoft.Windows.Widgets.Providers.WidgetUpdateRequestOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Microsoft.Windows.Widgets.Providers.WidgetUpdateRequestOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.Windows.Widgets.Providers.IWidgetUpdateRequestOptionsFactory, widgetId: WinRT_String) -> win32more.Microsoft.Windows.Widgets.Providers.WidgetUpdateRequestOptions: ...
     @winrt_mixinmethod
@@ -323,9 +317,11 @@ class WidgetUpdateRequestOptions(ComPtr, metaclass=_WidgetUpdateRequestOptions_M
     def put_CustomState(self: win32more.Microsoft.Windows.Widgets.Providers.IWidgetUpdateRequestOptions, value: WinRT_String) -> Void: ...
     @winrt_classmethod
     def get_UnsetValue(cls: win32more.Microsoft.Windows.Widgets.Providers.IWidgetUpdateRequestOptionsStatics) -> WinRT_String: ...
-    WidgetId = property(get_WidgetId, None)
-    Template = property(get_Template, put_Template)
-    Data = property(get_Data, put_Data)
     CustomState = property(get_CustomState, put_CustomState)
+    Data = property(get_Data, put_Data)
+    Template = property(get_Template, put_Template)
+    WidgetId = property(get_WidgetId, None)
     _WidgetUpdateRequestOptions_Meta_.UnsetValue = property(get_UnsetValue.__wrapped__, None)
+
+
 make_ready(__name__)

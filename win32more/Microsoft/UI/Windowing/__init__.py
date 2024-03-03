@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI
 import win32more.Microsoft.UI.Dispatching
 import win32more.Microsoft.UI.Windowing
@@ -22,12 +8,13 @@ import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics
 import win32more.Windows.UI
+import win32more.Windows.Win32.System.WinRT
 class AppWindow(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Windowing.IAppWindow
     _classid_ = 'Microsoft.UI.Windowing.AppWindow'
     @winrt_mixinmethod
-    def remove_Closing(self: win32more.Microsoft.UI.Windowing.IAppWindow, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    def add_Closing(self: win32more.Microsoft.UI.Windowing.IAppWindow, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Windowing.AppWindow, win32more.Microsoft.UI.Windowing.AppWindowClosingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def get_IsShownInSwitchers(self: win32more.Microsoft.UI.Windowing.IAppWindow) -> Boolean: ...
     @winrt_mixinmethod
@@ -77,9 +64,9 @@ class AppWindow(ComPtr):
     @winrt_mixinmethod
     def remove_Changed(self: win32more.Microsoft.UI.Windowing.IAppWindow, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
-    def add_Closing(self: win32more.Microsoft.UI.Windowing.IAppWindow, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Windowing.AppWindow, win32more.Microsoft.UI.Windowing.AppWindowClosingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
-    @winrt_mixinmethod
     def get_TitleBar(self: win32more.Microsoft.UI.Windowing.IAppWindow) -> win32more.Microsoft.UI.Windowing.AppWindowTitleBar: ...
+    @winrt_mixinmethod
+    def remove_Closing(self: win32more.Microsoft.UI.Windowing.IAppWindow, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def add_Destroying(self: win32more.Microsoft.UI.Windowing.IAppWindow, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Windowing.AppWindow, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
@@ -110,6 +97,9 @@ class AppWindow(ComPtr):
     def CreateWithPresenterAndOwner(cls: win32more.Microsoft.UI.Windowing.IAppWindowStatics, appWindowPresenter: win32more.Microsoft.UI.Windowing.AppWindowPresenter, ownerWindowId: win32more.Microsoft.UI.WindowId) -> win32more.Microsoft.UI.Windowing.AppWindow: ...
     @winrt_classmethod
     def GetFromWindowId(cls: win32more.Microsoft.UI.Windowing.IAppWindowStatics, windowId: win32more.Microsoft.UI.WindowId) -> win32more.Microsoft.UI.Windowing.AppWindow: ...
+    ClientSize = property(get_ClientSize, None)
+    DispatcherQueue = property(get_DispatcherQueue, None)
+    Id = property(get_Id, None)
     IsShownInSwitchers = property(get_IsShownInSwitchers, put_IsShownInSwitchers)
     IsVisible = property(get_IsVisible, None)
     OwnerWindowId = property(get_OwnerWindowId, None)
@@ -117,10 +107,7 @@ class AppWindow(ComPtr):
     Presenter = property(get_Presenter, None)
     Size = property(get_Size, None)
     Title = property(get_Title, put_Title)
-    Id = property(get_Id, None)
     TitleBar = property(get_TitleBar, None)
-    ClientSize = property(get_ClientSize, None)
-    DispatcherQueue = property(get_DispatcherQueue, None)
 class AppWindowChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Windowing.IAppWindowChangedEventArgs
@@ -165,11 +152,11 @@ class AppWindowPresenter(ComPtr):
     @winrt_mixinmethod
     def get_Kind(self: win32more.Microsoft.UI.Windowing.IAppWindowPresenter) -> win32more.Microsoft.UI.Windowing.AppWindowPresenterKind: ...
     Kind = property(get_Kind, None)
-AppWindowPresenterKind = Int32
-AppWindowPresenterKind_Default: AppWindowPresenterKind = 0
-AppWindowPresenterKind_CompactOverlay: AppWindowPresenterKind = 1
-AppWindowPresenterKind_FullScreen: AppWindowPresenterKind = 2
-AppWindowPresenterKind_Overlapped: AppWindowPresenterKind = 3
+class AppWindowPresenterKind(Int32):  # enum
+    Default = 0
+    CompactOverlay = 1
+    FullScreen = 2
+    Overlapped = 3
 class AppWindowTitleBar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Windowing.IAppWindowTitleBar
@@ -246,13 +233,13 @@ class AppWindowTitleBar(ComPtr):
     def put_PreferredHeightOption(self: win32more.Microsoft.UI.Windowing.IAppWindowTitleBar2, value: win32more.Microsoft.UI.Windowing.TitleBarHeightOption) -> Void: ...
     @winrt_classmethod
     def IsCustomizationSupported(cls: win32more.Microsoft.UI.Windowing.IAppWindowTitleBarStatics) -> Boolean: ...
-    ButtonInactiveForegroundColor = property(get_ButtonInactiveForegroundColor, put_ButtonInactiveForegroundColor)
     BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     ButtonBackgroundColor = property(get_ButtonBackgroundColor, put_ButtonBackgroundColor)
     ButtonForegroundColor = property(get_ButtonForegroundColor, put_ButtonForegroundColor)
     ButtonHoverBackgroundColor = property(get_ButtonHoverBackgroundColor, put_ButtonHoverBackgroundColor)
     ButtonHoverForegroundColor = property(get_ButtonHoverForegroundColor, put_ButtonHoverForegroundColor)
     ButtonInactiveBackgroundColor = property(get_ButtonInactiveBackgroundColor, put_ButtonInactiveBackgroundColor)
+    ButtonInactiveForegroundColor = property(get_ButtonInactiveForegroundColor, put_ButtonInactiveForegroundColor)
     ButtonPressedBackgroundColor = property(get_ButtonPressedBackgroundColor, put_ButtonPressedBackgroundColor)
     ButtonPressedForegroundColor = property(get_ButtonPressedForegroundColor, put_ButtonPressedForegroundColor)
     ExtendsContentIntoTitleBar = property(get_ExtendsContentIntoTitleBar, put_ExtendsContentIntoTitleBar)
@@ -262,8 +249,8 @@ class AppWindowTitleBar(ComPtr):
     InactiveBackgroundColor = property(get_InactiveBackgroundColor, put_InactiveBackgroundColor)
     InactiveForegroundColor = property(get_InactiveForegroundColor, put_InactiveForegroundColor)
     LeftInset = property(get_LeftInset, None)
-    RightInset = property(get_RightInset, None)
     PreferredHeightOption = property(get_PreferredHeightOption, put_PreferredHeightOption)
+    RightInset = property(get_RightInset, None)
 class CompactOverlayPresenter(ComPtr):
     extends: win32more.Microsoft.UI.Windowing.AppWindowPresenter
     default_interface: win32more.Microsoft.UI.Windowing.ICompactOverlayPresenter
@@ -275,10 +262,10 @@ class CompactOverlayPresenter(ComPtr):
     @winrt_classmethod
     def Create(cls: win32more.Microsoft.UI.Windowing.ICompactOverlayPresenterStatics) -> win32more.Microsoft.UI.Windowing.CompactOverlayPresenter: ...
     InitialSize = property(get_InitialSize, put_InitialSize)
-CompactOverlaySize = Int32
-CompactOverlaySize_Small: CompactOverlaySize = 0
-CompactOverlaySize_Medium: CompactOverlaySize = 1
-CompactOverlaySize_Large: CompactOverlaySize = 2
+class CompactOverlaySize(Int32):  # enum
+    Small = 0
+    Medium = 1
+    Large = 2
 class _DisplayArea_Meta_(ComPtr.__class__):
     pass
 class DisplayArea(ComPtr, metaclass=_DisplayArea_Meta_):
@@ -307,15 +294,15 @@ class DisplayArea(ComPtr, metaclass=_DisplayArea_Meta_):
     def GetFromPoint(cls: win32more.Microsoft.UI.Windowing.IDisplayAreaStatics, point: win32more.Windows.Graphics.PointInt32, displayAreaFallback: win32more.Microsoft.UI.Windowing.DisplayAreaFallback) -> win32more.Microsoft.UI.Windowing.DisplayArea: ...
     @winrt_classmethod
     def GetFromRect(cls: win32more.Microsoft.UI.Windowing.IDisplayAreaStatics, rect: win32more.Windows.Graphics.RectInt32, displayAreaFallback: win32more.Microsoft.UI.Windowing.DisplayAreaFallback) -> win32more.Microsoft.UI.Windowing.DisplayArea: ...
-    IsPrimary = property(get_IsPrimary, None)
     DisplayId = property(get_DisplayId, None)
+    IsPrimary = property(get_IsPrimary, None)
     OuterBounds = property(get_OuterBounds, None)
     WorkArea = property(get_WorkArea, None)
     _DisplayArea_Meta_.Primary = property(get_Primary.__wrapped__, None)
-DisplayAreaFallback = Int32
-DisplayAreaFallback_None: DisplayAreaFallback = 0
-DisplayAreaFallback_Primary: DisplayAreaFallback = 1
-DisplayAreaFallback_Nearest: DisplayAreaFallback = 2
+class DisplayAreaFallback(Int32):  # enum
+    None_ = 0
+    Primary = 1
+    Nearest = 2
 class DisplayAreaWatcher(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Windowing.IDisplayAreaWatcher
@@ -347,13 +334,13 @@ class DisplayAreaWatcher(ComPtr):
     @winrt_mixinmethod
     def remove_Updated(self: win32more.Microsoft.UI.Windowing.IDisplayAreaWatcher, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Status = property(get_Status, None)
-DisplayAreaWatcherStatus = Int32
-DisplayAreaWatcherStatus_Created: DisplayAreaWatcherStatus = 0
-DisplayAreaWatcherStatus_Started: DisplayAreaWatcherStatus = 1
-DisplayAreaWatcherStatus_EnumerationCompleted: DisplayAreaWatcherStatus = 2
-DisplayAreaWatcherStatus_Stopping: DisplayAreaWatcherStatus = 3
-DisplayAreaWatcherStatus_Stopped: DisplayAreaWatcherStatus = 4
-DisplayAreaWatcherStatus_Aborted: DisplayAreaWatcherStatus = 5
+class DisplayAreaWatcherStatus(Int32):  # enum
+    Created = 0
+    Started = 1
+    EnumerationCompleted = 2
+    Stopping = 3
+    Stopped = 4
+    Aborted = 5
 class FullScreenPresenter(ComPtr):
     extends: win32more.Microsoft.UI.Windowing.AppWindowPresenter
     default_interface: win32more.Microsoft.UI.Windowing.IFullScreenPresenter
@@ -797,9 +784,9 @@ class IOverlappedPresenterStatics2(ComPtr):
     @winrt_commethod(6)
     def get_RequestedStartupState(self) -> win32more.Microsoft.UI.Windowing.OverlappedPresenterState: ...
     RequestedStartupState = property(get_RequestedStartupState, None)
-IconShowOptions = Int32
-IconShowOptions_ShowIconAndSystemMenu: IconShowOptions = 0
-IconShowOptions_HideIconAndSystemMenu: IconShowOptions = 1
+class IconShowOptions(Int32):  # enum
+    ShowIconAndSystemMenu = 0
+    HideIconAndSystemMenu = 1
 class _OverlappedPresenter_Meta_(ComPtr.__class__):
     pass
 class OverlappedPresenter(ComPtr, metaclass=_OverlappedPresenter_Meta_):
@@ -854,6 +841,7 @@ class OverlappedPresenter(ComPtr, metaclass=_OverlappedPresenter_Meta_):
     def CreateForDialog(cls: win32more.Microsoft.UI.Windowing.IOverlappedPresenterStatics) -> win32more.Microsoft.UI.Windowing.OverlappedPresenter: ...
     @winrt_classmethod
     def CreateForToolWindow(cls: win32more.Microsoft.UI.Windowing.IOverlappedPresenterStatics) -> win32more.Microsoft.UI.Windowing.OverlappedPresenter: ...
+    HasBorder = property(get_HasBorder, None)
     HasTitleBar = property(get_HasTitleBar, None)
     IsAlwaysOnTop = property(get_IsAlwaysOnTop, put_IsAlwaysOnTop)
     IsMaximizable = property(get_IsMaximizable, put_IsMaximizable)
@@ -861,14 +849,15 @@ class OverlappedPresenter(ComPtr, metaclass=_OverlappedPresenter_Meta_):
     IsModal = property(get_IsModal, put_IsModal)
     IsResizable = property(get_IsResizable, put_IsResizable)
     State = property(get_State, None)
-    HasBorder = property(get_HasBorder, None)
     _OverlappedPresenter_Meta_.RequestedStartupState = property(get_RequestedStartupState.__wrapped__, None)
-OverlappedPresenterState = Int32
-OverlappedPresenterState_Maximized: OverlappedPresenterState = 0
-OverlappedPresenterState_Minimized: OverlappedPresenterState = 1
-OverlappedPresenterState_Restored: OverlappedPresenterState = 2
-TitleBarHeightOption = Int32
-TitleBarHeightOption_Standard: TitleBarHeightOption = 0
-TitleBarHeightOption_Tall: TitleBarHeightOption = 1
-TitleBarHeightOption_Collapsed: TitleBarHeightOption = 2
+class OverlappedPresenterState(Int32):  # enum
+    Maximized = 0
+    Minimized = 1
+    Restored = 2
+class TitleBarHeightOption(Int32):  # enum
+    Standard = 0
+    Tall = 1
+    Collapsed = 2
+
+
 make_ready(__name__)

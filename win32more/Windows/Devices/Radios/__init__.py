@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Radios
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IRadio(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Radios.IRadio'
@@ -34,9 +21,9 @@ class IRadio(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_Kind(self) -> win32more.Windows.Devices.Radios.RadioKind: ...
-    State = property(get_State, None)
-    Name = property(get_Name, None)
     Kind = property(get_Kind, None)
+    Name = property(get_Name, None)
+    State = property(get_State, None)
 class IRadioStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Radios.IRadioStatics'
@@ -73,23 +60,25 @@ class Radio(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Devices.Radios.IRadioStatics, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Radios.Radio]: ...
     @winrt_classmethod
     def RequestAccessAsync(cls: win32more.Windows.Devices.Radios.IRadioStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Radios.RadioAccessStatus]: ...
-    State = property(get_State, None)
-    Name = property(get_Name, None)
     Kind = property(get_Kind, None)
-RadioAccessStatus = Int32
-RadioAccessStatus_Unspecified: RadioAccessStatus = 0
-RadioAccessStatus_Allowed: RadioAccessStatus = 1
-RadioAccessStatus_DeniedByUser: RadioAccessStatus = 2
-RadioAccessStatus_DeniedBySystem: RadioAccessStatus = 3
-RadioKind = Int32
-RadioKind_Other: RadioKind = 0
-RadioKind_WiFi: RadioKind = 1
-RadioKind_MobileBroadband: RadioKind = 2
-RadioKind_Bluetooth: RadioKind = 3
-RadioKind_FM: RadioKind = 4
-RadioState = Int32
-RadioState_Unknown: RadioState = 0
-RadioState_On: RadioState = 1
-RadioState_Off: RadioState = 2
-RadioState_Disabled: RadioState = 3
+    Name = property(get_Name, None)
+    State = property(get_State, None)
+class RadioAccessStatus(Int32):  # enum
+    Unspecified = 0
+    Allowed = 1
+    DeniedByUser = 2
+    DeniedBySystem = 3
+class RadioKind(Int32):  # enum
+    Other = 0
+    WiFi = 1
+    MobileBroadband = 2
+    Bluetooth = 3
+    FM = 4
+class RadioState(Int32):  # enum
+    Unknown = 0
+    On = 1
+    Off = 2
+    Disabled = 3
+
+
 make_ready(__name__)

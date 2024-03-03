@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Devices.Midi
 import win32more.Windows.Foundation
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IMidiChannelPressureMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Midi.IMidiChannelPressureMessage'
@@ -46,8 +33,8 @@ class IMidiControlChangeMessage(ComPtr):
     @winrt_commethod(8)
     def get_ControlValue(self) -> Byte: ...
     Channel = property(get_Channel, None)
-    Controller = property(get_Controller, None)
     ControlValue = property(get_ControlValue, None)
+    Controller = property(get_Controller, None)
 class IMidiControlChangeMessageFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Midi.IMidiControlChangeMessageFactory'
@@ -83,8 +70,8 @@ class IMidiMessage(ComPtr):
     def get_RawData(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(8)
     def get_Type(self) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class IMidiMessageReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -158,8 +145,8 @@ class IMidiPitchBendChangeMessage(ComPtr):
     def get_Channel(self) -> Byte: ...
     @winrt_commethod(7)
     def get_Bend(self) -> UInt16: ...
-    Channel = property(get_Channel, None)
     Bend = property(get_Bend, None)
+    Channel = property(get_Channel, None)
 class IMidiPitchBendChangeMessageFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Midi.IMidiPitchBendChangeMessageFactory'
@@ -275,6 +262,13 @@ class MidiActiveSensingMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiActiveSensingMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiActiveSensingMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiActiveSensingMessage: ...
     @winrt_mixinmethod
@@ -283,13 +277,20 @@ class MidiActiveSensingMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiChannelPressureMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiChannelPressureMessage
     _classid_ = 'Windows.Devices.Midi.MidiChannelPressureMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Midi.MidiChannelPressureMessage.CreateMidiChannelPressureMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiChannelPressureMessage(cls: win32more.Windows.Devices.Midi.IMidiChannelPressureMessageFactory, channel: Byte, pressure: Byte) -> win32more.Windows.Devices.Midi.MidiChannelPressureMessage: ...
     @winrt_mixinmethod
@@ -304,13 +305,20 @@ class MidiChannelPressureMessage(ComPtr):
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Channel = property(get_Channel, None)
     Pressure = property(get_Pressure, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiContinueMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiContinueMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiContinueMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiContinueMessage: ...
     @winrt_mixinmethod
@@ -319,13 +327,20 @@ class MidiContinueMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiControlChangeMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiControlChangeMessage
     _classid_ = 'Windows.Devices.Midi.MidiControlChangeMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Midi.MidiControlChangeMessage.CreateMidiControlChangeMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiControlChangeMessage(cls: win32more.Windows.Devices.Midi.IMidiControlChangeMessageFactory, channel: Byte, controller: Byte, controlValue: Byte) -> win32more.Windows.Devices.Midi.MidiControlChangeMessage: ...
     @winrt_mixinmethod
@@ -341,10 +356,10 @@ class MidiControlChangeMessage(ComPtr):
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Channel = property(get_Channel, None)
-    Controller = property(get_Controller, None)
     ControlValue = property(get_ControlValue, None)
-    Timestamp = property(get_Timestamp, None)
+    Controller = property(get_Controller, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiInPort(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -370,31 +385,38 @@ class MidiMessageReceivedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Message(self: win32more.Windows.Devices.Midi.IMidiMessageReceivedEventArgs) -> win32more.Windows.Devices.Midi.IMidiMessage: ...
     Message = property(get_Message, None)
-MidiMessageType = Int32
-MidiMessageType_None: MidiMessageType = 0
-MidiMessageType_NoteOff: MidiMessageType = 128
-MidiMessageType_NoteOn: MidiMessageType = 144
-MidiMessageType_PolyphonicKeyPressure: MidiMessageType = 160
-MidiMessageType_ControlChange: MidiMessageType = 176
-MidiMessageType_ProgramChange: MidiMessageType = 192
-MidiMessageType_ChannelPressure: MidiMessageType = 208
-MidiMessageType_PitchBendChange: MidiMessageType = 224
-MidiMessageType_SystemExclusive: MidiMessageType = 240
-MidiMessageType_MidiTimeCode: MidiMessageType = 241
-MidiMessageType_SongPositionPointer: MidiMessageType = 242
-MidiMessageType_SongSelect: MidiMessageType = 243
-MidiMessageType_TuneRequest: MidiMessageType = 246
-MidiMessageType_EndSystemExclusive: MidiMessageType = 247
-MidiMessageType_TimingClock: MidiMessageType = 248
-MidiMessageType_Start: MidiMessageType = 250
-MidiMessageType_Continue: MidiMessageType = 251
-MidiMessageType_Stop: MidiMessageType = 252
-MidiMessageType_ActiveSensing: MidiMessageType = 254
-MidiMessageType_SystemReset: MidiMessageType = 255
+class MidiMessageType(Int32):  # enum
+    None_ = 0
+    NoteOff = 128
+    NoteOn = 144
+    PolyphonicKeyPressure = 160
+    ControlChange = 176
+    ProgramChange = 192
+    ChannelPressure = 208
+    PitchBendChange = 224
+    SystemExclusive = 240
+    MidiTimeCode = 241
+    SongPositionPointer = 242
+    SongSelect = 243
+    TuneRequest = 246
+    EndSystemExclusive = 247
+    TimingClock = 248
+    Start = 250
+    Continue = 251
+    Stop = 252
+    ActiveSensing = 254
+    SystemReset = 255
 class MidiNoteOffMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiNoteOffMessage
     _classid_ = 'Windows.Devices.Midi.MidiNoteOffMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Midi.MidiNoteOffMessage.CreateMidiNoteOffMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiNoteOffMessage(cls: win32more.Windows.Devices.Midi.IMidiNoteOffMessageFactory, channel: Byte, note: Byte, velocity: Byte) -> win32more.Windows.Devices.Midi.MidiNoteOffMessage: ...
     @winrt_mixinmethod
@@ -411,14 +433,21 @@ class MidiNoteOffMessage(ComPtr):
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Channel = property(get_Channel, None)
     Note = property(get_Note, None)
-    Velocity = property(get_Velocity, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
+    Velocity = property(get_Velocity, None)
 class MidiNoteOnMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiNoteOnMessage
     _classid_ = 'Windows.Devices.Midi.MidiNoteOnMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Midi.MidiNoteOnMessage.CreateMidiNoteOnMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiNoteOnMessage(cls: win32more.Windows.Devices.Midi.IMidiNoteOnMessageFactory, channel: Byte, note: Byte, velocity: Byte) -> win32more.Windows.Devices.Midi.MidiNoteOnMessage: ...
     @winrt_mixinmethod
@@ -435,10 +464,10 @@ class MidiNoteOnMessage(ComPtr):
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Channel = property(get_Channel, None)
     Note = property(get_Note, None)
-    Velocity = property(get_Velocity, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
+    Velocity = property(get_Velocity, None)
 class MidiOutPort(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiOutPort
@@ -460,6 +489,13 @@ class MidiPitchBendChangeMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiPitchBendChangeMessage
     _classid_ = 'Windows.Devices.Midi.MidiPitchBendChangeMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Midi.MidiPitchBendChangeMessage.CreateMidiPitchBendChangeMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiPitchBendChangeMessage(cls: win32more.Windows.Devices.Midi.IMidiPitchBendChangeMessageFactory, channel: Byte, bend: UInt16) -> win32more.Windows.Devices.Midi.MidiPitchBendChangeMessage: ...
     @winrt_mixinmethod
@@ -472,15 +508,22 @@ class MidiPitchBendChangeMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Channel = property(get_Channel, None)
     Bend = property(get_Bend, None)
-    Timestamp = property(get_Timestamp, None)
+    Channel = property(get_Channel, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiPolyphonicKeyPressureMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiPolyphonicKeyPressureMessage
     _classid_ = 'Windows.Devices.Midi.MidiPolyphonicKeyPressureMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Midi.MidiPolyphonicKeyPressureMessage.CreateMidiPolyphonicKeyPressureMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiPolyphonicKeyPressureMessage(cls: win32more.Windows.Devices.Midi.IMidiPolyphonicKeyPressureMessageFactory, channel: Byte, note: Byte, pressure: Byte) -> win32more.Windows.Devices.Midi.MidiPolyphonicKeyPressureMessage: ...
     @winrt_mixinmethod
@@ -498,13 +541,20 @@ class MidiPolyphonicKeyPressureMessage(ComPtr):
     Channel = property(get_Channel, None)
     Note = property(get_Note, None)
     Pressure = property(get_Pressure, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiProgramChangeMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiProgramChangeMessage
     _classid_ = 'Windows.Devices.Midi.MidiProgramChangeMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Midi.MidiProgramChangeMessage.CreateMidiProgramChangeMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiProgramChangeMessage(cls: win32more.Windows.Devices.Midi.IMidiProgramChangeMessageFactory, channel: Byte, program: Byte) -> win32more.Windows.Devices.Midi.MidiProgramChangeMessage: ...
     @winrt_mixinmethod
@@ -519,13 +569,20 @@ class MidiProgramChangeMessage(ComPtr):
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Channel = property(get_Channel, None)
     Program = property(get_Program, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiSongPositionPointerMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiSongPositionPointerMessage
     _classid_ = 'Windows.Devices.Midi.MidiSongPositionPointerMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Midi.MidiSongPositionPointerMessage.CreateMidiSongPositionPointerMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiSongPositionPointerMessage(cls: win32more.Windows.Devices.Midi.IMidiSongPositionPointerMessageFactory, beats: UInt16) -> win32more.Windows.Devices.Midi.MidiSongPositionPointerMessage: ...
     @winrt_mixinmethod
@@ -537,13 +594,20 @@ class MidiSongPositionPointerMessage(ComPtr):
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     Beats = property(get_Beats, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiSongSelectMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiSongSelectMessage
     _classid_ = 'Windows.Devices.Midi.MidiSongSelectMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Midi.MidiSongSelectMessage.CreateMidiSongSelectMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiSongSelectMessage(cls: win32more.Windows.Devices.Midi.IMidiSongSelectMessageFactory, song: Byte) -> win32more.Windows.Devices.Midi.MidiSongSelectMessage: ...
     @winrt_mixinmethod
@@ -554,14 +618,21 @@ class MidiSongSelectMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
+    RawData = property(get_RawData, None)
     Song = property(get_Song, None)
     Timestamp = property(get_Timestamp, None)
-    RawData = property(get_RawData, None)
     Type = property(get_Type, None)
 class MidiStartMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiStartMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiStartMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiStartMessage: ...
     @winrt_mixinmethod
@@ -570,13 +641,20 @@ class MidiStartMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiStopMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiStopMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiStopMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiStopMessage: ...
     @winrt_mixinmethod
@@ -585,8 +663,8 @@ class MidiStopMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiSynthesizer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -613,12 +691,19 @@ class MidiSynthesizer(ComPtr):
     @winrt_classmethod
     def IsSynthesizer(cls: win32more.Windows.Devices.Midi.IMidiSynthesizerStatics, midiDevice: win32more.Windows.Devices.Enumeration.DeviceInformation) -> Boolean: ...
     AudioDevice = property(get_AudioDevice, None)
-    Volume = property(get_Volume, put_Volume)
     DeviceId = property(get_DeviceId, None)
+    Volume = property(get_Volume, put_Volume)
 class MidiSystemExclusiveMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiSystemExclusiveMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Midi.MidiSystemExclusiveMessage.CreateMidiSystemExclusiveMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiSystemExclusiveMessage(cls: win32more.Windows.Devices.Midi.IMidiSystemExclusiveMessageFactory, rawData: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Devices.Midi.MidiSystemExclusiveMessage: ...
     @winrt_mixinmethod
@@ -627,13 +712,20 @@ class MidiSystemExclusiveMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiSystemResetMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiSystemResetMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiSystemResetMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiSystemResetMessage: ...
     @winrt_mixinmethod
@@ -642,13 +734,20 @@ class MidiSystemResetMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiTimeCodeMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiTimeCodeMessage
     _classid_ = 'Windows.Devices.Midi.MidiTimeCodeMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Midi.MidiTimeCodeMessage.CreateMidiTimeCodeMessage(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateMidiTimeCodeMessage(cls: win32more.Windows.Devices.Midi.IMidiTimeCodeMessageFactory, frameType: Byte, values: Byte) -> win32more.Windows.Devices.Midi.MidiTimeCodeMessage: ...
     @winrt_mixinmethod
@@ -662,14 +761,21 @@ class MidiTimeCodeMessage(ComPtr):
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
     FrameType = property(get_FrameType, None)
-    Values = property(get_Values, None)
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
+    Values = property(get_Values, None)
 class MidiTimingClockMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiTimingClockMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiTimingClockMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiTimingClockMessage: ...
     @winrt_mixinmethod
@@ -678,13 +784,20 @@ class MidiTimingClockMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
 class MidiTuneRequestMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Midi.IMidiMessage
     _classid_ = 'Windows.Devices.Midi.MidiTuneRequestMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Midi.MidiTuneRequestMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Midi.MidiTuneRequestMessage: ...
     @winrt_mixinmethod
@@ -693,7 +806,9 @@ class MidiTuneRequestMessage(ComPtr):
     def get_RawData(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Devices.Midi.IMidiMessage) -> win32more.Windows.Devices.Midi.MidiMessageType: ...
-    Timestamp = property(get_Timestamp, None)
     RawData = property(get_RawData, None)
+    Timestamp = property(get_Timestamp, None)
     Type = property(get_Type, None)
+
+
 make_ready(__name__)

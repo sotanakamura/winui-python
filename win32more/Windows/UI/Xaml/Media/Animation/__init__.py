@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.UI
@@ -23,10 +9,18 @@ import win32more.Windows.UI.Xaml
 import win32more.Windows.UI.Xaml.Controls
 import win32more.Windows.UI.Xaml.Controls.Primitives
 import win32more.Windows.UI.Xaml.Media.Animation
+import win32more.Windows.Win32.System.WinRT
 class AddDeleteThemeTransition(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IAddDeleteThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition: ...
 class _BackEase_Meta_(ComPtr.__class__):
@@ -35,6 +29,13 @@ class BackEase(ComPtr, metaclass=_BackEase_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IBackEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.BackEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.BackEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.BackEase: ...
     @winrt_mixinmethod
@@ -49,6 +50,13 @@ class BasicConnectedAnimationConfiguration(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ConnectedAnimationConfiguration
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IBasicConnectedAnimationConfiguration
     _classid_ = 'Windows.UI.Xaml.Media.Animation.BasicConnectedAnimationConfiguration'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.BasicConnectedAnimationConfiguration.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IBasicConnectedAnimationConfigurationFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.BasicConnectedAnimationConfiguration: ...
 class _BeginStoryboard_Meta_(ComPtr.__class__):
@@ -57,6 +65,13 @@ class BeginStoryboard(ComPtr, metaclass=_BeginStoryboard_Meta_):
     extends: win32more.Windows.UI.Xaml.TriggerAction
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IBeginStoryboard
     _classid_ = 'Windows.UI.Xaml.Media.Animation.BeginStoryboard'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.BeginStoryboard.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.BeginStoryboard: ...
     @winrt_mixinmethod
@@ -73,6 +88,13 @@ class BounceEase(ComPtr, metaclass=_BounceEase_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IBounceEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.BounceEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.BounceEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.BounceEase: ...
     @winrt_mixinmethod
@@ -95,18 +117,32 @@ class CircleEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ICircleEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.CircleEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.CircleEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.CircleEase: ...
-ClockState = Int32
-ClockState_Active: ClockState = 0
-ClockState_Filling: ClockState = 1
-ClockState_Stopped: ClockState = 2
+class ClockState(Int32):  # enum
+    Active = 0
+    Filling = 1
+    Stopped = 2
 class _ColorAnimation_Meta_(ComPtr.__class__):
     pass
 class ColorAnimation(ComPtr, metaclass=_ColorAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ColorAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ColorAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ColorAnimation: ...
     @winrt_mixinmethod
@@ -139,22 +175,29 @@ class ColorAnimation(ComPtr, metaclass=_ColorAnimation_Meta_):
     def get_EasingFunctionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
-    _ColorAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
-    _ColorAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
     _ColorAnimation_Meta_.ByProperty = property(get_ByProperty.__wrapped__, None)
     _ColorAnimation_Meta_.EasingFunctionProperty = property(get_EasingFunctionProperty.__wrapped__, None)
     _ColorAnimation_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
+    _ColorAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
+    _ColorAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
 class _ColorAnimationUsingKeyFrames_Meta_(ComPtr.__class__):
     pass
 class ColorAnimationUsingKeyFrames(ComPtr, metaclass=_ColorAnimationUsingKeyFrames_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimationUsingKeyFrames
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ColorAnimationUsingKeyFrames'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ColorAnimationUsingKeyFrames.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ColorAnimationUsingKeyFrames: ...
     @winrt_mixinmethod
@@ -165,8 +208,8 @@ class ColorAnimationUsingKeyFrames(ComPtr, metaclass=_ColorAnimationUsingKeyFram
     def put_EnableDependentAnimation(self: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimationUsingKeyFrames, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorAnimationUsingKeyFramesStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
     _ColorAnimationUsingKeyFrames_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
 class _ColorKeyFrame_Meta_(ComPtr.__class__):
     pass
@@ -174,6 +217,13 @@ class ColorKeyFrame(ComPtr, metaclass=_ColorKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IColorKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ColorKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorKeyFrameFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame: ...
     @winrt_mixinmethod
@@ -188,14 +238,21 @@ class ColorKeyFrame(ComPtr, metaclass=_ColorKeyFrame_Meta_):
     def get_ValueProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_KeyTimeProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IColorKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
-    _ColorKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
+    Value = property(get_Value, put_Value)
     _ColorKeyFrame_Meta_.KeyTimeProperty = property(get_KeyTimeProperty.__wrapped__, None)
+    _ColorKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
 class ColorKeyFrameCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ColorKeyFrameCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrameCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrameCollection: ...
     @winrt_mixinmethod
@@ -231,6 +288,13 @@ class CommonNavigationTransitionInfo(ComPtr, metaclass=_CommonNavigationTransiti
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ICommonNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.CommonNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.CommonNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.CommonNavigationTransitionInfo: ...
     @winrt_mixinmethod
@@ -246,8 +310,8 @@ class CommonNavigationTransitionInfo(ComPtr, metaclass=_CommonNavigationTransiti
     @winrt_classmethod
     def SetIsStaggerElement(cls: win32more.Windows.UI.Xaml.Media.Animation.ICommonNavigationTransitionInfoStatics, element: win32more.Windows.UI.Xaml.UIElement, value: Boolean) -> Void: ...
     IsStaggeringEnabled = property(get_IsStaggeringEnabled, put_IsStaggeringEnabled)
-    _CommonNavigationTransitionInfo_Meta_.IsStaggeringEnabledProperty = property(get_IsStaggeringEnabledProperty.__wrapped__, None)
     _CommonNavigationTransitionInfo_Meta_.IsStaggerElementProperty = property(get_IsStaggerElementProperty.__wrapped__, None)
+    _CommonNavigationTransitionInfo_Meta_.IsStaggeringEnabledProperty = property(get_IsStaggeringEnabledProperty.__wrapped__, None)
 class ConnectedAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IConnectedAnimation
@@ -272,13 +336,13 @@ class ConnectedAnimation(ComPtr):
     def get_Configuration(self: win32more.Windows.UI.Xaml.Media.Animation.IConnectedAnimation3) -> win32more.Windows.UI.Xaml.Media.Animation.ConnectedAnimationConfiguration: ...
     @winrt_mixinmethod
     def put_Configuration(self: win32more.Windows.UI.Xaml.Media.Animation.IConnectedAnimation3, value: win32more.Windows.UI.Xaml.Media.Animation.ConnectedAnimationConfiguration) -> Void: ...
-    IsScaleAnimationEnabled = property(get_IsScaleAnimationEnabled, put_IsScaleAnimationEnabled)
     Configuration = property(get_Configuration, put_Configuration)
-ConnectedAnimationComponent = Int32
-ConnectedAnimationComponent_OffsetX: ConnectedAnimationComponent = 0
-ConnectedAnimationComponent_OffsetY: ConnectedAnimationComponent = 1
-ConnectedAnimationComponent_CrossFade: ConnectedAnimationComponent = 2
-ConnectedAnimationComponent_Scale: ConnectedAnimationComponent = 3
+    IsScaleAnimationEnabled = property(get_IsScaleAnimationEnabled, put_IsScaleAnimationEnabled)
+class ConnectedAnimationComponent(Int32):  # enum
+    OffsetX = 0
+    OffsetY = 1
+    CrossFade = 2
+    Scale = 3
 class ConnectedAnimationConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IConnectedAnimationConfiguration
@@ -309,6 +373,13 @@ class ContentThemeTransition(ComPtr, metaclass=_ContentThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IContentThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ContentThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ContentThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ContentThemeTransition: ...
     @winrt_mixinmethod
@@ -333,6 +404,13 @@ class ContinuumNavigationTransitionInfo(ComPtr, metaclass=_ContinuumNavigationTr
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IContinuumNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ContinuumNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ContinuumNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ContinuumNavigationTransitionInfo: ...
     @winrt_mixinmethod
@@ -360,44 +438,86 @@ class ContinuumNavigationTransitionInfo(ComPtr, metaclass=_ContinuumNavigationTr
     @winrt_classmethod
     def SetExitElementContainer(cls: win32more.Windows.UI.Xaml.Media.Animation.IContinuumNavigationTransitionInfoStatics, element: win32more.Windows.UI.Xaml.Controls.ListViewBase, value: Boolean) -> Void: ...
     ExitElement = property(get_ExitElement, put_ExitElement)
+    _ContinuumNavigationTransitionInfo_Meta_.ExitElementContainerProperty = property(get_ExitElementContainerProperty.__wrapped__, None)
     _ContinuumNavigationTransitionInfo_Meta_.ExitElementProperty = property(get_ExitElementProperty.__wrapped__, None)
     _ContinuumNavigationTransitionInfo_Meta_.IsEntranceElementProperty = property(get_IsEntranceElementProperty.__wrapped__, None)
     _ContinuumNavigationTransitionInfo_Meta_.IsExitElementProperty = property(get_IsExitElementProperty.__wrapped__, None)
-    _ContinuumNavigationTransitionInfo_Meta_.ExitElementContainerProperty = property(get_ExitElementContainerProperty.__wrapped__, None)
 class CubicEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ICubicEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.CubicEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.CubicEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.CubicEase: ...
 class DirectConnectedAnimationConfiguration(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ConnectedAnimationConfiguration
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDirectConnectedAnimationConfiguration
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DirectConnectedAnimationConfiguration'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DirectConnectedAnimationConfiguration.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IDirectConnectedAnimationConfigurationFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.DirectConnectedAnimationConfiguration: ...
 class DiscreteColorKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDiscreteColorKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DiscreteColorKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DiscreteColorKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DiscreteColorKeyFrame: ...
 class DiscreteDoubleKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDiscreteDoubleKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DiscreteDoubleKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DiscreteDoubleKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DiscreteDoubleKeyFrame: ...
 class DiscreteObjectKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDiscreteObjectKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DiscreteObjectKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DiscreteObjectKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DiscreteObjectKeyFrame: ...
 class DiscretePointKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDiscretePointKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DiscretePointKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DiscretePointKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DiscretePointKeyFrame: ...
 class _DoubleAnimation_Meta_(ComPtr.__class__):
@@ -406,6 +526,13 @@ class DoubleAnimation(ComPtr, metaclass=_DoubleAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DoubleAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DoubleAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DoubleAnimation: ...
     @winrt_mixinmethod
@@ -438,22 +565,29 @@ class DoubleAnimation(ComPtr, metaclass=_DoubleAnimation_Meta_):
     def get_EasingFunctionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
-    _DoubleAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
-    _DoubleAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
     _DoubleAnimation_Meta_.ByProperty = property(get_ByProperty.__wrapped__, None)
     _DoubleAnimation_Meta_.EasingFunctionProperty = property(get_EasingFunctionProperty.__wrapped__, None)
     _DoubleAnimation_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
+    _DoubleAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
+    _DoubleAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
 class _DoubleAnimationUsingKeyFrames_Meta_(ComPtr.__class__):
     pass
 class DoubleAnimationUsingKeyFrames(ComPtr, metaclass=_DoubleAnimationUsingKeyFrames_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimationUsingKeyFrames
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DoubleAnimationUsingKeyFrames'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DoubleAnimationUsingKeyFrames.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DoubleAnimationUsingKeyFrames: ...
     @winrt_mixinmethod
@@ -464,8 +598,8 @@ class DoubleAnimationUsingKeyFrames(ComPtr, metaclass=_DoubleAnimationUsingKeyFr
     def put_EnableDependentAnimation(self: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimationUsingKeyFrames, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleAnimationUsingKeyFramesStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
     _DoubleAnimationUsingKeyFrames_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
 class _DoubleKeyFrame_Meta_(ComPtr.__class__):
     pass
@@ -473,6 +607,13 @@ class DoubleKeyFrame(ComPtr, metaclass=_DoubleKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDoubleKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DoubleKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleKeyFrameFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame: ...
     @winrt_mixinmethod
@@ -487,14 +628,21 @@ class DoubleKeyFrame(ComPtr, metaclass=_DoubleKeyFrame_Meta_):
     def get_ValueProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_KeyTimeProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDoubleKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
-    _DoubleKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
+    Value = property(get_Value, put_Value)
     _DoubleKeyFrame_Meta_.KeyTimeProperty = property(get_KeyTimeProperty.__wrapped__, None)
+    _DoubleKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
 class DoubleKeyFrameCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DoubleKeyFrameCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrameCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrameCollection: ...
     @winrt_mixinmethod
@@ -530,6 +678,13 @@ class DragItemThemeAnimation(ComPtr, metaclass=_DragItemThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDragItemThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DragItemThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DragItemThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DragItemThemeAnimation: ...
     @winrt_mixinmethod
@@ -546,6 +701,13 @@ class DragOverThemeAnimation(ComPtr, metaclass=_DragOverThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDragOverThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DragOverThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DragOverThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DragOverThemeAnimation: ...
     @winrt_mixinmethod
@@ -566,16 +728,23 @@ class DragOverThemeAnimation(ComPtr, metaclass=_DragOverThemeAnimation_Meta_):
     def get_ToOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDragOverThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_DirectionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDragOverThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Direction = property(get_Direction, put_Direction)
     TargetName = property(get_TargetName, put_TargetName)
     ToOffset = property(get_ToOffset, put_ToOffset)
-    Direction = property(get_Direction, put_Direction)
+    _DragOverThemeAnimation_Meta_.DirectionProperty = property(get_DirectionProperty.__wrapped__, None)
     _DragOverThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
     _DragOverThemeAnimation_Meta_.ToOffsetProperty = property(get_ToOffsetProperty.__wrapped__, None)
-    _DragOverThemeAnimation_Meta_.DirectionProperty = property(get_DirectionProperty.__wrapped__, None)
 class DrillInNavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDrillInNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DrillInNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DrillInNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DrillInNavigationTransitionInfo: ...
 class _DrillInThemeAnimation_Meta_(ComPtr.__class__):
@@ -584,6 +753,13 @@ class DrillInThemeAnimation(ComPtr, metaclass=_DrillInThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDrillInThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DrillInThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DrillInThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DrillInThemeAnimation: ...
     @winrt_mixinmethod
@@ -610,10 +786,10 @@ class DrillInThemeAnimation(ComPtr, metaclass=_DrillInThemeAnimation_Meta_):
     def get_ExitTargetNameProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDrillInThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ExitTargetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDrillInThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     EntranceTarget = property(get_EntranceTarget, put_EntranceTarget)
-    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
+    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     ExitTarget = property(get_ExitTarget, put_ExitTarget)
+    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
     _DrillInThemeAnimation_Meta_.EntranceTargetNameProperty = property(get_EntranceTargetNameProperty.__wrapped__, None)
     _DrillInThemeAnimation_Meta_.EntranceTargetProperty = property(get_EntranceTargetProperty.__wrapped__, None)
     _DrillInThemeAnimation_Meta_.ExitTargetNameProperty = property(get_ExitTargetNameProperty.__wrapped__, None)
@@ -624,6 +800,13 @@ class DrillOutThemeAnimation(ComPtr, metaclass=_DrillOutThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDrillOutThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DrillOutThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DrillOutThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DrillOutThemeAnimation: ...
     @winrt_mixinmethod
@@ -650,10 +833,10 @@ class DrillOutThemeAnimation(ComPtr, metaclass=_DrillOutThemeAnimation_Meta_):
     def get_ExitTargetNameProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDrillOutThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ExitTargetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IDrillOutThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     EntranceTarget = property(get_EntranceTarget, put_EntranceTarget)
-    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
+    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     ExitTarget = property(get_ExitTarget, put_ExitTarget)
+    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
     _DrillOutThemeAnimation_Meta_.EntranceTargetNameProperty = property(get_EntranceTargetNameProperty.__wrapped__, None)
     _DrillOutThemeAnimation_Meta_.EntranceTargetProperty = property(get_EntranceTargetProperty.__wrapped__, None)
     _DrillOutThemeAnimation_Meta_.ExitTargetNameProperty = property(get_ExitTargetNameProperty.__wrapped__, None)
@@ -664,6 +847,13 @@ class DropTargetItemThemeAnimation(ComPtr, metaclass=_DropTargetItemThemeAnimati
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IDropTargetItemThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.DropTargetItemThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.DropTargetItemThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.DropTargetItemThemeAnimation: ...
     @winrt_mixinmethod
@@ -680,6 +870,13 @@ class EasingColorKeyFrame(ComPtr, metaclass=_EasingColorKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEasingColorKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EasingColorKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EasingColorKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EasingColorKeyFrame: ...
     @winrt_mixinmethod
@@ -696,6 +893,13 @@ class EasingDoubleKeyFrame(ComPtr, metaclass=_EasingDoubleKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEasingDoubleKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EasingDoubleKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EasingDoubleKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EasingDoubleKeyFrame: ...
     @winrt_mixinmethod
@@ -722,16 +926,23 @@ class EasingFunctionBase(ComPtr, metaclass=_EasingFunctionBase_Meta_):
     def get_EasingModeProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IEasingFunctionBaseStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     EasingMode = property(get_EasingMode, put_EasingMode)
     _EasingFunctionBase_Meta_.EasingModeProperty = property(get_EasingModeProperty.__wrapped__, None)
-EasingMode = Int32
-EasingMode_EaseOut: EasingMode = 0
-EasingMode_EaseIn: EasingMode = 1
-EasingMode_EaseInOut: EasingMode = 2
+class EasingMode(Int32):  # enum
+    EaseOut = 0
+    EaseIn = 1
+    EaseInOut = 2
 class _EasingPointKeyFrame_Meta_(ComPtr.__class__):
     pass
 class EasingPointKeyFrame(ComPtr, metaclass=_EasingPointKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEasingPointKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EasingPointKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EasingPointKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EasingPointKeyFrame: ...
     @winrt_mixinmethod
@@ -748,6 +959,13 @@ class EdgeUIThemeTransition(ComPtr, metaclass=_EdgeUIThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEdgeUIThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EdgeUIThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EdgeUIThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EdgeUIThemeTransition: ...
     @winrt_mixinmethod
@@ -764,6 +982,13 @@ class ElasticEase(ComPtr, metaclass=_ElasticEase_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IElasticEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ElasticEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ElasticEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ElasticEase: ...
     @winrt_mixinmethod
@@ -788,6 +1013,13 @@ class EntranceNavigationTransitionInfo(ComPtr, metaclass=_EntranceNavigationTran
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEntranceNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo: ...
     @winrt_classmethod
@@ -803,6 +1035,13 @@ class EntranceThemeTransition(ComPtr, metaclass=_EntranceThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IEntranceThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.EntranceThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.EntranceThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.EntranceThemeTransition: ...
     @winrt_mixinmethod
@@ -835,6 +1074,13 @@ class ExponentialEase(ComPtr, metaclass=_ExponentialEase_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IExponentialEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ExponentialEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ExponentialEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ExponentialEase: ...
     @winrt_mixinmethod
@@ -851,6 +1097,13 @@ class FadeInThemeAnimation(ComPtr, metaclass=_FadeInThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IFadeInThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.FadeInThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.FadeInThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.FadeInThemeAnimation: ...
     @winrt_mixinmethod
@@ -867,6 +1120,13 @@ class FadeOutThemeAnimation(ComPtr, metaclass=_FadeOutThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IFadeOutThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.FadeOutThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.FadeOutThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.FadeOutThemeAnimation: ...
     @winrt_mixinmethod
@@ -877,13 +1137,20 @@ class FadeOutThemeAnimation(ComPtr, metaclass=_FadeOutThemeAnimation_Meta_):
     def get_TargetNameProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IFadeOutThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     TargetName = property(get_TargetName, put_TargetName)
     _FadeOutThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
-FillBehavior = Int32
-FillBehavior_HoldEnd: FillBehavior = 0
-FillBehavior_Stop: FillBehavior = 1
+class FillBehavior(Int32):  # enum
+    HoldEnd = 0
+    Stop = 1
 class GravityConnectedAnimationConfiguration(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ConnectedAnimationConfiguration
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IGravityConnectedAnimationConfiguration
     _classid_ = 'Windows.UI.Xaml.Media.Animation.GravityConnectedAnimationConfiguration'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.GravityConnectedAnimationConfiguration.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IGravityConnectedAnimationConfigurationFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.GravityConnectedAnimationConfiguration: ...
     @winrt_mixinmethod
@@ -989,11 +1256,11 @@ class IColorAnimation(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
 class IColorAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IColorAnimationStatics'
@@ -1008,11 +1275,11 @@ class IColorAnimationStatics(ComPtr):
     def get_EasingFunctionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_EnableDependentAnimationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FromProperty = property(get_FromProperty, None)
-    ToProperty = property(get_ToProperty, None)
     ByProperty = property(get_ByProperty, None)
     EasingFunctionProperty = property(get_EasingFunctionProperty, None)
     EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty, None)
+    FromProperty = property(get_FromProperty, None)
+    ToProperty = property(get_ToProperty, None)
 class IColorAnimationUsingKeyFrames(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IColorAnimationUsingKeyFrames'
@@ -1023,8 +1290,8 @@ class IColorAnimationUsingKeyFrames(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
 class IColorAnimationUsingKeyFramesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IColorAnimationUsingKeyFramesStatics'
@@ -1044,8 +1311,8 @@ class IColorKeyFrame(ComPtr):
     def get_KeyTime(self) -> win32more.Windows.UI.Xaml.Media.Animation.KeyTime: ...
     @winrt_commethod(9)
     def put_KeyTime(self, value: win32more.Windows.UI.Xaml.Media.Animation.KeyTime) -> Void: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
+    Value = property(get_Value, put_Value)
 class IColorKeyFrameFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IColorKeyFrameFactory'
@@ -1060,8 +1327,8 @@ class IColorKeyFrameStatics(ComPtr):
     def get_ValueProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_KeyTimeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ValueProperty = property(get_ValueProperty, None)
     KeyTimeProperty = property(get_KeyTimeProperty, None)
+    ValueProperty = property(get_ValueProperty, None)
 class ICommonNavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ICommonNavigationTransitionInfo'
@@ -1083,8 +1350,8 @@ class ICommonNavigationTransitionInfoStatics(ComPtr):
     def GetIsStaggerElement(self, element: win32more.Windows.UI.Xaml.UIElement) -> Boolean: ...
     @winrt_commethod(9)
     def SetIsStaggerElement(self, element: win32more.Windows.UI.Xaml.UIElement, value: Boolean) -> Void: ...
-    IsStaggeringEnabledProperty = property(get_IsStaggeringEnabledProperty, None)
     IsStaggerElementProperty = property(get_IsStaggerElementProperty, None)
+    IsStaggeringEnabledProperty = property(get_IsStaggeringEnabledProperty, None)
 class IConnectedAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IConnectedAnimation'
@@ -1208,10 +1475,10 @@ class IContinuumNavigationTransitionInfoStatics(ComPtr):
     def GetExitElementContainer(self, element: win32more.Windows.UI.Xaml.Controls.ListViewBase) -> Boolean: ...
     @winrt_commethod(15)
     def SetExitElementContainer(self, element: win32more.Windows.UI.Xaml.Controls.ListViewBase, value: Boolean) -> Void: ...
+    ExitElementContainerProperty = property(get_ExitElementContainerProperty, None)
     ExitElementProperty = property(get_ExitElementProperty, None)
     IsEntranceElementProperty = property(get_IsEntranceElementProperty, None)
     IsExitElementProperty = property(get_IsExitElementProperty, None)
-    ExitElementContainerProperty = property(get_ExitElementContainerProperty, None)
 class ICubicEase(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ICubicEase'
@@ -1266,11 +1533,11 @@ class IDoubleAnimation(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
 class IDoubleAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDoubleAnimationStatics'
@@ -1285,11 +1552,11 @@ class IDoubleAnimationStatics(ComPtr):
     def get_EasingFunctionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_EnableDependentAnimationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FromProperty = property(get_FromProperty, None)
-    ToProperty = property(get_ToProperty, None)
     ByProperty = property(get_ByProperty, None)
     EasingFunctionProperty = property(get_EasingFunctionProperty, None)
     EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty, None)
+    FromProperty = property(get_FromProperty, None)
+    ToProperty = property(get_ToProperty, None)
 class IDoubleAnimationUsingKeyFrames(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDoubleAnimationUsingKeyFrames'
@@ -1300,8 +1567,8 @@ class IDoubleAnimationUsingKeyFrames(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
 class IDoubleAnimationUsingKeyFramesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDoubleAnimationUsingKeyFramesStatics'
@@ -1321,8 +1588,8 @@ class IDoubleKeyFrame(ComPtr):
     def get_KeyTime(self) -> win32more.Windows.UI.Xaml.Media.Animation.KeyTime: ...
     @winrt_commethod(9)
     def put_KeyTime(self, value: win32more.Windows.UI.Xaml.Media.Animation.KeyTime) -> Void: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
+    Value = property(get_Value, put_Value)
 class IDoubleKeyFrameFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDoubleKeyFrameFactory'
@@ -1337,8 +1604,8 @@ class IDoubleKeyFrameStatics(ComPtr):
     def get_ValueProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_KeyTimeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ValueProperty = property(get_ValueProperty, None)
     KeyTimeProperty = property(get_KeyTimeProperty, None)
+    ValueProperty = property(get_ValueProperty, None)
 class IDragItemThemeAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDragItemThemeAnimation'
@@ -1371,9 +1638,9 @@ class IDragOverThemeAnimation(ComPtr):
     def get_Direction(self) -> win32more.Windows.UI.Xaml.Controls.Primitives.AnimationDirection: ...
     @winrt_commethod(11)
     def put_Direction(self, value: win32more.Windows.UI.Xaml.Controls.Primitives.AnimationDirection) -> Void: ...
+    Direction = property(get_Direction, put_Direction)
     TargetName = property(get_TargetName, put_TargetName)
     ToOffset = property(get_ToOffset, put_ToOffset)
-    Direction = property(get_Direction, put_Direction)
 class IDragOverThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDragOverThemeAnimationStatics'
@@ -1384,9 +1651,9 @@ class IDragOverThemeAnimationStatics(ComPtr):
     def get_ToOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_DirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    DirectionProperty = property(get_DirectionProperty, None)
     TargetNameProperty = property(get_TargetNameProperty, None)
     ToOffsetProperty = property(get_ToOffsetProperty, None)
-    DirectionProperty = property(get_DirectionProperty, None)
 class IDrillInNavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDrillInNavigationTransitionInfo'
@@ -1411,10 +1678,10 @@ class IDrillInThemeAnimation(ComPtr):
     def get_ExitTarget(self) -> win32more.Windows.UI.Xaml.DependencyObject: ...
     @winrt_commethod(13)
     def put_ExitTarget(self, value: win32more.Windows.UI.Xaml.DependencyObject) -> Void: ...
-    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     EntranceTarget = property(get_EntranceTarget, put_EntranceTarget)
-    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
+    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     ExitTarget = property(get_ExitTarget, put_ExitTarget)
+    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
 class IDrillInThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDrillInThemeAnimationStatics'
@@ -1451,10 +1718,10 @@ class IDrillOutThemeAnimation(ComPtr):
     def get_ExitTarget(self) -> win32more.Windows.UI.Xaml.DependencyObject: ...
     @winrt_commethod(13)
     def put_ExitTarget(self, value: win32more.Windows.UI.Xaml.DependencyObject) -> Void: ...
-    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     EntranceTarget = property(get_EntranceTarget, put_EntranceTarget)
-    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
+    EntranceTargetName = property(get_EntranceTargetName, put_EntranceTargetName)
     ExitTarget = property(get_ExitTarget, put_ExitTarget)
+    ExitTargetName = property(get_ExitTargetName, put_ExitTargetName)
 class IDrillOutThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IDrillOutThemeAnimationStatics'
@@ -1791,8 +2058,8 @@ class IObjectAnimationUsingKeyFrames(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
 class IObjectAnimationUsingKeyFramesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IObjectAnimationUsingKeyFramesStatics'
@@ -1812,8 +2079,8 @@ class IObjectKeyFrame(ComPtr):
     def get_KeyTime(self) -> win32more.Windows.UI.Xaml.Media.Animation.KeyTime: ...
     @winrt_commethod(9)
     def put_KeyTime(self, value: win32more.Windows.UI.Xaml.Media.Animation.KeyTime) -> Void: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
+    Value = property(get_Value, put_Value)
 class IObjectKeyFrameFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IObjectKeyFrameFactory'
@@ -1828,8 +2095,8 @@ class IObjectKeyFrameStatics(ComPtr):
     def get_ValueProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_KeyTimeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ValueProperty = property(get_ValueProperty, None)
     KeyTimeProperty = property(get_KeyTimeProperty, None)
+    ValueProperty = property(get_ValueProperty, None)
 class IPaneThemeTransition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPaneThemeTransition'
@@ -1870,11 +2137,11 @@ class IPointAnimation(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
 class IPointAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPointAnimationStatics'
@@ -1889,11 +2156,11 @@ class IPointAnimationStatics(ComPtr):
     def get_EasingFunctionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_EnableDependentAnimationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FromProperty = property(get_FromProperty, None)
-    ToProperty = property(get_ToProperty, None)
     ByProperty = property(get_ByProperty, None)
     EasingFunctionProperty = property(get_EasingFunctionProperty, None)
     EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty, None)
+    FromProperty = property(get_FromProperty, None)
+    ToProperty = property(get_ToProperty, None)
 class IPointAnimationUsingKeyFrames(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPointAnimationUsingKeyFrames'
@@ -1904,8 +2171,8 @@ class IPointAnimationUsingKeyFrames(ComPtr):
     def get_EnableDependentAnimation(self) -> Boolean: ...
     @winrt_commethod(8)
     def put_EnableDependentAnimation(self, value: Boolean) -> Void: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
 class IPointAnimationUsingKeyFramesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPointAnimationUsingKeyFramesStatics'
@@ -1925,8 +2192,8 @@ class IPointKeyFrame(ComPtr):
     def get_KeyTime(self) -> win32more.Windows.UI.Xaml.Media.Animation.KeyTime: ...
     @winrt_commethod(9)
     def put_KeyTime(self, value: win32more.Windows.UI.Xaml.Media.Animation.KeyTime) -> Void: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
+    Value = property(get_Value, put_Value)
 class IPointKeyFrameFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPointKeyFrameFactory'
@@ -1941,8 +2208,8 @@ class IPointKeyFrameStatics(ComPtr):
     def get_ValueProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_KeyTimeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    ValueProperty = property(get_ValueProperty, None)
     KeyTimeProperty = property(get_KeyTimeProperty, None)
+    ValueProperty = property(get_ValueProperty, None)
 class IPointerDownThemeAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPointerDownThemeAnimation'
@@ -1991,9 +2258,9 @@ class IPopInThemeAnimation(ComPtr):
     def get_FromVerticalOffset(self) -> Double: ...
     @winrt_commethod(11)
     def put_FromVerticalOffset(self, value: Double) -> Void: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
+    TargetName = property(get_TargetName, put_TargetName)
 class IPopInThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPopInThemeAnimationStatics'
@@ -2004,9 +2271,9 @@ class IPopInThemeAnimationStatics(ComPtr):
     def get_FromHorizontalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_FromVerticalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetNameProperty = property(get_TargetNameProperty, None)
     FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty, None)
     FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty, None)
+    TargetNameProperty = property(get_TargetNameProperty, None)
 class IPopOutThemeAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IPopOutThemeAnimation'
@@ -2116,9 +2383,9 @@ class IRepositionThemeAnimation(ComPtr):
     def get_FromVerticalOffset(self) -> Double: ...
     @winrt_commethod(11)
     def put_FromVerticalOffset(self, value: Double) -> Void: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
+    TargetName = property(get_TargetName, put_TargetName)
 class IRepositionThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IRepositionThemeAnimationStatics'
@@ -2129,9 +2396,9 @@ class IRepositionThemeAnimationStatics(ComPtr):
     def get_FromHorizontalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_FromVerticalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetNameProperty = property(get_TargetNameProperty, None)
     FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty, None)
     FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty, None)
+    TargetNameProperty = property(get_TargetNameProperty, None)
 class IRepositionThemeTransition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IRepositionThemeTransition'
@@ -2272,17 +2539,17 @@ class ISplitCloseThemeAnimation(ComPtr):
     def get_ContentTranslationOffset(self) -> Double: ...
     @winrt_commethod(27)
     def put_ContentTranslationOffset(self, value: Double) -> Void: ...
-    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
-    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
-    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
-    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
-    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
-    ContentTarget = property(get_ContentTarget, put_ContentTarget)
-    OpenedLength = property(get_OpenedLength, put_OpenedLength)
     ClosedLength = property(get_ClosedLength, put_ClosedLength)
-    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
+    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
+    ContentTarget = property(get_ContentTarget, put_ContentTarget)
+    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
     ContentTranslationDirection = property(get_ContentTranslationDirection, put_ContentTranslationDirection)
     ContentTranslationOffset = property(get_ContentTranslationOffset, put_ContentTranslationOffset)
+    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    OpenedLength = property(get_OpenedLength, put_OpenedLength)
+    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
+    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
 class ISplitCloseThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISplitCloseThemeAnimationStatics'
@@ -2309,17 +2576,17 @@ class ISplitCloseThemeAnimationStatics(ComPtr):
     def get_ContentTranslationDirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(16)
     def get_ContentTranslationOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    OpenedTargetNameProperty = property(get_OpenedTargetNameProperty, None)
-    OpenedTargetProperty = property(get_OpenedTargetProperty, None)
+    ClosedLengthProperty = property(get_ClosedLengthProperty, None)
     ClosedTargetNameProperty = property(get_ClosedTargetNameProperty, None)
     ClosedTargetProperty = property(get_ClosedTargetProperty, None)
     ContentTargetNameProperty = property(get_ContentTargetNameProperty, None)
     ContentTargetProperty = property(get_ContentTargetProperty, None)
-    OpenedLengthProperty = property(get_OpenedLengthProperty, None)
-    ClosedLengthProperty = property(get_ClosedLengthProperty, None)
-    OffsetFromCenterProperty = property(get_OffsetFromCenterProperty, None)
     ContentTranslationDirectionProperty = property(get_ContentTranslationDirectionProperty, None)
     ContentTranslationOffsetProperty = property(get_ContentTranslationOffsetProperty, None)
+    OffsetFromCenterProperty = property(get_OffsetFromCenterProperty, None)
+    OpenedLengthProperty = property(get_OpenedLengthProperty, None)
+    OpenedTargetNameProperty = property(get_OpenedTargetNameProperty, None)
+    OpenedTargetProperty = property(get_OpenedTargetProperty, None)
 class ISplitOpenThemeAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISplitOpenThemeAnimation'
@@ -2368,17 +2635,17 @@ class ISplitOpenThemeAnimation(ComPtr):
     def get_ContentTranslationOffset(self) -> Double: ...
     @winrt_commethod(27)
     def put_ContentTranslationOffset(self, value: Double) -> Void: ...
-    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
-    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
-    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
-    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
-    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
-    ContentTarget = property(get_ContentTarget, put_ContentTarget)
-    OpenedLength = property(get_OpenedLength, put_OpenedLength)
     ClosedLength = property(get_ClosedLength, put_ClosedLength)
-    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
+    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
+    ContentTarget = property(get_ContentTarget, put_ContentTarget)
+    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
     ContentTranslationDirection = property(get_ContentTranslationDirection, put_ContentTranslationDirection)
     ContentTranslationOffset = property(get_ContentTranslationOffset, put_ContentTranslationOffset)
+    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    OpenedLength = property(get_OpenedLength, put_OpenedLength)
+    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
+    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
 class ISplitOpenThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISplitOpenThemeAnimationStatics'
@@ -2405,17 +2672,17 @@ class ISplitOpenThemeAnimationStatics(ComPtr):
     def get_ContentTranslationDirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(16)
     def get_ContentTranslationOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    OpenedTargetNameProperty = property(get_OpenedTargetNameProperty, None)
-    OpenedTargetProperty = property(get_OpenedTargetProperty, None)
+    ClosedLengthProperty = property(get_ClosedLengthProperty, None)
     ClosedTargetNameProperty = property(get_ClosedTargetNameProperty, None)
     ClosedTargetProperty = property(get_ClosedTargetProperty, None)
     ContentTargetNameProperty = property(get_ContentTargetNameProperty, None)
     ContentTargetProperty = property(get_ContentTargetProperty, None)
-    OpenedLengthProperty = property(get_OpenedLengthProperty, None)
-    ClosedLengthProperty = property(get_ClosedLengthProperty, None)
-    OffsetFromCenterProperty = property(get_OffsetFromCenterProperty, None)
     ContentTranslationDirectionProperty = property(get_ContentTranslationDirectionProperty, None)
     ContentTranslationOffsetProperty = property(get_ContentTranslationOffsetProperty, None)
+    OffsetFromCenterProperty = property(get_OffsetFromCenterProperty, None)
+    OpenedLengthProperty = property(get_OpenedLengthProperty, None)
+    OpenedTargetNameProperty = property(get_OpenedTargetNameProperty, None)
+    OpenedTargetProperty = property(get_OpenedTargetProperty, None)
 class IStoryboard(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.IStoryboard'
@@ -2459,8 +2726,8 @@ class IStoryboardStatics(ComPtr):
     def SetTargetName(self, element: win32more.Windows.UI.Xaml.Media.Animation.Timeline, name: WinRT_String) -> Void: ...
     @winrt_commethod(12)
     def SetTarget(self, timeline: win32more.Windows.UI.Xaml.Media.Animation.Timeline, target: win32more.Windows.UI.Xaml.DependencyObject) -> Void: ...
-    TargetPropertyProperty = property(get_TargetPropertyProperty, None)
     TargetNameProperty = property(get_TargetNameProperty, None)
+    TargetPropertyProperty = property(get_TargetPropertyProperty, None)
 class ISuppressNavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISuppressNavigationTransitionInfo'
@@ -2481,9 +2748,9 @@ class ISwipeBackThemeAnimation(ComPtr):
     def get_FromVerticalOffset(self) -> Double: ...
     @winrt_commethod(11)
     def put_FromVerticalOffset(self, value: Double) -> Void: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
+    TargetName = property(get_TargetName, put_TargetName)
 class ISwipeBackThemeAnimationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISwipeBackThemeAnimationStatics'
@@ -2494,9 +2761,9 @@ class ISwipeBackThemeAnimationStatics(ComPtr):
     def get_FromHorizontalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_FromVerticalOffsetProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetNameProperty = property(get_TargetNameProperty, None)
     FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty, None)
     FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty, None)
+    TargetNameProperty = property(get_TargetNameProperty, None)
 class ISwipeHintThemeAnimation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ISwipeHintThemeAnimation'
@@ -2564,9 +2831,9 @@ class ITimeline(ComPtr):
     AutoReverse = property(get_AutoReverse, put_AutoReverse)
     BeginTime = property(get_BeginTime, put_BeginTime)
     Duration = property(get_Duration, put_Duration)
-    SpeedRatio = property(get_SpeedRatio, put_SpeedRatio)
     FillBehavior = property(get_FillBehavior, put_FillBehavior)
     RepeatBehavior = property(get_RepeatBehavior, put_RepeatBehavior)
+    SpeedRatio = property(get_SpeedRatio, put_SpeedRatio)
 class ITimelineFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ITimelineFactory'
@@ -2597,9 +2864,9 @@ class ITimelineStatics(ComPtr):
     AutoReverseProperty = property(get_AutoReverseProperty, None)
     BeginTimeProperty = property(get_BeginTimeProperty, None)
     DurationProperty = property(get_DurationProperty, None)
-    SpeedRatioProperty = property(get_SpeedRatioProperty, None)
     FillBehaviorProperty = property(get_FillBehaviorProperty, None)
     RepeatBehaviorProperty = property(get_RepeatBehaviorProperty, None)
+    SpeedRatioProperty = property(get_SpeedRatioProperty, None)
 class ITransition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ITransition'
@@ -2612,6 +2879,13 @@ class KeySpline(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IKeySpline
     _classid_ = 'Windows.UI.Xaml.Media.Animation.KeySpline'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.KeySpline.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.KeySpline: ...
     @winrt_mixinmethod
@@ -2636,18 +2910,39 @@ class LinearColorKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ILinearColorKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.LinearColorKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.LinearColorKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.LinearColorKeyFrame: ...
 class LinearDoubleKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ILinearDoubleKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.LinearDoubleKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.LinearDoubleKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.LinearDoubleKeyFrame: ...
 class LinearPointKeyFrame(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ILinearPointKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.LinearPointKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.LinearPointKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.LinearPointKeyFrame: ...
 class _NavigationThemeTransition_Meta_(ComPtr.__class__):
@@ -2656,6 +2951,13 @@ class NavigationThemeTransition(ComPtr, metaclass=_NavigationThemeTransition_Met
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.INavigationThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.NavigationThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.NavigationThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationThemeTransition: ...
     @winrt_mixinmethod
@@ -2670,6 +2972,13 @@ class NavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.INavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.INavigationTransitionInfoFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
     @winrt_mixinmethod
@@ -2682,6 +2991,13 @@ class ObjectAnimationUsingKeyFrames(ComPtr, metaclass=_ObjectAnimationUsingKeyFr
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IObjectAnimationUsingKeyFrames
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ObjectAnimationUsingKeyFrames'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ObjectAnimationUsingKeyFrames.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ObjectAnimationUsingKeyFrames: ...
     @winrt_mixinmethod
@@ -2692,8 +3008,8 @@ class ObjectAnimationUsingKeyFrames(ComPtr, metaclass=_ObjectAnimationUsingKeyFr
     def put_EnableDependentAnimation(self: win32more.Windows.UI.Xaml.Media.Animation.IObjectAnimationUsingKeyFrames, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IObjectAnimationUsingKeyFramesStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
     _ObjectAnimationUsingKeyFrames_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
 class _ObjectKeyFrame_Meta_(ComPtr.__class__):
     pass
@@ -2701,6 +3017,13 @@ class ObjectKeyFrame(ComPtr, metaclass=_ObjectKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IObjectKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ObjectKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrame.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IObjectKeyFrameFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrame: ...
     @winrt_mixinmethod
@@ -2715,14 +3038,21 @@ class ObjectKeyFrame(ComPtr, metaclass=_ObjectKeyFrame_Meta_):
     def get_ValueProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IObjectKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_KeyTimeProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IObjectKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
-    _ObjectKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
+    Value = property(get_Value, put_Value)
     _ObjectKeyFrame_Meta_.KeyTimeProperty = property(get_KeyTimeProperty.__wrapped__, None)
+    _ObjectKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
 class ObjectKeyFrameCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrame]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ObjectKeyFrameCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrameCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ObjectKeyFrameCollection: ...
     @winrt_mixinmethod
@@ -2758,6 +3088,13 @@ class PaneThemeTransition(ComPtr, metaclass=_PaneThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPaneThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PaneThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PaneThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PaneThemeTransition: ...
     @winrt_mixinmethod
@@ -2774,6 +3111,13 @@ class PointAnimation(ComPtr, metaclass=_PointAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PointAnimation: ...
     @winrt_mixinmethod
@@ -2806,22 +3150,29 @@ class PointAnimation(ComPtr, metaclass=_PointAnimation_Meta_):
     def get_EasingFunctionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    From = property(get_From, put_From)
-    To = property(get_To, put_To)
     By = property(get_By, put_By)
     EasingFunction = property(get_EasingFunction, put_EasingFunction)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
-    _PointAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
-    _PointAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
+    From = property(get_From, put_From)
+    To = property(get_To, put_To)
     _PointAnimation_Meta_.ByProperty = property(get_ByProperty.__wrapped__, None)
     _PointAnimation_Meta_.EasingFunctionProperty = property(get_EasingFunctionProperty.__wrapped__, None)
     _PointAnimation_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
+    _PointAnimation_Meta_.FromProperty = property(get_FromProperty.__wrapped__, None)
+    _PointAnimation_Meta_.ToProperty = property(get_ToProperty.__wrapped__, None)
 class _PointAnimationUsingKeyFrames_Meta_(ComPtr.__class__):
     pass
 class PointAnimationUsingKeyFrames(ComPtr, metaclass=_PointAnimationUsingKeyFrames_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimationUsingKeyFrames
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointAnimationUsingKeyFrames'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointAnimationUsingKeyFrames.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PointAnimationUsingKeyFrames: ...
     @winrt_mixinmethod
@@ -2832,8 +3183,8 @@ class PointAnimationUsingKeyFrames(ComPtr, metaclass=_PointAnimationUsingKeyFram
     def put_EnableDependentAnimation(self: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimationUsingKeyFrames, value: Boolean) -> Void: ...
     @winrt_classmethod
     def get_EnableDependentAnimationProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointAnimationUsingKeyFramesStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    KeyFrames = property(get_KeyFrames, None)
     EnableDependentAnimation = property(get_EnableDependentAnimation, put_EnableDependentAnimation)
+    KeyFrames = property(get_KeyFrames, None)
     _PointAnimationUsingKeyFrames_Meta_.EnableDependentAnimationProperty = property(get_EnableDependentAnimationProperty.__wrapped__, None)
 class _PointKeyFrame_Meta_(ComPtr.__class__):
     pass
@@ -2841,6 +3192,13 @@ class PointKeyFrame(ComPtr, metaclass=_PointKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPointKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointKeyFrameFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame: ...
     @winrt_mixinmethod
@@ -2855,14 +3213,21 @@ class PointKeyFrame(ComPtr, metaclass=_PointKeyFrame_Meta_):
     def get_ValueProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_KeyTimeProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPointKeyFrameStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Value = property(get_Value, put_Value)
     KeyTime = property(get_KeyTime, put_KeyTime)
-    _PointKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
+    Value = property(get_Value, put_Value)
     _PointKeyFrame_Meta_.KeyTimeProperty = property(get_KeyTimeProperty.__wrapped__, None)
+    _PointKeyFrame_Meta_.ValueProperty = property(get_ValueProperty.__wrapped__, None)
 class PointKeyFrameCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointKeyFrameCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrameCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrameCollection: ...
     @winrt_mixinmethod
@@ -2898,6 +3263,13 @@ class PointerDownThemeAnimation(ComPtr, metaclass=_PointerDownThemeAnimation_Met
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPointerDownThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointerDownThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointerDownThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PointerDownThemeAnimation: ...
     @winrt_mixinmethod
@@ -2914,6 +3286,13 @@ class PointerUpThemeAnimation(ComPtr, metaclass=_PointerUpThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPointerUpThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PointerUpThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PointerUpThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PointerUpThemeAnimation: ...
     @winrt_mixinmethod
@@ -2930,6 +3309,13 @@ class PopInThemeAnimation(ComPtr, metaclass=_PopInThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPopInThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PopInThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PopInThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PopInThemeAnimation: ...
     @winrt_mixinmethod
@@ -2950,18 +3336,25 @@ class PopInThemeAnimation(ComPtr, metaclass=_PopInThemeAnimation_Meta_):
     def get_FromHorizontalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPopInThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FromVerticalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IPopInThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
-    _PopInThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
+    TargetName = property(get_TargetName, put_TargetName)
     _PopInThemeAnimation_Meta_.FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty.__wrapped__, None)
     _PopInThemeAnimation_Meta_.FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty.__wrapped__, None)
+    _PopInThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
 class _PopOutThemeAnimation_Meta_(ComPtr.__class__):
     pass
 class PopOutThemeAnimation(ComPtr, metaclass=_PopOutThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPopOutThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PopOutThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PopOutThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PopOutThemeAnimation: ...
     @winrt_mixinmethod
@@ -2978,6 +3371,13 @@ class PopupThemeTransition(ComPtr, metaclass=_PopupThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPopupThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PopupThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PopupThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PopupThemeTransition: ...
     @winrt_mixinmethod
@@ -3002,6 +3402,13 @@ class PowerEase(ComPtr, metaclass=_PowerEase_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IPowerEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.PowerEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.PowerEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.PowerEase: ...
     @winrt_mixinmethod
@@ -3016,24 +3423,52 @@ class QuadraticEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IQuadraticEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.QuadraticEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.QuadraticEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.QuadraticEase: ...
 class QuarticEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IQuarticEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.QuarticEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.QuarticEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.QuarticEase: ...
 class QuinticEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IQuinticEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.QuinticEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.QuinticEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.QuinticEase: ...
 class ReorderThemeTransition(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IReorderThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.ReorderThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.ReorderThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.ReorderThemeTransition: ...
 class RepeatBehavior(EasyCastStructure):
@@ -3059,16 +3494,23 @@ class RepeatBehaviorHelper(ComPtr, metaclass=_RepeatBehaviorHelper_Meta_):
     @winrt_classmethod
     def Equals(cls: win32more.Windows.UI.Xaml.Media.Animation.IRepeatBehaviorHelperStatics, target: win32more.Windows.UI.Xaml.Media.Animation.RepeatBehavior, value: win32more.Windows.UI.Xaml.Media.Animation.RepeatBehavior) -> Boolean: ...
     _RepeatBehaviorHelper_Meta_.Forever = property(get_Forever.__wrapped__, None)
-RepeatBehaviorType = Int32
-RepeatBehaviorType_Count: RepeatBehaviorType = 0
-RepeatBehaviorType_Duration: RepeatBehaviorType = 1
-RepeatBehaviorType_Forever: RepeatBehaviorType = 2
+class RepeatBehaviorType(Int32):  # enum
+    Count = 0
+    Duration = 1
+    Forever = 2
 class _RepositionThemeAnimation_Meta_(ComPtr.__class__):
     pass
 class RepositionThemeAnimation(ComPtr, metaclass=_RepositionThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IRepositionThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.RepositionThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.RepositionThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.RepositionThemeAnimation: ...
     @winrt_mixinmethod
@@ -3089,18 +3531,25 @@ class RepositionThemeAnimation(ComPtr, metaclass=_RepositionThemeAnimation_Meta_
     def get_FromHorizontalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IRepositionThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FromVerticalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.IRepositionThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
-    _RepositionThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
+    TargetName = property(get_TargetName, put_TargetName)
     _RepositionThemeAnimation_Meta_.FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty.__wrapped__, None)
     _RepositionThemeAnimation_Meta_.FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty.__wrapped__, None)
+    _RepositionThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
 class _RepositionThemeTransition_Meta_(ComPtr.__class__):
     pass
 class RepositionThemeTransition(ComPtr, metaclass=_RepositionThemeTransition_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Transition
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IRepositionThemeTransition
     _classid_ = 'Windows.UI.Xaml.Media.Animation.RepositionThemeTransition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.RepositionThemeTransition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.RepositionThemeTransition: ...
     @winrt_mixinmethod
@@ -3115,18 +3564,32 @@ class SineEase(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.EasingFunctionBase
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISineEase
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SineEase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SineEase.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SineEase: ...
-SlideNavigationTransitionEffect = Int32
-SlideNavigationTransitionEffect_FromBottom: SlideNavigationTransitionEffect = 0
-SlideNavigationTransitionEffect_FromLeft: SlideNavigationTransitionEffect = 1
-SlideNavigationTransitionEffect_FromRight: SlideNavigationTransitionEffect = 2
+class SlideNavigationTransitionEffect(Int32):  # enum
+    FromBottom = 0
+    FromLeft = 1
+    FromRight = 2
 class _SlideNavigationTransitionInfo_Meta_(ComPtr.__class__):
     pass
 class SlideNavigationTransitionInfo(ComPtr, metaclass=_SlideNavigationTransitionInfo_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISlideNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SlideNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SlideNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SlideNavigationTransitionInfo: ...
     @winrt_mixinmethod
@@ -3143,6 +3606,13 @@ class SplineColorKeyFrame(ComPtr, metaclass=_SplineColorKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.ColorKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISplineColorKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SplineColorKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SplineColorKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SplineColorKeyFrame: ...
     @winrt_mixinmethod
@@ -3159,6 +3629,13 @@ class SplineDoubleKeyFrame(ComPtr, metaclass=_SplineDoubleKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.DoubleKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISplineDoubleKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SplineDoubleKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SplineDoubleKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SplineDoubleKeyFrame: ...
     @winrt_mixinmethod
@@ -3175,6 +3652,13 @@ class SplinePointKeyFrame(ComPtr, metaclass=_SplinePointKeyFrame_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.PointKeyFrame
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISplinePointKeyFrame
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SplinePointKeyFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SplinePointKeyFrame.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SplinePointKeyFrame: ...
     @winrt_mixinmethod
@@ -3191,6 +3675,13 @@ class SplitCloseThemeAnimation(ComPtr, metaclass=_SplitCloseThemeAnimation_Meta_
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISplitCloseThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SplitCloseThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SplitCloseThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SplitCloseThemeAnimation: ...
     @winrt_mixinmethod
@@ -3259,34 +3750,41 @@ class SplitCloseThemeAnimation(ComPtr, metaclass=_SplitCloseThemeAnimation_Meta_
     def get_ContentTranslationDirectionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISplitCloseThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ContentTranslationOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISplitCloseThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
-    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
-    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
-    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
-    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
-    ContentTarget = property(get_ContentTarget, put_ContentTarget)
-    OpenedLength = property(get_OpenedLength, put_OpenedLength)
     ClosedLength = property(get_ClosedLength, put_ClosedLength)
-    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
+    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
+    ContentTarget = property(get_ContentTarget, put_ContentTarget)
+    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
     ContentTranslationDirection = property(get_ContentTranslationDirection, put_ContentTranslationDirection)
     ContentTranslationOffset = property(get_ContentTranslationOffset, put_ContentTranslationOffset)
-    _SplitCloseThemeAnimation_Meta_.OpenedTargetNameProperty = property(get_OpenedTargetNameProperty.__wrapped__, None)
-    _SplitCloseThemeAnimation_Meta_.OpenedTargetProperty = property(get_OpenedTargetProperty.__wrapped__, None)
+    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    OpenedLength = property(get_OpenedLength, put_OpenedLength)
+    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
+    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
+    _SplitCloseThemeAnimation_Meta_.ClosedLengthProperty = property(get_ClosedLengthProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ClosedTargetNameProperty = property(get_ClosedTargetNameProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ClosedTargetProperty = property(get_ClosedTargetProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ContentTargetNameProperty = property(get_ContentTargetNameProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ContentTargetProperty = property(get_ContentTargetProperty.__wrapped__, None)
-    _SplitCloseThemeAnimation_Meta_.OpenedLengthProperty = property(get_OpenedLengthProperty.__wrapped__, None)
-    _SplitCloseThemeAnimation_Meta_.ClosedLengthProperty = property(get_ClosedLengthProperty.__wrapped__, None)
-    _SplitCloseThemeAnimation_Meta_.OffsetFromCenterProperty = property(get_OffsetFromCenterProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ContentTranslationDirectionProperty = property(get_ContentTranslationDirectionProperty.__wrapped__, None)
     _SplitCloseThemeAnimation_Meta_.ContentTranslationOffsetProperty = property(get_ContentTranslationOffsetProperty.__wrapped__, None)
+    _SplitCloseThemeAnimation_Meta_.OffsetFromCenterProperty = property(get_OffsetFromCenterProperty.__wrapped__, None)
+    _SplitCloseThemeAnimation_Meta_.OpenedLengthProperty = property(get_OpenedLengthProperty.__wrapped__, None)
+    _SplitCloseThemeAnimation_Meta_.OpenedTargetNameProperty = property(get_OpenedTargetNameProperty.__wrapped__, None)
+    _SplitCloseThemeAnimation_Meta_.OpenedTargetProperty = property(get_OpenedTargetProperty.__wrapped__, None)
 class _SplitOpenThemeAnimation_Meta_(ComPtr.__class__):
     pass
 class SplitOpenThemeAnimation(ComPtr, metaclass=_SplitOpenThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISplitOpenThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SplitOpenThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SplitOpenThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SplitOpenThemeAnimation: ...
     @winrt_mixinmethod
@@ -3355,34 +3853,41 @@ class SplitOpenThemeAnimation(ComPtr, metaclass=_SplitOpenThemeAnimation_Meta_):
     def get_ContentTranslationDirectionProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISplitOpenThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ContentTranslationOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISplitOpenThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
-    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
-    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
-    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
-    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
-    ContentTarget = property(get_ContentTarget, put_ContentTarget)
-    OpenedLength = property(get_OpenedLength, put_OpenedLength)
     ClosedLength = property(get_ClosedLength, put_ClosedLength)
-    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    ClosedTarget = property(get_ClosedTarget, put_ClosedTarget)
+    ClosedTargetName = property(get_ClosedTargetName, put_ClosedTargetName)
+    ContentTarget = property(get_ContentTarget, put_ContentTarget)
+    ContentTargetName = property(get_ContentTargetName, put_ContentTargetName)
     ContentTranslationDirection = property(get_ContentTranslationDirection, put_ContentTranslationDirection)
     ContentTranslationOffset = property(get_ContentTranslationOffset, put_ContentTranslationOffset)
-    _SplitOpenThemeAnimation_Meta_.OpenedTargetNameProperty = property(get_OpenedTargetNameProperty.__wrapped__, None)
-    _SplitOpenThemeAnimation_Meta_.OpenedTargetProperty = property(get_OpenedTargetProperty.__wrapped__, None)
+    OffsetFromCenter = property(get_OffsetFromCenter, put_OffsetFromCenter)
+    OpenedLength = property(get_OpenedLength, put_OpenedLength)
+    OpenedTarget = property(get_OpenedTarget, put_OpenedTarget)
+    OpenedTargetName = property(get_OpenedTargetName, put_OpenedTargetName)
+    _SplitOpenThemeAnimation_Meta_.ClosedLengthProperty = property(get_ClosedLengthProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ClosedTargetNameProperty = property(get_ClosedTargetNameProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ClosedTargetProperty = property(get_ClosedTargetProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ContentTargetNameProperty = property(get_ContentTargetNameProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ContentTargetProperty = property(get_ContentTargetProperty.__wrapped__, None)
-    _SplitOpenThemeAnimation_Meta_.OpenedLengthProperty = property(get_OpenedLengthProperty.__wrapped__, None)
-    _SplitOpenThemeAnimation_Meta_.ClosedLengthProperty = property(get_ClosedLengthProperty.__wrapped__, None)
-    _SplitOpenThemeAnimation_Meta_.OffsetFromCenterProperty = property(get_OffsetFromCenterProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ContentTranslationDirectionProperty = property(get_ContentTranslationDirectionProperty.__wrapped__, None)
     _SplitOpenThemeAnimation_Meta_.ContentTranslationOffsetProperty = property(get_ContentTranslationOffsetProperty.__wrapped__, None)
+    _SplitOpenThemeAnimation_Meta_.OffsetFromCenterProperty = property(get_OffsetFromCenterProperty.__wrapped__, None)
+    _SplitOpenThemeAnimation_Meta_.OpenedLengthProperty = property(get_OpenedLengthProperty.__wrapped__, None)
+    _SplitOpenThemeAnimation_Meta_.OpenedTargetNameProperty = property(get_OpenedTargetNameProperty.__wrapped__, None)
+    _SplitOpenThemeAnimation_Meta_.OpenedTargetProperty = property(get_OpenedTargetProperty.__wrapped__, None)
 class _Storyboard_Meta_(ComPtr.__class__):
     pass
 class Storyboard(ComPtr, metaclass=_Storyboard_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.IStoryboard
     _classid_ = 'Windows.UI.Xaml.Media.Animation.Storyboard'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.Storyboard.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.Storyboard: ...
     @winrt_mixinmethod
@@ -3420,12 +3925,19 @@ class Storyboard(ComPtr, metaclass=_Storyboard_Meta_):
     @winrt_classmethod
     def SetTarget(cls: win32more.Windows.UI.Xaml.Media.Animation.IStoryboardStatics, timeline: win32more.Windows.UI.Xaml.Media.Animation.Timeline, target: win32more.Windows.UI.Xaml.DependencyObject) -> Void: ...
     Children = property(get_Children, None)
-    _Storyboard_Meta_.TargetPropertyProperty = property(get_TargetPropertyProperty.__wrapped__, None)
     _Storyboard_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
+    _Storyboard_Meta_.TargetPropertyProperty = property(get_TargetPropertyProperty.__wrapped__, None)
 class SuppressNavigationTransitionInfo(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISuppressNavigationTransitionInfo
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo: ...
 class _SwipeBackThemeAnimation_Meta_(ComPtr.__class__):
@@ -3434,6 +3946,13 @@ class SwipeBackThemeAnimation(ComPtr, metaclass=_SwipeBackThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISwipeBackThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SwipeBackThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SwipeBackThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SwipeBackThemeAnimation: ...
     @winrt_mixinmethod
@@ -3454,18 +3973,25 @@ class SwipeBackThemeAnimation(ComPtr, metaclass=_SwipeBackThemeAnimation_Meta_):
     def get_FromHorizontalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISwipeBackThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FromVerticalOffsetProperty(cls: win32more.Windows.UI.Xaml.Media.Animation.ISwipeBackThemeAnimationStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    TargetName = property(get_TargetName, put_TargetName)
     FromHorizontalOffset = property(get_FromHorizontalOffset, put_FromHorizontalOffset)
     FromVerticalOffset = property(get_FromVerticalOffset, put_FromVerticalOffset)
-    _SwipeBackThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
+    TargetName = property(get_TargetName, put_TargetName)
     _SwipeBackThemeAnimation_Meta_.FromHorizontalOffsetProperty = property(get_FromHorizontalOffsetProperty.__wrapped__, None)
     _SwipeBackThemeAnimation_Meta_.FromVerticalOffsetProperty = property(get_FromVerticalOffsetProperty.__wrapped__, None)
+    _SwipeBackThemeAnimation_Meta_.TargetNameProperty = property(get_TargetNameProperty.__wrapped__, None)
 class _SwipeHintThemeAnimation_Meta_(ComPtr.__class__):
     pass
 class SwipeHintThemeAnimation(ComPtr, metaclass=_SwipeHintThemeAnimation_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Animation.Timeline
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ISwipeHintThemeAnimation
     _classid_ = 'Windows.UI.Xaml.Media.Animation.SwipeHintThemeAnimation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.SwipeHintThemeAnimation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.SwipeHintThemeAnimation: ...
     @winrt_mixinmethod
@@ -3498,6 +4024,13 @@ class Timeline(ComPtr, metaclass=_Timeline_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.Animation.ITimeline
     _classid_ = 'Windows.UI.Xaml.Media.Animation.Timeline'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.Timeline.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.Animation.ITimelineFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Animation.Timeline: ...
     @winrt_mixinmethod
@@ -3547,20 +4080,27 @@ class Timeline(ComPtr, metaclass=_Timeline_Meta_):
     AutoReverse = property(get_AutoReverse, put_AutoReverse)
     BeginTime = property(get_BeginTime, put_BeginTime)
     Duration = property(get_Duration, put_Duration)
-    SpeedRatio = property(get_SpeedRatio, put_SpeedRatio)
     FillBehavior = property(get_FillBehavior, put_FillBehavior)
     RepeatBehavior = property(get_RepeatBehavior, put_RepeatBehavior)
+    SpeedRatio = property(get_SpeedRatio, put_SpeedRatio)
     _Timeline_Meta_.AllowDependentAnimations = property(get_AllowDependentAnimations.__wrapped__, put_AllowDependentAnimations.__wrapped__)
     _Timeline_Meta_.AutoReverseProperty = property(get_AutoReverseProperty.__wrapped__, None)
     _Timeline_Meta_.BeginTimeProperty = property(get_BeginTimeProperty.__wrapped__, None)
     _Timeline_Meta_.DurationProperty = property(get_DurationProperty.__wrapped__, None)
-    _Timeline_Meta_.SpeedRatioProperty = property(get_SpeedRatioProperty.__wrapped__, None)
     _Timeline_Meta_.FillBehaviorProperty = property(get_FillBehaviorProperty.__wrapped__, None)
     _Timeline_Meta_.RepeatBehaviorProperty = property(get_RepeatBehaviorProperty.__wrapped__, None)
+    _Timeline_Meta_.SpeedRatioProperty = property(get_SpeedRatioProperty.__wrapped__, None)
 class TimelineCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.Timeline]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.TimelineCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.TimelineCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.TimelineCollection: ...
     @winrt_mixinmethod
@@ -3598,6 +4138,13 @@ class TransitionCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Animation.Transition]
     _classid_ = 'Windows.UI.Xaml.Media.Animation.TransitionCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Animation.TransitionCollection: ...
     @winrt_mixinmethod
@@ -3627,4 +4174,6 @@ class TransitionCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Xaml.Media.Animation.Transition]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.UI.Xaml.Media.Animation.Transition]: ...
     Size = property(get_Size, None)
+
+
 make_ready(__name__)

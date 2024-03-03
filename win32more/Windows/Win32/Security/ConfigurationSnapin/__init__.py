@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security.ConfigurationSnapin
 import win32more.Windows.Win32.System.Com
@@ -89,10 +89,10 @@ class SCESVC_CONFIGURATION_LINE(EasyCastStructure):
     Value: POINTER(SByte)
     ValueLen: UInt32
 SCESVC_INFO_TYPE = Int32
-SCESVC_INFO_TYPE_SceSvcConfigurationInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 0
-SCESVC_INFO_TYPE_SceSvcMergedPolicyInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 1
-SCESVC_INFO_TYPE_SceSvcAnalysisInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 2
-SCESVC_INFO_TYPE_SceSvcInternalUse: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 3
+SceSvcConfigurationInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 0
+SceSvcMergedPolicyInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 1
+SceSvcAnalysisInfo: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 2
+SceSvcInternalUse: win32more.Windows.Win32.Security.ConfigurationSnapin.SCESVC_INFO_TYPE = 3
 SCE_LOG_ERR_LEVEL = Int32
 SCE_LOG_LEVEL_ALWAYS: win32more.Windows.Win32.Security.ConfigurationSnapin.SCE_LOG_ERR_LEVEL = 0
 SCE_LOG_LEVEL_ERROR: win32more.Windows.Win32.Security.ConfigurationSnapin.SCE_LOG_ERR_LEVEL = 1

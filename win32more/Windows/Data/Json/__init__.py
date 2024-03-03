@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Data.Json
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IJsonArray(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Json.IJsonArray'
@@ -131,6 +118,13 @@ class JsonArray(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Json.IJsonArray
     _classid_ = 'Windows.Data.Json.JsonArray'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Data.Json.JsonArray.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Data.Json.JsonArray: ...
     @winrt_mixinmethod
@@ -189,23 +183,30 @@ class JsonArray(ComPtr):
     def Parse(cls: win32more.Windows.Data.Json.IJsonArrayStatics, input: WinRT_String) -> win32more.Windows.Data.Json.JsonArray: ...
     @winrt_classmethod
     def TryParse(cls: win32more.Windows.Data.Json.IJsonArrayStatics, input: WinRT_String, result: POINTER(win32more.Windows.Data.Json.JsonArray)) -> Boolean: ...
-    ValueType = property(get_ValueType, None)
     Size = property(get_Size, None)
+    ValueType = property(get_ValueType, None)
 class JsonError(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Data.Json.JsonError'
     @winrt_classmethod
     def GetJsonStatus(cls: win32more.Windows.Data.Json.IJsonErrorStatics2, hresult: Int32) -> win32more.Windows.Data.Json.JsonErrorStatus: ...
-JsonErrorStatus = Int32
-JsonErrorStatus_Unknown: JsonErrorStatus = 0
-JsonErrorStatus_InvalidJsonString: JsonErrorStatus = 1
-JsonErrorStatus_InvalidJsonNumber: JsonErrorStatus = 2
-JsonErrorStatus_JsonValueNotFound: JsonErrorStatus = 3
-JsonErrorStatus_ImplementationLimit: JsonErrorStatus = 4
+class JsonErrorStatus(Int32):  # enum
+    Unknown = 0
+    InvalidJsonString = 1
+    InvalidJsonNumber = 2
+    JsonValueNotFound = 3
+    ImplementationLimit = 4
 class JsonObject(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Json.IJsonObject
     _classid_ = 'Windows.Data.Json.JsonObject'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Data.Json.JsonObject.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Data.Json.JsonObject: ...
     @winrt_mixinmethod
@@ -270,8 +271,8 @@ class JsonObject(ComPtr):
     def Parse(cls: win32more.Windows.Data.Json.IJsonObjectStatics, input: WinRT_String) -> win32more.Windows.Data.Json.JsonObject: ...
     @winrt_classmethod
     def TryParse(cls: win32more.Windows.Data.Json.IJsonObjectStatics, input: WinRT_String, result: POINTER(win32more.Windows.Data.Json.JsonObject)) -> Boolean: ...
-    ValueType = property(get_ValueType, None)
     Size = property(get_Size, None)
+    ValueType = property(get_ValueType, None)
 class JsonValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Data.Json.IJsonValue
@@ -305,11 +306,13 @@ class JsonValue(ComPtr):
     @winrt_classmethod
     def CreateStringValue(cls: win32more.Windows.Data.Json.IJsonValueStatics, input: WinRT_String) -> win32more.Windows.Data.Json.JsonValue: ...
     ValueType = property(get_ValueType, None)
-JsonValueType = Int32
-JsonValueType_Null: JsonValueType = 0
-JsonValueType_Boolean: JsonValueType = 1
-JsonValueType_Number: JsonValueType = 2
-JsonValueType_String: JsonValueType = 3
-JsonValueType_Array: JsonValueType = 4
-JsonValueType_Object: JsonValueType = 5
+class JsonValueType(Int32):  # enum
+    Null = 0
+    Boolean = 1
+    Number = 2
+    String = 3
+    Array = 4
+    Object = 5
+
+
 make_ready(__name__)

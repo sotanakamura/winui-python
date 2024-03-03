@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Data.Xml.MsXml
 import win32more.Windows.Win32.Devices.Communication
 import win32more.Windows.Win32.Devices.Display
@@ -928,6 +928,7 @@ ROUTER_UNKNOWN: UInt32 = 0
 ROUTER_SUCCESS: UInt32 = 1
 ROUTER_STOP_ROUTING: UInt32 = 2
 DOC_INFO_INTERNAL_LEVEL: UInt32 = 100
+SPLCLIENT_INFO_INTERNAL_LEVEL: UInt32 = 100
 FILL_WITH_DEFAULTS: UInt32 = 1
 PRINTER_NOTIFY_INFO_DATA_COMPACT: UInt32 = 1
 COPYFILE_EVENT_SET_PRINTER_DATAEX: UInt32 = 1
@@ -2333,39 +2334,39 @@ kADT_SIZE: win32more.Windows.Win32.Graphics.Printing.EATTRIBUTE_DATATYPE = 8
 kADT_RECT: win32more.Windows.Win32.Graphics.Printing.EATTRIBUTE_DATATYPE = 9
 kADT_CUSTOMSIZEPARAMS: win32more.Windows.Win32.Graphics.Printing.EATTRIBUTE_DATATYPE = 10
 EBranchOfficeJobEventType = Int32
-EBranchOfficeJobEventType_kInvalidJobState: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 0
-EBranchOfficeJobEventType_kLogJobPrinted: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 1
-EBranchOfficeJobEventType_kLogJobRendered: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 2
-EBranchOfficeJobEventType_kLogJobError: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 3
-EBranchOfficeJobEventType_kLogJobPipelineError: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 4
-EBranchOfficeJobEventType_kLogOfflineFileFull: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 5
+kInvalidJobState: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 0
+kLogJobPrinted: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 1
+kLogJobRendered: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 2
+kLogJobError: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 3
+kLogJobPipelineError: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 4
+kLogOfflineFileFull: win32more.Windows.Win32.Graphics.Printing.EBranchOfficeJobEventType = 5
 @winfunctype_pointer
 def EMFPLAYPROC(param0: win32more.Windows.Win32.Graphics.Gdi.HDC, param1: Int32, param2: win32more.Windows.Win32.Foundation.HANDLE) -> Int32: ...
 EPrintPropertyType = Int32
-EPrintPropertyType_kPropertyTypeString: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 1
-EPrintPropertyType_kPropertyTypeInt32: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 2
-EPrintPropertyType_kPropertyTypeInt64: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 3
-EPrintPropertyType_kPropertyTypeByte: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 4
-EPrintPropertyType_kPropertyTypeTime: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 5
-EPrintPropertyType_kPropertyTypeDevMode: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 6
-EPrintPropertyType_kPropertyTypeSD: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 7
-EPrintPropertyType_kPropertyTypeNotificationReply: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 8
-EPrintPropertyType_kPropertyTypeNotificationOptions: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 9
-EPrintPropertyType_kPropertyTypeBuffer: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 10
+kPropertyTypeString: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 1
+kPropertyTypeInt32: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 2
+kPropertyTypeInt64: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 3
+kPropertyTypeByte: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 4
+kPropertyTypeTime: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 5
+kPropertyTypeDevMode: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 6
+kPropertyTypeSD: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 7
+kPropertyTypeNotificationReply: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 8
+kPropertyTypeNotificationOptions: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 9
+kPropertyTypeBuffer: win32more.Windows.Win32.Graphics.Printing.EPrintPropertyType = 10
 EPrintXPSJobOperation = Int32
-EPrintXPSJobOperation_kJobProduction: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobOperation = 1
-EPrintXPSJobOperation_kJobConsumption: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobOperation = 2
+kJobProduction: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobOperation = 1
+kJobConsumption: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobOperation = 2
 EPrintXPSJobProgress = Int32
-EPrintXPSJobProgress_kAddingDocumentSequence: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 0
-EPrintXPSJobProgress_kDocumentSequenceAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 1
-EPrintXPSJobProgress_kAddingFixedDocument: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 2
-EPrintXPSJobProgress_kFixedDocumentAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 3
-EPrintXPSJobProgress_kAddingFixedPage: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 4
-EPrintXPSJobProgress_kFixedPageAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 5
-EPrintXPSJobProgress_kResourceAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 6
-EPrintXPSJobProgress_kFontAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 7
-EPrintXPSJobProgress_kImageAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 8
-EPrintXPSJobProgress_kXpsDocumentCommitted: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 9
+kAddingDocumentSequence: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 0
+kDocumentSequenceAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 1
+kAddingFixedDocument: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 2
+kFixedDocumentAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 3
+kAddingFixedPage: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 4
+kFixedPageAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 5
+kResourceAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 6
+kFontAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 7
+kImageAdded: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 8
+kXpsDocumentCommitted: win32more.Windows.Win32.Graphics.Printing.EPrintXPSJobProgress = 9
 class EXTCHKBOX(EasyCastStructure):
     cbSize: UInt16
     Flags: UInt16
@@ -4376,11 +4377,11 @@ class PUBLISHERINFO(EasyCastStructure):
     wMinoutlinePPEM: UInt16
     wMaxbitmapPPEM: UInt16
 PageCountType = Int32
-PageCountType_FinalPageCount: win32more.Windows.Win32.Graphics.Printing.PageCountType = 0
-PageCountType_IntermediatePageCount: win32more.Windows.Win32.Graphics.Printing.PageCountType = 1
+FinalPageCount: win32more.Windows.Win32.Graphics.Printing.PageCountType = 0
+IntermediatePageCount: win32more.Windows.Win32.Graphics.Printing.PageCountType = 1
 PrintAsyncNotifyConversationStyle = Int32
-PrintAsyncNotifyConversationStyle_kBiDirectional: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyConversationStyle = 0
-PrintAsyncNotifyConversationStyle_kUniDirectional: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyConversationStyle = 1
+kBiDirectional: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyConversationStyle = 0
+kUniDirectional: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyConversationStyle = 1
 PrintAsyncNotifyError = Int32
 CHANNEL_CLOSED_BY_SERVER: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyError = 1
 CHANNEL_CLOSED_BY_ANOTHER_LISTENER: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyError = 2
@@ -4407,8 +4408,8 @@ MAX_CHANNEL_COUNT_EXCEEDED: win32more.Windows.Win32.Graphics.Printing.PrintAsync
 LOCAL_ONLY_REGISTRATION: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyError = 23
 REMOTE_ONLY_REGISTRATION: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyError = 24
 PrintAsyncNotifyUserFilter = Int32
-PrintAsyncNotifyUserFilter_kPerUser: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyUserFilter = 0
-PrintAsyncNotifyUserFilter_kAllUsers: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyUserFilter = 1
+kPerUser: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyUserFilter = 0
+kAllUsers: win32more.Windows.Win32.Graphics.Printing.PrintAsyncNotifyUserFilter = 1
 PrintJobStatus = Int32
 PrintJobStatus_Paused: win32more.Windows.Win32.Graphics.Printing.PrintJobStatus = 1
 PrintJobStatus_Error: win32more.Windows.Win32.Graphics.Printing.PrintJobStatus = 2
@@ -4490,7 +4491,7 @@ class SPLCLIENT_INFO_2_W2K(EasyCastStructure):
 if ARCH in 'X64,ARM64':
     class SPLCLIENT_INFO_2_WINXP(EasyCastStructure):
         hSplPrinter: UInt64
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SPLCLIENT_INFO_2_WINXP(EasyCastStructure):
         hSplPrinter: UInt32
 class SPLCLIENT_INFO_3_VISTA(EasyCastStructure):
@@ -4504,6 +4505,19 @@ class SPLCLIENT_INFO_3_VISTA(EasyCastStructure):
     dwMinorVersion: UInt32
     wProcessorArchitecture: UInt16
     hSplPrinter: UInt64
+class SPLCLIENT_INFO_INTERNAL(EasyCastStructure):
+    cbSize: UInt32
+    dwFlags: UInt32
+    dwSize: UInt32
+    pMachineName: win32more.Windows.Win32.Foundation.PWSTR
+    pUserName: win32more.Windows.Win32.Foundation.PWSTR
+    dwBuildNum: UInt32
+    dwMajorVersion: UInt32
+    dwMinorVersion: UInt32
+    wProcessorArchitecture: UInt16
+    hSplPrinter: UInt64
+    dwProcessId: UInt32
+    dwSessionId: UInt32
 class TRANSDATA(EasyCastStructure):
     ubCodePageID: Byte
     ubType: Byte
@@ -4535,7 +4549,7 @@ class UFF_FONTDIRECTORY(EasyCastStructure):
     offGlyphData: UInt32
     offVarData: UInt32
 UI_TYPE = Int32
-UI_TYPE_kMessageBox: win32more.Windows.Win32.Graphics.Printing.UI_TYPE = 0
+kMessageBox: win32more.Windows.Win32.Graphics.Printing.UI_TYPE = 0
 class UNIDRVINFO(EasyCastStructure):
     dwSize: UInt32
     flGenFlags: UInt32

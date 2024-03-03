@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Geolocation
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.FileProperties
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class BasicProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IBasicProperties
@@ -37,9 +24,9 @@ class BasicProperties(ComPtr):
     def SavePropertiesAsync(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties, propertiesToSave: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]]) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def SavePropertiesAsyncOverloadDefault(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Size = property(get_Size, None)
     DateModified = property(get_DateModified, None)
     ItemDate = property(get_ItemDate, None)
+    Size = property(get_Size, None)
 class DocumentProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IDocumentProperties
@@ -63,9 +50,9 @@ class DocumentProperties(ComPtr):
     @winrt_mixinmethod
     def SavePropertiesAsyncOverloadDefault(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties) -> win32more.Windows.Foundation.IAsyncAction: ...
     Author = property(get_Author, None)
-    Title = property(get_Title, put_Title)
-    Keywords = property(get_Keywords, None)
     Comment = property(get_Comment, put_Comment)
+    Keywords = property(get_Keywords, None)
+    Title = property(get_Title, put_Title)
 class GeotagHelper(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.FileProperties.GeotagHelper'
@@ -85,9 +72,9 @@ class IBasicProperties(ComPtr):
     def get_DateModified(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(8)
     def get_ItemDate(self) -> win32more.Windows.Foundation.DateTime: ...
-    Size = property(get_Size, None)
     DateModified = property(get_DateModified, None)
     ItemDate = property(get_ItemDate, None)
+    Size = property(get_Size, None)
 class IDocumentProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.FileProperties.IDocumentProperties'
@@ -105,9 +92,9 @@ class IDocumentProperties(ComPtr):
     @winrt_commethod(11)
     def put_Comment(self, value: WinRT_String) -> Void: ...
     Author = property(get_Author, None)
-    Title = property(get_Title, put_Title)
-    Keywords = property(get_Keywords, None)
     Comment = property(get_Comment, put_Comment)
+    Keywords = property(get_Keywords, None)
+    Title = property(get_Title, put_Title)
 class IGeotagHelperStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.FileProperties.IGeotagHelperStatics'
@@ -156,18 +143,18 @@ class IImageProperties(ComPtr):
     def get_Orientation(self) -> win32more.Windows.Storage.FileProperties.PhotoOrientation: ...
     @winrt_commethod(22)
     def get_PeopleNames(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
-    Rating = property(get_Rating, put_Rating)
-    Keywords = property(get_Keywords, None)
-    DateTaken = property(get_DateTaken, put_DateTaken)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Title = property(get_Title, put_Title)
-    Latitude = property(get_Latitude, None)
-    Longitude = property(get_Longitude, None)
     CameraManufacturer = property(get_CameraManufacturer, put_CameraManufacturer)
     CameraModel = property(get_CameraModel, put_CameraModel)
+    DateTaken = property(get_DateTaken, put_DateTaken)
+    Height = property(get_Height, None)
+    Keywords = property(get_Keywords, None)
+    Latitude = property(get_Latitude, None)
+    Longitude = property(get_Longitude, None)
     Orientation = property(get_Orientation, None)
     PeopleNames = property(get_PeopleNames, None)
+    Rating = property(get_Rating, put_Rating)
+    Title = property(get_Title, put_Title)
+    Width = property(get_Width, None)
 class IMusicProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.FileProperties.IMusicProperties'
@@ -223,19 +210,19 @@ class IMusicProperties(ComPtr):
     @winrt_commethod(30)
     def put_Year(self, value: UInt32) -> Void: ...
     Album = property(get_Album, put_Album)
-    Artist = property(get_Artist, put_Artist)
-    Genre = property(get_Genre, None)
-    TrackNumber = property(get_TrackNumber, put_TrackNumber)
-    Title = property(get_Title, put_Title)
-    Rating = property(get_Rating, put_Rating)
-    Duration = property(get_Duration, None)
-    Bitrate = property(get_Bitrate, None)
     AlbumArtist = property(get_AlbumArtist, put_AlbumArtist)
+    Artist = property(get_Artist, put_Artist)
+    Bitrate = property(get_Bitrate, None)
     Composers = property(get_Composers, None)
     Conductors = property(get_Conductors, None)
-    Subtitle = property(get_Subtitle, put_Subtitle)
+    Duration = property(get_Duration, None)
+    Genre = property(get_Genre, None)
     Producers = property(get_Producers, None)
     Publisher = property(get_Publisher, put_Publisher)
+    Rating = property(get_Rating, put_Rating)
+    Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
+    TrackNumber = property(get_TrackNumber, put_TrackNumber)
     Writers = property(get_Writers, None)
     Year = property(get_Year, put_Year)
 class IStorageItemContentProperties(ComPtr):
@@ -272,8 +259,8 @@ class IThumbnailProperties(ComPtr):
     def get_ReturnedSmallerCachedSize(self) -> Boolean: ...
     @winrt_commethod(9)
     def get_Type(self) -> win32more.Windows.Storage.FileProperties.ThumbnailType: ...
-    OriginalWidth = property(get_OriginalWidth, None)
     OriginalHeight = property(get_OriginalHeight, None)
+    OriginalWidth = property(get_OriginalWidth, None)
     ReturnedSmallerCachedSize = property(get_ReturnedSmallerCachedSize, None)
     Type = property(get_Type, None)
 class IVideoProperties(ComPtr):
@@ -322,22 +309,22 @@ class IVideoProperties(ComPtr):
     def get_Directors(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     @winrt_commethod(26)
     def get_Orientation(self) -> win32more.Windows.Storage.FileProperties.VideoOrientation: ...
-    Rating = property(get_Rating, put_Rating)
-    Keywords = property(get_Keywords, None)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Duration = property(get_Duration, None)
-    Latitude = property(get_Latitude, None)
-    Longitude = property(get_Longitude, None)
-    Title = property(get_Title, put_Title)
-    Subtitle = property(get_Subtitle, put_Subtitle)
-    Producers = property(get_Producers, None)
-    Publisher = property(get_Publisher, put_Publisher)
-    Writers = property(get_Writers, None)
-    Year = property(get_Year, put_Year)
     Bitrate = property(get_Bitrate, None)
     Directors = property(get_Directors, None)
+    Duration = property(get_Duration, None)
+    Height = property(get_Height, None)
+    Keywords = property(get_Keywords, None)
+    Latitude = property(get_Latitude, None)
+    Longitude = property(get_Longitude, None)
     Orientation = property(get_Orientation, None)
+    Producers = property(get_Producers, None)
+    Publisher = property(get_Publisher, put_Publisher)
+    Rating = property(get_Rating, put_Rating)
+    Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
+    Width = property(get_Width, None)
+    Writers = property(get_Writers, None)
+    Year = property(get_Year, put_Year)
 class ImageProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IImageProperties
@@ -382,18 +369,18 @@ class ImageProperties(ComPtr):
     def SavePropertiesAsync(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties, propertiesToSave: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]]) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def SavePropertiesAsyncOverloadDefault(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Rating = property(get_Rating, put_Rating)
-    Keywords = property(get_Keywords, None)
-    DateTaken = property(get_DateTaken, put_DateTaken)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Title = property(get_Title, put_Title)
-    Latitude = property(get_Latitude, None)
-    Longitude = property(get_Longitude, None)
     CameraManufacturer = property(get_CameraManufacturer, put_CameraManufacturer)
     CameraModel = property(get_CameraModel, put_CameraModel)
+    DateTaken = property(get_DateTaken, put_DateTaken)
+    Height = property(get_Height, None)
+    Keywords = property(get_Keywords, None)
+    Latitude = property(get_Latitude, None)
+    Longitude = property(get_Longitude, None)
     Orientation = property(get_Orientation, None)
     PeopleNames = property(get_PeopleNames, None)
+    Rating = property(get_Rating, put_Rating)
+    Title = property(get_Title, put_Title)
+    Width = property(get_Width, None)
 class MusicProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IMusicProperties
@@ -455,38 +442,38 @@ class MusicProperties(ComPtr):
     @winrt_mixinmethod
     def SavePropertiesAsyncOverloadDefault(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties) -> win32more.Windows.Foundation.IAsyncAction: ...
     Album = property(get_Album, put_Album)
-    Artist = property(get_Artist, put_Artist)
-    Genre = property(get_Genre, None)
-    TrackNumber = property(get_TrackNumber, put_TrackNumber)
-    Title = property(get_Title, put_Title)
-    Rating = property(get_Rating, put_Rating)
-    Duration = property(get_Duration, None)
-    Bitrate = property(get_Bitrate, None)
     AlbumArtist = property(get_AlbumArtist, put_AlbumArtist)
+    Artist = property(get_Artist, put_Artist)
+    Bitrate = property(get_Bitrate, None)
     Composers = property(get_Composers, None)
     Conductors = property(get_Conductors, None)
-    Subtitle = property(get_Subtitle, put_Subtitle)
+    Duration = property(get_Duration, None)
+    Genre = property(get_Genre, None)
     Producers = property(get_Producers, None)
     Publisher = property(get_Publisher, put_Publisher)
+    Rating = property(get_Rating, put_Rating)
+    Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
+    TrackNumber = property(get_TrackNumber, put_TrackNumber)
     Writers = property(get_Writers, None)
     Year = property(get_Year, put_Year)
-PhotoOrientation = Int32
-PhotoOrientation_Unspecified: PhotoOrientation = 0
-PhotoOrientation_Normal: PhotoOrientation = 1
-PhotoOrientation_FlipHorizontal: PhotoOrientation = 2
-PhotoOrientation_Rotate180: PhotoOrientation = 3
-PhotoOrientation_FlipVertical: PhotoOrientation = 4
-PhotoOrientation_Transpose: PhotoOrientation = 5
-PhotoOrientation_Rotate270: PhotoOrientation = 6
-PhotoOrientation_Transverse: PhotoOrientation = 7
-PhotoOrientation_Rotate90: PhotoOrientation = 8
-PropertyPrefetchOptions = UInt32
-PropertyPrefetchOptions_None: PropertyPrefetchOptions = 0
-PropertyPrefetchOptions_MusicProperties: PropertyPrefetchOptions = 1
-PropertyPrefetchOptions_VideoProperties: PropertyPrefetchOptions = 2
-PropertyPrefetchOptions_ImageProperties: PropertyPrefetchOptions = 4
-PropertyPrefetchOptions_DocumentProperties: PropertyPrefetchOptions = 8
-PropertyPrefetchOptions_BasicProperties: PropertyPrefetchOptions = 16
+class PhotoOrientation(Int32):  # enum
+    Unspecified = 0
+    Normal = 1
+    FlipHorizontal = 2
+    Rotate180 = 3
+    FlipVertical = 4
+    Transpose = 5
+    Rotate270 = 6
+    Transverse = 7
+    Rotate90 = 8
+class PropertyPrefetchOptions(UInt32):  # enum
+    None_ = 0
+    MusicProperties = 1
+    VideoProperties = 2
+    ImageProperties = 4
+    DocumentProperties = 8
+    BasicProperties = 16
 class StorageItemContentProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IStorageItemContentProperties
@@ -545,35 +532,35 @@ class StorageItemThumbnail(ComPtr):
     def get_ReturnedSmallerCachedSize(self: win32more.Windows.Storage.FileProperties.IThumbnailProperties) -> Boolean: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Storage.FileProperties.IThumbnailProperties) -> win32more.Windows.Storage.FileProperties.ThumbnailType: ...
-    Size = property(get_Size, put_Size)
-    Position = property(get_Position, None)
     CanRead = property(get_CanRead, None)
     CanWrite = property(get_CanWrite, None)
     ContentType = property(get_ContentType, None)
-    OriginalWidth = property(get_OriginalWidth, None)
     OriginalHeight = property(get_OriginalHeight, None)
+    OriginalWidth = property(get_OriginalWidth, None)
+    Position = property(get_Position, None)
     ReturnedSmallerCachedSize = property(get_ReturnedSmallerCachedSize, None)
+    Size = property(get_Size, put_Size)
     Type = property(get_Type, None)
-ThumbnailMode = Int32
-ThumbnailMode_PicturesView: ThumbnailMode = 0
-ThumbnailMode_VideosView: ThumbnailMode = 1
-ThumbnailMode_MusicView: ThumbnailMode = 2
-ThumbnailMode_DocumentsView: ThumbnailMode = 3
-ThumbnailMode_ListView: ThumbnailMode = 4
-ThumbnailMode_SingleItem: ThumbnailMode = 5
-ThumbnailOptions = UInt32
-ThumbnailOptions_None: ThumbnailOptions = 0
-ThumbnailOptions_ReturnOnlyIfCached: ThumbnailOptions = 1
-ThumbnailOptions_ResizeThumbnail: ThumbnailOptions = 2
-ThumbnailOptions_UseCurrentScale: ThumbnailOptions = 4
-ThumbnailType = Int32
-ThumbnailType_Image: ThumbnailType = 0
-ThumbnailType_Icon: ThumbnailType = 1
-VideoOrientation = Int32
-VideoOrientation_Normal: VideoOrientation = 0
-VideoOrientation_Rotate90: VideoOrientation = 90
-VideoOrientation_Rotate180: VideoOrientation = 180
-VideoOrientation_Rotate270: VideoOrientation = 270
+class ThumbnailMode(Int32):  # enum
+    PicturesView = 0
+    VideosView = 1
+    MusicView = 2
+    DocumentsView = 3
+    ListView = 4
+    SingleItem = 5
+class ThumbnailOptions(UInt32):  # enum
+    None_ = 0
+    ReturnOnlyIfCached = 1
+    ResizeThumbnail = 2
+    UseCurrentScale = 4
+class ThumbnailType(Int32):  # enum
+    Image = 0
+    Icon = 1
+class VideoOrientation(Int32):  # enum
+    Normal = 0
+    Rotate90 = 90
+    Rotate180 = 180
+    Rotate270 = 270
 class VideoProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.FileProperties.IVideoProperties
@@ -626,20 +613,22 @@ class VideoProperties(ComPtr):
     def SavePropertiesAsync(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties, propertiesToSave: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, win32more.Windows.Win32.System.WinRT.IInspectable]]) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def SavePropertiesAsyncOverloadDefault(self: win32more.Windows.Storage.FileProperties.IStorageItemExtraProperties) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Rating = property(get_Rating, put_Rating)
-    Keywords = property(get_Keywords, None)
-    Width = property(get_Width, None)
-    Height = property(get_Height, None)
-    Duration = property(get_Duration, None)
-    Latitude = property(get_Latitude, None)
-    Longitude = property(get_Longitude, None)
-    Title = property(get_Title, put_Title)
-    Subtitle = property(get_Subtitle, put_Subtitle)
-    Producers = property(get_Producers, None)
-    Publisher = property(get_Publisher, put_Publisher)
-    Writers = property(get_Writers, None)
-    Year = property(get_Year, put_Year)
     Bitrate = property(get_Bitrate, None)
     Directors = property(get_Directors, None)
+    Duration = property(get_Duration, None)
+    Height = property(get_Height, None)
+    Keywords = property(get_Keywords, None)
+    Latitude = property(get_Latitude, None)
+    Longitude = property(get_Longitude, None)
     Orientation = property(get_Orientation, None)
+    Producers = property(get_Producers, None)
+    Publisher = property(get_Publisher, put_Publisher)
+    Rating = property(get_Rating, put_Rating)
+    Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
+    Width = property(get_Width, None)
+    Writers = property(get_Writers, None)
+    Year = property(get_Year, put_Year)
+
+
 make_ready(__name__)

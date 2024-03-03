@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.Graphics.Printing.PrintTicket
@@ -35,12 +35,12 @@ def PTConvertPrintTicketToDevMode(hProvider: win32more.Windows.Win32.Storage.Xps
 @winfunctype('prntvpt.dll')
 def PTConvertDevModeToPrintTicket(hProvider: win32more.Windows.Win32.Storage.Xps.HPTPROVIDER, cbDevmode: UInt32, pDevmode: POINTER(win32more.Windows.Win32.Graphics.Gdi.DEVMODEA), scope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope, pPrintTicket: win32more.Windows.Win32.System.Com.IStream) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 EDefaultDevmodeType = Int32
-EDefaultDevmodeType_kUserDefaultDevmode: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EDefaultDevmodeType = 0
-EDefaultDevmodeType_kPrinterDefaultDevmode: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EDefaultDevmodeType = 1
+kUserDefaultDevmode: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EDefaultDevmodeType = 0
+kPrinterDefaultDevmode: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EDefaultDevmodeType = 1
 EPrintTicketScope = Int32
-EPrintTicketScope_kPTPageScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 0
-EPrintTicketScope_kPTDocumentScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 1
-EPrintTicketScope_kPTJobScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 2
+kPTPageScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 0
+kPTDocumentScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 1
+kPTJobScope: win32more.Windows.Win32.Graphics.Printing.PrintTicket.EPrintTicketScope = 2
 
 
 make_ready(__name__)

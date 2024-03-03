@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Security.Credentials
 import win32more.Windows.Security.Cryptography.Core
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class ICredentialFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.ICredentialFactory'
@@ -52,8 +39,8 @@ class IKeyCredentialAttestationResult(ComPtr):
     def get_AttestationBuffer(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(8)
     def get_Status(self) -> win32more.Windows.Security.Credentials.KeyCredentialAttestationStatus: ...
-    CertificateChainBuffer = property(get_CertificateChainBuffer, None)
     AttestationBuffer = property(get_AttestationBuffer, None)
+    CertificateChainBuffer = property(get_CertificateChainBuffer, None)
     Status = property(get_Status, None)
 class IKeyCredentialManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -109,10 +96,10 @@ class IPasswordCredential(ComPtr):
     def RetrievePassword(self) -> Void: ...
     @winrt_commethod(13)
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Resource = property(get_Resource, put_Resource)
-    UserName = property(get_UserName, put_UserName)
     Password = property(get_Password, put_Password)
     Properties = property(get_Properties, None)
+    Resource = property(get_Resource, put_Resource)
+    UserName = property(get_UserName, put_UserName)
 class IPasswordVault(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.IPasswordVault'
@@ -139,9 +126,9 @@ class IWebAccount(ComPtr):
     def get_UserName(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_State(self) -> win32more.Windows.Security.Credentials.WebAccountState: ...
-    WebAccountProvider = property(get_WebAccountProvider, None)
-    UserName = property(get_UserName, None)
     State = property(get_State, None)
+    UserName = property(get_UserName, None)
+    WebAccountProvider = property(get_WebAccountProvider, None)
 class IWebAccount2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.IWebAccount2'
@@ -174,9 +161,9 @@ class IWebAccountProvider(ComPtr):
     def get_DisplayName(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_IconUri(self) -> win32more.Windows.Foundation.Uri: ...
-    Id = property(get_Id, None)
     DisplayName = property(get_DisplayName, None)
     IconUri = property(get_IconUri, None)
+    Id = property(get_Id, None)
 class IWebAccountProvider2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.IWebAccountProvider2'
@@ -185,8 +172,8 @@ class IWebAccountProvider2(ComPtr):
     def get_DisplayPurpose(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_Authority(self) -> WinRT_String: ...
-    DisplayPurpose = property(get_DisplayPurpose, None)
     Authority = property(get_Authority, None)
+    DisplayPurpose = property(get_DisplayPurpose, None)
 class IWebAccountProvider3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.IWebAccountProvider3'
@@ -232,17 +219,17 @@ class KeyCredentialAttestationResult(ComPtr):
     def get_AttestationBuffer(self: win32more.Windows.Security.Credentials.IKeyCredentialAttestationResult) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.Security.Credentials.IKeyCredentialAttestationResult) -> win32more.Windows.Security.Credentials.KeyCredentialAttestationStatus: ...
-    CertificateChainBuffer = property(get_CertificateChainBuffer, None)
     AttestationBuffer = property(get_AttestationBuffer, None)
+    CertificateChainBuffer = property(get_CertificateChainBuffer, None)
     Status = property(get_Status, None)
-KeyCredentialAttestationStatus = Int32
-KeyCredentialAttestationStatus_Success: KeyCredentialAttestationStatus = 0
-KeyCredentialAttestationStatus_UnknownError: KeyCredentialAttestationStatus = 1
-KeyCredentialAttestationStatus_NotSupported: KeyCredentialAttestationStatus = 2
-KeyCredentialAttestationStatus_TemporaryFailure: KeyCredentialAttestationStatus = 3
-KeyCredentialCreationOption = Int32
-KeyCredentialCreationOption_ReplaceExisting: KeyCredentialCreationOption = 0
-KeyCredentialCreationOption_FailIfExists: KeyCredentialCreationOption = 1
+class KeyCredentialAttestationStatus(Int32):  # enum
+    Success = 0
+    UnknownError = 1
+    NotSupported = 2
+    TemporaryFailure = 3
+class KeyCredentialCreationOption(Int32):  # enum
+    ReplaceExisting = 0
+    FailIfExists = 1
 class KeyCredentialManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Credentials.KeyCredentialManager'
@@ -276,22 +263,31 @@ class KeyCredentialRetrievalResult(ComPtr):
     def get_Status(self: win32more.Windows.Security.Credentials.IKeyCredentialRetrievalResult) -> win32more.Windows.Security.Credentials.KeyCredentialStatus: ...
     Credential = property(get_Credential, None)
     Status = property(get_Status, None)
-KeyCredentialStatus = Int32
-KeyCredentialStatus_Success: KeyCredentialStatus = 0
-KeyCredentialStatus_UnknownError: KeyCredentialStatus = 1
-KeyCredentialStatus_NotFound: KeyCredentialStatus = 2
-KeyCredentialStatus_UserCanceled: KeyCredentialStatus = 3
-KeyCredentialStatus_UserPrefersPassword: KeyCredentialStatus = 4
-KeyCredentialStatus_CredentialAlreadyExists: KeyCredentialStatus = 5
-KeyCredentialStatus_SecurityDeviceLocked: KeyCredentialStatus = 6
+class KeyCredentialStatus(Int32):  # enum
+    Success = 0
+    UnknownError = 1
+    NotFound = 2
+    UserCanceled = 3
+    UserPrefersPassword = 4
+    CredentialAlreadyExists = 5
+    SecurityDeviceLocked = 6
 class PasswordCredential(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.IPasswordCredential
     _classid_ = 'Windows.Security.Credentials.PasswordCredential'
-    @winrt_factorymethod
-    def CreatePasswordCredential(cls: win32more.Windows.Security.Credentials.ICredentialFactory, resource: WinRT_String, userName: WinRT_String, password: WinRT_String) -> win32more.Windows.Security.Credentials.PasswordCredential: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Security.Credentials.PasswordCredential.CreateInstance(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Security.Credentials.PasswordCredential.CreatePasswordCredential(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Security.Credentials.PasswordCredential: ...
+    @winrt_factorymethod
+    def CreatePasswordCredential(cls: win32more.Windows.Security.Credentials.ICredentialFactory, resource: WinRT_String, userName: WinRT_String, password: WinRT_String) -> win32more.Windows.Security.Credentials.PasswordCredential: ...
     @winrt_mixinmethod
     def get_Resource(self: win32more.Windows.Security.Credentials.IPasswordCredential) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -308,14 +304,21 @@ class PasswordCredential(ComPtr):
     def RetrievePassword(self: win32more.Windows.Security.Credentials.IPasswordCredential) -> Void: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Security.Credentials.IPasswordCredential) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Resource = property(get_Resource, put_Resource)
-    UserName = property(get_UserName, put_UserName)
     Password = property(get_Password, put_Password)
     Properties = property(get_Properties, None)
+    Resource = property(get_Resource, put_Resource)
+    UserName = property(get_UserName, put_UserName)
 class PasswordCredentialPropertyStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IPropertySet
     _classid_ = 'Windows.Security.Credentials.PasswordCredentialPropertyStore'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Security.Credentials.PasswordCredentialPropertyStore.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Security.Credentials.PasswordCredentialPropertyStore: ...
     @winrt_mixinmethod
@@ -343,6 +346,13 @@ class PasswordVault(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.IPasswordVault
     _classid_ = 'Windows.Security.Credentials.PasswordVault'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Security.Credentials.PasswordVault.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Security.Credentials.PasswordVault: ...
     @winrt_mixinmethod
@@ -361,6 +371,13 @@ class WebAccount(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.IWebAccount
     _classid_ = 'Windows.Security.Credentials.WebAccount'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Security.Credentials.WebAccount.CreateWebAccount(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateWebAccount(cls: win32more.Windows.Security.Credentials.IWebAccountFactory, webAccountProvider: win32more.Windows.Security.Credentials.WebAccountProvider, userName: WinRT_String, state: win32more.Windows.Security.Credentials.WebAccountState) -> win32more.Windows.Security.Credentials.WebAccount: ...
     @winrt_mixinmethod
@@ -379,20 +396,27 @@ class WebAccount(ComPtr):
     def SignOutAsync(self: win32more.Windows.Security.Credentials.IWebAccount2) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def SignOutWithClientIdAsync(self: win32more.Windows.Security.Credentials.IWebAccount2, clientId: WinRT_String) -> win32more.Windows.Foundation.IAsyncAction: ...
-    WebAccountProvider = property(get_WebAccountProvider, None)
-    UserName = property(get_UserName, None)
-    State = property(get_State, None)
     Id = property(get_Id, None)
     Properties = property(get_Properties, None)
-WebAccountPictureSize = Int32
-WebAccountPictureSize_Size64x64: WebAccountPictureSize = 64
-WebAccountPictureSize_Size208x208: WebAccountPictureSize = 208
-WebAccountPictureSize_Size424x424: WebAccountPictureSize = 424
-WebAccountPictureSize_Size1080x1080: WebAccountPictureSize = 1080
+    State = property(get_State, None)
+    UserName = property(get_UserName, None)
+    WebAccountProvider = property(get_WebAccountProvider, None)
+class WebAccountPictureSize(Int32):  # enum
+    Size64x64 = 64
+    Size208x208 = 208
+    Size424x424 = 424
+    Size1080x1080 = 1080
 class WebAccountProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Credentials.IWebAccountProvider
     _classid_ = 'Windows.Security.Credentials.WebAccountProvider'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Security.Credentials.WebAccountProvider.CreateWebAccountProvider(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateWebAccountProvider(cls: win32more.Windows.Security.Credentials.IWebAccountProviderFactory, id: WinRT_String, displayName: WinRT_String, iconUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Security.Credentials.WebAccountProvider: ...
     @winrt_mixinmethod
@@ -409,15 +433,17 @@ class WebAccountProvider(ComPtr):
     def get_User(self: win32more.Windows.Security.Credentials.IWebAccountProvider3) -> win32more.Windows.System.User: ...
     @winrt_mixinmethod
     def get_IsSystemProvider(self: win32more.Windows.Security.Credentials.IWebAccountProvider4) -> Boolean: ...
-    Id = property(get_Id, None)
-    DisplayName = property(get_DisplayName, None)
-    IconUri = property(get_IconUri, None)
-    DisplayPurpose = property(get_DisplayPurpose, None)
     Authority = property(get_Authority, None)
-    User = property(get_User, None)
+    DisplayName = property(get_DisplayName, None)
+    DisplayPurpose = property(get_DisplayPurpose, None)
+    IconUri = property(get_IconUri, None)
+    Id = property(get_Id, None)
     IsSystemProvider = property(get_IsSystemProvider, None)
-WebAccountState = Int32
-WebAccountState_None: WebAccountState = 0
-WebAccountState_Connected: WebAccountState = 1
-WebAccountState_Error: WebAccountState = 2
+    User = property(get_User, None)
+class WebAccountState(Int32):  # enum
+    None_ = 0
+    Connected = 1
+    Error = 2
+
+
 make_ready(__name__)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Direct3D
 import win32more.Windows.Win32.Graphics.Direct3D11
@@ -1131,6 +1131,7 @@ D3D11_FORMAT_SUPPORT2_OUTPUT_MERGER_LOGIC_OP: win32more.Windows.Win32.Graphics.D
 D3D11_FORMAT_SUPPORT2_TILED: win32more.Windows.Win32.Graphics.Direct3D11.D3D11_FORMAT_SUPPORT2 = 512
 D3D11_FORMAT_SUPPORT2_SHAREABLE: win32more.Windows.Win32.Graphics.Direct3D11.D3D11_FORMAT_SUPPORT2 = 1024
 D3D11_FORMAT_SUPPORT2_MULTIPLANE_OVERLAY: win32more.Windows.Win32.Graphics.Direct3D11.D3D11_FORMAT_SUPPORT2 = 16384
+D3D11_FORMAT_SUPPORT2_DISPLAYABLE: win32more.Windows.Win32.Graphics.Direct3D11.D3D11_FORMAT_SUPPORT2 = 65536
 class D3D11_FUNCTION_DESC(EasyCastStructure):
     Version: UInt32
     Creator: win32more.Windows.Win32.Foundation.PSTR

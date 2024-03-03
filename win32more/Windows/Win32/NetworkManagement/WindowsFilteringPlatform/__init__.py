@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform
 import win32more.Windows.Win32.Security
@@ -959,9 +959,9 @@ def FwpmvSwitchEventsGetSecurityInfo0(engineHandle: win32more.Windows.Win32.Foun
 @winfunctype('fwpuclnt.dll')
 def FwpmvSwitchEventsSetSecurityInfo0(engineHandle: win32more.Windows.Win32.Foundation.HANDLE, securityInfo: UInt32, sidOwner: POINTER(win32more.Windows.Win32.Security.SID), sidGroup: POINTER(win32more.Windows.Win32.Security.SID), dacl: POINTER(win32more.Windows.Win32.Security.ACL), sacl: POINTER(win32more.Windows.Win32.Security.ACL)) -> UInt32: ...
 DL_ADDRESS_TYPE = Int32
-DL_ADDRESS_TYPE_DlUnicast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 0
-DL_ADDRESS_TYPE_DlMulticast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 1
-DL_ADDRESS_TYPE_DlBroadcast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 2
+DlUnicast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 0
+DlMulticast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 1
+DlBroadcast: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.DL_ADDRESS_TYPE = 2
 class FWPM_ACTION0(EasyCastStructure):
     type: win32more.Windows.Win32.NetworkManagement.WindowsFilteringPlatform.FWP_ACTION_TYPE
     Anonymous: _Anonymous_e__Union

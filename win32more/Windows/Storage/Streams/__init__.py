@@ -1,29 +1,23 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class Buffer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IBuffer
     _classid_ = 'Windows.Storage.Streams.Buffer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Storage.Streams.Buffer.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Storage.Streams.IBufferFactory, capacity: UInt32) -> win32more.Windows.Storage.Streams.Buffer: ...
     @winrt_mixinmethod
@@ -38,13 +32,20 @@ class Buffer(ComPtr):
     def CreateMemoryBufferOverIBuffer(cls: win32more.Windows.Storage.Streams.IBufferStatics, input: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Foundation.MemoryBuffer: ...
     Capacity = property(get_Capacity, None)
     Length = property(get_Length, put_Length)
-ByteOrder = Int32
-ByteOrder_LittleEndian: ByteOrder = 0
-ByteOrder_BigEndian: ByteOrder = 1
+class ByteOrder(Int32):  # enum
+    LittleEndian = 0
+    BigEndian = 1
 class DataReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IDataReader
     _classid_ = 'Windows.Storage.Streams.DataReader'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Storage.Streams.DataReader.CreateDataReader(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateDataReader(cls: win32more.Windows.Storage.Streams.IDataReaderFactory, inputStream: win32more.Windows.Storage.Streams.IInputStream) -> win32more.Windows.Storage.Streams.DataReader: ...
     @winrt_mixinmethod
@@ -103,10 +104,10 @@ class DataReader(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_classmethod
     def FromBuffer(cls: win32more.Windows.Storage.Streams.IDataReaderStatics, buffer: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Storage.Streams.DataReader: ...
-    UnconsumedBufferLength = property(get_UnconsumedBufferLength, None)
-    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
     ByteOrder = property(get_ByteOrder, put_ByteOrder)
     InputStreamOptions = property(get_InputStreamOptions, put_InputStreamOptions)
+    UnconsumedBufferLength = property(get_UnconsumedBufferLength, None)
+    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
 class DataReaderLoadOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncOperation[UInt32]
@@ -128,17 +129,26 @@ class DataReaderLoadOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class DataWriter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IDataWriter
     _classid_ = 'Windows.Storage.Streams.DataWriter'
-    @winrt_factorymethod
-    def CreateDataWriter(cls: win32more.Windows.Storage.Streams.IDataWriterFactory, outputStream: win32more.Windows.Storage.Streams.IOutputStream) -> win32more.Windows.Storage.Streams.DataWriter: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Streams.DataWriter.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Storage.Streams.DataWriter.CreateDataWriter(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Streams.DataWriter: ...
+    @winrt_factorymethod
+    def CreateDataWriter(cls: win32more.Windows.Storage.Streams.IDataWriterFactory, outputStream: win32more.Windows.Storage.Streams.IOutputStream) -> win32more.Windows.Storage.Streams.DataWriter: ...
     @winrt_mixinmethod
     def get_UnstoredBufferLength(self: win32more.Windows.Storage.Streams.IDataWriter) -> UInt32: ...
     @winrt_mixinmethod
@@ -195,9 +205,9 @@ class DataWriter(ComPtr):
     def DetachStream(self: win32more.Windows.Storage.Streams.IDataWriter) -> win32more.Windows.Storage.Streams.IOutputStream: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    UnstoredBufferLength = property(get_UnstoredBufferLength, None)
-    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
     ByteOrder = property(get_ByteOrder, put_ByteOrder)
+    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
+    UnstoredBufferLength = property(get_UnstoredBufferLength, None)
 class DataWriterStoreOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncOperation[UInt32]
@@ -219,9 +229,9 @@ class DataWriterStoreOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class FileInputStream(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IInputStream
@@ -230,12 +240,12 @@ class FileInputStream(ComPtr):
     def ReadAsync(self: win32more.Windows.Storage.Streams.IInputStream, buffer: win32more.Windows.Storage.Streams.IBuffer, count: UInt32, options: win32more.Windows.Storage.Streams.InputStreamOptions) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Storage.Streams.IBuffer, UInt32]: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-FileOpenDisposition = Int32
-FileOpenDisposition_OpenExisting: FileOpenDisposition = 0
-FileOpenDisposition_OpenAlways: FileOpenDisposition = 1
-FileOpenDisposition_CreateNew: FileOpenDisposition = 2
-FileOpenDisposition_CreateAlways: FileOpenDisposition = 3
-FileOpenDisposition_TruncateExisting: FileOpenDisposition = 4
+class FileOpenDisposition(Int32):  # enum
+    OpenExisting = 0
+    OpenAlways = 1
+    CreateNew = 2
+    CreateAlways = 3
+    TruncateExisting = 4
 class FileOutputStream(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IOutputStream
@@ -292,10 +302,10 @@ class FileRandomAccessStream(ComPtr):
     def OpenTransactedWriteForUserAsync(cls: win32more.Windows.Storage.Streams.IFileRandomAccessStreamStatics, user: win32more.Windows.System.User, filePath: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageStreamTransaction]: ...
     @winrt_classmethod
     def OpenTransactedWriteForUserWithOptionsAsync(cls: win32more.Windows.Storage.Streams.IFileRandomAccessStreamStatics, user: win32more.Windows.System.User, filePath: WinRT_String, openOptions: win32more.Windows.Storage.StorageOpenOptions, openDisposition: win32more.Windows.Storage.Streams.FileOpenDisposition) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.StorageStreamTransaction]: ...
-    Size = property(get_Size, put_Size)
-    Position = property(get_Position, None)
     CanRead = property(get_CanRead, None)
     CanWrite = property(get_CanWrite, None)
+    Position = property(get_Position, None)
+    Size = property(get_Size, put_Size)
 class IBuffer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Streams.IBuffer'
@@ -385,10 +395,10 @@ class IDataReader(ComPtr):
     def DetachBuffer(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(31)
     def DetachStream(self) -> win32more.Windows.Storage.Streams.IInputStream: ...
-    UnconsumedBufferLength = property(get_UnconsumedBufferLength, None)
-    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
     ByteOrder = property(get_ByteOrder, put_ByteOrder)
     InputStreamOptions = property(get_InputStreamOptions, put_InputStreamOptions)
+    UnconsumedBufferLength = property(get_UnconsumedBufferLength, None)
+    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
 class IDataReaderFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Streams.IDataReaderFactory'
@@ -459,9 +469,9 @@ class IDataWriter(ComPtr):
     def DetachBuffer(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(32)
     def DetachStream(self) -> win32more.Windows.Storage.Streams.IOutputStream: ...
-    UnstoredBufferLength = property(get_UnstoredBufferLength, None)
-    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
     ByteOrder = property(get_ByteOrder, put_ByteOrder)
+    UnicodeEncoding = property(get_UnicodeEncoding, put_UnicodeEncoding)
+    UnstoredBufferLength = property(get_UnstoredBufferLength, None)
 class IDataWriterFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Streams.IDataWriterFactory'
@@ -538,10 +548,10 @@ class IRandomAccessStream(ComPtr):
     def get_CanRead(self) -> Boolean: ...
     @winrt_commethod(14)
     def get_CanWrite(self) -> Boolean: ...
-    Size = property(get_Size, put_Size)
-    Position = property(get_Position, None)
     CanRead = property(get_CanRead, None)
     CanWrite = property(get_CanWrite, None)
+    Position = property(get_Position, None)
+    Size = property(get_Size, put_Size)
 class IRandomAccessStreamReference(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Streams.IRandomAccessStreamReference'
@@ -576,6 +586,13 @@ class InMemoryRandomAccessStream(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IRandomAccessStream
     _classid_ = 'Windows.Storage.Streams.InMemoryRandomAccessStream'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Storage.Streams.InMemoryRandomAccessStream.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Storage.Streams.InMemoryRandomAccessStream: ...
     @winrt_mixinmethod
@@ -604,14 +621,14 @@ class InMemoryRandomAccessStream(ComPtr):
     def WriteAsync(self: win32more.Windows.Storage.Streams.IOutputStream, buffer: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[UInt32, UInt32]: ...
     @winrt_mixinmethod
     def FlushAsync(self: win32more.Windows.Storage.Streams.IOutputStream) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-    Size = property(get_Size, put_Size)
-    Position = property(get_Position, None)
     CanRead = property(get_CanRead, None)
     CanWrite = property(get_CanWrite, None)
-InputStreamOptions = UInt32
-InputStreamOptions_None: InputStreamOptions = 0
-InputStreamOptions_Partial: InputStreamOptions = 1
-InputStreamOptions_ReadAhead: InputStreamOptions = 2
+    Position = property(get_Position, None)
+    Size = property(get_Size, put_Size)
+class InputStreamOptions(UInt32):  # enum
+    None_ = 0
+    Partial = 1
+    ReadAhead = 2
 class InputStreamOverStream(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IInputStream
@@ -669,10 +686,10 @@ class RandomAccessStreamOverStream(ComPtr):
     def WriteAsync(self: win32more.Windows.Storage.Streams.IOutputStream, buffer: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[UInt32, UInt32]: ...
     @winrt_mixinmethod
     def FlushAsync(self: win32more.Windows.Storage.Streams.IOutputStream) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-    Size = property(get_Size, put_Size)
-    Position = property(get_Position, None)
     CanRead = property(get_CanRead, None)
     CanWrite = property(get_CanWrite, None)
+    Position = property(get_Position, None)
+    Size = property(get_Size, put_Size)
 class RandomAccessStreamReference(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Streams.IRandomAccessStreamReference
@@ -685,8 +702,10 @@ class RandomAccessStreamReference(ComPtr):
     def CreateFromUri(cls: win32more.Windows.Storage.Streams.IRandomAccessStreamReferenceStatics, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Storage.Streams.RandomAccessStreamReference: ...
     @winrt_classmethod
     def CreateFromStream(cls: win32more.Windows.Storage.Streams.IRandomAccessStreamReferenceStatics, stream: win32more.Windows.Storage.Streams.IRandomAccessStream) -> win32more.Windows.Storage.Streams.RandomAccessStreamReference: ...
-UnicodeEncoding = Int32
-UnicodeEncoding_Utf8: UnicodeEncoding = 0
-UnicodeEncoding_Utf16LE: UnicodeEncoding = 1
-UnicodeEncoding_Utf16BE: UnicodeEncoding = 2
+class UnicodeEncoding(Int32):  # enum
+    Utf8 = 0
+    Utf16LE = 1
+    Utf16BE = 2
+
+
 make_ready(__name__)

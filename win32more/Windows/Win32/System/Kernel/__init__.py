@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.Diagnostics.Debug
 import win32more.Windows.Win32.System.Kernel
@@ -42,13 +42,13 @@ class CSTRING(EasyCastStructure):
     MaximumLength: UInt16
     Buffer: win32more.Windows.Win32.Foundation.PSTR
 EVENT_TYPE = Int32
-EVENT_TYPE_NotificationEvent: win32more.Windows.Win32.System.Kernel.EVENT_TYPE = 0
-EVENT_TYPE_SynchronizationEvent: win32more.Windows.Win32.System.Kernel.EVENT_TYPE = 1
+NotificationEvent: win32more.Windows.Win32.System.Kernel.EVENT_TYPE = 0
+SynchronizationEvent: win32more.Windows.Win32.System.Kernel.EVENT_TYPE = 1
 EXCEPTION_DISPOSITION = Int32
-EXCEPTION_DISPOSITION_ExceptionContinueExecution: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 0
-EXCEPTION_DISPOSITION_ExceptionContinueSearch: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 1
-EXCEPTION_DISPOSITION_ExceptionNestedException: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 2
-EXCEPTION_DISPOSITION_ExceptionCollidedUnwind: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 3
+ExceptionContinueExecution: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 0
+ExceptionContinueSearch: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 1
+ExceptionNestedException: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 2
+ExceptionCollidedUnwind: win32more.Windows.Win32.System.Kernel.EXCEPTION_DISPOSITION = 3
 class EXCEPTION_REGISTRATION_RECORD(EasyCastStructure):
     Next: POINTER(win32more.Windows.Win32.System.Kernel.EXCEPTION_REGISTRATION_RECORD)
     Handler: win32more.Windows.Win32.System.Kernel.EXCEPTION_ROUTINE
@@ -65,7 +65,7 @@ if ARCH in 'X64,ARM64':
         DataSelector: UInt32
         RegisterArea: Byte * 80
         Cr0NpxState: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class FLOATING_SAVE_AREA(EasyCastStructure):
         ControlWord: UInt32
         StatusWord: UInt32
@@ -86,9 +86,9 @@ class LIST_ENTRY64(EasyCastStructure):
     Flink: UInt64
     Blink: UInt64
 NT_PRODUCT_TYPE = Int32
-NT_PRODUCT_TYPE_NtProductWinNt: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 1
-NT_PRODUCT_TYPE_NtProductLanManNt: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 2
-NT_PRODUCT_TYPE_NtProductServer: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 3
+NtProductWinNt: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 1
+NtProductLanManNt: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 2
+NtProductServer: win32more.Windows.Win32.System.Kernel.NT_PRODUCT_TYPE = 3
 class NT_TIB(EasyCastStructure):
     ExceptionList: POINTER(win32more.Windows.Win32.System.Kernel.EXCEPTION_REGISTRATION_RECORD)
     StackBase: VoidPtr
@@ -140,7 +140,7 @@ if ARCH in 'ARM64':
         class _HeaderArm64_e__Struct(EasyCastStructure):
             _bitfield1: UInt64
             _bitfield2: UInt64
-if ARCH in 'X64':
+elif ARCH in 'X64':
     class SLIST_HEADER(EasyCastUnion):
         Anonymous: _Anonymous_e__Struct
         HeaderX64: _HeaderX64_e__Struct
@@ -150,7 +150,7 @@ if ARCH in 'X64':
         class _HeaderX64_e__Struct(EasyCastStructure):
             _bitfield1: UInt64
             _bitfield2: UInt64
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class SLIST_HEADER(EasyCastUnion):
         Alignment: UInt64
         Anonymous: _Anonymous_e__Struct
@@ -171,34 +171,34 @@ class STRING64(EasyCastStructure):
     MaximumLength: UInt16
     Buffer: UInt64
 SUITE_TYPE = Int32
-SUITE_TYPE_SmallBusiness: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 0
-SUITE_TYPE_Enterprise: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 1
-SUITE_TYPE_BackOffice: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 2
-SUITE_TYPE_CommunicationServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 3
-SUITE_TYPE_TerminalServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 4
-SUITE_TYPE_SmallBusinessRestricted: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 5
-SUITE_TYPE_EmbeddedNT: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 6
-SUITE_TYPE_DataCenter: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 7
-SUITE_TYPE_SingleUserTS: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 8
-SUITE_TYPE_Personal: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 9
-SUITE_TYPE_Blade: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 10
-SUITE_TYPE_EmbeddedRestricted: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 11
-SUITE_TYPE_SecurityAppliance: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 12
-SUITE_TYPE_StorageServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 13
-SUITE_TYPE_ComputeServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 14
-SUITE_TYPE_WHServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 15
-SUITE_TYPE_PhoneNT: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 16
-SUITE_TYPE_MultiUserTS: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 17
-SUITE_TYPE_MaxSuiteType: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 18
+SmallBusiness: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 0
+Enterprise: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 1
+BackOffice: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 2
+CommunicationServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 3
+TerminalServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 4
+SmallBusinessRestricted: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 5
+EmbeddedNT: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 6
+DataCenter: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 7
+SingleUserTS: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 8
+Personal: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 9
+Blade: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 10
+EmbeddedRestricted: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 11
+SecurityAppliance: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 12
+StorageServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 13
+ComputeServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 14
+WHServer: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 15
+PhoneNT: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 16
+MultiUserTS: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 17
+MaxSuiteType: win32more.Windows.Win32.System.Kernel.SUITE_TYPE = 18
 TIMER_TYPE = Int32
-TIMER_TYPE_NotificationTimer: win32more.Windows.Win32.System.Kernel.TIMER_TYPE = 0
-TIMER_TYPE_SynchronizationTimer: win32more.Windows.Win32.System.Kernel.TIMER_TYPE = 1
+NotificationTimer: win32more.Windows.Win32.System.Kernel.TIMER_TYPE = 0
+SynchronizationTimer: win32more.Windows.Win32.System.Kernel.TIMER_TYPE = 1
 WAIT_TYPE = Int32
-WAIT_TYPE_WaitAll: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 0
-WAIT_TYPE_WaitAny: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 1
-WAIT_TYPE_WaitNotification: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 2
-WAIT_TYPE_WaitDequeue: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 3
-WAIT_TYPE_WaitDpc: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 4
+WaitAll: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 0
+WaitAny: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 1
+WaitNotification: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 2
+WaitDequeue: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 3
+WaitDpc: win32more.Windows.Win32.System.Kernel.WAIT_TYPE = 4
 class WNF_STATE_NAME(EasyCastStructure):
     Data: UInt32 * 2
 

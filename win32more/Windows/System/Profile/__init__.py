@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
 import win32more.Windows.System.Profile
+import win32more.Windows.Win32.System.WinRT
 class _AnalyticsInfo_Meta_(ComPtr.__class__):
     pass
 class AnalyticsInfo(ComPtr, metaclass=_AnalyticsInfo_Meta_):
@@ -31,8 +18,8 @@ class AnalyticsInfo(ComPtr, metaclass=_AnalyticsInfo_Meta_):
     def get_VersionInfo(cls: win32more.Windows.System.Profile.IAnalyticsInfoStatics) -> win32more.Windows.System.Profile.AnalyticsVersionInfo: ...
     @winrt_classmethod
     def get_DeviceForm(cls: win32more.Windows.System.Profile.IAnalyticsInfoStatics) -> WinRT_String: ...
-    _AnalyticsInfo_Meta_.VersionInfo = property(get_VersionInfo.__wrapped__, None)
     _AnalyticsInfo_Meta_.DeviceForm = property(get_DeviceForm.__wrapped__, None)
+    _AnalyticsInfo_Meta_.VersionInfo = property(get_VersionInfo.__wrapped__, None)
 class AnalyticsVersionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.System.Profile.IAnalyticsVersionInfo
@@ -74,9 +61,9 @@ class HardwareToken(ComPtr):
     def get_Signature(self: win32more.Windows.System.Profile.IHardwareToken) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_mixinmethod
     def get_Certificate(self: win32more.Windows.System.Profile.IHardwareToken) -> win32more.Windows.Storage.Streams.IBuffer: ...
+    Certificate = property(get_Certificate, None)
     Id = property(get_Id, None)
     Signature = property(get_Signature, None)
-    Certificate = property(get_Certificate, None)
 class IAnalyticsInfoStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.IAnalyticsInfoStatics'
@@ -85,8 +72,8 @@ class IAnalyticsInfoStatics(ComPtr):
     def get_VersionInfo(self) -> win32more.Windows.System.Profile.AnalyticsVersionInfo: ...
     @winrt_commethod(7)
     def get_DeviceForm(self) -> WinRT_String: ...
-    VersionInfo = property(get_VersionInfo, None)
     DeviceForm = property(get_DeviceForm, None)
+    VersionInfo = property(get_VersionInfo, None)
 class IAnalyticsInfoStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.IAnalyticsInfoStatics2'
@@ -139,9 +126,9 @@ class IHardwareToken(ComPtr):
     def get_Signature(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(8)
     def get_Certificate(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
+    Certificate = property(get_Certificate, None)
     Id = property(get_Id, None)
     Signature = property(get_Signature, None)
-    Certificate = property(get_Certificate, None)
 class IKnownRetailInfoPropertiesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.IKnownRetailInfoPropertiesStatics'
@@ -190,27 +177,27 @@ class IKnownRetailInfoPropertiesStatics(ComPtr):
     def get_IsOfficeInstalled(self) -> WinRT_String: ...
     @winrt_commethod(27)
     def get_WindowsEdition(self) -> WinRT_String: ...
-    RetailAccessCode = property(get_RetailAccessCode, None)
-    ManufacturerName = property(get_ManufacturerName, None)
-    ModelName = property(get_ModelName, None)
-    DisplayModelName = property(get_DisplayModelName, None)
-    Price = property(get_Price, None)
-    IsFeatured = property(get_IsFeatured, None)
-    FormFactor = property(get_FormFactor, None)
-    ScreenSize = property(get_ScreenSize, None)
-    Weight = property(get_Weight, None)
-    DisplayDescription = property(get_DisplayDescription, None)
     BatteryLifeDescription = property(get_BatteryLifeDescription, None)
-    ProcessorDescription = property(get_ProcessorDescription, None)
-    Memory = property(get_Memory, None)
-    StorageDescription = property(get_StorageDescription, None)
-    GraphicsDescription = property(get_GraphicsDescription, None)
+    DisplayDescription = property(get_DisplayDescription, None)
+    DisplayModelName = property(get_DisplayModelName, None)
+    FormFactor = property(get_FormFactor, None)
     FrontCameraDescription = property(get_FrontCameraDescription, None)
-    RearCameraDescription = property(get_RearCameraDescription, None)
+    GraphicsDescription = property(get_GraphicsDescription, None)
     HasNfc = property(get_HasNfc, None)
-    HasSdSlot = property(get_HasSdSlot, None)
     HasOpticalDrive = property(get_HasOpticalDrive, None)
+    HasSdSlot = property(get_HasSdSlot, None)
+    IsFeatured = property(get_IsFeatured, None)
     IsOfficeInstalled = property(get_IsOfficeInstalled, None)
+    ManufacturerName = property(get_ManufacturerName, None)
+    Memory = property(get_Memory, None)
+    ModelName = property(get_ModelName, None)
+    Price = property(get_Price, None)
+    ProcessorDescription = property(get_ProcessorDescription, None)
+    RearCameraDescription = property(get_RearCameraDescription, None)
+    RetailAccessCode = property(get_RetailAccessCode, None)
+    ScreenSize = property(get_ScreenSize, None)
+    StorageDescription = property(get_StorageDescription, None)
+    Weight = property(get_Weight, None)
     WindowsEdition = property(get_WindowsEdition, None)
 class IPlatformDiagnosticsAndUsageDataSettingsStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -297,8 +284,8 @@ class IUnsupportedAppRequirement(ComPtr):
     def get_Requirement(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_Reasons(self) -> win32more.Windows.System.Profile.UnsupportedAppRequirementReasons: ...
-    Requirement = property(get_Requirement, None)
     Reasons = property(get_Reasons, None)
+    Requirement = property(get_Requirement, None)
 class IWindowsIntegrityPolicyStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.IWindowsIntegrityPolicyStatics'
@@ -315,10 +302,10 @@ class IWindowsIntegrityPolicyStatics(ComPtr):
     def add_PolicyChanged(self, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_PolicyChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsEnabled = property(get_IsEnabled, None)
-    IsEnabledForTrial = property(get_IsEnabledForTrial, None)
     CanDisable = property(get_CanDisable, None)
     IsDisableSupported = property(get_IsDisableSupported, None)
+    IsEnabled = property(get_IsEnabled, None)
+    IsEnabledForTrial = property(get_IsEnabledForTrial, None)
 class _KnownRetailInfoProperties_Meta_(ComPtr.__class__):
     pass
 class KnownRetailInfoProperties(ComPtr, metaclass=_KnownRetailInfoProperties_Meta_):
@@ -368,33 +355,33 @@ class KnownRetailInfoProperties(ComPtr, metaclass=_KnownRetailInfoProperties_Met
     def get_IsOfficeInstalled(cls: win32more.Windows.System.Profile.IKnownRetailInfoPropertiesStatics) -> WinRT_String: ...
     @winrt_classmethod
     def get_WindowsEdition(cls: win32more.Windows.System.Profile.IKnownRetailInfoPropertiesStatics) -> WinRT_String: ...
-    _KnownRetailInfoProperties_Meta_.RetailAccessCode = property(get_RetailAccessCode.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.ManufacturerName = property(get_ManufacturerName.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.ModelName = property(get_ModelName.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.DisplayModelName = property(get_DisplayModelName.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.Price = property(get_Price.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.IsFeatured = property(get_IsFeatured.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.FormFactor = property(get_FormFactor.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.ScreenSize = property(get_ScreenSize.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.Weight = property(get_Weight.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.DisplayDescription = property(get_DisplayDescription.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.BatteryLifeDescription = property(get_BatteryLifeDescription.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.ProcessorDescription = property(get_ProcessorDescription.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.Memory = property(get_Memory.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.StorageDescription = property(get_StorageDescription.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.GraphicsDescription = property(get_GraphicsDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.DisplayDescription = property(get_DisplayDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.DisplayModelName = property(get_DisplayModelName.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.FormFactor = property(get_FormFactor.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.FrontCameraDescription = property(get_FrontCameraDescription.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.RearCameraDescription = property(get_RearCameraDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.GraphicsDescription = property(get_GraphicsDescription.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.HasNfc = property(get_HasNfc.__wrapped__, None)
-    _KnownRetailInfoProperties_Meta_.HasSdSlot = property(get_HasSdSlot.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.HasOpticalDrive = property(get_HasOpticalDrive.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.HasSdSlot = property(get_HasSdSlot.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.IsFeatured = property(get_IsFeatured.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.IsOfficeInstalled = property(get_IsOfficeInstalled.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.ManufacturerName = property(get_ManufacturerName.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.Memory = property(get_Memory.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.ModelName = property(get_ModelName.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.Price = property(get_Price.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.ProcessorDescription = property(get_ProcessorDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.RearCameraDescription = property(get_RearCameraDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.RetailAccessCode = property(get_RetailAccessCode.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.ScreenSize = property(get_ScreenSize.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.StorageDescription = property(get_StorageDescription.__wrapped__, None)
+    _KnownRetailInfoProperties_Meta_.Weight = property(get_Weight.__wrapped__, None)
     _KnownRetailInfoProperties_Meta_.WindowsEdition = property(get_WindowsEdition.__wrapped__, None)
-PlatformDataCollectionLevel = Int32
-PlatformDataCollectionLevel_Security: PlatformDataCollectionLevel = 0
-PlatformDataCollectionLevel_Basic: PlatformDataCollectionLevel = 1
-PlatformDataCollectionLevel_Enhanced: PlatformDataCollectionLevel = 2
-PlatformDataCollectionLevel_Full: PlatformDataCollectionLevel = 3
+class PlatformDataCollectionLevel(Int32):  # enum
+    Security = 0
+    Basic = 1
+    Enhanced = 2
+    Full = 3
 class _PlatformDiagnosticsAndUsageDataSettings_Meta_(ComPtr.__class__):
     pass
 class PlatformDiagnosticsAndUsageDataSettings(ComPtr, metaclass=_PlatformDiagnosticsAndUsageDataSettings_Meta_):
@@ -432,8 +419,8 @@ class SharedModeSettings(ComPtr, metaclass=_SharedModeSettings_Meta_):
     def get_ShouldAvoidLocalStorage(cls: win32more.Windows.System.Profile.ISharedModeSettingsStatics2) -> Boolean: ...
     @winrt_classmethod
     def get_IsEnabled(cls: win32more.Windows.System.Profile.ISharedModeSettingsStatics) -> Boolean: ...
-    _SharedModeSettings_Meta_.ShouldAvoidLocalStorage = property(get_ShouldAvoidLocalStorage.__wrapped__, None)
     _SharedModeSettings_Meta_.IsEnabled = property(get_IsEnabled.__wrapped__, None)
+    _SharedModeSettings_Meta_.ShouldAvoidLocalStorage = property(get_ShouldAvoidLocalStorage.__wrapped__, None)
 class _SmartAppControlPolicy_Meta_(ComPtr.__class__):
     pass
 class SmartAppControlPolicy(ComPtr, metaclass=_SmartAppControlPolicy_Meta_):
@@ -463,15 +450,15 @@ class SystemIdentificationInfo(ComPtr):
     def get_Source(self: win32more.Windows.System.Profile.ISystemIdentificationInfo) -> win32more.Windows.System.Profile.SystemIdentificationSource: ...
     Id = property(get_Id, None)
     Source = property(get_Source, None)
-SystemIdentificationSource = Int32
-SystemIdentificationSource_None: SystemIdentificationSource = 0
-SystemIdentificationSource_Tpm: SystemIdentificationSource = 1
-SystemIdentificationSource_Uefi: SystemIdentificationSource = 2
-SystemIdentificationSource_Registry: SystemIdentificationSource = 3
-SystemOutOfBoxExperienceState = Int32
-SystemOutOfBoxExperienceState_NotStarted: SystemOutOfBoxExperienceState = 0
-SystemOutOfBoxExperienceState_InProgress: SystemOutOfBoxExperienceState = 1
-SystemOutOfBoxExperienceState_Completed: SystemOutOfBoxExperienceState = 2
+class SystemIdentificationSource(Int32):  # enum
+    None_ = 0
+    Tpm = 1
+    Uefi = 2
+    Registry = 3
+class SystemOutOfBoxExperienceState(Int32):  # enum
+    NotStarted = 0
+    InProgress = 1
+    Completed = 2
 class _SystemSetupInfo_Meta_(ComPtr.__class__):
     pass
 class SystemSetupInfo(ComPtr, metaclass=_SystemSetupInfo_Meta_):
@@ -492,11 +479,11 @@ class UnsupportedAppRequirement(ComPtr):
     def get_Requirement(self: win32more.Windows.System.Profile.IUnsupportedAppRequirement) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Reasons(self: win32more.Windows.System.Profile.IUnsupportedAppRequirement) -> win32more.Windows.System.Profile.UnsupportedAppRequirementReasons: ...
-    Requirement = property(get_Requirement, None)
     Reasons = property(get_Reasons, None)
-UnsupportedAppRequirementReasons = UInt32
-UnsupportedAppRequirementReasons_Unknown: UnsupportedAppRequirementReasons = 0
-UnsupportedAppRequirementReasons_DeniedBySystem: UnsupportedAppRequirementReasons = 1
+    Requirement = property(get_Requirement, None)
+class UnsupportedAppRequirementReasons(UInt32):  # enum
+    Unknown = 0
+    DeniedBySystem = 1
 class _WindowsIntegrityPolicy_Meta_(ComPtr.__class__):
     pass
 class WindowsIntegrityPolicy(ComPtr, metaclass=_WindowsIntegrityPolicy_Meta_):
@@ -514,8 +501,10 @@ class WindowsIntegrityPolicy(ComPtr, metaclass=_WindowsIntegrityPolicy_Meta_):
     def add_PolicyChanged(cls: win32more.Windows.System.Profile.IWindowsIntegrityPolicyStatics, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_classmethod
     def remove_PolicyChanged(cls: win32more.Windows.System.Profile.IWindowsIntegrityPolicyStatics, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    _WindowsIntegrityPolicy_Meta_.IsEnabled = property(get_IsEnabled.__wrapped__, None)
-    _WindowsIntegrityPolicy_Meta_.IsEnabledForTrial = property(get_IsEnabledForTrial.__wrapped__, None)
     _WindowsIntegrityPolicy_Meta_.CanDisable = property(get_CanDisable.__wrapped__, None)
     _WindowsIntegrityPolicy_Meta_.IsDisableSupported = property(get_IsDisableSupported.__wrapped__, None)
+    _WindowsIntegrityPolicy_Meta_.IsEnabled = property(get_IsEnabled.__wrapped__, None)
+    _WindowsIntegrityPolicy_Meta_.IsEnabledForTrial = property(get_IsEnabledForTrial.__wrapped__, None)
+
+
 make_ready(__name__)

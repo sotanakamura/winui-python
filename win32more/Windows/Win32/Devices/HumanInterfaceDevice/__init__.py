@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Devices.HumanInterfaceDevice
 import win32more.Windows.Win32.Devices.Properties
 import win32more.Windows.Win32.Foundation
@@ -143,22 +143,14 @@ DIDIFT_DELETE: UInt32 = 16777216
 GUID_DEVINTERFACE_HID: Guid = Guid('{4d1e55b2-f16f-11cf-88cb-001111000030}')
 GUID_HID_INTERFACE_NOTIFY: Guid = Guid('{2c4e2e88-25e6-4c33-882f-3d82e6073681}')
 GUID_HID_INTERFACE_HIDPARSE: Guid = Guid('{f5c315a5-69ac-4bc2-9279-d0b64576f44b}')
-def DEVPKEY_DeviceInterface_HID_UsagePage():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=2)
-def DEVPKEY_DeviceInterface_HID_UsageId():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=3)
-def DEVPKEY_DeviceInterface_HID_IsReadOnly():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=4)
-def DEVPKEY_DeviceInterface_HID_VendorId():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=5)
-def DEVPKEY_DeviceInterface_HID_ProductId():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=6)
-def DEVPKEY_DeviceInterface_HID_VersionNumber():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=7)
-def DEVPKEY_DeviceInterface_HID_BackgroundAccess():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=8)
-def DEVPKEY_DeviceInterface_HID_WakeScreenOnInputCapable():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=9)
+DEVPKEY_DeviceInterface_HID_UsagePage: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=2)
+DEVPKEY_DeviceInterface_HID_UsageId: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=3)
+DEVPKEY_DeviceInterface_HID_IsReadOnly: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=4)
+DEVPKEY_DeviceInterface_HID_VendorId: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=5)
+DEVPKEY_DeviceInterface_HID_ProductId: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=6)
+DEVPKEY_DeviceInterface_HID_VersionNumber: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=7)
+DEVPKEY_DeviceInterface_HID_BackgroundAccess: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=8)
+DEVPKEY_DeviceInterface_HID_WakeScreenOnInputCapable: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{cbf38310-4a17-4310-a1eb-247f0b67593b}'), pid=9)
 HID_REVISION: UInt32 = 1
 HIDP_STATUS_SUCCESS: win32more.Windows.Win32.Foundation.NTSTATUS = 1114112
 HIDP_STATUS_NULL: win32more.Windows.Win32.Foundation.NTSTATUS = -2146369535
@@ -467,6 +459,8 @@ HID_USAGE_KEYBOARD_ESCAPE: UInt16 = 41
 HID_USAGE_KEYBOARD_DELETE: UInt16 = 42
 HID_USAGE_KEYBOARD_PRINT_SCREEN: UInt16 = 70
 HID_USAGE_KEYBOARD_DELETE_FORWARD: UInt16 = 76
+HID_USAGE_KEYBOARD_KEYPAD_1_AND_END: UInt16 = 89
+HID_USAGE_KEYBOARD_KEYPAD_0_AND_INSERT: UInt16 = 98
 HID_USAGE_LED_NUM_LOCK: UInt16 = 1
 HID_USAGE_LED_CAPS_LOCK: UInt16 = 2
 HID_USAGE_LED_SCROLL_LOCK: UInt16 = 3
@@ -850,11 +844,6 @@ MOUSE_BUTTON_5_DOWN: UInt32 = 256
 MOUSE_BUTTON_5_UP: UInt32 = 512
 MOUSE_WHEEL: UInt32 = 1024
 MOUSE_HWHEEL: UInt32 = 2048
-MOUSE_MOVE_RELATIVE: UInt32 = 0
-MOUSE_MOVE_ABSOLUTE: UInt32 = 1
-MOUSE_VIRTUAL_DESKTOP: UInt32 = 2
-MOUSE_ATTRIBUTES_CHANGED: UInt32 = 4
-MOUSE_MOVE_NOCOALESCE: UInt32 = 8
 MOUSE_TERMSRV_SRC_SHADOW: UInt32 = 256
 MOUSE_INPORT_HARDWARE: UInt32 = 1
 MOUSE_I8042_HARDWARE: UInt32 = 2

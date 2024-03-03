@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.DataTransfer
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Services.Cortana
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class CortanaActionableInsights(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Cortana.ICortanaActionableInsights
@@ -50,6 +37,13 @@ class CortanaActionableInsightsOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Cortana.ICortanaActionableInsightsOptions
     _classid_ = 'Windows.Services.Cortana.CortanaActionableInsightsOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Services.Cortana.CortanaActionableInsightsOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Services.Cortana.CortanaActionableInsightsOptions: ...
     @winrt_mixinmethod
@@ -62,22 +56,22 @@ class CortanaActionableInsightsOptions(ComPtr):
     def put_SurroundingText(self: win32more.Windows.Services.Cortana.ICortanaActionableInsightsOptions, value: WinRT_String) -> Void: ...
     ContentSourceWebLink = property(get_ContentSourceWebLink, put_ContentSourceWebLink)
     SurroundingText = property(get_SurroundingText, put_SurroundingText)
-CortanaPermission = Int32
-CortanaPermission_BrowsingHistory: CortanaPermission = 0
-CortanaPermission_Calendar: CortanaPermission = 1
-CortanaPermission_CallHistory: CortanaPermission = 2
-CortanaPermission_Contacts: CortanaPermission = 3
-CortanaPermission_Email: CortanaPermission = 4
-CortanaPermission_InputPersonalization: CortanaPermission = 5
-CortanaPermission_Location: CortanaPermission = 6
-CortanaPermission_Messaging: CortanaPermission = 7
-CortanaPermission_Microphone: CortanaPermission = 8
-CortanaPermission_Personalization: CortanaPermission = 9
-CortanaPermission_PhoneCall: CortanaPermission = 10
-CortanaPermissionsChangeResult = Int32
-CortanaPermissionsChangeResult_Success: CortanaPermissionsChangeResult = 0
-CortanaPermissionsChangeResult_Unavailable: CortanaPermissionsChangeResult = 1
-CortanaPermissionsChangeResult_DisabledByPolicy: CortanaPermissionsChangeResult = 2
+class CortanaPermission(Int32):  # enum
+    BrowsingHistory = 0
+    Calendar = 1
+    CallHistory = 2
+    Contacts = 3
+    Email = 4
+    InputPersonalization = 5
+    Location = 6
+    Messaging = 7
+    Microphone = 8
+    Personalization = 9
+    PhoneCall = 10
+class CortanaPermissionsChangeResult(Int32):  # enum
+    Success = 0
+    Unavailable = 1
+    DisabledByPolicy = 2
 class CortanaPermissionsManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Cortana.ICortanaPermissionsManager
@@ -189,4 +183,6 @@ class ICortanaSettingsStatics(ComPtr):
     def IsSupported(self) -> Boolean: ...
     @winrt_commethod(7)
     def GetDefault(self) -> win32more.Windows.Services.Cortana.CortanaSettings: ...
+
+
 make_ready(__name__)

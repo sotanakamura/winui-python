@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Pwm.Provider
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IPwmControllerProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Pwm.Provider.IPwmControllerProvider'
@@ -41,14 +28,16 @@ class IPwmControllerProvider(ComPtr):
     def DisablePin(self, pin: Int32) -> Void: ...
     @winrt_commethod(15)
     def SetPulseParameters(self, pin: Int32, dutyCycle: Double, invertPolarity: Boolean) -> Void: ...
-    PinCount = property(get_PinCount, None)
     ActualFrequency = property(get_ActualFrequency, None)
     MaxFrequency = property(get_MaxFrequency, None)
     MinFrequency = property(get_MinFrequency, None)
+    PinCount = property(get_PinCount, None)
 class IPwmProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Pwm.Provider.IPwmProvider'
     _iid_ = Guid('{a3301228-52f1-47b0-9349-66ba43d25902}')
     @winrt_commethod(6)
     def GetControllers(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Pwm.Provider.IPwmControllerProvider]: ...
+
+
 make_ready(__name__)

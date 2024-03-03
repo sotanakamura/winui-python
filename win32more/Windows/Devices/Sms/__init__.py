@@ -1,28 +1,16 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Sms
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
-CellularClass = Int32
-CellularClass_None: CellularClass = 0
-CellularClass_Gsm: CellularClass = 1
-CellularClass_Cdma: CellularClass = 2
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
+class CellularClass(Int32):  # enum
+    None_ = 0
+    Gsm = 1
+    Cdma = 2
 class DeleteSmsMessageOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncAction
@@ -44,9 +32,9 @@ class DeleteSmsMessageOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class DeleteSmsMessagesOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncAction
@@ -68,9 +56,9 @@ class DeleteSmsMessagesOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class GetSmsDeviceOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Sms.SmsDevice]
@@ -92,9 +80,9 @@ class GetSmsDeviceOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class GetSmsMessageOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Sms.ISmsMessage]
@@ -116,9 +104,9 @@ class GetSmsMessageOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class GetSmsMessagesOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Sms.ISmsMessage], Int32]
@@ -143,11 +131,11 @@ class GetSmsMessagesOperation(ComPtr):
     def Cancel(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
-    Progress = property(get_Progress, put_Progress)
     Completed = property(get_Completed, put_Completed)
-    Id = property(get_Id, None)
-    Status = property(get_Status, None)
     ErrorCode = property(get_ErrorCode, None)
+    Id = property(get_Id, None)
+    Progress = property(get_Progress, put_Progress)
+    Status = property(get_Status, None)
 class ISmsAppMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsAppMessage'
@@ -196,18 +184,18 @@ class ISmsAppMessage(ComPtr):
     def get_BinaryBody(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(27)
     def put_BinaryBody(self, value: win32more.Windows.Storage.Streams.IBuffer) -> Void: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, put_To)
-    From = property(get_From, None)
+    BinaryBody = property(get_BinaryBody, put_BinaryBody)
     Body = property(get_Body, put_Body)
     CallbackNumber = property(get_CallbackNumber, put_CallbackNumber)
-    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
-    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
     Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, None)
+    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
     PortNumber = property(get_PortNumber, put_PortNumber)
-    TeleserviceId = property(get_TeleserviceId, put_TeleserviceId)
     ProtocolId = property(get_ProtocolId, put_ProtocolId)
-    BinaryBody = property(get_BinaryBody, put_BinaryBody)
+    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
+    TeleserviceId = property(get_TeleserviceId, put_TeleserviceId)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, put_To)
 class ISmsBinaryMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsBinaryMessage'
@@ -245,16 +233,16 @@ class ISmsBroadcastMessage(ComPtr):
     def get_IsEmergencyAlert(self) -> Boolean: ...
     @winrt_commethod(15)
     def get_IsUserPopupRequested(self) -> Boolean: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, None)
     Body = property(get_Body, None)
+    BroadcastType = property(get_BroadcastType, None)
     Channel = property(get_Channel, None)
     GeographicalScope = property(get_GeographicalScope, None)
-    MessageCode = property(get_MessageCode, None)
-    UpdateNumber = property(get_UpdateNumber, None)
-    BroadcastType = property(get_BroadcastType, None)
     IsEmergencyAlert = property(get_IsEmergencyAlert, None)
     IsUserPopupRequested = property(get_IsUserPopupRequested, None)
+    MessageCode = property(get_MessageCode, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, None)
+    UpdateNumber = property(get_UpdateNumber, None)
 class ISmsDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsDevice'
@@ -281,8 +269,8 @@ class ISmsDevice(ComPtr):
     def remove_SmsDeviceStatusChanged(self, eventCookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     AccountPhoneNumber = property(get_AccountPhoneNumber, None)
     CellularClass = property(get_CellularClass, None)
-    MessageStore = property(get_MessageStore, None)
     DeviceStatus = property(get_DeviceStatus, None)
+    MessageStore = property(get_MessageStore, None)
 class ISmsDevice2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsDevice2'
@@ -309,12 +297,12 @@ class ISmsDevice2(ComPtr):
     def add_DeviceStatusChanged(self, eventHandler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.Sms.SmsDevice2, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(16)
     def remove_DeviceStatusChanged(self, eventCookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    SmscAddress = property(get_SmscAddress, put_SmscAddress)
-    DeviceId = property(get_DeviceId, None)
-    ParentDeviceId = property(get_ParentDeviceId, None)
     AccountPhoneNumber = property(get_AccountPhoneNumber, None)
     CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
     DeviceStatus = property(get_DeviceStatus, None)
+    ParentDeviceId = property(get_ParentDeviceId, None)
+    SmscAddress = property(get_SmscAddress, put_SmscAddress)
 class ISmsDevice2Statics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsDevice2Statics'
@@ -390,19 +378,19 @@ class ISmsFilterRule(ComPtr):
     def get_BroadcastTypes(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Devices.Sms.SmsBroadcastType]: ...
     @winrt_commethod(19)
     def get_BroadcastChannels(self) -> win32more.Windows.Foundation.Collections.IVector[Int32]: ...
-    MessageType = property(get_MessageType, None)
-    ImsiPrefixes = property(get_ImsiPrefixes, None)
-    DeviceIds = property(get_DeviceIds, None)
-    SenderNumbers = property(get_SenderNumbers, None)
-    TextMessagePrefixes = property(get_TextMessagePrefixes, None)
-    PortNumbers = property(get_PortNumbers, None)
+    BroadcastChannels = property(get_BroadcastChannels, None)
+    BroadcastTypes = property(get_BroadcastTypes, None)
     CellularClass = property(get_CellularClass, put_CellularClass)
+    DeviceIds = property(get_DeviceIds, None)
+    ImsiPrefixes = property(get_ImsiPrefixes, None)
+    MessageType = property(get_MessageType, None)
+    PortNumbers = property(get_PortNumbers, None)
     ProtocolIds = property(get_ProtocolIds, None)
+    SenderNumbers = property(get_SenderNumbers, None)
     TeleserviceIds = property(get_TeleserviceIds, None)
+    TextMessagePrefixes = property(get_TextMessagePrefixes, None)
     WapApplicationIds = property(get_WapApplicationIds, None)
     WapContentTypes = property(get_WapContentTypes, None)
-    BroadcastTypes = property(get_BroadcastTypes, None)
-    BroadcastChannels = property(get_BroadcastChannels, None)
 class ISmsFilterRuleFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsFilterRuleFactory'
@@ -449,10 +437,10 @@ class ISmsMessageBase(ComPtr):
     def get_MessageClass(self) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_commethod(10)
     def get_SimIccId(self) -> WinRT_String: ...
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
     CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
     MessageClass = property(get_MessageClass, None)
+    MessageType = property(get_MessageType, None)
     SimIccId = property(get_SimIccId, None)
 class ISmsMessageReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -462,8 +450,8 @@ class ISmsMessageReceivedEventArgs(ComPtr):
     def get_TextMessage(self) -> win32more.Windows.Devices.Sms.SmsTextMessage: ...
     @winrt_commethod(7)
     def get_BinaryMessage(self) -> win32more.Windows.Devices.Sms.SmsBinaryMessage: ...
-    TextMessage = property(get_TextMessage, None)
     BinaryMessage = property(get_BinaryMessage, None)
+    TextMessage = property(get_TextMessage, None)
 class ISmsMessageReceivedTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsMessageReceivedTriggerDetails'
@@ -486,13 +474,13 @@ class ISmsMessageReceivedTriggerDetails(ComPtr):
     def Drop(self) -> Void: ...
     @winrt_commethod(14)
     def Accept(self) -> Void: ...
-    MessageType = property(get_MessageType, None)
-    TextMessage = property(get_TextMessage, None)
-    WapMessage = property(get_WapMessage, None)
     AppMessage = property(get_AppMessage, None)
     BroadcastMessage = property(get_BroadcastMessage, None)
-    VoicemailMessage = property(get_VoicemailMessage, None)
+    MessageType = property(get_MessageType, None)
     StatusMessage = property(get_StatusMessage, None)
+    TextMessage = property(get_TextMessage, None)
+    VoicemailMessage = property(get_VoicemailMessage, None)
+    WapMessage = property(get_WapMessage, None)
 class ISmsMessageRegistration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsMessageRegistration'
@@ -533,8 +521,8 @@ class ISmsReceivedEventDetails2(ComPtr):
     def get_MessageClass(self) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_commethod(7)
     def get_BinaryMessage(self) -> win32more.Windows.Devices.Sms.SmsBinaryMessage: ...
-    MessageClass = property(get_MessageClass, None)
     BinaryMessage = property(get_BinaryMessage, None)
+    MessageClass = property(get_MessageClass, None)
 class ISmsSendMessageResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsSendMessageResult'
@@ -553,11 +541,11 @@ class ISmsSendMessageResult(ComPtr):
     def get_NetworkCauseCode(self) -> Int32: ...
     @winrt_commethod(12)
     def get_TransportFailureCause(self) -> Int32: ...
+    CellularClass = property(get_CellularClass, None)
+    IsErrorTransient = property(get_IsErrorTransient, None)
     IsSuccessful = property(get_IsSuccessful, None)
     MessageReferenceNumbers = property(get_MessageReferenceNumbers, None)
-    CellularClass = property(get_CellularClass, None)
     ModemErrorCode = property(get_ModemErrorCode, None)
-    IsErrorTransient = property(get_IsErrorTransient, None)
     NetworkCauseCode = property(get_NetworkCauseCode, None)
     TransportFailureCause = property(get_TransportFailureCause, None)
 class ISmsStatusMessage(ComPtr):
@@ -578,13 +566,13 @@ class ISmsStatusMessage(ComPtr):
     def get_ServiceCenterTimestamp(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(12)
     def get_DischargeTime(self) -> win32more.Windows.Foundation.DateTime: ...
-    To = property(get_To, None)
-    From = property(get_From, None)
     Body = property(get_Body, None)
-    Status = property(get_Status, None)
+    DischargeTime = property(get_DischargeTime, None)
+    From = property(get_From, None)
     MessageReferenceNumber = property(get_MessageReferenceNumber, None)
     ServiceCenterTimestamp = property(get_ServiceCenterTimestamp, None)
-    DischargeTime = property(get_DischargeTime, None)
+    Status = property(get_Status, None)
+    To = property(get_To, None)
 class ISmsTextMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsTextMessage'
@@ -615,14 +603,14 @@ class ISmsTextMessage(ComPtr):
     def put_Encoding(self, value: win32more.Windows.Devices.Sms.SmsEncoding) -> Void: ...
     @winrt_commethod(18)
     def ToBinaryMessages(self, format: win32more.Windows.Devices.Sms.SmsDataFormat) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Sms.ISmsBinaryMessage]: ...
-    Timestamp = property(get_Timestamp, None)
-    PartReferenceId = property(get_PartReferenceId, None)
-    PartNumber = property(get_PartNumber, None)
-    PartCount = property(get_PartCount, None)
-    To = property(get_To, put_To)
-    From = property(get_From, put_From)
     Body = property(get_Body, put_Body)
     Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, put_From)
+    PartCount = property(get_PartCount, None)
+    PartNumber = property(get_PartNumber, None)
+    PartReferenceId = property(get_PartReferenceId, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, put_To)
 class ISmsTextMessage2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsTextMessage2'
@@ -659,16 +647,16 @@ class ISmsTextMessage2(ComPtr):
     def get_TeleserviceId(self) -> Int32: ...
     @winrt_commethod(21)
     def get_ProtocolId(self) -> Int32: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, put_To)
-    From = property(get_From, None)
     Body = property(get_Body, put_Body)
-    Encoding = property(get_Encoding, put_Encoding)
     CallbackNumber = property(get_CallbackNumber, put_CallbackNumber)
+    Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, None)
     IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
+    ProtocolId = property(get_ProtocolId, None)
     RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
     TeleserviceId = property(get_TeleserviceId, None)
-    ProtocolId = property(get_ProtocolId, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, put_To)
 class ISmsTextMessageStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsTextMessageStatics'
@@ -689,10 +677,10 @@ class ISmsVoicemailMessage(ComPtr):
     def get_Body(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def get_MessageCount(self) -> win32more.Windows.Foundation.IReference[Int32]: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, None)
     Body = property(get_Body, None)
     MessageCount = property(get_MessageCount, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, None)
 class ISmsWapMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Sms.ISmsWapMessage'
@@ -711,13 +699,13 @@ class ISmsWapMessage(ComPtr):
     def get_BinaryBody(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     @winrt_commethod(12)
     def get_Headers(self) -> win32more.Windows.Foundation.Collections.IMap[WinRT_String, WinRT_String]: ...
+    ApplicationId = property(get_ApplicationId, None)
+    BinaryBody = property(get_BinaryBody, None)
+    ContentType = property(get_ContentType, None)
+    From = property(get_From, None)
+    Headers = property(get_Headers, None)
     Timestamp = property(get_Timestamp, None)
     To = property(get_To, None)
-    From = property(get_From, None)
-    ApplicationId = property(get_ApplicationId, None)
-    ContentType = property(get_ContentType, None)
-    BinaryBody = property(get_BinaryBody, None)
-    Headers = property(get_Headers, None)
 LegacySmsApiContract: UInt32 = 65536
 class SendSmsMessageOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -740,13 +728,20 @@ class SendSmsMessageOperation(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IAsyncInfo) -> Void: ...
     Completed = property(get_Completed, put_Completed)
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class SmsAppMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsAppMessage
     _classid_ = 'Windows.Devices.Sms.SmsAppMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Sms.SmsAppMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Sms.SmsAppMessage: ...
     @winrt_mixinmethod
@@ -803,27 +798,34 @@ class SmsAppMessage(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, put_To)
-    From = property(get_From, None)
+    BinaryBody = property(get_BinaryBody, put_BinaryBody)
     Body = property(get_Body, put_Body)
     CallbackNumber = property(get_CallbackNumber, put_CallbackNumber)
-    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
-    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
-    Encoding = property(get_Encoding, put_Encoding)
-    PortNumber = property(get_PortNumber, put_PortNumber)
-    TeleserviceId = property(get_TeleserviceId, put_TeleserviceId)
-    ProtocolId = property(get_ProtocolId, put_ProtocolId)
-    BinaryBody = property(get_BinaryBody, put_BinaryBody)
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
     CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
+    Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, None)
+    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
     MessageClass = property(get_MessageClass, None)
+    MessageType = property(get_MessageType, None)
+    PortNumber = property(get_PortNumber, put_PortNumber)
+    ProtocolId = property(get_ProtocolId, put_ProtocolId)
+    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
     SimIccId = property(get_SimIccId, None)
+    TeleserviceId = property(get_TeleserviceId, put_TeleserviceId)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, put_To)
 class SmsBinaryMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsBinaryMessage
     _classid_ = 'Windows.Devices.Sms.SmsBinaryMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Sms.SmsBinaryMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Sms.SmsBinaryMessage: ...
     @winrt_mixinmethod
@@ -875,43 +877,43 @@ class SmsBroadcastMessage(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, None)
     Body = property(get_Body, None)
-    Channel = property(get_Channel, None)
-    GeographicalScope = property(get_GeographicalScope, None)
-    MessageCode = property(get_MessageCode, None)
-    UpdateNumber = property(get_UpdateNumber, None)
     BroadcastType = property(get_BroadcastType, None)
+    CellularClass = property(get_CellularClass, None)
+    Channel = property(get_Channel, None)
+    DeviceId = property(get_DeviceId, None)
+    GeographicalScope = property(get_GeographicalScope, None)
     IsEmergencyAlert = property(get_IsEmergencyAlert, None)
     IsUserPopupRequested = property(get_IsUserPopupRequested, None)
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
-    CellularClass = property(get_CellularClass, None)
     MessageClass = property(get_MessageClass, None)
+    MessageCode = property(get_MessageCode, None)
+    MessageType = property(get_MessageType, None)
     SimIccId = property(get_SimIccId, None)
-SmsBroadcastType = Int32
-SmsBroadcastType_Other: SmsBroadcastType = 0
-SmsBroadcastType_CmasPresidential: SmsBroadcastType = 1
-SmsBroadcastType_CmasExtreme: SmsBroadcastType = 2
-SmsBroadcastType_CmasSevere: SmsBroadcastType = 3
-SmsBroadcastType_CmasAmber: SmsBroadcastType = 4
-SmsBroadcastType_CmasTest: SmsBroadcastType = 5
-SmsBroadcastType_EUAlert1: SmsBroadcastType = 6
-SmsBroadcastType_EUAlert2: SmsBroadcastType = 7
-SmsBroadcastType_EUAlert3: SmsBroadcastType = 8
-SmsBroadcastType_EUAlertAmber: SmsBroadcastType = 9
-SmsBroadcastType_EUAlertInfo: SmsBroadcastType = 10
-SmsBroadcastType_EtwsEarthquake: SmsBroadcastType = 11
-SmsBroadcastType_EtwsTsunami: SmsBroadcastType = 12
-SmsBroadcastType_EtwsTsunamiAndEarthquake: SmsBroadcastType = 13
-SmsBroadcastType_LatAlertLocal: SmsBroadcastType = 14
-SmsDataFormat = Int32
-SmsDataFormat_Unknown: SmsDataFormat = 0
-SmsDataFormat_CdmaSubmit: SmsDataFormat = 1
-SmsDataFormat_GsmSubmit: SmsDataFormat = 2
-SmsDataFormat_CdmaDeliver: SmsDataFormat = 3
-SmsDataFormat_GsmDeliver: SmsDataFormat = 4
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, None)
+    UpdateNumber = property(get_UpdateNumber, None)
+class SmsBroadcastType(Int32):  # enum
+    Other = 0
+    CmasPresidential = 1
+    CmasExtreme = 2
+    CmasSevere = 3
+    CmasAmber = 4
+    CmasTest = 5
+    EUAlert1 = 6
+    EUAlert2 = 7
+    EUAlert3 = 8
+    EUAlertAmber = 9
+    EUAlertInfo = 10
+    EtwsEarthquake = 11
+    EtwsTsunami = 12
+    EtwsTsunamiAndEarthquake = 13
+    LatAlertLocal = 14
+class SmsDataFormat(Int32):  # enum
+    Unknown = 0
+    CdmaSubmit = 1
+    GsmSubmit = 2
+    CdmaDeliver = 3
+    GsmDeliver = 4
 class SmsDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsDevice
@@ -946,8 +948,8 @@ class SmsDevice(ComPtr):
     def GetDefaultAsync(cls: win32more.Windows.Devices.Sms.ISmsDeviceStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Sms.SmsDevice]: ...
     AccountPhoneNumber = property(get_AccountPhoneNumber, None)
     CellularClass = property(get_CellularClass, None)
-    MessageStore = property(get_MessageStore, None)
     DeviceStatus = property(get_DeviceStatus, None)
+    MessageStore = property(get_MessageStore, None)
 class SmsDevice2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsDevice2
@@ -982,12 +984,12 @@ class SmsDevice2(ComPtr):
     def GetDefault(cls: win32more.Windows.Devices.Sms.ISmsDevice2Statics) -> win32more.Windows.Devices.Sms.SmsDevice2: ...
     @winrt_classmethod
     def FromParentId(cls: win32more.Windows.Devices.Sms.ISmsDevice2Statics, parentDeviceId: WinRT_String) -> win32more.Windows.Devices.Sms.SmsDevice2: ...
-    SmscAddress = property(get_SmscAddress, put_SmscAddress)
-    DeviceId = property(get_DeviceId, None)
-    ParentDeviceId = property(get_ParentDeviceId, None)
     AccountPhoneNumber = property(get_AccountPhoneNumber, None)
     CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
     DeviceStatus = property(get_DeviceStatus, None)
+    ParentDeviceId = property(get_ParentDeviceId, None)
+    SmscAddress = property(get_SmscAddress, put_SmscAddress)
 class SmsDeviceMessageStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsDeviceMessageStore
@@ -1003,15 +1005,15 @@ class SmsDeviceMessageStore(ComPtr):
     @winrt_mixinmethod
     def get_MaxMessages(self: win32more.Windows.Devices.Sms.ISmsDeviceMessageStore) -> UInt32: ...
     MaxMessages = property(get_MaxMessages, None)
-SmsDeviceStatus = Int32
-SmsDeviceStatus_Off: SmsDeviceStatus = 0
-SmsDeviceStatus_Ready: SmsDeviceStatus = 1
-SmsDeviceStatus_SimNotInserted: SmsDeviceStatus = 2
-SmsDeviceStatus_BadSim: SmsDeviceStatus = 3
-SmsDeviceStatus_DeviceFailure: SmsDeviceStatus = 4
-SmsDeviceStatus_SubscriptionNotActivated: SmsDeviceStatus = 5
-SmsDeviceStatus_DeviceLocked: SmsDeviceStatus = 6
-SmsDeviceStatus_DeviceBlocked: SmsDeviceStatus = 7
+class SmsDeviceStatus(Int32):  # enum
+    Off = 0
+    Ready = 1
+    SimNotInserted = 2
+    BadSim = 3
+    DeviceFailure = 4
+    SubscriptionNotActivated = 5
+    DeviceLocked = 6
+    DeviceBlocked = 7
 class SmsDeviceStatusChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{982b1162-3dd7-4618-af89-0c272d5d06d8}')
@@ -1022,27 +1024,34 @@ class SmsEncodedLength(EasyCastStructure):
     CharactersPerSegment: UInt32
     ByteCountLastSegment: UInt32
     BytesPerSegment: UInt32
-SmsEncoding = Int32
-SmsEncoding_Unknown: SmsEncoding = 0
-SmsEncoding_Optimal: SmsEncoding = 1
-SmsEncoding_SevenBitAscii: SmsEncoding = 2
-SmsEncoding_Unicode: SmsEncoding = 3
-SmsEncoding_GsmSevenBit: SmsEncoding = 4
-SmsEncoding_EightBit: SmsEncoding = 5
-SmsEncoding_Latin: SmsEncoding = 6
-SmsEncoding_Korean: SmsEncoding = 7
-SmsEncoding_IA5: SmsEncoding = 8
-SmsEncoding_ShiftJis: SmsEncoding = 9
-SmsEncoding_LatinHebrew: SmsEncoding = 10
-SmsFilterActionType = Int32
-SmsFilterActionType_AcceptImmediately: SmsFilterActionType = 0
-SmsFilterActionType_Drop: SmsFilterActionType = 1
-SmsFilterActionType_Peek: SmsFilterActionType = 2
-SmsFilterActionType_Accept: SmsFilterActionType = 3
+class SmsEncoding(Int32):  # enum
+    Unknown = 0
+    Optimal = 1
+    SevenBitAscii = 2
+    Unicode = 3
+    GsmSevenBit = 4
+    EightBit = 5
+    Latin = 6
+    Korean = 7
+    IA5 = 8
+    ShiftJis = 9
+    LatinHebrew = 10
+class SmsFilterActionType(Int32):  # enum
+    AcceptImmediately = 0
+    Drop = 1
+    Peek = 2
+    Accept = 3
 class SmsFilterRule(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsFilterRule
     _classid_ = 'Windows.Devices.Sms.SmsFilterRule'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Sms.SmsFilterRule.CreateFilterRule(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFilterRule(cls: win32more.Windows.Devices.Sms.ISmsFilterRuleFactory, messageType: win32more.Windows.Devices.Sms.SmsMessageType) -> win32more.Windows.Devices.Sms.SmsFilterRule: ...
     @winrt_mixinmethod
@@ -1073,23 +1082,30 @@ class SmsFilterRule(ComPtr):
     def get_BroadcastTypes(self: win32more.Windows.Devices.Sms.ISmsFilterRule) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Devices.Sms.SmsBroadcastType]: ...
     @winrt_mixinmethod
     def get_BroadcastChannels(self: win32more.Windows.Devices.Sms.ISmsFilterRule) -> win32more.Windows.Foundation.Collections.IVector[Int32]: ...
-    MessageType = property(get_MessageType, None)
-    ImsiPrefixes = property(get_ImsiPrefixes, None)
-    DeviceIds = property(get_DeviceIds, None)
-    SenderNumbers = property(get_SenderNumbers, None)
-    TextMessagePrefixes = property(get_TextMessagePrefixes, None)
-    PortNumbers = property(get_PortNumbers, None)
+    BroadcastChannels = property(get_BroadcastChannels, None)
+    BroadcastTypes = property(get_BroadcastTypes, None)
     CellularClass = property(get_CellularClass, put_CellularClass)
+    DeviceIds = property(get_DeviceIds, None)
+    ImsiPrefixes = property(get_ImsiPrefixes, None)
+    MessageType = property(get_MessageType, None)
+    PortNumbers = property(get_PortNumbers, None)
     ProtocolIds = property(get_ProtocolIds, None)
+    SenderNumbers = property(get_SenderNumbers, None)
     TeleserviceIds = property(get_TeleserviceIds, None)
+    TextMessagePrefixes = property(get_TextMessagePrefixes, None)
     WapApplicationIds = property(get_WapApplicationIds, None)
     WapContentTypes = property(get_WapContentTypes, None)
-    BroadcastTypes = property(get_BroadcastTypes, None)
-    BroadcastChannels = property(get_BroadcastChannels, None)
 class SmsFilterRules(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsFilterRules
     _classid_ = 'Windows.Devices.Sms.SmsFilterRules'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Sms.SmsFilterRules.CreateFilterRules(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFilterRules(cls: win32more.Windows.Devices.Sms.ISmsFilterRulesFactory, actionType: win32more.Windows.Devices.Sms.SmsFilterActionType) -> win32more.Windows.Devices.Sms.SmsFilterRules: ...
     @winrt_mixinmethod
@@ -1098,24 +1114,24 @@ class SmsFilterRules(ComPtr):
     def get_Rules(self: win32more.Windows.Devices.Sms.ISmsFilterRules) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Devices.Sms.SmsFilterRule]: ...
     ActionType = property(get_ActionType, None)
     Rules = property(get_Rules, None)
-SmsGeographicalScope = Int32
-SmsGeographicalScope_None: SmsGeographicalScope = 0
-SmsGeographicalScope_CellWithImmediateDisplay: SmsGeographicalScope = 1
-SmsGeographicalScope_LocationArea: SmsGeographicalScope = 2
-SmsGeographicalScope_Plmn: SmsGeographicalScope = 3
-SmsGeographicalScope_Cell: SmsGeographicalScope = 4
-SmsMessageClass = Int32
-SmsMessageClass_None: SmsMessageClass = 0
-SmsMessageClass_Class0: SmsMessageClass = 1
-SmsMessageClass_Class1: SmsMessageClass = 2
-SmsMessageClass_Class2: SmsMessageClass = 3
-SmsMessageClass_Class3: SmsMessageClass = 4
-SmsMessageFilter = Int32
-SmsMessageFilter_All: SmsMessageFilter = 0
-SmsMessageFilter_Unread: SmsMessageFilter = 1
-SmsMessageFilter_Read: SmsMessageFilter = 2
-SmsMessageFilter_Sent: SmsMessageFilter = 3
-SmsMessageFilter_Draft: SmsMessageFilter = 4
+class SmsGeographicalScope(Int32):  # enum
+    None_ = 0
+    CellWithImmediateDisplay = 1
+    LocationArea = 2
+    Plmn = 3
+    Cell = 4
+class SmsMessageClass(Int32):  # enum
+    None_ = 0
+    Class0 = 1
+    Class1 = 2
+    Class2 = 3
+    Class3 = 4
+class SmsMessageFilter(Int32):  # enum
+    All = 0
+    Unread = 1
+    Read = 2
+    Sent = 3
+    Draft = 4
 class SmsMessageReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsMessageReceivedEventArgs
@@ -1124,8 +1140,8 @@ class SmsMessageReceivedEventArgs(ComPtr):
     def get_TextMessage(self: win32more.Windows.Devices.Sms.ISmsMessageReceivedEventArgs) -> win32more.Windows.Devices.Sms.SmsTextMessage: ...
     @winrt_mixinmethod
     def get_BinaryMessage(self: win32more.Windows.Devices.Sms.ISmsMessageReceivedEventArgs) -> win32more.Windows.Devices.Sms.SmsBinaryMessage: ...
-    TextMessage = property(get_TextMessage, None)
     BinaryMessage = property(get_BinaryMessage, None)
+    TextMessage = property(get_TextMessage, None)
 class SmsMessageReceivedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{0b7ad409-ec2d-47ce-a253-732beeebcacd}')
@@ -1152,13 +1168,13 @@ class SmsMessageReceivedTriggerDetails(ComPtr):
     def Drop(self: win32more.Windows.Devices.Sms.ISmsMessageReceivedTriggerDetails) -> Void: ...
     @winrt_mixinmethod
     def Accept(self: win32more.Windows.Devices.Sms.ISmsMessageReceivedTriggerDetails) -> Void: ...
-    MessageType = property(get_MessageType, None)
-    TextMessage = property(get_TextMessage, None)
-    WapMessage = property(get_WapMessage, None)
     AppMessage = property(get_AppMessage, None)
     BroadcastMessage = property(get_BroadcastMessage, None)
-    VoicemailMessage = property(get_VoicemailMessage, None)
+    MessageType = property(get_MessageType, None)
     StatusMessage = property(get_StatusMessage, None)
+    TextMessage = property(get_TextMessage, None)
+    VoicemailMessage = property(get_VoicemailMessage, None)
+    WapMessage = property(get_WapMessage, None)
 class _SmsMessageRegistration_Meta_(ComPtr.__class__):
     pass
 class SmsMessageRegistration(ComPtr, metaclass=_SmsMessageRegistration_Meta_):
@@ -1179,27 +1195,27 @@ class SmsMessageRegistration(ComPtr, metaclass=_SmsMessageRegistration_Meta_):
     def Register(cls: win32more.Windows.Devices.Sms.ISmsMessageRegistrationStatics, id: WinRT_String, filterRules: win32more.Windows.Devices.Sms.SmsFilterRules) -> win32more.Windows.Devices.Sms.SmsMessageRegistration: ...
     Id = property(get_Id, None)
     _SmsMessageRegistration_Meta_.AllRegistrations = property(get_AllRegistrations.__wrapped__, None)
-SmsMessageType = Int32
-SmsMessageType_Binary: SmsMessageType = 0
-SmsMessageType_Text: SmsMessageType = 1
-SmsMessageType_Wap: SmsMessageType = 2
-SmsMessageType_App: SmsMessageType = 3
-SmsMessageType_Broadcast: SmsMessageType = 4
-SmsMessageType_Voicemail: SmsMessageType = 5
-SmsMessageType_Status: SmsMessageType = 6
-SmsModemErrorCode = Int32
-SmsModemErrorCode_Other: SmsModemErrorCode = 0
-SmsModemErrorCode_MessagingNetworkError: SmsModemErrorCode = 1
-SmsModemErrorCode_SmsOperationNotSupportedByDevice: SmsModemErrorCode = 2
-SmsModemErrorCode_SmsServiceNotSupportedByNetwork: SmsModemErrorCode = 3
-SmsModemErrorCode_DeviceFailure: SmsModemErrorCode = 4
-SmsModemErrorCode_MessageNotEncodedProperly: SmsModemErrorCode = 5
-SmsModemErrorCode_MessageTooLarge: SmsModemErrorCode = 6
-SmsModemErrorCode_DeviceNotReady: SmsModemErrorCode = 7
-SmsModemErrorCode_NetworkNotReady: SmsModemErrorCode = 8
-SmsModemErrorCode_InvalidSmscAddress: SmsModemErrorCode = 9
-SmsModemErrorCode_NetworkFailure: SmsModemErrorCode = 10
-SmsModemErrorCode_FixedDialingNumberRestricted: SmsModemErrorCode = 11
+class SmsMessageType(Int32):  # enum
+    Binary = 0
+    Text = 1
+    Wap = 2
+    App = 3
+    Broadcast = 4
+    Voicemail = 5
+    Status = 6
+class SmsModemErrorCode(Int32):  # enum
+    Other = 0
+    MessagingNetworkError = 1
+    SmsOperationNotSupportedByDevice = 2
+    SmsServiceNotSupportedByNetwork = 3
+    DeviceFailure = 4
+    MessageNotEncodedProperly = 5
+    MessageTooLarge = 6
+    DeviceNotReady = 7
+    NetworkNotReady = 8
+    InvalidSmscAddress = 9
+    NetworkFailure = 10
+    FixedDialingNumberRestricted = 11
 class SmsReceivedEventDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsReceivedEventDetails
@@ -1212,10 +1228,10 @@ class SmsReceivedEventDetails(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsReceivedEventDetails2) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_BinaryMessage(self: win32more.Windows.Devices.Sms.ISmsReceivedEventDetails2) -> win32more.Windows.Devices.Sms.SmsBinaryMessage: ...
-    DeviceId = property(get_DeviceId, None)
-    MessageIndex = property(get_MessageIndex, None)
-    MessageClass = property(get_MessageClass, None)
     BinaryMessage = property(get_BinaryMessage, None)
+    DeviceId = property(get_DeviceId, None)
+    MessageClass = property(get_MessageClass, None)
+    MessageIndex = property(get_MessageIndex, None)
 class SmsSendMessageResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsSendMessageResult
@@ -1234,11 +1250,11 @@ class SmsSendMessageResult(ComPtr):
     def get_NetworkCauseCode(self: win32more.Windows.Devices.Sms.ISmsSendMessageResult) -> Int32: ...
     @winrt_mixinmethod
     def get_TransportFailureCause(self: win32more.Windows.Devices.Sms.ISmsSendMessageResult) -> Int32: ...
+    CellularClass = property(get_CellularClass, None)
+    IsErrorTransient = property(get_IsErrorTransient, None)
     IsSuccessful = property(get_IsSuccessful, None)
     MessageReferenceNumbers = property(get_MessageReferenceNumbers, None)
-    CellularClass = property(get_CellularClass, None)
     ModemErrorCode = property(get_ModemErrorCode, None)
-    IsErrorTransient = property(get_IsErrorTransient, None)
     NetworkCauseCode = property(get_NetworkCauseCode, None)
     TransportFailureCause = property(get_TransportFailureCause, None)
 class SmsStatusMessage(ComPtr):
@@ -1269,22 +1285,29 @@ class SmsStatusMessage(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
-    To = property(get_To, None)
-    From = property(get_From, None)
     Body = property(get_Body, None)
-    Status = property(get_Status, None)
-    MessageReferenceNumber = property(get_MessageReferenceNumber, None)
-    ServiceCenterTimestamp = property(get_ServiceCenterTimestamp, None)
-    DischargeTime = property(get_DischargeTime, None)
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
     CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
+    DischargeTime = property(get_DischargeTime, None)
+    From = property(get_From, None)
     MessageClass = property(get_MessageClass, None)
+    MessageReferenceNumber = property(get_MessageReferenceNumber, None)
+    MessageType = property(get_MessageType, None)
+    ServiceCenterTimestamp = property(get_ServiceCenterTimestamp, None)
     SimIccId = property(get_SimIccId, None)
+    Status = property(get_Status, None)
+    To = property(get_To, None)
 class SmsTextMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsTextMessage
     _classid_ = 'Windows.Devices.Sms.SmsTextMessage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Sms.SmsTextMessage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Sms.SmsTextMessage: ...
     @winrt_mixinmethod
@@ -1321,20 +1344,27 @@ class SmsTextMessage(ComPtr):
     def FromBinaryMessage(cls: win32more.Windows.Devices.Sms.ISmsTextMessageStatics, binaryMessage: win32more.Windows.Devices.Sms.SmsBinaryMessage) -> win32more.Windows.Devices.Sms.SmsTextMessage: ...
     @winrt_classmethod
     def FromBinaryData(cls: win32more.Windows.Devices.Sms.ISmsTextMessageStatics, format: win32more.Windows.Devices.Sms.SmsDataFormat, value: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Devices.Sms.SmsTextMessage: ...
-    Timestamp = property(get_Timestamp, None)
-    PartReferenceId = property(get_PartReferenceId, None)
-    PartNumber = property(get_PartNumber, None)
-    PartCount = property(get_PartCount, None)
-    To = property(get_To, put_To)
-    From = property(get_From, put_From)
     Body = property(get_Body, put_Body)
     Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, put_From)
     Id = property(get_Id, None)
     MessageClass = property(get_MessageClass, None)
+    PartCount = property(get_PartCount, None)
+    PartNumber = property(get_PartNumber, None)
+    PartReferenceId = property(get_PartReferenceId, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, put_To)
 class SmsTextMessage2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsTextMessage2
     _classid_ = 'Windows.Devices.Sms.SmsTextMessage2'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Sms.SmsTextMessage2.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Sms.SmsTextMessage2: ...
     @winrt_mixinmethod
@@ -1379,21 +1409,21 @@ class SmsTextMessage2(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
+    Body = property(get_Body, put_Body)
+    CallbackNumber = property(get_CallbackNumber, put_CallbackNumber)
+    CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
+    Encoding = property(get_Encoding, put_Encoding)
+    From = property(get_From, None)
+    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
+    MessageClass = property(get_MessageClass, None)
+    MessageType = property(get_MessageType, None)
+    ProtocolId = property(get_ProtocolId, None)
+    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
+    SimIccId = property(get_SimIccId, None)
+    TeleserviceId = property(get_TeleserviceId, None)
     Timestamp = property(get_Timestamp, None)
     To = property(get_To, put_To)
-    From = property(get_From, None)
-    Body = property(get_Body, put_Body)
-    Encoding = property(get_Encoding, put_Encoding)
-    CallbackNumber = property(get_CallbackNumber, put_CallbackNumber)
-    IsDeliveryNotificationEnabled = property(get_IsDeliveryNotificationEnabled, put_IsDeliveryNotificationEnabled)
-    RetryAttemptCount = property(get_RetryAttemptCount, put_RetryAttemptCount)
-    TeleserviceId = property(get_TeleserviceId, None)
-    ProtocolId = property(get_ProtocolId, None)
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
-    CellularClass = property(get_CellularClass, None)
-    MessageClass = property(get_MessageClass, None)
-    SimIccId = property(get_SimIccId, None)
 class SmsVoicemailMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsVoicemailMessage
@@ -1416,15 +1446,15 @@ class SmsVoicemailMessage(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
-    Timestamp = property(get_Timestamp, None)
-    To = property(get_To, None)
     Body = property(get_Body, None)
+    CellularClass = property(get_CellularClass, None)
+    DeviceId = property(get_DeviceId, None)
+    MessageClass = property(get_MessageClass, None)
     MessageCount = property(get_MessageCount, None)
     MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
-    CellularClass = property(get_CellularClass, None)
-    MessageClass = property(get_MessageClass, None)
     SimIccId = property(get_SimIccId, None)
+    Timestamp = property(get_Timestamp, None)
+    To = property(get_To, None)
 class SmsWapMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Sms.ISmsWapMessage
@@ -1453,16 +1483,18 @@ class SmsWapMessage(ComPtr):
     def get_MessageClass(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> win32more.Windows.Devices.Sms.SmsMessageClass: ...
     @winrt_mixinmethod
     def get_SimIccId(self: win32more.Windows.Devices.Sms.ISmsMessageBase) -> WinRT_String: ...
+    ApplicationId = property(get_ApplicationId, None)
+    BinaryBody = property(get_BinaryBody, None)
+    CellularClass = property(get_CellularClass, None)
+    ContentType = property(get_ContentType, None)
+    DeviceId = property(get_DeviceId, None)
+    From = property(get_From, None)
+    Headers = property(get_Headers, None)
+    MessageClass = property(get_MessageClass, None)
+    MessageType = property(get_MessageType, None)
+    SimIccId = property(get_SimIccId, None)
     Timestamp = property(get_Timestamp, None)
     To = property(get_To, None)
-    From = property(get_From, None)
-    ApplicationId = property(get_ApplicationId, None)
-    ContentType = property(get_ContentType, None)
-    BinaryBody = property(get_BinaryBody, None)
-    Headers = property(get_Headers, None)
-    MessageType = property(get_MessageType, None)
-    DeviceId = property(get_DeviceId, None)
-    CellularClass = property(get_CellularClass, None)
-    MessageClass = property(get_MessageClass, None)
-    SimIccId = property(get_SimIccId, None)
+
+
 make_ready(__name__)

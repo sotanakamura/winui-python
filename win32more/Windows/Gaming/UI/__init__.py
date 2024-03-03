@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Activation
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Gaming.UI
+import win32more.Windows.Win32.System.WinRT
 class _GameBar_Meta_(ComPtr.__class__):
     pass
 class GameBar(ComPtr, metaclass=_GameBar_Meta_):
@@ -36,11 +23,11 @@ class GameBar(ComPtr, metaclass=_GameBar_Meta_):
     def get_Visible(cls: win32more.Windows.Gaming.UI.IGameBarStatics) -> Boolean: ...
     @winrt_classmethod
     def get_IsInputRedirected(cls: win32more.Windows.Gaming.UI.IGameBarStatics) -> Boolean: ...
-    _GameBar_Meta_.Visible = property(get_Visible.__wrapped__, None)
     _GameBar_Meta_.IsInputRedirected = property(get_IsInputRedirected.__wrapped__, None)
-GameChatMessageOrigin = Int32
-GameChatMessageOrigin_Voice: GameChatMessageOrigin = 0
-GameChatMessageOrigin_Text: GameChatMessageOrigin = 1
+    _GameBar_Meta_.Visible = property(get_Visible.__wrapped__, None)
+class GameChatMessageOrigin(Int32):  # enum
+    Voice = 0
+    Text = 1
 class GameChatMessageReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.UI.IGameChatMessageReceivedEventArgs
@@ -55,11 +42,11 @@ class GameChatMessageReceivedEventArgs(ComPtr):
     def get_Message(self: win32more.Windows.Gaming.UI.IGameChatMessageReceivedEventArgs) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Origin(self: win32more.Windows.Gaming.UI.IGameChatMessageReceivedEventArgs) -> win32more.Windows.Gaming.UI.GameChatMessageOrigin: ...
-    AppId = property(get_AppId, None)
     AppDisplayName = property(get_AppDisplayName, None)
-    SenderName = property(get_SenderName, None)
+    AppId = property(get_AppId, None)
     Message = property(get_Message, None)
     Origin = property(get_Origin, None)
+    SenderName = property(get_SenderName, None)
 class GameChatOverlay(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.UI.IGameChatOverlay
@@ -78,6 +65,13 @@ class GameChatOverlayMessageSource(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.UI.IGameChatOverlayMessageSource
     _classid_ = 'Windows.Gaming.UI.GameChatOverlayMessageSource'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Gaming.UI.GameChatOverlayMessageSource.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Gaming.UI.GameChatOverlayMessageSource: ...
     @winrt_mixinmethod
@@ -86,15 +80,15 @@ class GameChatOverlayMessageSource(ComPtr):
     def remove_MessageReceived(self: win32more.Windows.Gaming.UI.IGameChatOverlayMessageSource, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def SetDelayBeforeClosingAfterMessageReceived(self: win32more.Windows.Gaming.UI.IGameChatOverlayMessageSource, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-GameChatOverlayPosition = Int32
-GameChatOverlayPosition_BottomCenter: GameChatOverlayPosition = 0
-GameChatOverlayPosition_BottomLeft: GameChatOverlayPosition = 1
-GameChatOverlayPosition_BottomRight: GameChatOverlayPosition = 2
-GameChatOverlayPosition_MiddleRight: GameChatOverlayPosition = 3
-GameChatOverlayPosition_MiddleLeft: GameChatOverlayPosition = 4
-GameChatOverlayPosition_TopCenter: GameChatOverlayPosition = 5
-GameChatOverlayPosition_TopLeft: GameChatOverlayPosition = 6
-GameChatOverlayPosition_TopRight: GameChatOverlayPosition = 7
+class GameChatOverlayPosition(Int32):  # enum
+    BottomCenter = 0
+    BottomLeft = 1
+    BottomRight = 2
+    MiddleRight = 3
+    MiddleLeft = 4
+    TopCenter = 5
+    TopLeft = 6
+    TopRight = 7
 class GameUIProviderActivatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Gaming.UI.IGameUIProviderActivatedEventArgs
@@ -130,8 +124,8 @@ class IGameBarStatics(ComPtr):
     def get_Visible(self) -> Boolean: ...
     @winrt_commethod(11)
     def get_IsInputRedirected(self) -> Boolean: ...
-    Visible = property(get_Visible, None)
     IsInputRedirected = property(get_IsInputRedirected, None)
+    Visible = property(get_Visible, None)
 class IGameChatMessageReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.UI.IGameChatMessageReceivedEventArgs'
@@ -146,11 +140,11 @@ class IGameChatMessageReceivedEventArgs(ComPtr):
     def get_Message(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_Origin(self) -> win32more.Windows.Gaming.UI.GameChatMessageOrigin: ...
-    AppId = property(get_AppId, None)
     AppDisplayName = property(get_AppDisplayName, None)
-    SenderName = property(get_SenderName, None)
+    AppId = property(get_AppId, None)
     Message = property(get_Message, None)
     Origin = property(get_Origin, None)
+    SenderName = property(get_SenderName, None)
 class IGameChatOverlay(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.UI.IGameChatOverlay'
@@ -187,4 +181,6 @@ class IGameUIProviderActivatedEventArgs(ComPtr):
     @winrt_commethod(7)
     def ReportCompleted(self, results: win32more.Windows.Foundation.Collections.ValueSet) -> Void: ...
     GameUIArgs = property(get_GameUIArgs, None)
+
+
 make_ready(__name__)

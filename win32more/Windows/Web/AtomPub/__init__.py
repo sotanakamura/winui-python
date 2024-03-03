@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Data.Xml.Dom
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -22,10 +8,20 @@ import win32more.Windows.Security.Credentials
 import win32more.Windows.Storage.Streams
 import win32more.Windows.Web.AtomPub
 import win32more.Windows.Web.Syndication
+import win32more.Windows.Win32.System.WinRT
 class AtomPubClient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.AtomPub.IAtomPubClient
     _classid_ = 'Windows.Web.AtomPub.AtomPubClient'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.AtomPub.AtomPubClient.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Web.AtomPub.AtomPubClient.CreateAtomPubClientWithCredentials(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.AtomPub.AtomPubClient: ...
     @winrt_factorymethod
@@ -76,11 +72,11 @@ class AtomPubClient(ComPtr):
     def SetRequestHeader(self: win32more.Windows.Web.Syndication.ISyndicationClient, name: WinRT_String, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def RetrieveFeedAsync(self: win32more.Windows.Web.Syndication.ISyndicationClient, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Web.Syndication.SyndicationFeed, win32more.Windows.Web.Syndication.RetrievalProgress]: ...
-    ServerCredential = property(get_ServerCredential, put_ServerCredential)
-    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
-    MaxResponseBufferSize = property(get_MaxResponseBufferSize, put_MaxResponseBufferSize)
-    Timeout = property(get_Timeout, put_Timeout)
     BypassCacheOnRetrieve = property(get_BypassCacheOnRetrieve, put_BypassCacheOnRetrieve)
+    MaxResponseBufferSize = property(get_MaxResponseBufferSize, put_MaxResponseBufferSize)
+    ProxyCredential = property(get_ProxyCredential, put_ProxyCredential)
+    ServerCredential = property(get_ServerCredential, put_ServerCredential)
+    Timeout = property(get_Timeout, put_Timeout)
 class IAtomPubClient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Web.AtomPub.IAtomPubClient'
@@ -125,10 +121,10 @@ class IResourceCollection(ComPtr):
     def get_Categories(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Web.Syndication.SyndicationCategory]: ...
     @winrt_commethod(9)
     def get_Accepts(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
+    Accepts = property(get_Accepts, None)
+    Categories = property(get_Categories, None)
     Title = property(get_Title, None)
     Uri = property(get_Uri, None)
-    Categories = property(get_Categories, None)
-    Accepts = property(get_Accepts, None)
 class IServiceDocument(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Web.AtomPub.IServiceDocument'
@@ -144,8 +140,8 @@ class IWorkspace(ComPtr):
     def get_Title(self) -> win32more.Windows.Web.Syndication.ISyndicationText: ...
     @winrt_commethod(7)
     def get_Collections(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Web.AtomPub.ResourceCollection]: ...
-    Title = property(get_Title, None)
     Collections = property(get_Collections, None)
+    Title = property(get_Title, None)
 class ResourceCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.AtomPub.IResourceCollection
@@ -184,17 +180,17 @@ class ResourceCollection(ComPtr):
     def get_ElementExtensions(self: win32more.Windows.Web.Syndication.ISyndicationNode) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Web.Syndication.ISyndicationNode]: ...
     @winrt_mixinmethod
     def GetXmlDocument(self: win32more.Windows.Web.Syndication.ISyndicationNode, format: win32more.Windows.Web.Syndication.SyndicationFormat) -> win32more.Windows.Data.Xml.Dom.XmlDocument: ...
-    Title = property(get_Title, None)
-    Uri = property(get_Uri, None)
-    Categories = property(get_Categories, None)
     Accepts = property(get_Accepts, None)
+    AttributeExtensions = property(get_AttributeExtensions, None)
+    BaseUri = property(get_BaseUri, put_BaseUri)
+    Categories = property(get_Categories, None)
+    ElementExtensions = property(get_ElementExtensions, None)
+    Language = property(get_Language, put_Language)
     NodeName = property(get_NodeName, put_NodeName)
     NodeNamespace = property(get_NodeNamespace, put_NodeNamespace)
     NodeValue = property(get_NodeValue, put_NodeValue)
-    Language = property(get_Language, put_Language)
-    BaseUri = property(get_BaseUri, put_BaseUri)
-    AttributeExtensions = property(get_AttributeExtensions, None)
-    ElementExtensions = property(get_ElementExtensions, None)
+    Title = property(get_Title, None)
+    Uri = property(get_Uri, None)
 class ServiceDocument(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.AtomPub.IServiceDocument
@@ -227,14 +223,14 @@ class ServiceDocument(ComPtr):
     def get_ElementExtensions(self: win32more.Windows.Web.Syndication.ISyndicationNode) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Web.Syndication.ISyndicationNode]: ...
     @winrt_mixinmethod
     def GetXmlDocument(self: win32more.Windows.Web.Syndication.ISyndicationNode, format: win32more.Windows.Web.Syndication.SyndicationFormat) -> win32more.Windows.Data.Xml.Dom.XmlDocument: ...
-    Workspaces = property(get_Workspaces, None)
+    AttributeExtensions = property(get_AttributeExtensions, None)
+    BaseUri = property(get_BaseUri, put_BaseUri)
+    ElementExtensions = property(get_ElementExtensions, None)
+    Language = property(get_Language, put_Language)
     NodeName = property(get_NodeName, put_NodeName)
     NodeNamespace = property(get_NodeNamespace, put_NodeNamespace)
     NodeValue = property(get_NodeValue, put_NodeValue)
-    Language = property(get_Language, put_Language)
-    BaseUri = property(get_BaseUri, put_BaseUri)
-    AttributeExtensions = property(get_AttributeExtensions, None)
-    ElementExtensions = property(get_ElementExtensions, None)
+    Workspaces = property(get_Workspaces, None)
 class Workspace(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.AtomPub.IWorkspace
@@ -269,13 +265,15 @@ class Workspace(ComPtr):
     def get_ElementExtensions(self: win32more.Windows.Web.Syndication.ISyndicationNode) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Web.Syndication.ISyndicationNode]: ...
     @winrt_mixinmethod
     def GetXmlDocument(self: win32more.Windows.Web.Syndication.ISyndicationNode, format: win32more.Windows.Web.Syndication.SyndicationFormat) -> win32more.Windows.Data.Xml.Dom.XmlDocument: ...
-    Title = property(get_Title, None)
+    AttributeExtensions = property(get_AttributeExtensions, None)
+    BaseUri = property(get_BaseUri, put_BaseUri)
     Collections = property(get_Collections, None)
+    ElementExtensions = property(get_ElementExtensions, None)
+    Language = property(get_Language, put_Language)
     NodeName = property(get_NodeName, put_NodeName)
     NodeNamespace = property(get_NodeNamespace, put_NodeNamespace)
     NodeValue = property(get_NodeValue, put_NodeValue)
-    Language = property(get_Language, put_Language)
-    BaseUri = property(get_BaseUri, put_BaseUri)
-    AttributeExtensions = property(get_AttributeExtensions, None)
-    ElementExtensions = property(get_ElementExtensions, None)
+    Title = property(get_Title, None)
+
+
 make_ready(__name__)

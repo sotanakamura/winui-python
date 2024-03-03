@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Core
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -22,6 +8,7 @@ import win32more.Windows.Graphics
 import win32more.Windows.Media.Core
 import win32more.Windows.Media.Miracast
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IMiracastReceiver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiver'
@@ -60,8 +47,8 @@ class IMiracastReceiverApplySettingsResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Miracast.MiracastReceiverApplySettingsStatus: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class IMiracastReceiverConnection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverConnection'
@@ -86,10 +73,10 @@ class IMiracastReceiverConnection(ComPtr):
     def get_CursorImageChannel(self) -> win32more.Windows.Media.Miracast.MiracastReceiverCursorImageChannel: ...
     @winrt_commethod(15)
     def get_StreamControl(self) -> win32more.Windows.Media.Miracast.MiracastReceiverStreamControl: ...
-    Transmitter = property(get_Transmitter, None)
-    InputDevices = property(get_InputDevices, None)
     CursorImageChannel = property(get_CursorImageChannel, None)
+    InputDevices = property(get_InputDevices, None)
     StreamControl = property(get_StreamControl, None)
+    Transmitter = property(get_Transmitter, None)
 class IMiracastReceiverConnectionCreatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverConnectionCreatedEventArgs'
@@ -122,10 +109,10 @@ class IMiracastReceiverCursorImageChannel(ComPtr):
     def add_PositionChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverCursorImageChannel, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_PositionChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    ImageStream = property(get_ImageStream, None)
     IsEnabled = property(get_IsEnabled, None)
     MaxImageSize = property(get_MaxImageSize, None)
     Position = property(get_Position, None)
-    ImageStream = property(get_ImageStream, None)
 class IMiracastReceiverCursorImageChannelSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverCursorImageChannelSettings'
@@ -167,10 +154,10 @@ class IMiracastReceiverGameControllerDevice(ComPtr):
     def add_Changed(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverGameControllerDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(13)
     def remove_Changed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TransmitInput = property(get_TransmitInput, put_TransmitInput)
     IsRequestedByTransmitter = property(get_IsRequestedByTransmitter, None)
     IsTransmittingInput = property(get_IsTransmittingInput, None)
     Mode = property(get_Mode, put_Mode)
+    TransmitInput = property(get_TransmitInput, put_TransmitInput)
 class IMiracastReceiverInputDevices(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverInputDevices'
@@ -179,8 +166,8 @@ class IMiracastReceiverInputDevices(ComPtr):
     def get_Keyboard(self) -> win32more.Windows.Media.Miracast.MiracastReceiverKeyboardDevice: ...
     @winrt_commethod(7)
     def get_GameController(self) -> win32more.Windows.Media.Miracast.MiracastReceiverGameControllerDevice: ...
-    Keyboard = property(get_Keyboard, None)
     GameController = property(get_GameController, None)
+    Keyboard = property(get_Keyboard, None)
 class IMiracastReceiverKeyboardDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverKeyboardDevice'
@@ -197,9 +184,9 @@ class IMiracastReceiverKeyboardDevice(ComPtr):
     def add_Changed(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverKeyboardDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_Changed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TransmitInput = property(get_TransmitInput, put_TransmitInput)
     IsRequestedByTransmitter = property(get_IsRequestedByTransmitter, None)
     IsTransmittingInput = property(get_IsTransmittingInput, None)
+    TransmitInput = property(get_TransmitInput, put_TransmitInput)
 class IMiracastReceiverMediaSourceCreatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverMediaSourceCreatedEventArgs'
@@ -213,8 +200,8 @@ class IMiracastReceiverMediaSourceCreatedEventArgs(ComPtr):
     @winrt_commethod(9)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
     Connection = property(get_Connection, None)
-    MediaSource = property(get_MediaSource, None)
     CursorImageChannelSettings = property(get_CursorImageChannelSettings, None)
+    MediaSource = property(get_MediaSource, None)
 class IMiracastReceiverSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverSession'
@@ -253,8 +240,8 @@ class IMiracastReceiverSessionStartResult(ComPtr):
     def get_Status(self) -> win32more.Windows.Media.Miracast.MiracastReceiverSessionStartStatus: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class IMiracastReceiverSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverSettings'
@@ -279,10 +266,10 @@ class IMiracastReceiverSettings(ComPtr):
     def get_RequireAuthorizationFromKnownTransmitters(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_RequireAuthorizationFromKnownTransmitters(self, value: Boolean) -> Void: ...
+    AuthorizationMethod = property(get_AuthorizationMethod, put_AuthorizationMethod)
     FriendlyName = property(get_FriendlyName, put_FriendlyName)
     ModelName = property(get_ModelName, put_ModelName)
     ModelNumber = property(get_ModelNumber, put_ModelNumber)
-    AuthorizationMethod = property(get_AuthorizationMethod, put_AuthorizationMethod)
     RequireAuthorizationFromKnownTransmitters = property(get_RequireAuthorizationFromKnownTransmitters, put_RequireAuthorizationFromKnownTransmitters)
 class IMiracastReceiverStatus(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -298,11 +285,11 @@ class IMiracastReceiverStatus(ComPtr):
     def get_MaxSimultaneousConnections(self) -> Int32: ...
     @winrt_commethod(10)
     def get_KnownTransmitters(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Miracast.MiracastTransmitter]: ...
-    ListeningStatus = property(get_ListeningStatus, None)
-    WiFiStatus = property(get_WiFiStatus, None)
     IsConnectionTakeoverSupported = property(get_IsConnectionTakeoverSupported, None)
-    MaxSimultaneousConnections = property(get_MaxSimultaneousConnections, None)
     KnownTransmitters = property(get_KnownTransmitters, None)
+    ListeningStatus = property(get_ListeningStatus, None)
+    MaxSimultaneousConnections = property(get_MaxSimultaneousConnections, None)
+    WiFiStatus = property(get_WiFiStatus, None)
 class IMiracastReceiverStreamControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastReceiverStreamControl'
@@ -332,8 +319,8 @@ class IMiracastReceiverVideoStreamSettings(ComPtr):
     def get_Bitrate(self) -> Int32: ...
     @winrt_commethod(9)
     def put_Bitrate(self, value: Int32) -> Void: ...
-    Size = property(get_Size, put_Size)
     Bitrate = property(get_Bitrate, put_Bitrate)
+    Size = property(get_Size, put_Size)
 class IMiracastTransmitter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Miracast.IMiracastTransmitter'
@@ -352,14 +339,21 @@ class IMiracastTransmitter(ComPtr):
     def get_MacAddress(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def get_LastConnectionTime(self) -> win32more.Windows.Foundation.DateTime: ...
-    Name = property(get_Name, put_Name)
     AuthorizationStatus = property(get_AuthorizationStatus, put_AuthorizationStatus)
-    MacAddress = property(get_MacAddress, None)
     LastConnectionTime = property(get_LastConnectionTime, None)
+    MacAddress = property(get_MacAddress, None)
+    Name = property(get_Name, put_Name)
 class MiracastReceiver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiver
     _classid_ = 'Windows.Media.Miracast.MiracastReceiver'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Miracast.MiracastReceiver.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Miracast.MiracastReceiver: ...
     @winrt_mixinmethod
@@ -396,22 +390,22 @@ class MiracastReceiverApplySettingsResult(ComPtr):
     def get_Status(self: win32more.Windows.Media.Miracast.IMiracastReceiverApplySettingsResult) -> win32more.Windows.Media.Miracast.MiracastReceiverApplySettingsStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Miracast.IMiracastReceiverApplySettingsResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
-MiracastReceiverApplySettingsStatus = Int32
-MiracastReceiverApplySettingsStatus_Success: MiracastReceiverApplySettingsStatus = 0
-MiracastReceiverApplySettingsStatus_UnknownFailure: MiracastReceiverApplySettingsStatus = 1
-MiracastReceiverApplySettingsStatus_MiracastNotSupported: MiracastReceiverApplySettingsStatus = 2
-MiracastReceiverApplySettingsStatus_AccessDenied: MiracastReceiverApplySettingsStatus = 3
-MiracastReceiverApplySettingsStatus_FriendlyNameTooLong: MiracastReceiverApplySettingsStatus = 4
-MiracastReceiverApplySettingsStatus_ModelNameTooLong: MiracastReceiverApplySettingsStatus = 5
-MiracastReceiverApplySettingsStatus_ModelNumberTooLong: MiracastReceiverApplySettingsStatus = 6
-MiracastReceiverApplySettingsStatus_InvalidSettings: MiracastReceiverApplySettingsStatus = 7
-MiracastReceiverAuthorizationMethod = Int32
-MiracastReceiverAuthorizationMethod_None: MiracastReceiverAuthorizationMethod = 0
-MiracastReceiverAuthorizationMethod_ConfirmConnection: MiracastReceiverAuthorizationMethod = 1
-MiracastReceiverAuthorizationMethod_PinDisplayIfRequested: MiracastReceiverAuthorizationMethod = 2
-MiracastReceiverAuthorizationMethod_PinDisplayRequired: MiracastReceiverAuthorizationMethod = 3
+    Status = property(get_Status, None)
+class MiracastReceiverApplySettingsStatus(Int32):  # enum
+    Success = 0
+    UnknownFailure = 1
+    MiracastNotSupported = 2
+    AccessDenied = 3
+    FriendlyNameTooLong = 4
+    ModelNameTooLong = 5
+    ModelNumberTooLong = 6
+    InvalidSettings = 7
+class MiracastReceiverAuthorizationMethod(Int32):  # enum
+    None_ = 0
+    ConfirmConnection = 1
+    PinDisplayIfRequested = 2
+    PinDisplayRequired = 3
 class MiracastReceiverConnection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverConnection
@@ -438,10 +432,10 @@ class MiracastReceiverConnection(ComPtr):
     def get_StreamControl(self: win32more.Windows.Media.Miracast.IMiracastReceiverConnection) -> win32more.Windows.Media.Miracast.MiracastReceiverStreamControl: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    Transmitter = property(get_Transmitter, None)
-    InputDevices = property(get_InputDevices, None)
     CursorImageChannel = property(get_CursorImageChannel, None)
+    InputDevices = property(get_InputDevices, None)
     StreamControl = property(get_StreamControl, None)
+    Transmitter = property(get_Transmitter, None)
 class MiracastReceiverConnectionCreatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverConnectionCreatedEventArgs
@@ -474,10 +468,10 @@ class MiracastReceiverCursorImageChannel(ComPtr):
     def add_PositionChanged(self: win32more.Windows.Media.Miracast.IMiracastReceiverCursorImageChannel, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverCursorImageChannel, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_PositionChanged(self: win32more.Windows.Media.Miracast.IMiracastReceiverCursorImageChannel, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
+    ImageStream = property(get_ImageStream, None)
     IsEnabled = property(get_IsEnabled, None)
     MaxImageSize = property(get_MaxImageSize, None)
     Position = property(get_Position, None)
-    ImageStream = property(get_ImageStream, None)
 class MiracastReceiverCursorImageChannelSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverCursorImageChannelSettings
@@ -492,15 +486,15 @@ class MiracastReceiverCursorImageChannelSettings(ComPtr):
     def put_MaxImageSize(self: win32more.Windows.Media.Miracast.IMiracastReceiverCursorImageChannelSettings, value: win32more.Windows.Graphics.SizeInt32) -> Void: ...
     IsEnabled = property(get_IsEnabled, put_IsEnabled)
     MaxImageSize = property(get_MaxImageSize, put_MaxImageSize)
-MiracastReceiverDisconnectReason = Int32
-MiracastReceiverDisconnectReason_Finished: MiracastReceiverDisconnectReason = 0
-MiracastReceiverDisconnectReason_AppSpecificError: MiracastReceiverDisconnectReason = 1
-MiracastReceiverDisconnectReason_ConnectionNotAccepted: MiracastReceiverDisconnectReason = 2
-MiracastReceiverDisconnectReason_DisconnectedByUser: MiracastReceiverDisconnectReason = 3
-MiracastReceiverDisconnectReason_FailedToStartStreaming: MiracastReceiverDisconnectReason = 4
-MiracastReceiverDisconnectReason_MediaDecodingError: MiracastReceiverDisconnectReason = 5
-MiracastReceiverDisconnectReason_MediaStreamingError: MiracastReceiverDisconnectReason = 6
-MiracastReceiverDisconnectReason_MediaDecryptionError: MiracastReceiverDisconnectReason = 7
+class MiracastReceiverDisconnectReason(Int32):  # enum
+    Finished = 0
+    AppSpecificError = 1
+    ConnectionNotAccepted = 2
+    DisconnectedByUser = 3
+    FailedToStartStreaming = 4
+    MediaDecodingError = 5
+    MediaStreamingError = 6
+    MediaDecryptionError = 7
 class MiracastReceiverDisconnectedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverDisconnectedEventArgs
@@ -528,13 +522,13 @@ class MiracastReceiverGameControllerDevice(ComPtr):
     def add_Changed(self: win32more.Windows.Media.Miracast.IMiracastReceiverGameControllerDevice, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverGameControllerDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_Changed(self: win32more.Windows.Media.Miracast.IMiracastReceiverGameControllerDevice, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TransmitInput = property(get_TransmitInput, put_TransmitInput)
     IsRequestedByTransmitter = property(get_IsRequestedByTransmitter, None)
     IsTransmittingInput = property(get_IsTransmittingInput, None)
     Mode = property(get_Mode, put_Mode)
-MiracastReceiverGameControllerDeviceUsageMode = Int32
-MiracastReceiverGameControllerDeviceUsageMode_AsGameController: MiracastReceiverGameControllerDeviceUsageMode = 0
-MiracastReceiverGameControllerDeviceUsageMode_AsMouseAndKeyboard: MiracastReceiverGameControllerDeviceUsageMode = 1
+    TransmitInput = property(get_TransmitInput, put_TransmitInput)
+class MiracastReceiverGameControllerDeviceUsageMode(Int32):  # enum
+    AsGameController = 0
+    AsMouseAndKeyboard = 1
 class MiracastReceiverInputDevices(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverInputDevices
@@ -543,8 +537,8 @@ class MiracastReceiverInputDevices(ComPtr):
     def get_Keyboard(self: win32more.Windows.Media.Miracast.IMiracastReceiverInputDevices) -> win32more.Windows.Media.Miracast.MiracastReceiverKeyboardDevice: ...
     @winrt_mixinmethod
     def get_GameController(self: win32more.Windows.Media.Miracast.IMiracastReceiverInputDevices) -> win32more.Windows.Media.Miracast.MiracastReceiverGameControllerDevice: ...
-    Keyboard = property(get_Keyboard, None)
     GameController = property(get_GameController, None)
+    Keyboard = property(get_Keyboard, None)
 class MiracastReceiverKeyboardDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverKeyboardDevice
@@ -561,16 +555,16 @@ class MiracastReceiverKeyboardDevice(ComPtr):
     def add_Changed(self: win32more.Windows.Media.Miracast.IMiracastReceiverKeyboardDevice, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Miracast.MiracastReceiverKeyboardDevice, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_Changed(self: win32more.Windows.Media.Miracast.IMiracastReceiverKeyboardDevice, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    TransmitInput = property(get_TransmitInput, put_TransmitInput)
     IsRequestedByTransmitter = property(get_IsRequestedByTransmitter, None)
     IsTransmittingInput = property(get_IsTransmittingInput, None)
-MiracastReceiverListeningStatus = Int32
-MiracastReceiverListeningStatus_NotListening: MiracastReceiverListeningStatus = 0
-MiracastReceiverListeningStatus_Listening: MiracastReceiverListeningStatus = 1
-MiracastReceiverListeningStatus_ConnectionPending: MiracastReceiverListeningStatus = 2
-MiracastReceiverListeningStatus_Connected: MiracastReceiverListeningStatus = 3
-MiracastReceiverListeningStatus_DisabledByPolicy: MiracastReceiverListeningStatus = 4
-MiracastReceiverListeningStatus_TemporarilyDisabled: MiracastReceiverListeningStatus = 5
+    TransmitInput = property(get_TransmitInput, put_TransmitInput)
+class MiracastReceiverListeningStatus(Int32):  # enum
+    NotListening = 0
+    Listening = 1
+    ConnectionPending = 2
+    Connected = 3
+    DisabledByPolicy = 4
+    TemporarilyDisabled = 5
 class MiracastReceiverMediaSourceCreatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverMediaSourceCreatedEventArgs
@@ -584,8 +578,8 @@ class MiracastReceiverMediaSourceCreatedEventArgs(ComPtr):
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Media.Miracast.IMiracastReceiverMediaSourceCreatedEventArgs) -> win32more.Windows.Foundation.Deferral: ...
     Connection = property(get_Connection, None)
-    MediaSource = property(get_MediaSource, None)
     CursorImageChannelSettings = property(get_CursorImageChannelSettings, None)
+    MediaSource = property(get_MediaSource, None)
 class MiracastReceiverSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverSession
@@ -626,13 +620,13 @@ class MiracastReceiverSessionStartResult(ComPtr):
     def get_Status(self: win32more.Windows.Media.Miracast.IMiracastReceiverSessionStartResult) -> win32more.Windows.Media.Miracast.MiracastReceiverSessionStartStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Miracast.IMiracastReceiverSessionStartResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
-MiracastReceiverSessionStartStatus = Int32
-MiracastReceiverSessionStartStatus_Success: MiracastReceiverSessionStartStatus = 0
-MiracastReceiverSessionStartStatus_UnknownFailure: MiracastReceiverSessionStartStatus = 1
-MiracastReceiverSessionStartStatus_MiracastNotSupported: MiracastReceiverSessionStartStatus = 2
-MiracastReceiverSessionStartStatus_AccessDenied: MiracastReceiverSessionStartStatus = 3
+    Status = property(get_Status, None)
+class MiracastReceiverSessionStartStatus(Int32):  # enum
+    Success = 0
+    UnknownFailure = 1
+    MiracastNotSupported = 2
+    AccessDenied = 3
 class MiracastReceiverSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverSettings
@@ -657,10 +651,10 @@ class MiracastReceiverSettings(ComPtr):
     def get_RequireAuthorizationFromKnownTransmitters(self: win32more.Windows.Media.Miracast.IMiracastReceiverSettings) -> Boolean: ...
     @winrt_mixinmethod
     def put_RequireAuthorizationFromKnownTransmitters(self: win32more.Windows.Media.Miracast.IMiracastReceiverSettings, value: Boolean) -> Void: ...
+    AuthorizationMethod = property(get_AuthorizationMethod, put_AuthorizationMethod)
     FriendlyName = property(get_FriendlyName, put_FriendlyName)
     ModelName = property(get_ModelName, put_ModelName)
     ModelNumber = property(get_ModelNumber, put_ModelNumber)
-    AuthorizationMethod = property(get_AuthorizationMethod, put_AuthorizationMethod)
     RequireAuthorizationFromKnownTransmitters = property(get_RequireAuthorizationFromKnownTransmitters, put_RequireAuthorizationFromKnownTransmitters)
 class MiracastReceiverStatus(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -676,11 +670,11 @@ class MiracastReceiverStatus(ComPtr):
     def get_MaxSimultaneousConnections(self: win32more.Windows.Media.Miracast.IMiracastReceiverStatus) -> Int32: ...
     @winrt_mixinmethod
     def get_KnownTransmitters(self: win32more.Windows.Media.Miracast.IMiracastReceiverStatus) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Miracast.MiracastTransmitter]: ...
-    ListeningStatus = property(get_ListeningStatus, None)
-    WiFiStatus = property(get_WiFiStatus, None)
     IsConnectionTakeoverSupported = property(get_IsConnectionTakeoverSupported, None)
-    MaxSimultaneousConnections = property(get_MaxSimultaneousConnections, None)
     KnownTransmitters = property(get_KnownTransmitters, None)
+    ListeningStatus = property(get_ListeningStatus, None)
+    MaxSimultaneousConnections = property(get_MaxSimultaneousConnections, None)
+    WiFiStatus = property(get_WiFiStatus, None)
 class MiracastReceiverStreamControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastReceiverStreamControl
@@ -710,13 +704,13 @@ class MiracastReceiverVideoStreamSettings(ComPtr):
     def get_Bitrate(self: win32more.Windows.Media.Miracast.IMiracastReceiverVideoStreamSettings) -> Int32: ...
     @winrt_mixinmethod
     def put_Bitrate(self: win32more.Windows.Media.Miracast.IMiracastReceiverVideoStreamSettings, value: Int32) -> Void: ...
-    Size = property(get_Size, put_Size)
     Bitrate = property(get_Bitrate, put_Bitrate)
-MiracastReceiverWiFiStatus = Int32
-MiracastReceiverWiFiStatus_MiracastSupportUndetermined: MiracastReceiverWiFiStatus = 0
-MiracastReceiverWiFiStatus_MiracastNotSupported: MiracastReceiverWiFiStatus = 1
-MiracastReceiverWiFiStatus_MiracastSupportNotOptimized: MiracastReceiverWiFiStatus = 2
-MiracastReceiverWiFiStatus_MiracastSupported: MiracastReceiverWiFiStatus = 3
+    Size = property(get_Size, put_Size)
+class MiracastReceiverWiFiStatus(Int32):  # enum
+    MiracastSupportUndetermined = 0
+    MiracastNotSupported = 1
+    MiracastSupportNotOptimized = 2
+    MiracastSupported = 3
 class MiracastTransmitter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Miracast.IMiracastTransmitter
@@ -735,13 +729,15 @@ class MiracastTransmitter(ComPtr):
     def get_MacAddress(self: win32more.Windows.Media.Miracast.IMiracastTransmitter) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_LastConnectionTime(self: win32more.Windows.Media.Miracast.IMiracastTransmitter) -> win32more.Windows.Foundation.DateTime: ...
-    Name = property(get_Name, put_Name)
     AuthorizationStatus = property(get_AuthorizationStatus, put_AuthorizationStatus)
-    MacAddress = property(get_MacAddress, None)
     LastConnectionTime = property(get_LastConnectionTime, None)
-MiracastTransmitterAuthorizationStatus = Int32
-MiracastTransmitterAuthorizationStatus_Undecided: MiracastTransmitterAuthorizationStatus = 0
-MiracastTransmitterAuthorizationStatus_Allowed: MiracastTransmitterAuthorizationStatus = 1
-MiracastTransmitterAuthorizationStatus_AlwaysPrompt: MiracastTransmitterAuthorizationStatus = 2
-MiracastTransmitterAuthorizationStatus_Blocked: MiracastTransmitterAuthorizationStatus = 3
+    MacAddress = property(get_MacAddress, None)
+    Name = property(get_Name, put_Name)
+class MiracastTransmitterAuthorizationStatus(Int32):  # enum
+    Undecided = 0
+    Allowed = 1
+    AlwaysPrompt = 2
+    Blocked = 3
+
+
 make_ready(__name__)

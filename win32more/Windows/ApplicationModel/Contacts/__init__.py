@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.Data.Text
 import win32more.Windows.Foundation
@@ -24,6 +10,7 @@ import win32more.Windows.System
 import win32more.Windows.UI
 import win32more.Windows.UI.Popups
 import win32more.Windows.UI.ViewManagement
+import win32more.Windows.Win32.System.WinRT
 class AggregateContactManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IAggregateContactManager
@@ -42,6 +29,13 @@ class Contact(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContact
     _classid_ = 'Windows.ApplicationModel.Contacts.Contact'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.Contact.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.Contact: ...
     @winrt_mixinmethod
@@ -160,50 +154,57 @@ class Contact(ComPtr):
     def put_Nickname(self: win32more.Windows.ApplicationModel.Contacts.IContact3, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def get_SortName(self: win32more.Windows.ApplicationModel.Contacts.IContact3) -> WinRT_String: ...
-    Name = property(get_Name, put_Name)
-    Thumbnail = property(get_Thumbnail, put_Thumbnail)
-    Fields = property(get_Fields, None)
-    Id = property(get_Id, put_Id)
-    Notes = property(get_Notes, put_Notes)
-    Phones = property(get_Phones, None)
-    Emails = property(get_Emails, None)
     Addresses = property(get_Addresses, None)
+    AggregateId = property(get_AggregateId, None)
     ConnectedServiceAccounts = property(get_ConnectedServiceAccounts, None)
-    ImportantDates = property(get_ImportantDates, None)
+    ContactListId = property(get_ContactListId, None)
     DataSuppliers = property(get_DataSuppliers, None)
-    JobInfo = property(get_JobInfo, None)
-    SignificantOthers = property(get_SignificantOthers, None)
-    Websites = property(get_Websites, None)
-    ProviderProperties = property(get_ProviderProperties, None)
+    DisplayName = property(get_DisplayName, None)
+    DisplayNameOverride = property(get_DisplayNameOverride, put_DisplayNameOverride)
+    DisplayPictureUserUpdateTime = property(get_DisplayPictureUserUpdateTime, put_DisplayPictureUserUpdateTime)
+    Emails = property(get_Emails, None)
+    Fields = property(get_Fields, None)
     FirstName = property(get_FirstName, put_FirstName)
+    FullName = property(get_FullName, None)
+    HonorificNamePrefix = property(get_HonorificNamePrefix, put_HonorificNamePrefix)
+    HonorificNameSuffix = property(get_HonorificNameSuffix, put_HonorificNameSuffix)
+    Id = property(get_Id, put_Id)
+    ImportantDates = property(get_ImportantDates, None)
+    IsAggregate = property(get_IsAggregate, None)
+    IsDisplayPictureManuallySet = property(get_IsDisplayPictureManuallySet, None)
+    IsMe = property(get_IsMe, None)
+    JobInfo = property(get_JobInfo, None)
+    LargeDisplayPicture = property(get_LargeDisplayPicture, None)
     LastName = property(get_LastName, put_LastName)
     MiddleName = property(get_MiddleName, put_MiddleName)
-    YomiGivenName = property(get_YomiGivenName, put_YomiGivenName)
-    YomiFamilyName = property(get_YomiFamilyName, put_YomiFamilyName)
-    HonorificNameSuffix = property(get_HonorificNameSuffix, put_HonorificNameSuffix)
-    HonorificNamePrefix = property(get_HonorificNamePrefix, put_HonorificNamePrefix)
-    DisplayName = property(get_DisplayName, None)
-    YomiDisplayName = property(get_YomiDisplayName, None)
-    ContactListId = property(get_ContactListId, None)
-    DisplayPictureUserUpdateTime = property(get_DisplayPictureUserUpdateTime, put_DisplayPictureUserUpdateTime)
-    IsMe = property(get_IsMe, None)
-    AggregateId = property(get_AggregateId, None)
+    Name = property(get_Name, put_Name)
+    Nickname = property(get_Nickname, put_Nickname)
+    Notes = property(get_Notes, put_Notes)
+    Phones = property(get_Phones, None)
+    ProviderProperties = property(get_ProviderProperties, None)
     RemoteId = property(get_RemoteId, put_RemoteId)
     RingToneToken = property(get_RingToneToken, put_RingToneToken)
-    IsDisplayPictureManuallySet = property(get_IsDisplayPictureManuallySet, None)
-    LargeDisplayPicture = property(get_LargeDisplayPicture, None)
+    SignificantOthers = property(get_SignificantOthers, None)
     SmallDisplayPicture = property(get_SmallDisplayPicture, None)
+    SortName = property(get_SortName, None)
     SourceDisplayPicture = property(get_SourceDisplayPicture, put_SourceDisplayPicture)
     TextToneToken = property(get_TextToneToken, put_TextToneToken)
-    IsAggregate = property(get_IsAggregate, None)
-    FullName = property(get_FullName, None)
-    DisplayNameOverride = property(get_DisplayNameOverride, put_DisplayNameOverride)
-    Nickname = property(get_Nickname, put_Nickname)
-    SortName = property(get_SortName, None)
+    Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Websites = property(get_Websites, None)
+    YomiDisplayName = property(get_YomiDisplayName, None)
+    YomiFamilyName = property(get_YomiFamilyName, put_YomiFamilyName)
+    YomiGivenName = property(get_YomiGivenName, put_YomiGivenName)
 class ContactAddress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactAddress
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactAddress'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactAddress.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactAddress: ...
     @winrt_mixinmethod
@@ -234,21 +235,28 @@ class ContactAddress(ComPtr):
     def get_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactAddress) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactAddress, value: WinRT_String) -> Void: ...
-    StreetAddress = property(get_StreetAddress, put_StreetAddress)
-    Locality = property(get_Locality, put_Locality)
-    Region = property(get_Region, put_Region)
     Country = property(get_Country, put_Country)
-    PostalCode = property(get_PostalCode, put_PostalCode)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
-ContactAddressKind = Int32
-ContactAddressKind_Home: ContactAddressKind = 0
-ContactAddressKind_Work: ContactAddressKind = 1
-ContactAddressKind_Other: ContactAddressKind = 2
+    Kind = property(get_Kind, put_Kind)
+    Locality = property(get_Locality, put_Locality)
+    PostalCode = property(get_PostalCode, put_PostalCode)
+    Region = property(get_Region, put_Region)
+    StreetAddress = property(get_StreetAddress, put_StreetAddress)
+class ContactAddressKind(Int32):  # enum
+    Home = 0
+    Work = 1
+    Other = 2
 class ContactAnnotation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactAnnotation
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactAnnotation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactAnnotation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactAnnotation: ...
     @winrt_mixinmethod
@@ -275,14 +283,14 @@ class ContactAnnotation(ComPtr):
     def get_ContactListId(self: win32more.Windows.ApplicationModel.Contacts.IContactAnnotation2) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_ContactListId(self: win32more.Windows.ApplicationModel.Contacts.IContactAnnotation2, value: WinRT_String) -> Void: ...
-    Id = property(get_Id, None)
     AnnotationListId = property(get_AnnotationListId, None)
     ContactId = property(get_ContactId, put_ContactId)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    SupportedOperations = property(get_SupportedOperations, put_SupportedOperations)
+    ContactListId = property(get_ContactListId, put_ContactListId)
+    Id = property(get_Id, None)
     IsDisabled = property(get_IsDisabled, None)
     ProviderProperties = property(get_ProviderProperties, None)
-    ContactListId = property(get_ContactListId, put_ContactListId)
+    RemoteId = property(get_RemoteId, put_RemoteId)
+    SupportedOperations = property(get_SupportedOperations, put_SupportedOperations)
 class ContactAnnotationList(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactAnnotationList
@@ -308,14 +316,14 @@ class ContactAnnotationList(ComPtr):
     Id = property(get_Id, None)
     ProviderPackageFamilyName = property(get_ProviderPackageFamilyName, None)
     UserDataAccountId = property(get_UserDataAccountId, None)
-ContactAnnotationOperations = UInt32
-ContactAnnotationOperations_None: ContactAnnotationOperations = 0
-ContactAnnotationOperations_ContactProfile: ContactAnnotationOperations = 1
-ContactAnnotationOperations_Message: ContactAnnotationOperations = 2
-ContactAnnotationOperations_AudioCall: ContactAnnotationOperations = 4
-ContactAnnotationOperations_VideoCall: ContactAnnotationOperations = 8
-ContactAnnotationOperations_SocialFeeds: ContactAnnotationOperations = 16
-ContactAnnotationOperations_Share: ContactAnnotationOperations = 32
+class ContactAnnotationOperations(UInt32):  # enum
+    None_ = 0
+    ContactProfile = 1
+    Message = 2
+    AudioCall = 4
+    VideoCall = 8
+    SocialFeeds = 16
+    Share = 32
 class ContactAnnotationStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactAnnotationStore
@@ -338,9 +346,9 @@ class ContactAnnotationStore(ComPtr):
     def FindAnnotationListsAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactAnnotationStore) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactAnnotationList]]: ...
     @winrt_mixinmethod
     def FindAnnotationsForContactListAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactAnnotationStore2, contactListId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactAnnotation]]: ...
-ContactAnnotationStoreAccessType = Int32
-ContactAnnotationStoreAccessType_AppAnnotationsReadWrite: ContactAnnotationStoreAccessType = 0
-ContactAnnotationStoreAccessType_AllAnnotationsReadWrite: ContactAnnotationStoreAccessType = 1
+class ContactAnnotationStoreAccessType(Int32):  # enum
+    AppAnnotationsReadWrite = 0
+    AllAnnotationsReadWrite = 1
 class ContactBatch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactBatch
@@ -351,10 +359,10 @@ class ContactBatch(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.Contacts.IContactBatch) -> win32more.Windows.ApplicationModel.Contacts.ContactBatchStatus: ...
     Contacts = property(get_Contacts, None)
     Status = property(get_Status, None)
-ContactBatchStatus = Int32
-ContactBatchStatus_Success: ContactBatchStatus = 0
-ContactBatchStatus_ServerSearchSyncManagerError: ContactBatchStatus = 1
-ContactBatchStatus_ServerSearchUnknownError: ContactBatchStatus = 2
+class ContactBatchStatus(Int32):  # enum
+    Success = 0
+    ServerSearchSyncManagerError = 1
+    ServerSearchUnknownError = 2
 class ContactCardDelayedDataLoader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactCardDelayedDataLoader
@@ -363,14 +371,21 @@ class ContactCardDelayedDataLoader(ComPtr):
     def SetData(self: win32more.Windows.ApplicationModel.Contacts.IContactCardDelayedDataLoader, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-ContactCardHeaderKind = Int32
-ContactCardHeaderKind_Default: ContactCardHeaderKind = 0
-ContactCardHeaderKind_Basic: ContactCardHeaderKind = 1
-ContactCardHeaderKind_Enterprise: ContactCardHeaderKind = 2
+class ContactCardHeaderKind(Int32):  # enum
+    Default = 0
+    Basic = 1
+    Enterprise = 2
 class ContactCardOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactCardOptions
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactCardOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactCardOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactCardOptions: ...
     @winrt_mixinmethod
@@ -386,13 +401,13 @@ class ContactCardOptions(ComPtr):
     HeaderKind = property(get_HeaderKind, put_HeaderKind)
     InitialTabKind = property(get_InitialTabKind, put_InitialTabKind)
     ServerSearchContactListIds = property(get_ServerSearchContactListIds, None)
-ContactCardTabKind = Int32
-ContactCardTabKind_Default: ContactCardTabKind = 0
-ContactCardTabKind_Email: ContactCardTabKind = 1
-ContactCardTabKind_Messaging: ContactCardTabKind = 2
-ContactCardTabKind_Phone: ContactCardTabKind = 3
-ContactCardTabKind_Video: ContactCardTabKind = 4
-ContactCardTabKind_OrganizationalHierarchy: ContactCardTabKind = 5
+class ContactCardTabKind(Int32):  # enum
+    Default = 0
+    Email = 1
+    Messaging = 2
+    Phone = 3
+    Video = 4
+    OrganizationalHierarchy = 5
 class ContactChange(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactChange
@@ -426,11 +441,11 @@ class ContactChangeTracker(ComPtr):
     @winrt_mixinmethod
     def get_IsTracking(self: win32more.Windows.ApplicationModel.Contacts.IContactChangeTracker2) -> Boolean: ...
     IsTracking = property(get_IsTracking, None)
-ContactChangeType = Int32
-ContactChangeType_Created: ContactChangeType = 0
-ContactChangeType_Modified: ContactChangeType = 1
-ContactChangeType_Deleted: ContactChangeType = 2
-ContactChangeType_ChangeTrackingLost: ContactChangeType = 3
+class ContactChangeType(Int32):  # enum
+    Created = 0
+    Modified = 1
+    Deleted = 2
+    ChangeTrackingLost = 3
 class ContactChangedDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactChangedDeferral
@@ -447,6 +462,13 @@ class ContactConnectedServiceAccount(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactConnectedServiceAccount
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactConnectedServiceAccount'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactConnectedServiceAccount.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactConnectedServiceAccount: ...
     @winrt_mixinmethod
@@ -463,6 +485,13 @@ class ContactDate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactDate
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactDate'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactDate.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactDate: ...
     @winrt_mixinmethod
@@ -486,18 +515,25 @@ class ContactDate(ComPtr):
     @winrt_mixinmethod
     def put_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactDate, value: WinRT_String) -> Void: ...
     Day = property(get_Day, put_Day)
+    Description = property(get_Description, put_Description)
+    Kind = property(get_Kind, put_Kind)
     Month = property(get_Month, put_Month)
     Year = property(get_Year, put_Year)
-    Kind = property(get_Kind, put_Kind)
-    Description = property(get_Description, put_Description)
-ContactDateKind = Int32
-ContactDateKind_Birthday: ContactDateKind = 0
-ContactDateKind_Anniversary: ContactDateKind = 1
-ContactDateKind_Other: ContactDateKind = 2
+class ContactDateKind(Int32):  # enum
+    Birthday = 0
+    Anniversary = 1
+    Other = 2
 class ContactEmail(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactEmail
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactEmail'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactEmail.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactEmail: ...
     @winrt_mixinmethod
@@ -513,22 +549,33 @@ class ContactEmail(ComPtr):
     @winrt_mixinmethod
     def put_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactEmail, value: WinRT_String) -> Void: ...
     Address = property(get_Address, put_Address)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
-ContactEmailKind = Int32
-ContactEmailKind_Personal: ContactEmailKind = 0
-ContactEmailKind_Work: ContactEmailKind = 1
-ContactEmailKind_Other: ContactEmailKind = 2
+    Kind = property(get_Kind, put_Kind)
+class ContactEmailKind(Int32):  # enum
+    Personal = 0
+    Work = 1
+    Other = 2
 class ContactField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactField
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactField'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Contacts.ContactField.CreateField_Default(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Contacts.ContactField.CreateField_Category(*args)
+        elif len(args) == 4:
+            return win32more.Windows.ApplicationModel.Contacts.ContactField.CreateField_Custom(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
-    def CreateField(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
+    def CreateField_Default(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
     @winrt_factorymethod
-    def CreateField(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
+    def CreateField_Category(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
     @winrt_factorymethod
-    def CreateField(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, name: WinRT_String, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
+    def CreateField_Custom(cls: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory, name: WinRT_String, value: WinRT_String, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactField: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> win32more.Windows.ApplicationModel.Contacts.ContactFieldType: ...
     @winrt_mixinmethod
@@ -537,20 +584,27 @@ class ContactField(ComPtr):
     def get_Name(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Value(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
-    Type = property(get_Type, None)
     Category = property(get_Category, None)
     Name = property(get_Name, None)
+    Type = property(get_Type, None)
     Value = property(get_Value, None)
-ContactFieldCategory = Int32
-ContactFieldCategory_None: ContactFieldCategory = 0
-ContactFieldCategory_Home: ContactFieldCategory = 1
-ContactFieldCategory_Work: ContactFieldCategory = 2
-ContactFieldCategory_Mobile: ContactFieldCategory = 3
-ContactFieldCategory_Other: ContactFieldCategory = 4
+class ContactFieldCategory(Int32):  # enum
+    None_ = 0
+    Home = 1
+    Work = 2
+    Mobile = 3
+    Other = 4
 class ContactFieldFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactFieldFactory
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactFieldFactory'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactFieldFactory.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactFieldFactory: ...
     @winrt_mixinmethod
@@ -571,19 +625,19 @@ class ContactFieldFactory(ComPtr):
     def CreateInstantMessage_Category(self: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
     @winrt_mixinmethod
     def CreateInstantMessage_All(self: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory, service: WinRT_String, displayText: WinRT_String, verb: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
-ContactFieldType = Int32
-ContactFieldType_Email: ContactFieldType = 0
-ContactFieldType_PhoneNumber: ContactFieldType = 1
-ContactFieldType_Location: ContactFieldType = 2
-ContactFieldType_InstantMessage: ContactFieldType = 3
-ContactFieldType_Custom: ContactFieldType = 4
-ContactFieldType_ConnectedServiceAccount: ContactFieldType = 5
-ContactFieldType_ImportantDate: ContactFieldType = 6
-ContactFieldType_Address: ContactFieldType = 7
-ContactFieldType_SignificantOther: ContactFieldType = 8
-ContactFieldType_Notes: ContactFieldType = 9
-ContactFieldType_Website: ContactFieldType = 10
-ContactFieldType_JobInfo: ContactFieldType = 11
+class ContactFieldType(Int32):  # enum
+    Email = 0
+    PhoneNumber = 1
+    Location = 2
+    InstantMessage = 3
+    Custom = 4
+    ConnectedServiceAccount = 5
+    ImportantDate = 6
+    Address = 7
+    SignificantOther = 8
+    Notes = 9
+    Website = 10
+    JobInfo = 11
 class ContactGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactGroup
@@ -608,22 +662,33 @@ class ContactInformation(ComPtr):
     def get_CustomFields(self: win32more.Windows.ApplicationModel.Contacts.IContactInformation) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactField]: ...
     @winrt_mixinmethod
     def QueryCustomFields(self: win32more.Windows.ApplicationModel.Contacts.IContactInformation, customName: WinRT_String) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactField]: ...
-    Name = property(get_Name, None)
-    Emails = property(get_Emails, None)
-    PhoneNumbers = property(get_PhoneNumbers, None)
-    Locations = property(get_Locations, None)
-    InstantMessages = property(get_InstantMessages, None)
     CustomFields = property(get_CustomFields, None)
+    Emails = property(get_Emails, None)
+    InstantMessages = property(get_InstantMessages, None)
+    Locations = property(get_Locations, None)
+    Name = property(get_Name, None)
+    PhoneNumbers = property(get_PhoneNumbers, None)
 class ContactInstantMessageField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageField
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactInstantMessageField'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField.CreateInstantMessage_Default(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField.CreateInstantMessage_Category(*args)
+        elif len(args) == 5:
+            return win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField.CreateInstantMessage_All(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
-    def CreateInstantMessage(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
+    def CreateInstantMessage_Default(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
     @winrt_factorymethod
-    def CreateInstantMessage(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
+    def CreateInstantMessage_Category(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
     @winrt_factorymethod
-    def CreateInstantMessage(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory, service: WinRT_String, displayText: WinRT_String, verb: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
+    def CreateInstantMessage_All(cls: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory, userName: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory, service: WinRT_String, displayText: WinRT_String, verb: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.Contacts.ContactInstantMessageField: ...
     @winrt_mixinmethod
     def get_UserName(self: win32more.Windows.ApplicationModel.Contacts.IContactInstantMessageField) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -640,18 +705,25 @@ class ContactInstantMessageField(ComPtr):
     def get_Name(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Value(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
-    UserName = property(get_UserName, None)
-    Service = property(get_Service, None)
+    Category = property(get_Category, None)
     DisplayText = property(get_DisplayText, None)
     LaunchUri = property(get_LaunchUri, None)
-    Type = property(get_Type, None)
-    Category = property(get_Category, None)
     Name = property(get_Name, None)
+    Service = property(get_Service, None)
+    Type = property(get_Type, None)
+    UserName = property(get_UserName, None)
     Value = property(get_Value, None)
 class ContactJobInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactJobInfo
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactJobInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactJobInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactJobInfo: ...
     @winrt_mixinmethod
@@ -686,14 +758,14 @@ class ContactJobInfo(ComPtr):
     def get_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactJobInfo) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactJobInfo, value: WinRT_String) -> Void: ...
+    CompanyAddress = property(get_CompanyAddress, put_CompanyAddress)
     CompanyName = property(get_CompanyName, put_CompanyName)
     CompanyYomiName = property(get_CompanyYomiName, put_CompanyYomiName)
     Department = property(get_Department, put_Department)
-    Title = property(get_Title, put_Title)
+    Description = property(get_Description, put_Description)
     Manager = property(get_Manager, put_Manager)
     Office = property(get_Office, put_Office)
-    CompanyAddress = property(get_CompanyAddress, put_CompanyAddress)
-    Description = property(get_Description, put_Description)
+    Title = property(get_Title, put_Title)
 class _ContactLaunchActionVerbs_Meta_(ComPtr.__class__):
     pass
 class ContactLaunchActionVerbs(ComPtr, metaclass=_ContactLaunchActionVerbs_Meta_):
@@ -710,8 +782,8 @@ class ContactLaunchActionVerbs(ComPtr, metaclass=_ContactLaunchActionVerbs_Meta_
     @winrt_classmethod
     def get_VideoCall(cls: win32more.Windows.ApplicationModel.Contacts.IContactLaunchActionVerbsStatics) -> WinRT_String: ...
     _ContactLaunchActionVerbs_Meta_.Call = property(get_Call.__wrapped__, None)
-    _ContactLaunchActionVerbs_Meta_.Message = property(get_Message.__wrapped__, None)
     _ContactLaunchActionVerbs_Meta_.Map = property(get_Map.__wrapped__, None)
+    _ContactLaunchActionVerbs_Meta_.Message = property(get_Message.__wrapped__, None)
     _ContactLaunchActionVerbs_Meta_.Post = property(get_Post.__wrapped__, None)
     _ContactLaunchActionVerbs_Meta_.VideoCall = property(get_VideoCall.__wrapped__, None)
 class ContactList(ComPtr):
@@ -778,18 +850,18 @@ class ContactList(ComPtr):
     def get_LimitedWriteOperations(self: win32more.Windows.ApplicationModel.Contacts.IContactList3) -> win32more.Windows.ApplicationModel.Contacts.ContactListLimitedWriteOperations: ...
     @winrt_mixinmethod
     def GetChangeTracker(self: win32more.Windows.ApplicationModel.Contacts.IContactList3, identity: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactChangeTracker: ...
-    Id = property(get_Id, None)
+    ChangeTracker = property(get_ChangeTracker, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    SourceDisplayName = property(get_SourceDisplayName, None)
+    Id = property(get_Id, None)
     IsHidden = property(get_IsHidden, put_IsHidden)
+    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     OtherAppWriteAccess = property(get_OtherAppWriteAccess, put_OtherAppWriteAccess)
-    ChangeTracker = property(get_ChangeTracker, None)
-    SyncManager = property(get_SyncManager, None)
+    SourceDisplayName = property(get_SourceDisplayName, None)
     SupportsServerSearch = property(get_SupportsServerSearch, put_SupportsServerSearch)
-    UserDataAccountId = property(get_UserDataAccountId, None)
     SyncConstraints = property(get_SyncConstraints, None)
-    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
+    SyncManager = property(get_SyncManager, None)
+    UserDataAccountId = property(get_UserDataAccountId, None)
 class ContactListLimitedWriteOperations(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactListLimitedWriteOperations
@@ -798,15 +870,15 @@ class ContactListLimitedWriteOperations(ComPtr):
     def TryCreateOrUpdateContactAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactListLimitedWriteOperations, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_mixinmethod
     def TryDeleteContactAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactListLimitedWriteOperations, contactId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-ContactListOtherAppReadAccess = Int32
-ContactListOtherAppReadAccess_SystemOnly: ContactListOtherAppReadAccess = 0
-ContactListOtherAppReadAccess_Limited: ContactListOtherAppReadAccess = 1
-ContactListOtherAppReadAccess_Full: ContactListOtherAppReadAccess = 2
-ContactListOtherAppReadAccess_None: ContactListOtherAppReadAccess = 3
-ContactListOtherAppWriteAccess = Int32
-ContactListOtherAppWriteAccess_None: ContactListOtherAppWriteAccess = 0
-ContactListOtherAppWriteAccess_SystemOnly: ContactListOtherAppWriteAccess = 1
-ContactListOtherAppWriteAccess_Limited: ContactListOtherAppWriteAccess = 2
+class ContactListOtherAppReadAccess(Int32):  # enum
+    SystemOnly = 0
+    Limited = 1
+    Full = 2
+    None_ = 3
+class ContactListOtherAppWriteAccess(Int32):  # enum
+    None_ = 0
+    SystemOnly = 1
+    Limited = 2
 class ContactListSyncConstraints(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactListSyncConstraints
@@ -924,33 +996,33 @@ class ContactListSyncConstraints(ComPtr):
     @winrt_mixinmethod
     def put_MaxWebsites(self: win32more.Windows.ApplicationModel.Contacts.IContactListSyncConstraints, value: win32more.Windows.Foundation.IReference[Int32]) -> Void: ...
     CanSyncDescriptions = property(get_CanSyncDescriptions, put_CanSyncDescriptions)
-    MaxHomePhoneNumbers = property(get_MaxHomePhoneNumbers, put_MaxHomePhoneNumbers)
-    MaxMobilePhoneNumbers = property(get_MaxMobilePhoneNumbers, put_MaxMobilePhoneNumbers)
-    MaxWorkPhoneNumbers = property(get_MaxWorkPhoneNumbers, put_MaxWorkPhoneNumbers)
-    MaxOtherPhoneNumbers = property(get_MaxOtherPhoneNumbers, put_MaxOtherPhoneNumbers)
-    MaxPagerPhoneNumbers = property(get_MaxPagerPhoneNumbers, put_MaxPagerPhoneNumbers)
-    MaxBusinessFaxPhoneNumbers = property(get_MaxBusinessFaxPhoneNumbers, put_MaxBusinessFaxPhoneNumbers)
-    MaxHomeFaxPhoneNumbers = property(get_MaxHomeFaxPhoneNumbers, put_MaxHomeFaxPhoneNumbers)
-    MaxCompanyPhoneNumbers = property(get_MaxCompanyPhoneNumbers, put_MaxCompanyPhoneNumbers)
-    MaxAssistantPhoneNumbers = property(get_MaxAssistantPhoneNumbers, put_MaxAssistantPhoneNumbers)
-    MaxRadioPhoneNumbers = property(get_MaxRadioPhoneNumbers, put_MaxRadioPhoneNumbers)
-    MaxPersonalEmailAddresses = property(get_MaxPersonalEmailAddresses, put_MaxPersonalEmailAddresses)
-    MaxWorkEmailAddresses = property(get_MaxWorkEmailAddresses, put_MaxWorkEmailAddresses)
-    MaxOtherEmailAddresses = property(get_MaxOtherEmailAddresses, put_MaxOtherEmailAddresses)
-    MaxHomeAddresses = property(get_MaxHomeAddresses, put_MaxHomeAddresses)
-    MaxWorkAddresses = property(get_MaxWorkAddresses, put_MaxWorkAddresses)
-    MaxOtherAddresses = property(get_MaxOtherAddresses, put_MaxOtherAddresses)
-    MaxBirthdayDates = property(get_MaxBirthdayDates, put_MaxBirthdayDates)
     MaxAnniversaryDates = property(get_MaxAnniversaryDates, put_MaxAnniversaryDates)
-    MaxOtherDates = property(get_MaxOtherDates, put_MaxOtherDates)
-    MaxOtherRelationships = property(get_MaxOtherRelationships, put_MaxOtherRelationships)
-    MaxSpouseRelationships = property(get_MaxSpouseRelationships, put_MaxSpouseRelationships)
-    MaxPartnerRelationships = property(get_MaxPartnerRelationships, put_MaxPartnerRelationships)
-    MaxSiblingRelationships = property(get_MaxSiblingRelationships, put_MaxSiblingRelationships)
-    MaxParentRelationships = property(get_MaxParentRelationships, put_MaxParentRelationships)
+    MaxAssistantPhoneNumbers = property(get_MaxAssistantPhoneNumbers, put_MaxAssistantPhoneNumbers)
+    MaxBirthdayDates = property(get_MaxBirthdayDates, put_MaxBirthdayDates)
+    MaxBusinessFaxPhoneNumbers = property(get_MaxBusinessFaxPhoneNumbers, put_MaxBusinessFaxPhoneNumbers)
     MaxChildRelationships = property(get_MaxChildRelationships, put_MaxChildRelationships)
+    MaxCompanyPhoneNumbers = property(get_MaxCompanyPhoneNumbers, put_MaxCompanyPhoneNumbers)
+    MaxHomeAddresses = property(get_MaxHomeAddresses, put_MaxHomeAddresses)
+    MaxHomeFaxPhoneNumbers = property(get_MaxHomeFaxPhoneNumbers, put_MaxHomeFaxPhoneNumbers)
+    MaxHomePhoneNumbers = property(get_MaxHomePhoneNumbers, put_MaxHomePhoneNumbers)
     MaxJobInfo = property(get_MaxJobInfo, put_MaxJobInfo)
+    MaxMobilePhoneNumbers = property(get_MaxMobilePhoneNumbers, put_MaxMobilePhoneNumbers)
+    MaxOtherAddresses = property(get_MaxOtherAddresses, put_MaxOtherAddresses)
+    MaxOtherDates = property(get_MaxOtherDates, put_MaxOtherDates)
+    MaxOtherEmailAddresses = property(get_MaxOtherEmailAddresses, put_MaxOtherEmailAddresses)
+    MaxOtherPhoneNumbers = property(get_MaxOtherPhoneNumbers, put_MaxOtherPhoneNumbers)
+    MaxOtherRelationships = property(get_MaxOtherRelationships, put_MaxOtherRelationships)
+    MaxPagerPhoneNumbers = property(get_MaxPagerPhoneNumbers, put_MaxPagerPhoneNumbers)
+    MaxParentRelationships = property(get_MaxParentRelationships, put_MaxParentRelationships)
+    MaxPartnerRelationships = property(get_MaxPartnerRelationships, put_MaxPartnerRelationships)
+    MaxPersonalEmailAddresses = property(get_MaxPersonalEmailAddresses, put_MaxPersonalEmailAddresses)
+    MaxRadioPhoneNumbers = property(get_MaxRadioPhoneNumbers, put_MaxRadioPhoneNumbers)
+    MaxSiblingRelationships = property(get_MaxSiblingRelationships, put_MaxSiblingRelationships)
+    MaxSpouseRelationships = property(get_MaxSpouseRelationships, put_MaxSpouseRelationships)
     MaxWebsites = property(get_MaxWebsites, put_MaxWebsites)
+    MaxWorkAddresses = property(get_MaxWorkAddresses, put_MaxWorkAddresses)
+    MaxWorkEmailAddresses = property(get_MaxWorkEmailAddresses, put_MaxWorkEmailAddresses)
+    MaxWorkPhoneNumbers = property(get_MaxWorkPhoneNumbers, put_MaxWorkPhoneNumbers)
 class ContactListSyncManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactListSyncManager
@@ -973,27 +1045,38 @@ class ContactListSyncManager(ComPtr):
     def put_LastSuccessfulSyncTime(self: win32more.Windows.ApplicationModel.Contacts.IContactListSyncManager2, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_mixinmethod
     def put_LastAttemptedSyncTime(self: win32more.Windows.ApplicationModel.Contacts.IContactListSyncManager2, value: win32more.Windows.Foundation.DateTime) -> Void: ...
-    Status = property(get_Status, put_Status)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
     LastAttemptedSyncTime = property(get_LastAttemptedSyncTime, put_LastAttemptedSyncTime)
-ContactListSyncStatus = Int32
-ContactListSyncStatus_Idle: ContactListSyncStatus = 0
-ContactListSyncStatus_Syncing: ContactListSyncStatus = 1
-ContactListSyncStatus_UpToDate: ContactListSyncStatus = 2
-ContactListSyncStatus_AuthenticationError: ContactListSyncStatus = 3
-ContactListSyncStatus_PolicyError: ContactListSyncStatus = 4
-ContactListSyncStatus_UnknownError: ContactListSyncStatus = 5
-ContactListSyncStatus_ManualAccountRemovalRequired: ContactListSyncStatus = 6
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
+    Status = property(get_Status, put_Status)
+class ContactListSyncStatus(Int32):  # enum
+    Idle = 0
+    Syncing = 1
+    UpToDate = 2
+    AuthenticationError = 3
+    PolicyError = 4
+    UnknownError = 5
+    ManualAccountRemovalRequired = 6
 class ContactLocationField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactLocationField
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactLocationField'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Contacts.ContactLocationField.CreateLocation_Default(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Contacts.ContactLocationField.CreateLocation_Category(*args)
+        elif len(args) == 7:
+            return win32more.Windows.ApplicationModel.Contacts.ContactLocationField.CreateLocation_All(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
-    def CreateLocation(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
+    def CreateLocation_Default(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
     @winrt_factorymethod
-    def CreateLocation(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
+    def CreateLocation_Category(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
     @winrt_factorymethod
-    def CreateLocation(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory, street: WinRT_String, city: WinRT_String, region: WinRT_String, country: WinRT_String, postalCode: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
+    def CreateLocation_All(cls: win32more.Windows.ApplicationModel.Contacts.IContactLocationFieldFactory, unstructuredAddress: WinRT_String, category: win32more.Windows.ApplicationModel.Contacts.ContactFieldCategory, street: WinRT_String, city: WinRT_String, region: WinRT_String, country: WinRT_String, postalCode: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactLocationField: ...
     @winrt_mixinmethod
     def get_UnstructuredAddress(self: win32more.Windows.ApplicationModel.Contacts.IContactLocationField) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -1014,15 +1097,15 @@ class ContactLocationField(ComPtr):
     def get_Name(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Value(self: win32more.Windows.ApplicationModel.Contacts.IContactField) -> WinRT_String: ...
-    UnstructuredAddress = property(get_UnstructuredAddress, None)
-    Street = property(get_Street, None)
-    City = property(get_City, None)
-    Region = property(get_Region, None)
-    Country = property(get_Country, None)
-    PostalCode = property(get_PostalCode, None)
-    Type = property(get_Type, None)
     Category = property(get_Category, None)
+    City = property(get_City, None)
+    Country = property(get_Country, None)
     Name = property(get_Name, None)
+    PostalCode = property(get_PostalCode, None)
+    Region = property(get_Region, None)
+    Street = property(get_Street, None)
+    Type = property(get_Type, None)
+    UnstructuredAddress = property(get_UnstructuredAddress, None)
     Value = property(get_Value, None)
 class _ContactManager_Meta_(ComPtr.__class__):
     pass
@@ -1118,16 +1201,16 @@ class ContactMatchReason(ComPtr):
     Field = property(get_Field, None)
     Segments = property(get_Segments, None)
     Text = property(get_Text, None)
-ContactMatchReasonKind = Int32
-ContactMatchReasonKind_Name: ContactMatchReasonKind = 0
-ContactMatchReasonKind_EmailAddress: ContactMatchReasonKind = 1
-ContactMatchReasonKind_PhoneNumber: ContactMatchReasonKind = 2
-ContactMatchReasonKind_JobInfo: ContactMatchReasonKind = 3
-ContactMatchReasonKind_YomiName: ContactMatchReasonKind = 4
-ContactMatchReasonKind_Other: ContactMatchReasonKind = 5
-ContactNameOrder = Int32
-ContactNameOrder_FirstNameLastName: ContactNameOrder = 0
-ContactNameOrder_LastNameFirstName: ContactNameOrder = 1
+class ContactMatchReasonKind(Int32):  # enum
+    Name = 0
+    EmailAddress = 1
+    PhoneNumber = 2
+    JobInfo = 3
+    YomiName = 4
+    Other = 5
+class ContactNameOrder(Int32):  # enum
+    FirstNameLastName = 0
+    LastNameFirstName = 1
 class ContactPanel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactPanel
@@ -1166,6 +1249,13 @@ class ContactPhone(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactPhone
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactPhone'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactPhone.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactPhone: ...
     @winrt_mixinmethod
@@ -1180,24 +1270,31 @@ class ContactPhone(ComPtr):
     def get_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactPhone) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Description(self: win32more.Windows.ApplicationModel.Contacts.IContactPhone, value: WinRT_String) -> Void: ...
-    Number = property(get_Number, put_Number)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
-ContactPhoneKind = Int32
-ContactPhoneKind_Home: ContactPhoneKind = 0
-ContactPhoneKind_Mobile: ContactPhoneKind = 1
-ContactPhoneKind_Work: ContactPhoneKind = 2
-ContactPhoneKind_Other: ContactPhoneKind = 3
-ContactPhoneKind_Pager: ContactPhoneKind = 4
-ContactPhoneKind_BusinessFax: ContactPhoneKind = 5
-ContactPhoneKind_HomeFax: ContactPhoneKind = 6
-ContactPhoneKind_Company: ContactPhoneKind = 7
-ContactPhoneKind_Assistant: ContactPhoneKind = 8
-ContactPhoneKind_Radio: ContactPhoneKind = 9
+    Kind = property(get_Kind, put_Kind)
+    Number = property(get_Number, put_Number)
+class ContactPhoneKind(Int32):  # enum
+    Home = 0
+    Mobile = 1
+    Work = 2
+    Other = 3
+    Pager = 4
+    BusinessFax = 5
+    HomeFax = 6
+    Company = 7
+    Assistant = 8
+    Radio = 9
 class ContactPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactPicker
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactPicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactPicker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactPicker: ...
     @winrt_mixinmethod
@@ -1227,19 +1324,30 @@ class ContactPicker(ComPtr):
     @winrt_classmethod
     def IsSupportedAsync(cls: win32more.Windows.ApplicationModel.Contacts.IContactPickerStatics) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     DesiredFields = property(get_DesiredFields, None)
     DesiredFieldsWithContactFieldType = property(get_DesiredFieldsWithContactFieldType, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     User = property(get_User, None)
-ContactQueryDesiredFields = UInt32
-ContactQueryDesiredFields_None: ContactQueryDesiredFields = 0
-ContactQueryDesiredFields_PhoneNumber: ContactQueryDesiredFields = 1
-ContactQueryDesiredFields_EmailAddress: ContactQueryDesiredFields = 2
-ContactQueryDesiredFields_PostalAddress: ContactQueryDesiredFields = 4
+class ContactQueryDesiredFields(UInt32):  # enum
+    None_ = 0
+    PhoneNumber = 1
+    EmailAddress = 2
+    PostalAddress = 4
 class ContactQueryOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactQueryOptions
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactQueryOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactQueryOptions.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Contacts.ContactQueryOptions.CreateWithText(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Contacts.ContactQueryOptions.CreateWithTextAndFields(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactQueryOptions: ...
     @winrt_factorymethod
@@ -1264,21 +1372,21 @@ class ContactQueryOptions(ComPtr):
     def put_DesiredOperations(self: win32more.Windows.ApplicationModel.Contacts.IContactQueryOptions, value: win32more.Windows.ApplicationModel.Contacts.ContactAnnotationOperations) -> Void: ...
     @winrt_mixinmethod
     def get_AnnotationListIds(self: win32more.Windows.ApplicationModel.Contacts.IContactQueryOptions) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    TextSearch = property(get_TextSearch, None)
+    AnnotationListIds = property(get_AnnotationListIds, None)
     ContactListIds = property(get_ContactListIds, None)
-    IncludeContactsFromHiddenLists = property(get_IncludeContactsFromHiddenLists, put_IncludeContactsFromHiddenLists)
     DesiredFields = property(get_DesiredFields, put_DesiredFields)
     DesiredOperations = property(get_DesiredOperations, put_DesiredOperations)
-    AnnotationListIds = property(get_AnnotationListIds, None)
-ContactQuerySearchFields = UInt32
-ContactQuerySearchFields_None: ContactQuerySearchFields = 0
-ContactQuerySearchFields_Name: ContactQuerySearchFields = 1
-ContactQuerySearchFields_Email: ContactQuerySearchFields = 2
-ContactQuerySearchFields_Phone: ContactQuerySearchFields = 4
-ContactQuerySearchFields_All: ContactQuerySearchFields = 4294967295
-ContactQuerySearchScope = Int32
-ContactQuerySearchScope_Local: ContactQuerySearchScope = 0
-ContactQuerySearchScope_Server: ContactQuerySearchScope = 1
+    IncludeContactsFromHiddenLists = property(get_IncludeContactsFromHiddenLists, put_IncludeContactsFromHiddenLists)
+    TextSearch = property(get_TextSearch, None)
+class ContactQuerySearchFields(UInt32):  # enum
+    None_ = 0
+    Name = 1
+    Email = 2
+    Phone = 4
+    All = 4294967295
+class ContactQuerySearchScope(Int32):  # enum
+    Local = 0
+    Server = 1
 class ContactQueryTextSearch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactQueryTextSearch
@@ -1296,8 +1404,8 @@ class ContactQueryTextSearch(ComPtr):
     @winrt_mixinmethod
     def put_SearchScope(self: win32more.Windows.ApplicationModel.Contacts.IContactQueryTextSearch, value: win32more.Windows.ApplicationModel.Contacts.ContactQuerySearchScope) -> Void: ...
     Fields = property(get_Fields, put_Fields)
-    Text = property(get_Text, put_Text)
     SearchScope = property(get_SearchScope, put_SearchScope)
+    Text = property(get_Text, put_Text)
 class ContactReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactReader
@@ -1306,20 +1414,27 @@ class ContactReader(ComPtr):
     def ReadBatchAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactReader) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Contacts.ContactBatch]: ...
     @winrt_mixinmethod
     def GetMatchingPropertiesWithMatchReason(self: win32more.Windows.ApplicationModel.Contacts.IContactReader, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactMatchReason]: ...
-ContactRelationship = Int32
-ContactRelationship_Other: ContactRelationship = 0
-ContactRelationship_Spouse: ContactRelationship = 1
-ContactRelationship_Partner: ContactRelationship = 2
-ContactRelationship_Sibling: ContactRelationship = 3
-ContactRelationship_Parent: ContactRelationship = 4
-ContactRelationship_Child: ContactRelationship = 5
-ContactSelectionMode = Int32
-ContactSelectionMode_Contacts: ContactSelectionMode = 0
-ContactSelectionMode_Fields: ContactSelectionMode = 1
+class ContactRelationship(Int32):  # enum
+    Other = 0
+    Spouse = 1
+    Partner = 2
+    Sibling = 3
+    Parent = 4
+    Child = 5
+class ContactSelectionMode(Int32):  # enum
+    Contacts = 0
+    Fields = 1
 class ContactSignificantOther(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactSignificantOther
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactSignificantOther'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactSignificantOther.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactSignificantOther: ...
     @winrt_mixinmethod
@@ -1334,8 +1449,8 @@ class ContactSignificantOther(ComPtr):
     def get_Relationship(self: win32more.Windows.ApplicationModel.Contacts.IContactSignificantOther2) -> win32more.Windows.ApplicationModel.Contacts.ContactRelationship: ...
     @winrt_mixinmethod
     def put_Relationship(self: win32more.Windows.ApplicationModel.Contacts.IContactSignificantOther2, value: win32more.Windows.ApplicationModel.Contacts.ContactRelationship) -> Void: ...
-    Name = property(get_Name, put_Name)
     Description = property(get_Description, put_Description)
+    Name = property(get_Name, put_Name)
     Relationship = property(get_Relationship, put_Relationship)
 class ContactStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1371,12 +1486,12 @@ class ContactStore(ComPtr):
     def CreateContactListInAccountAsync(self: win32more.Windows.ApplicationModel.Contacts.IContactStore2, displayName: WinRT_String, userDataAccountId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Contacts.ContactList]: ...
     @winrt_mixinmethod
     def GetChangeTracker(self: win32more.Windows.ApplicationModel.Contacts.IContactStore3, identity: WinRT_String) -> win32more.Windows.ApplicationModel.Contacts.ContactChangeTracker: ...
-    ChangeTracker = property(get_ChangeTracker, None)
     AggregateContactManager = property(get_AggregateContactManager, None)
-ContactStoreAccessType = Int32
-ContactStoreAccessType_AppContactsReadWrite: ContactStoreAccessType = 0
-ContactStoreAccessType_AllContactsReadOnly: ContactStoreAccessType = 1
-ContactStoreAccessType_AllContactsReadWrite: ContactStoreAccessType = 2
+    ChangeTracker = property(get_ChangeTracker, None)
+class ContactStoreAccessType(Int32):  # enum
+    AppContactsReadWrite = 0
+    AllContactsReadOnly = 1
+    AllContactsReadWrite = 2
 class ContactStoreNotificationTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactStoreNotificationTriggerDetails
@@ -1385,6 +1500,13 @@ class ContactWebsite(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IContactWebsite
     _classid_ = 'Windows.ApplicationModel.Contacts.ContactWebsite'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.ContactWebsite.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.ContactWebsite: ...
     @winrt_mixinmethod
@@ -1399,13 +1521,20 @@ class ContactWebsite(ComPtr):
     def get_RawValue(self: win32more.Windows.ApplicationModel.Contacts.IContactWebsite2) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_RawValue(self: win32more.Windows.ApplicationModel.Contacts.IContactWebsite2, value: WinRT_String) -> Void: ...
-    Uri = property(get_Uri, put_Uri)
     Description = property(get_Description, put_Description)
     RawValue = property(get_RawValue, put_RawValue)
+    Uri = property(get_Uri, put_Uri)
 class FullContactCardOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IFullContactCardOptions
     _classid_ = 'Windows.ApplicationModel.Contacts.FullContactCardOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Contacts.FullContactCardOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Contacts.FullContactCardOptions: ...
     @winrt_mixinmethod
@@ -1445,9 +1574,9 @@ class IContact(ComPtr):
     def put_Thumbnail(self, value: win32more.Windows.Storage.Streams.IRandomAccessStreamReference) -> Void: ...
     @winrt_commethod(10)
     def get_Fields(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.Contacts.IContactField]: ...
+    Fields = property(get_Fields, None)
     Name = property(get_Name, put_Name)
     Thumbnail = property(get_Thumbnail, put_Thumbnail)
-    Fields = property(get_Fields, None)
 class IContact2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContact2'
@@ -1480,18 +1609,18 @@ class IContact2(ComPtr):
     def get_Websites(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.Contacts.ContactWebsite]: ...
     @winrt_commethod(19)
     def get_ProviderProperties(self) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Id = property(get_Id, put_Id)
-    Notes = property(get_Notes, put_Notes)
-    Phones = property(get_Phones, None)
-    Emails = property(get_Emails, None)
     Addresses = property(get_Addresses, None)
     ConnectedServiceAccounts = property(get_ConnectedServiceAccounts, None)
-    ImportantDates = property(get_ImportantDates, None)
     DataSuppliers = property(get_DataSuppliers, None)
+    Emails = property(get_Emails, None)
+    Id = property(get_Id, put_Id)
+    ImportantDates = property(get_ImportantDates, None)
     JobInfo = property(get_JobInfo, None)
+    Notes = property(get_Notes, put_Notes)
+    Phones = property(get_Phones, None)
+    ProviderProperties = property(get_ProviderProperties, None)
     SignificantOthers = property(get_SignificantOthers, None)
     Websites = property(get_Websites, None)
-    ProviderProperties = property(get_ProviderProperties, None)
 class IContact3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContact3'
@@ -1542,22 +1671,22 @@ class IContact3(ComPtr):
     def put_Nickname(self, value: WinRT_String) -> Void: ...
     @winrt_commethod(28)
     def get_SortName(self) -> WinRT_String: ...
-    ContactListId = property(get_ContactListId, None)
-    DisplayPictureUserUpdateTime = property(get_DisplayPictureUserUpdateTime, put_DisplayPictureUserUpdateTime)
-    IsMe = property(get_IsMe, None)
     AggregateId = property(get_AggregateId, None)
+    ContactListId = property(get_ContactListId, None)
+    DisplayNameOverride = property(get_DisplayNameOverride, put_DisplayNameOverride)
+    DisplayPictureUserUpdateTime = property(get_DisplayPictureUserUpdateTime, put_DisplayPictureUserUpdateTime)
+    FullName = property(get_FullName, None)
+    IsAggregate = property(get_IsAggregate, None)
+    IsDisplayPictureManuallySet = property(get_IsDisplayPictureManuallySet, None)
+    IsMe = property(get_IsMe, None)
+    LargeDisplayPicture = property(get_LargeDisplayPicture, None)
+    Nickname = property(get_Nickname, put_Nickname)
     RemoteId = property(get_RemoteId, put_RemoteId)
     RingToneToken = property(get_RingToneToken, put_RingToneToken)
-    IsDisplayPictureManuallySet = property(get_IsDisplayPictureManuallySet, None)
-    LargeDisplayPicture = property(get_LargeDisplayPicture, None)
     SmallDisplayPicture = property(get_SmallDisplayPicture, None)
+    SortName = property(get_SortName, None)
     SourceDisplayPicture = property(get_SourceDisplayPicture, put_SourceDisplayPicture)
     TextToneToken = property(get_TextToneToken, put_TextToneToken)
-    IsAggregate = property(get_IsAggregate, None)
-    FullName = property(get_FullName, None)
-    DisplayNameOverride = property(get_DisplayNameOverride, put_DisplayNameOverride)
-    Nickname = property(get_Nickname, put_Nickname)
-    SortName = property(get_SortName, None)
 class IContactAddress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactAddress'
@@ -1590,13 +1719,13 @@ class IContactAddress(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(19)
     def put_Description(self, value: WinRT_String) -> Void: ...
-    StreetAddress = property(get_StreetAddress, put_StreetAddress)
-    Locality = property(get_Locality, put_Locality)
-    Region = property(get_Region, put_Region)
     Country = property(get_Country, put_Country)
-    PostalCode = property(get_PostalCode, put_PostalCode)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
+    Kind = property(get_Kind, put_Kind)
+    Locality = property(get_Locality, put_Locality)
+    PostalCode = property(get_PostalCode, put_PostalCode)
+    Region = property(get_Region, put_Region)
+    StreetAddress = property(get_StreetAddress, put_StreetAddress)
 class IContactAnnotation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactAnnotation'
@@ -1621,13 +1750,13 @@ class IContactAnnotation(ComPtr):
     def get_IsDisabled(self) -> Boolean: ...
     @winrt_commethod(15)
     def get_ProviderProperties(self) -> win32more.Windows.Foundation.Collections.ValueSet: ...
-    Id = property(get_Id, None)
     AnnotationListId = property(get_AnnotationListId, None)
     ContactId = property(get_ContactId, put_ContactId)
-    RemoteId = property(get_RemoteId, put_RemoteId)
-    SupportedOperations = property(get_SupportedOperations, put_SupportedOperations)
+    Id = property(get_Id, None)
     IsDisabled = property(get_IsDisabled, None)
     ProviderProperties = property(get_ProviderProperties, None)
+    RemoteId = property(get_RemoteId, put_RemoteId)
+    SupportedOperations = property(get_SupportedOperations, put_SupportedOperations)
 class IContactAnnotation2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactAnnotation2'
@@ -1813,10 +1942,10 @@ class IContactDate(ComPtr):
     @winrt_commethod(15)
     def put_Description(self, value: WinRT_String) -> Void: ...
     Day = property(get_Day, put_Day)
+    Description = property(get_Description, put_Description)
+    Kind = property(get_Kind, put_Kind)
     Month = property(get_Month, put_Month)
     Year = property(get_Year, put_Year)
-    Kind = property(get_Kind, put_Kind)
-    Description = property(get_Description, put_Description)
 class IContactEmail(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactEmail'
@@ -1834,8 +1963,8 @@ class IContactEmail(ComPtr):
     @winrt_commethod(11)
     def put_Description(self, value: WinRT_String) -> Void: ...
     Address = property(get_Address, put_Address)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
+    Kind = property(get_Kind, put_Kind)
 class IContactField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactField'
@@ -1848,9 +1977,9 @@ class IContactField(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def get_Value(self) -> WinRT_String: ...
-    Type = property(get_Type, None)
     Category = property(get_Category, None)
     Name = property(get_Name, None)
+    Type = property(get_Type, None)
     Value = property(get_Value, None)
 class IContactFieldFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -1886,12 +2015,12 @@ class IContactInformation(ComPtr):
     def get_CustomFields(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactField]: ...
     @winrt_commethod(13)
     def QueryCustomFields(self, customName: WinRT_String) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactField]: ...
-    Name = property(get_Name, None)
-    Emails = property(get_Emails, None)
-    PhoneNumbers = property(get_PhoneNumbers, None)
-    Locations = property(get_Locations, None)
-    InstantMessages = property(get_InstantMessages, None)
     CustomFields = property(get_CustomFields, None)
+    Emails = property(get_Emails, None)
+    InstantMessages = property(get_InstantMessages, None)
+    Locations = property(get_Locations, None)
+    Name = property(get_Name, None)
+    PhoneNumbers = property(get_PhoneNumbers, None)
 class IContactInstantMessageField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactInstantMessageField'
@@ -1904,10 +2033,10 @@ class IContactInstantMessageField(ComPtr):
     def get_DisplayText(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def get_LaunchUri(self) -> win32more.Windows.Foundation.Uri: ...
-    UserName = property(get_UserName, None)
-    Service = property(get_Service, None)
     DisplayText = property(get_DisplayText, None)
     LaunchUri = property(get_LaunchUri, None)
+    Service = property(get_Service, None)
+    UserName = property(get_UserName, None)
 class IContactInstantMessageFieldFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactInstantMessageFieldFactory'
@@ -1954,14 +2083,14 @@ class IContactJobInfo(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(21)
     def put_Description(self, value: WinRT_String) -> Void: ...
+    CompanyAddress = property(get_CompanyAddress, put_CompanyAddress)
     CompanyName = property(get_CompanyName, put_CompanyName)
     CompanyYomiName = property(get_CompanyYomiName, put_CompanyYomiName)
     Department = property(get_Department, put_Department)
-    Title = property(get_Title, put_Title)
+    Description = property(get_Description, put_Description)
     Manager = property(get_Manager, put_Manager)
     Office = property(get_Office, put_Office)
-    CompanyAddress = property(get_CompanyAddress, put_CompanyAddress)
-    Description = property(get_Description, put_Description)
+    Title = property(get_Title, put_Title)
 class IContactLaunchActionVerbsStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactLaunchActionVerbsStatics'
@@ -1977,8 +2106,8 @@ class IContactLaunchActionVerbsStatics(ComPtr):
     @winrt_commethod(10)
     def get_VideoCall(self) -> WinRT_String: ...
     Call = property(get_Call, None)
-    Message = property(get_Message, None)
     Map = property(get_Map, None)
+    Message = property(get_Message, None)
     Post = property(get_Post, None)
     VideoCall = property(get_VideoCall, None)
 class IContactList(ComPtr):
@@ -2035,15 +2164,15 @@ class IContactList(ComPtr):
     def DeleteContactAsync(self, contact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(30)
     def GetContactAsync(self, contactId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Contacts.Contact]: ...
-    Id = property(get_Id, None)
+    ChangeTracker = property(get_ChangeTracker, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    SourceDisplayName = property(get_SourceDisplayName, None)
+    Id = property(get_Id, None)
     IsHidden = property(get_IsHidden, put_IsHidden)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     OtherAppWriteAccess = property(get_OtherAppWriteAccess, put_OtherAppWriteAccess)
-    ChangeTracker = property(get_ChangeTracker, None)
-    SyncManager = property(get_SyncManager, None)
+    SourceDisplayName = property(get_SourceDisplayName, None)
     SupportsServerSearch = property(get_SupportsServerSearch, None)
+    SyncManager = property(get_SyncManager, None)
     UserDataAccountId = property(get_UserDataAccountId, None)
 class IContactList2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -2191,33 +2320,33 @@ class IContactListSyncConstraints(ComPtr):
     @winrt_commethod(61)
     def put_MaxWebsites(self, value: win32more.Windows.Foundation.IReference[Int32]) -> Void: ...
     CanSyncDescriptions = property(get_CanSyncDescriptions, put_CanSyncDescriptions)
-    MaxHomePhoneNumbers = property(get_MaxHomePhoneNumbers, put_MaxHomePhoneNumbers)
-    MaxMobilePhoneNumbers = property(get_MaxMobilePhoneNumbers, put_MaxMobilePhoneNumbers)
-    MaxWorkPhoneNumbers = property(get_MaxWorkPhoneNumbers, put_MaxWorkPhoneNumbers)
-    MaxOtherPhoneNumbers = property(get_MaxOtherPhoneNumbers, put_MaxOtherPhoneNumbers)
-    MaxPagerPhoneNumbers = property(get_MaxPagerPhoneNumbers, put_MaxPagerPhoneNumbers)
-    MaxBusinessFaxPhoneNumbers = property(get_MaxBusinessFaxPhoneNumbers, put_MaxBusinessFaxPhoneNumbers)
-    MaxHomeFaxPhoneNumbers = property(get_MaxHomeFaxPhoneNumbers, put_MaxHomeFaxPhoneNumbers)
-    MaxCompanyPhoneNumbers = property(get_MaxCompanyPhoneNumbers, put_MaxCompanyPhoneNumbers)
-    MaxAssistantPhoneNumbers = property(get_MaxAssistantPhoneNumbers, put_MaxAssistantPhoneNumbers)
-    MaxRadioPhoneNumbers = property(get_MaxRadioPhoneNumbers, put_MaxRadioPhoneNumbers)
-    MaxPersonalEmailAddresses = property(get_MaxPersonalEmailAddresses, put_MaxPersonalEmailAddresses)
-    MaxWorkEmailAddresses = property(get_MaxWorkEmailAddresses, put_MaxWorkEmailAddresses)
-    MaxOtherEmailAddresses = property(get_MaxOtherEmailAddresses, put_MaxOtherEmailAddresses)
-    MaxHomeAddresses = property(get_MaxHomeAddresses, put_MaxHomeAddresses)
-    MaxWorkAddresses = property(get_MaxWorkAddresses, put_MaxWorkAddresses)
-    MaxOtherAddresses = property(get_MaxOtherAddresses, put_MaxOtherAddresses)
-    MaxBirthdayDates = property(get_MaxBirthdayDates, put_MaxBirthdayDates)
     MaxAnniversaryDates = property(get_MaxAnniversaryDates, put_MaxAnniversaryDates)
-    MaxOtherDates = property(get_MaxOtherDates, put_MaxOtherDates)
-    MaxOtherRelationships = property(get_MaxOtherRelationships, put_MaxOtherRelationships)
-    MaxSpouseRelationships = property(get_MaxSpouseRelationships, put_MaxSpouseRelationships)
-    MaxPartnerRelationships = property(get_MaxPartnerRelationships, put_MaxPartnerRelationships)
-    MaxSiblingRelationships = property(get_MaxSiblingRelationships, put_MaxSiblingRelationships)
-    MaxParentRelationships = property(get_MaxParentRelationships, put_MaxParentRelationships)
+    MaxAssistantPhoneNumbers = property(get_MaxAssistantPhoneNumbers, put_MaxAssistantPhoneNumbers)
+    MaxBirthdayDates = property(get_MaxBirthdayDates, put_MaxBirthdayDates)
+    MaxBusinessFaxPhoneNumbers = property(get_MaxBusinessFaxPhoneNumbers, put_MaxBusinessFaxPhoneNumbers)
     MaxChildRelationships = property(get_MaxChildRelationships, put_MaxChildRelationships)
+    MaxCompanyPhoneNumbers = property(get_MaxCompanyPhoneNumbers, put_MaxCompanyPhoneNumbers)
+    MaxHomeAddresses = property(get_MaxHomeAddresses, put_MaxHomeAddresses)
+    MaxHomeFaxPhoneNumbers = property(get_MaxHomeFaxPhoneNumbers, put_MaxHomeFaxPhoneNumbers)
+    MaxHomePhoneNumbers = property(get_MaxHomePhoneNumbers, put_MaxHomePhoneNumbers)
     MaxJobInfo = property(get_MaxJobInfo, put_MaxJobInfo)
+    MaxMobilePhoneNumbers = property(get_MaxMobilePhoneNumbers, put_MaxMobilePhoneNumbers)
+    MaxOtherAddresses = property(get_MaxOtherAddresses, put_MaxOtherAddresses)
+    MaxOtherDates = property(get_MaxOtherDates, put_MaxOtherDates)
+    MaxOtherEmailAddresses = property(get_MaxOtherEmailAddresses, put_MaxOtherEmailAddresses)
+    MaxOtherPhoneNumbers = property(get_MaxOtherPhoneNumbers, put_MaxOtherPhoneNumbers)
+    MaxOtherRelationships = property(get_MaxOtherRelationships, put_MaxOtherRelationships)
+    MaxPagerPhoneNumbers = property(get_MaxPagerPhoneNumbers, put_MaxPagerPhoneNumbers)
+    MaxParentRelationships = property(get_MaxParentRelationships, put_MaxParentRelationships)
+    MaxPartnerRelationships = property(get_MaxPartnerRelationships, put_MaxPartnerRelationships)
+    MaxPersonalEmailAddresses = property(get_MaxPersonalEmailAddresses, put_MaxPersonalEmailAddresses)
+    MaxRadioPhoneNumbers = property(get_MaxRadioPhoneNumbers, put_MaxRadioPhoneNumbers)
+    MaxSiblingRelationships = property(get_MaxSiblingRelationships, put_MaxSiblingRelationships)
+    MaxSpouseRelationships = property(get_MaxSpouseRelationships, put_MaxSpouseRelationships)
     MaxWebsites = property(get_MaxWebsites, put_MaxWebsites)
+    MaxWorkAddresses = property(get_MaxWorkAddresses, put_MaxWorkAddresses)
+    MaxWorkEmailAddresses = property(get_MaxWorkEmailAddresses, put_MaxWorkEmailAddresses)
+    MaxWorkPhoneNumbers = property(get_MaxWorkPhoneNumbers, put_MaxWorkPhoneNumbers)
 class IContactListSyncManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactListSyncManager'
@@ -2234,9 +2363,9 @@ class IContactListSyncManager(ComPtr):
     def add_SyncStatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.ApplicationModel.Contacts.ContactListSyncManager, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(11)
     def remove_SyncStatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Status = property(get_Status, None)
-    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, None)
     LastAttemptedSyncTime = property(get_LastAttemptedSyncTime, None)
+    LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, None)
+    Status = property(get_Status, None)
 class IContactListSyncManager2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactListSyncManager2'
@@ -2247,9 +2376,9 @@ class IContactListSyncManager2(ComPtr):
     def put_LastSuccessfulSyncTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_commethod(8)
     def put_LastAttemptedSyncTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
-    Status = property(None, put_Status)
-    LastSuccessfulSyncTime = property(None, put_LastSuccessfulSyncTime)
     LastAttemptedSyncTime = property(None, put_LastAttemptedSyncTime)
+    LastSuccessfulSyncTime = property(None, put_LastSuccessfulSyncTime)
+    Status = property(None, put_Status)
 class IContactLocationField(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactLocationField'
@@ -2266,12 +2395,12 @@ class IContactLocationField(ComPtr):
     def get_Country(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def get_PostalCode(self) -> WinRT_String: ...
-    UnstructuredAddress = property(get_UnstructuredAddress, None)
-    Street = property(get_Street, None)
     City = property(get_City, None)
-    Region = property(get_Region, None)
     Country = property(get_Country, None)
     PostalCode = property(get_PostalCode, None)
+    Region = property(get_Region, None)
+    Street = property(get_Street, None)
+    UnstructuredAddress = property(get_UnstructuredAddress, None)
 class IContactLocationFieldFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactLocationFieldFactory'
@@ -2431,15 +2560,15 @@ class IContactName(ComPtr):
     def get_DisplayName(self) -> WinRT_String: ...
     @winrt_commethod(21)
     def get_YomiDisplayName(self) -> WinRT_String: ...
+    DisplayName = property(get_DisplayName, None)
     FirstName = property(get_FirstName, put_FirstName)
+    HonorificNamePrefix = property(get_HonorificNamePrefix, put_HonorificNamePrefix)
+    HonorificNameSuffix = property(get_HonorificNameSuffix, put_HonorificNameSuffix)
     LastName = property(get_LastName, put_LastName)
     MiddleName = property(get_MiddleName, put_MiddleName)
-    YomiGivenName = property(get_YomiGivenName, put_YomiGivenName)
-    YomiFamilyName = property(get_YomiFamilyName, put_YomiFamilyName)
-    HonorificNameSuffix = property(get_HonorificNameSuffix, put_HonorificNameSuffix)
-    HonorificNamePrefix = property(get_HonorificNamePrefix, put_HonorificNamePrefix)
-    DisplayName = property(get_DisplayName, None)
     YomiDisplayName = property(get_YomiDisplayName, None)
+    YomiFamilyName = property(get_YomiFamilyName, put_YomiFamilyName)
+    YomiGivenName = property(get_YomiGivenName, put_YomiGivenName)
 class IContactPanel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactPanel'
@@ -2490,9 +2619,9 @@ class IContactPhone(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def put_Description(self, value: WinRT_String) -> Void: ...
-    Number = property(get_Number, put_Number)
-    Kind = property(get_Kind, put_Kind)
     Description = property(get_Description, put_Description)
+    Kind = property(get_Kind, put_Kind)
+    Number = property(get_Number, put_Number)
 class IContactPicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactPicker'
@@ -2512,8 +2641,8 @@ class IContactPicker(ComPtr):
     @winrt_commethod(12)
     def PickMultipleContactsAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.ContactInformation]]: ...
     CommitButtonText = property(get_CommitButtonText, put_CommitButtonText)
-    SelectionMode = property(get_SelectionMode, put_SelectionMode)
     DesiredFields = property(get_DesiredFields, None)
+    SelectionMode = property(get_SelectionMode, put_SelectionMode)
 class IContactPicker2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactPicker2'
@@ -2562,12 +2691,12 @@ class IContactQueryOptions(ComPtr):
     def put_DesiredOperations(self, value: win32more.Windows.ApplicationModel.Contacts.ContactAnnotationOperations) -> Void: ...
     @winrt_commethod(14)
     def get_AnnotationListIds(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    TextSearch = property(get_TextSearch, None)
+    AnnotationListIds = property(get_AnnotationListIds, None)
     ContactListIds = property(get_ContactListIds, None)
-    IncludeContactsFromHiddenLists = property(get_IncludeContactsFromHiddenLists, put_IncludeContactsFromHiddenLists)
     DesiredFields = property(get_DesiredFields, put_DesiredFields)
     DesiredOperations = property(get_DesiredOperations, put_DesiredOperations)
-    AnnotationListIds = property(get_AnnotationListIds, None)
+    IncludeContactsFromHiddenLists = property(get_IncludeContactsFromHiddenLists, put_IncludeContactsFromHiddenLists)
+    TextSearch = property(get_TextSearch, None)
 class IContactQueryOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactQueryOptionsFactory'
@@ -2593,8 +2722,8 @@ class IContactQueryTextSearch(ComPtr):
     @winrt_commethod(11)
     def put_SearchScope(self, value: win32more.Windows.ApplicationModel.Contacts.ContactQuerySearchScope) -> Void: ...
     Fields = property(get_Fields, put_Fields)
-    Text = property(get_Text, put_Text)
     SearchScope = property(get_SearchScope, put_SearchScope)
+    Text = property(get_Text, put_Text)
 class IContactReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactReader'
@@ -2615,8 +2744,8 @@ class IContactSignificantOther(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Description(self, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, put_Name)
     Description = property(get_Description, put_Description)
+    Name = property(get_Name, put_Name)
 class IContactSignificantOther2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactSignificantOther2'
@@ -2662,8 +2791,8 @@ class IContactStore2(ComPtr):
     def GetContactReaderWithOptions(self, options: win32more.Windows.ApplicationModel.Contacts.ContactQueryOptions) -> win32more.Windows.ApplicationModel.Contacts.ContactReader: ...
     @winrt_commethod(16)
     def CreateContactListInAccountAsync(self, displayName: WinRT_String, userDataAccountId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Contacts.ContactList]: ...
-    ChangeTracker = property(get_ChangeTracker, None)
     AggregateContactManager = property(get_AggregateContactManager, None)
+    ChangeTracker = property(get_ChangeTracker, None)
 class IContactStore3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactStore3'
@@ -2686,8 +2815,8 @@ class IContactWebsite(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Description(self, value: WinRT_String) -> Void: ...
-    Uri = property(get_Uri, put_Uri)
     Description = property(get_Description, put_Description)
+    Uri = property(get_Uri, put_Uri)
 class IContactWebsite2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IContactWebsite2'
@@ -2723,9 +2852,9 @@ class IKnownContactFieldStatics(ComPtr):
     @winrt_commethod(11)
     def ConvertTypeToName(self, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType) -> WinRT_String: ...
     Email = property(get_Email, None)
-    PhoneNumber = property(get_PhoneNumber, None)
-    Location = property(get_Location, None)
     InstantMessage = property(get_InstantMessage, None)
+    Location = property(get_Location, None)
+    PhoneNumber = property(get_PhoneNumber, None)
 class IPinnedContactIdsQueryResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.IPinnedContactIdsQueryResult'
@@ -2782,9 +2911,9 @@ class KnownContactField(ComPtr, metaclass=_KnownContactField_Meta_):
     @winrt_classmethod
     def ConvertTypeToName(cls: win32more.Windows.ApplicationModel.Contacts.IKnownContactFieldStatics, type: win32more.Windows.ApplicationModel.Contacts.ContactFieldType) -> WinRT_String: ...
     _KnownContactField_Meta_.Email = property(get_Email.__wrapped__, None)
-    _KnownContactField_Meta_.PhoneNumber = property(get_PhoneNumber.__wrapped__, None)
-    _KnownContactField_Meta_.Location = property(get_Location.__wrapped__, None)
     _KnownContactField_Meta_.InstantMessage = property(get_InstantMessage.__wrapped__, None)
+    _KnownContactField_Meta_.Location = property(get_Location.__wrapped__, None)
+    _KnownContactField_Meta_.PhoneNumber = property(get_PhoneNumber.__wrapped__, None)
 class PinnedContactIdsQueryResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.IPinnedContactIdsQueryResult
@@ -2819,7 +2948,9 @@ class PinnedContactManager(ComPtr):
     @winrt_classmethod
     def IsSupported(cls: win32more.Windows.ApplicationModel.Contacts.IPinnedContactManagerStatics) -> Boolean: ...
     User = property(get_User, None)
-PinnedContactSurface = Int32
-PinnedContactSurface_StartMenu: PinnedContactSurface = 0
-PinnedContactSurface_Taskbar: PinnedContactSurface = 1
+class PinnedContactSurface(Int32):  # enum
+    StartMenu = 0
+    Taskbar = 1
+
+
 make_ready(__name__)

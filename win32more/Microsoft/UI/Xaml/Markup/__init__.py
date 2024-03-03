@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI.Xaml
 import win32more.Microsoft.UI.Xaml.Markup
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
 import win32more.Windows.UI.Xaml.Interop
+import win32more.Windows.Win32.System.WinRT
 class IComponentConnector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Xaml.Markup.IComponentConnector'
@@ -75,9 +62,9 @@ class IProvideValueTargetProperty(ComPtr):
     def get_Type(self) -> win32more.Windows.UI.Xaml.Interop.TypeName: ...
     @winrt_commethod(8)
     def get_DeclaringType(self) -> win32more.Windows.UI.Xaml.Interop.TypeName: ...
+    DeclaringType = property(get_DeclaringType, None)
     Name = property(get_Name, None)
     Type = property(get_Type, None)
-    DeclaringType = property(get_DeclaringType, None)
 class IRootObjectProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Xaml.Markup.IRootObjectProvider'
@@ -264,17 +251,17 @@ class IXamlType(ComPtr):
     @winrt_commethod(24)
     def RunInitializer(self) -> Void: ...
     BaseType = property(get_BaseType, None)
+    BoxedType = property(get_BoxedType, None)
     ContentProperty = property(get_ContentProperty, None)
     FullName = property(get_FullName, None)
     IsArray = property(get_IsArray, None)
+    IsBindable = property(get_IsBindable, None)
     IsCollection = property(get_IsCollection, None)
     IsConstructible = property(get_IsConstructible, None)
     IsDictionary = property(get_IsDictionary, None)
     IsMarkupExtension = property(get_IsMarkupExtension, None)
-    IsBindable = property(get_IsBindable, None)
     ItemType = property(get_ItemType, None)
     KeyType = property(get_KeyType, None)
-    BoxedType = property(get_BoxedType, None)
     UnderlyingType = property(get_UnderlyingType, None)
 class IXamlTypeResolver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -286,6 +273,13 @@ class MarkupExtension(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Xaml.Markup.IMarkupExtension
     _classid_ = 'Microsoft.UI.Xaml.Markup.MarkupExtension'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Xaml.Markup.MarkupExtension.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.UI.Xaml.Markup.IMarkupExtensionFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Microsoft.UI.Xaml.Markup.MarkupExtension: ...
     @winrt_mixinmethod
@@ -296,6 +290,13 @@ class ProvideValueTargetProperty(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Xaml.Markup.IProvideValueTargetProperty
     _classid_ = 'Microsoft.UI.Xaml.Markup.ProvideValueTargetProperty'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Xaml.Markup.ProvideValueTargetProperty.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Xaml.Markup.ProvideValueTargetProperty: ...
     @winrt_mixinmethod
@@ -304,9 +305,9 @@ class ProvideValueTargetProperty(ComPtr):
     def get_Type(self: win32more.Microsoft.UI.Xaml.Markup.IProvideValueTargetProperty) -> win32more.Windows.UI.Xaml.Interop.TypeName: ...
     @winrt_mixinmethod
     def get_DeclaringType(self: win32more.Microsoft.UI.Xaml.Markup.IProvideValueTargetProperty) -> win32more.Windows.UI.Xaml.Interop.TypeName: ...
+    DeclaringType = property(get_DeclaringType, None)
     Name = property(get_Name, None)
     Type = property(get_Type, None)
-    DeclaringType = property(get_DeclaringType, None)
 class XamlBinaryWriter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Xaml.Markup.IXamlBinaryWriter
@@ -387,4 +388,6 @@ class XamlReader(ComPtr):
 class XmlnsDefinition(EasyCastStructure):
     XmlNamespace: WinRT_String
     Namespace: WinRT_String
+
+
 make_ready(__name__)

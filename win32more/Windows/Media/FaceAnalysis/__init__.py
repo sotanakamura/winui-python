@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Media
 import win32more.Windows.Media.FaceAnalysis
+import win32more.Windows.Win32.System.WinRT
 class DetectedFace(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.FaceAnalysis.IDetectedFace
@@ -53,8 +40,8 @@ class FaceDetector(ComPtr, metaclass=_FaceDetector_Meta_):
     def IsBitmapPixelFormatSupported(cls: win32more.Windows.Media.FaceAnalysis.IFaceDetectorStatics, bitmapPixelFormat: win32more.Windows.Graphics.Imaging.BitmapPixelFormat) -> Boolean: ...
     @winrt_classmethod
     def get_IsSupported(cls: win32more.Windows.Media.FaceAnalysis.IFaceDetectorStatics) -> Boolean: ...
-    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     MaxDetectableFaceSize = property(get_MaxDetectableFaceSize, put_MaxDetectableFaceSize)
+    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     _FaceDetector_Meta_.IsSupported = property(get_IsSupported.__wrapped__, None)
 class _FaceTracker_Meta_(ComPtr.__class__):
     pass
@@ -80,8 +67,8 @@ class FaceTracker(ComPtr, metaclass=_FaceTracker_Meta_):
     def IsBitmapPixelFormatSupported(cls: win32more.Windows.Media.FaceAnalysis.IFaceTrackerStatics, bitmapPixelFormat: win32more.Windows.Graphics.Imaging.BitmapPixelFormat) -> Boolean: ...
     @winrt_classmethod
     def get_IsSupported(cls: win32more.Windows.Media.FaceAnalysis.IFaceTrackerStatics) -> Boolean: ...
-    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     MaxDetectableFaceSize = property(get_MaxDetectableFaceSize, put_MaxDetectableFaceSize)
+    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     _FaceTracker_Meta_.IsSupported = property(get_IsSupported.__wrapped__, None)
 class IDetectedFace(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -106,8 +93,8 @@ class IFaceDetector(ComPtr):
     def get_MaxDetectableFaceSize(self) -> win32more.Windows.Graphics.Imaging.BitmapSize: ...
     @winrt_commethod(11)
     def put_MaxDetectableFaceSize(self, value: win32more.Windows.Graphics.Imaging.BitmapSize) -> Void: ...
-    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     MaxDetectableFaceSize = property(get_MaxDetectableFaceSize, put_MaxDetectableFaceSize)
+    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
 class IFaceDetectorStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.FaceAnalysis.IFaceDetectorStatics'
@@ -135,8 +122,8 @@ class IFaceTracker(ComPtr):
     def get_MaxDetectableFaceSize(self) -> win32more.Windows.Graphics.Imaging.BitmapSize: ...
     @winrt_commethod(10)
     def put_MaxDetectableFaceSize(self, value: win32more.Windows.Graphics.Imaging.BitmapSize) -> Void: ...
-    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
     MaxDetectableFaceSize = property(get_MaxDetectableFaceSize, put_MaxDetectableFaceSize)
+    MinDetectableFaceSize = property(get_MinDetectableFaceSize, put_MinDetectableFaceSize)
 class IFaceTrackerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.FaceAnalysis.IFaceTrackerStatics'
@@ -150,4 +137,6 @@ class IFaceTrackerStatics(ComPtr):
     @winrt_commethod(9)
     def get_IsSupported(self) -> Boolean: ...
     IsSupported = property(get_IsSupported, None)
+
+
 make_ready(__name__)

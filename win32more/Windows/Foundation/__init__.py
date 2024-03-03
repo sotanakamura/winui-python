@@ -1,22 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class AsyncActionCompletedHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{a4ed5c81-76c9-40bd-8be6-b1d90fb20ae7}')
@@ -41,17 +29,24 @@ class AsyncOperationWithProgressCompletedHandler(Generic[TResult, TProgress], Mu
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{e85df41d-6aa7-46e3-a8e2-f009d840c627}')
     def Invoke(self, asyncInfo: win32more.Windows.Foundation.IAsyncOperationWithProgress[TResult, TProgress], asyncStatus: win32more.Windows.Foundation.AsyncStatus) -> Void: ...
-AsyncStatus = Int32
-AsyncStatus_Canceled: AsyncStatus = 2
-AsyncStatus_Completed: AsyncStatus = 1
-AsyncStatus_Error: AsyncStatus = 3
-AsyncStatus_Started: AsyncStatus = 0
+class AsyncStatus(Int32):  # enum
+    Canceled = 2
+    Completed = 1
+    Error = 3
+    Started = 0
 class DateTime(EasyCastStructure):
     UniversalTime: Int64
 class Deferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IDeferral
     _classid_ = 'Windows.Foundation.Deferral'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Deferral.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Foundation.IDeferralFactory, handler: win32more.Windows.Foundation.DeferralCompletedHandler) -> win32more.Windows.Foundation.Deferral: ...
     @winrt_mixinmethod
@@ -111,8 +106,8 @@ class IAsyncActionWithProgress(Generic[TProgress], ComPtr):
     def get_Completed(self) -> win32more.Windows.Foundation.AsyncActionWithProgressCompletedHandler[TProgress]: ...
     @winrt_commethod(10)
     def GetResults(self) -> Void: ...
-    Progress = property(get_Progress, put_Progress)
     Completed = property(get_Completed, put_Completed)
+    Progress = property(get_Progress, put_Progress)
     def __await__(self):
         from win32more._winrt import IAsyncAction___await__
         return IAsyncAction___await__(self)
@@ -130,9 +125,9 @@ class IAsyncInfo(ComPtr):
     def Cancel(self) -> Void: ...
     @winrt_commethod(10)
     def Close(self) -> Void: ...
+    ErrorCode = property(get_ErrorCode, None)
     Id = property(get_Id, None)
     Status = property(get_Status, None)
-    ErrorCode = property(get_ErrorCode, None)
 class IAsyncOperationWithProgress(Generic[TResult, TProgress], ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.IAsyncOperationWithProgress'
@@ -147,8 +142,8 @@ class IAsyncOperationWithProgress(Generic[TResult, TProgress], ComPtr):
     def get_Completed(self) -> win32more.Windows.Foundation.AsyncOperationWithProgressCompletedHandler[TResult, TProgress]: ...
     @winrt_commethod(10)
     def GetResults(self) -> TResult: ...
-    Progress = property(get_Progress, put_Progress)
     Completed = property(get_Completed, put_Completed)
+    Progress = property(get_Progress, put_Progress)
     def __await__(self):
         from win32more._winrt import IAsyncOperation___await__
         return IAsyncOperation___await__(self)
@@ -306,8 +301,8 @@ class IPropertyValue(ComPtr):
     def GetSizeArray(self, value: POINTER(SZArray[win32more.Windows.Foundation.Size])) -> Void: ...
     @winrt_commethod(44)
     def GetRectArray(self, value: POINTER(SZArray[win32more.Windows.Foundation.Rect])) -> Void: ...
-    Type = property(get_Type, None)
     IsNumericScalar = property(get_IsNumericScalar, None)
+    Type = property(get_Type, None)
 class IPropertyValueStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.IPropertyValueStatics'
@@ -464,13 +459,13 @@ class IUriRuntimeClass(ComPtr):
     Host = property(get_Host, None)
     Password = property(get_Password, None)
     Path = property(get_Path, None)
+    Port = property(get_Port, None)
     Query = property(get_Query, None)
     QueryParsed = property(get_QueryParsed, None)
     RawUri = property(get_RawUri, None)
     SchemeName = property(get_SchemeName, None)
-    UserName = property(get_UserName, None)
-    Port = property(get_Port, None)
     Suspicious = property(get_Suspicious, None)
+    UserName = property(get_UserName, None)
 class IUriRuntimeClassFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.IUriRuntimeClassFactory'
@@ -515,6 +510,13 @@ class MemoryBuffer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IMemoryBuffer
     _classid_ = 'Windows.Foundation.MemoryBuffer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.MemoryBuffer.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Foundation.IMemoryBufferFactory, capacity: UInt32) -> win32more.Windows.Foundation.MemoryBuffer: ...
     @winrt_mixinmethod
@@ -524,48 +526,48 @@ class MemoryBuffer(ComPtr):
 class Point(EasyCastStructure):
     X: Single
     Y: Single
-PropertyType = Int32
-PropertyType_Empty: PropertyType = 0
-PropertyType_UInt8: PropertyType = 1
-PropertyType_Int16: PropertyType = 2
-PropertyType_UInt16: PropertyType = 3
-PropertyType_Int32: PropertyType = 4
-PropertyType_UInt32: PropertyType = 5
-PropertyType_Int64: PropertyType = 6
-PropertyType_UInt64: PropertyType = 7
-PropertyType_Single: PropertyType = 8
-PropertyType_Double: PropertyType = 9
-PropertyType_Char16: PropertyType = 10
-PropertyType_Boolean: PropertyType = 11
-PropertyType_String: PropertyType = 12
-PropertyType_Inspectable: PropertyType = 13
-PropertyType_DateTime: PropertyType = 14
-PropertyType_TimeSpan: PropertyType = 15
-PropertyType_Guid: PropertyType = 16
-PropertyType_Point: PropertyType = 17
-PropertyType_Size: PropertyType = 18
-PropertyType_Rect: PropertyType = 19
-PropertyType_OtherType: PropertyType = 20
-PropertyType_UInt8Array: PropertyType = 1025
-PropertyType_Int16Array: PropertyType = 1026
-PropertyType_UInt16Array: PropertyType = 1027
-PropertyType_Int32Array: PropertyType = 1028
-PropertyType_UInt32Array: PropertyType = 1029
-PropertyType_Int64Array: PropertyType = 1030
-PropertyType_UInt64Array: PropertyType = 1031
-PropertyType_SingleArray: PropertyType = 1032
-PropertyType_DoubleArray: PropertyType = 1033
-PropertyType_Char16Array: PropertyType = 1034
-PropertyType_BooleanArray: PropertyType = 1035
-PropertyType_StringArray: PropertyType = 1036
-PropertyType_InspectableArray: PropertyType = 1037
-PropertyType_DateTimeArray: PropertyType = 1038
-PropertyType_TimeSpanArray: PropertyType = 1039
-PropertyType_GuidArray: PropertyType = 1040
-PropertyType_PointArray: PropertyType = 1041
-PropertyType_SizeArray: PropertyType = 1042
-PropertyType_RectArray: PropertyType = 1043
-PropertyType_OtherTypeArray: PropertyType = 1044
+class PropertyType(Int32):  # enum
+    Empty = 0
+    UInt8 = 1
+    Int16 = 2
+    UInt16 = 3
+    Int32 = 4
+    UInt32 = 5
+    Int64 = 6
+    UInt64 = 7
+    Single = 8
+    Double = 9
+    Char16 = 10
+    Boolean = 11
+    String = 12
+    Inspectable = 13
+    DateTime = 14
+    TimeSpan = 15
+    Guid = 16
+    Point = 17
+    Size = 18
+    Rect = 19
+    OtherType = 20
+    UInt8Array = 1025
+    Int16Array = 1026
+    UInt16Array = 1027
+    Int32Array = 1028
+    UInt32Array = 1029
+    Int64Array = 1030
+    UInt64Array = 1031
+    SingleArray = 1032
+    DoubleArray = 1033
+    Char16Array = 1034
+    BooleanArray = 1035
+    StringArray = 1036
+    InspectableArray = 1037
+    DateTimeArray = 1038
+    TimeSpanArray = 1039
+    GuidArray = 1040
+    PointArray = 1041
+    SizeArray = 1042
+    RectArray = 1043
+    OtherTypeArray = 1044
 class PropertyValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.PropertyValue'
@@ -666,6 +668,15 @@ class Uri(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IUriRuntimeClass
     _classid_ = 'Windows.Foundation.Uri'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Uri.CreateUri(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Foundation.Uri.CreateWithRelativeUri(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateUri(cls: win32more.Windows.Foundation.IUriRuntimeClassFactory, uri: WinRT_String) -> win32more.Windows.Foundation.Uri: ...
     @winrt_factorymethod
@@ -714,7 +725,9 @@ class Uri(ComPtr):
     def UnescapeComponent(cls: win32more.Windows.Foundation.IUriEscapeStatics, toUnescape: WinRT_String) -> WinRT_String: ...
     @winrt_classmethod
     def EscapeComponent(cls: win32more.Windows.Foundation.IUriEscapeStatics, toEscape: WinRT_String) -> WinRT_String: ...
+    AbsoluteCanonicalUri = property(get_AbsoluteCanonicalUri, None)
     AbsoluteUri = property(get_AbsoluteUri, None)
+    DisplayIri = property(get_DisplayIri, None)
     DisplayUri = property(get_DisplayUri, None)
     Domain = property(get_Domain, None)
     Extension = property(get_Extension, None)
@@ -722,19 +735,24 @@ class Uri(ComPtr):
     Host = property(get_Host, None)
     Password = property(get_Password, None)
     Path = property(get_Path, None)
+    Port = property(get_Port, None)
     Query = property(get_Query, None)
     QueryParsed = property(get_QueryParsed, None)
     RawUri = property(get_RawUri, None)
     SchemeName = property(get_SchemeName, None)
-    UserName = property(get_UserName, None)
-    Port = property(get_Port, None)
     Suspicious = property(get_Suspicious, None)
-    AbsoluteCanonicalUri = property(get_AbsoluteCanonicalUri, None)
-    DisplayIri = property(get_DisplayIri, None)
+    UserName = property(get_UserName, None)
 class WwwFormUrlDecoder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.IWwwFormUrlDecoderRuntimeClass
     _classid_ = 'Windows.Foundation.WwwFormUrlDecoder'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.WwwFormUrlDecoder.CreateWwwFormUrlDecoder(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateWwwFormUrlDecoder(cls: win32more.Windows.Foundation.IWwwFormUrlDecoderRuntimeClassFactory, query: WinRT_String) -> win32more.Windows.Foundation.WwwFormUrlDecoder: ...
     @winrt_mixinmethod
@@ -760,4 +778,6 @@ class WwwFormUrlDecoderEntry(ComPtr):
     def get_Value(self: win32more.Windows.Foundation.IWwwFormUrlDecoderEntry) -> WinRT_String: ...
     Name = property(get_Name, None)
     Value = property(get_Value, None)
+
+
 make_ready(__name__)

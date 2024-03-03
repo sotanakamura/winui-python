@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Management.Update
+import win32more.Windows.Win32.System.WinRT
 class IPreviewBuildsManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IPreviewBuildsManager'
@@ -98,28 +85,28 @@ class IWindowsUpdate(ComPtr):
     def GetPropertyValue(self, propertyName: WinRT_String) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_commethod(29)
     def AcceptEula(self) -> Void: ...
-    ProviderId = property(get_ProviderId, None)
-    UpdateId = property(get_UpdateId, None)
-    Title = property(get_Title, None)
+    ActionProgress = property(get_ActionProgress, None)
+    ActionResult = property(get_ActionResult, None)
+    AttentionRequiredInfo = property(get_AttentionRequiredInfo, None)
+    CurrentAction = property(get_CurrentAction, None)
+    Deadline = property(get_Deadline, None)
     Description = property(get_Description, None)
+    EulaText = property(get_EulaText, None)
+    IsCritical = property(get_IsCritical, None)
+    IsDriver = property(get_IsDriver, None)
+    IsEulaAccepted = property(get_IsEulaAccepted, None)
     IsFeatureUpdate = property(get_IsFeatureUpdate, None)
+    IsForOS = property(get_IsForOS, None)
+    IsMandatory = property(get_IsMandatory, None)
     IsMinorImpact = property(get_IsMinorImpact, None)
     IsSecurity = property(get_IsSecurity, None)
-    IsCritical = property(get_IsCritical, None)
-    IsForOS = property(get_IsForOS, None)
-    IsDriver = property(get_IsDriver, None)
-    IsMandatory = property(get_IsMandatory, None)
-    IsUrgent = property(get_IsUrgent, None)
     IsSeeker = property(get_IsSeeker, None)
+    IsUrgent = property(get_IsUrgent, None)
     MoreInfoUrl = property(get_MoreInfoUrl, None)
+    ProviderId = property(get_ProviderId, None)
     SupportUrl = property(get_SupportUrl, None)
-    IsEulaAccepted = property(get_IsEulaAccepted, None)
-    EulaText = property(get_EulaText, None)
-    Deadline = property(get_Deadline, None)
-    AttentionRequiredInfo = property(get_AttentionRequiredInfo, None)
-    ActionResult = property(get_ActionResult, None)
-    CurrentAction = property(get_CurrentAction, None)
-    ActionProgress = property(get_ActionProgress, None)
+    Title = property(get_Title, None)
+    UpdateId = property(get_UpdateId, None)
 class IWindowsUpdateActionCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateActionCompletedEventArgs'
@@ -132,10 +119,10 @@ class IWindowsUpdateActionCompletedEventArgs(ComPtr):
     def get_Succeeded(self) -> Boolean: ...
     @winrt_commethod(9)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Update = property(get_Update, None)
     Action = property(get_Action, None)
-    Succeeded = property(get_Succeeded, None)
     ExtendedError = property(get_ExtendedError, None)
+    Succeeded = property(get_Succeeded, None)
+    Update = property(get_Update, None)
 class IWindowsUpdateActionProgress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateActionProgress'
@@ -158,10 +145,10 @@ class IWindowsUpdateActionResult(ComPtr):
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
     @winrt_commethod(9)
     def get_Action(self) -> WinRT_String: ...
-    Timestamp = property(get_Timestamp, None)
-    Succeeded = property(get_Succeeded, None)
-    ExtendedError = property(get_ExtendedError, None)
     Action = property(get_Action, None)
+    ExtendedError = property(get_ExtendedError, None)
+    Succeeded = property(get_Succeeded, None)
+    Timestamp = property(get_Timestamp, None)
 class IWindowsUpdateAdministrator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateAdministrator'
@@ -218,11 +205,11 @@ class IWindowsUpdateApprovalData(ComPtr):
     def get_OptOutOfAutoReboot(self) -> win32more.Windows.Foundation.IReference[Boolean]: ...
     @winrt_commethod(15)
     def put_OptOutOfAutoReboot(self, value: win32more.Windows.Foundation.IReference[Boolean]) -> Void: ...
-    Seeker = property(get_Seeker, put_Seeker)
     AllowDownloadOnMetered = property(get_AllowDownloadOnMetered, put_AllowDownloadOnMetered)
     ComplianceDeadlineInDays = property(get_ComplianceDeadlineInDays, put_ComplianceDeadlineInDays)
     ComplianceGracePeriodInDays = property(get_ComplianceGracePeriodInDays, put_ComplianceGracePeriodInDays)
     OptOutOfAutoReboot = property(get_OptOutOfAutoReboot, put_OptOutOfAutoReboot)
+    Seeker = property(get_Seeker, put_Seeker)
 class IWindowsUpdateAttentionRequiredInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateAttentionRequiredInfo'
@@ -241,8 +228,8 @@ class IWindowsUpdateAttentionRequiredReasonChangedEventArgs(ComPtr):
     def get_Update(self) -> win32more.Windows.Management.Update.WindowsUpdate: ...
     @winrt_commethod(7)
     def get_Reason(self) -> win32more.Windows.Management.Update.WindowsUpdateAttentionRequiredReason: ...
-    Update = property(get_Update, None)
     Reason = property(get_Reason, None)
+    Update = property(get_Update, None)
 class IWindowsUpdateGetAdministratorResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateGetAdministratorResult'
@@ -273,14 +260,14 @@ class IWindowsUpdateItem(ComPtr):
     def get_Category(self) -> WinRT_String: ...
     @winrt_commethod(13)
     def get_Operation(self) -> WinRT_String: ...
-    ProviderId = property(get_ProviderId, None)
-    UpdateId = property(get_UpdateId, None)
-    Timestamp = property(get_Timestamp, None)
-    Title = property(get_Title, None)
+    Category = property(get_Category, None)
     Description = property(get_Description, None)
     MoreInfoUrl = property(get_MoreInfoUrl, None)
-    Category = property(get_Category, None)
     Operation = property(get_Operation, None)
+    ProviderId = property(get_ProviderId, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
+    UpdateId = property(get_UpdateId, None)
 class IWindowsUpdateManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateManager'
@@ -340,8 +327,8 @@ class IWindowsUpdateProgressChangedEventArgs(ComPtr):
     def get_Update(self) -> win32more.Windows.Management.Update.WindowsUpdate: ...
     @winrt_commethod(7)
     def get_ActionProgress(self) -> win32more.Windows.Management.Update.WindowsUpdateActionProgress: ...
-    Update = property(get_Update, None)
     ActionProgress = property(get_ActionProgress, None)
+    Update = property(get_Update, None)
 class IWindowsUpdateRestartRequestOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateRestartRequestOptions'
@@ -374,13 +361,13 @@ class IWindowsUpdateRestartRequestOptions(ComPtr):
     def get_OptOutOfAutoReboot(self) -> Boolean: ...
     @winrt_commethod(19)
     def put_OptOutOfAutoReboot(self, value: Boolean) -> Void: ...
-    Title = property(get_Title, put_Title)
-    Description = property(get_Description, put_Description)
-    MoreInfoUrl = property(get_MoreInfoUrl, put_MoreInfoUrl)
     ComplianceDeadlineInDays = property(get_ComplianceDeadlineInDays, put_ComplianceDeadlineInDays)
     ComplianceGracePeriodInDays = property(get_ComplianceGracePeriodInDays, put_ComplianceGracePeriodInDays)
-    OrganizationName = property(get_OrganizationName, put_OrganizationName)
+    Description = property(get_Description, put_Description)
+    MoreInfoUrl = property(get_MoreInfoUrl, put_MoreInfoUrl)
     OptOutOfAutoReboot = property(get_OptOutOfAutoReboot, put_OptOutOfAutoReboot)
+    OrganizationName = property(get_OrganizationName, put_OrganizationName)
+    Title = property(get_Title, put_Title)
 class IWindowsUpdateRestartRequestOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Management.Update.IWindowsUpdateRestartRequestOptionsFactory'
@@ -399,9 +386,9 @@ class IWindowsUpdateScanCompletedEventArgs(ComPtr):
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
     @winrt_commethod(9)
     def get_Updates(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Management.Update.WindowsUpdate]: ...
+    ExtendedError = property(get_ExtendedError, None)
     ProviderId = property(get_ProviderId, None)
     Succeeded = property(get_Succeeded, None)
-    ExtendedError = property(get_ExtendedError, None)
     Updates = property(get_Updates, None)
 class PreviewBuildsManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -479,28 +466,28 @@ class WindowsUpdate(ComPtr):
     def GetPropertyValue(self: win32more.Windows.Management.Update.IWindowsUpdate, propertyName: WinRT_String) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_mixinmethod
     def AcceptEula(self: win32more.Windows.Management.Update.IWindowsUpdate) -> Void: ...
-    ProviderId = property(get_ProviderId, None)
-    UpdateId = property(get_UpdateId, None)
-    Title = property(get_Title, None)
+    ActionProgress = property(get_ActionProgress, None)
+    ActionResult = property(get_ActionResult, None)
+    AttentionRequiredInfo = property(get_AttentionRequiredInfo, None)
+    CurrentAction = property(get_CurrentAction, None)
+    Deadline = property(get_Deadline, None)
     Description = property(get_Description, None)
+    EulaText = property(get_EulaText, None)
+    IsCritical = property(get_IsCritical, None)
+    IsDriver = property(get_IsDriver, None)
+    IsEulaAccepted = property(get_IsEulaAccepted, None)
     IsFeatureUpdate = property(get_IsFeatureUpdate, None)
+    IsForOS = property(get_IsForOS, None)
+    IsMandatory = property(get_IsMandatory, None)
     IsMinorImpact = property(get_IsMinorImpact, None)
     IsSecurity = property(get_IsSecurity, None)
-    IsCritical = property(get_IsCritical, None)
-    IsForOS = property(get_IsForOS, None)
-    IsDriver = property(get_IsDriver, None)
-    IsMandatory = property(get_IsMandatory, None)
-    IsUrgent = property(get_IsUrgent, None)
     IsSeeker = property(get_IsSeeker, None)
+    IsUrgent = property(get_IsUrgent, None)
     MoreInfoUrl = property(get_MoreInfoUrl, None)
+    ProviderId = property(get_ProviderId, None)
     SupportUrl = property(get_SupportUrl, None)
-    IsEulaAccepted = property(get_IsEulaAccepted, None)
-    EulaText = property(get_EulaText, None)
-    Deadline = property(get_Deadline, None)
-    AttentionRequiredInfo = property(get_AttentionRequiredInfo, None)
-    ActionResult = property(get_ActionResult, None)
-    CurrentAction = property(get_CurrentAction, None)
-    ActionProgress = property(get_ActionProgress, None)
+    Title = property(get_Title, None)
+    UpdateId = property(get_UpdateId, None)
 class WindowsUpdateActionCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateActionCompletedEventArgs
@@ -513,10 +500,10 @@ class WindowsUpdateActionCompletedEventArgs(ComPtr):
     def get_Succeeded(self: win32more.Windows.Management.Update.IWindowsUpdateActionCompletedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Management.Update.IWindowsUpdateActionCompletedEventArgs) -> win32more.Windows.Foundation.HResult: ...
-    Update = property(get_Update, None)
     Action = property(get_Action, None)
-    Succeeded = property(get_Succeeded, None)
     ExtendedError = property(get_ExtendedError, None)
+    Succeeded = property(get_Succeeded, None)
+    Update = property(get_Update, None)
 class WindowsUpdateActionProgress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateActionProgress
@@ -539,10 +526,10 @@ class WindowsUpdateActionResult(ComPtr):
     def get_ExtendedError(self: win32more.Windows.Management.Update.IWindowsUpdateActionResult) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def get_Action(self: win32more.Windows.Management.Update.IWindowsUpdateActionResult) -> WinRT_String: ...
-    Timestamp = property(get_Timestamp, None)
-    Succeeded = property(get_Succeeded, None)
-    ExtendedError = property(get_ExtendedError, None)
     Action = property(get_Action, None)
+    ExtendedError = property(get_ExtendedError, None)
+    Succeeded = property(get_Succeeded, None)
+    Timestamp = property(get_Timestamp, None)
 class WindowsUpdateAdministrator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateAdministrator
@@ -571,19 +558,26 @@ class WindowsUpdateAdministrator(ComPtr):
     def RequestRestart(cls: win32more.Windows.Management.Update.IWindowsUpdateAdministratorStatics, restartOptions: win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions) -> WinRT_String: ...
     @winrt_classmethod
     def CancelRestartRequest(cls: win32more.Windows.Management.Update.IWindowsUpdateAdministratorStatics, requestRestartToken: WinRT_String) -> Void: ...
-WindowsUpdateAdministratorOptions = UInt32
-WindowsUpdateAdministratorOptions_None: WindowsUpdateAdministratorOptions = 0
-WindowsUpdateAdministratorOptions_RequireAdministratorApprovalForScans: WindowsUpdateAdministratorOptions = 1
-WindowsUpdateAdministratorOptions_RequireAdministratorApprovalForUpdates: WindowsUpdateAdministratorOptions = 2
-WindowsUpdateAdministratorOptions_RequireAdministratorApprovalForActions: WindowsUpdateAdministratorOptions = 4
-WindowsUpdateAdministratorStatus = Int32
-WindowsUpdateAdministratorStatus_Succeeded: WindowsUpdateAdministratorStatus = 0
-WindowsUpdateAdministratorStatus_NoAdministratorRegistered: WindowsUpdateAdministratorStatus = 1
-WindowsUpdateAdministratorStatus_OtherAdministratorIsRegistered: WindowsUpdateAdministratorStatus = 2
+class WindowsUpdateAdministratorOptions(UInt32):  # enum
+    None_ = 0
+    RequireAdministratorApprovalForScans = 1
+    RequireAdministratorApprovalForUpdates = 2
+    RequireAdministratorApprovalForActions = 4
+class WindowsUpdateAdministratorStatus(Int32):  # enum
+    Succeeded = 0
+    NoAdministratorRegistered = 1
+    OtherAdministratorIsRegistered = 2
 class WindowsUpdateApprovalData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateApprovalData
     _classid_ = 'Windows.Management.Update.WindowsUpdateApprovalData'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Management.Update.WindowsUpdateApprovalData.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Management.Update.WindowsUpdateApprovalData: ...
     @winrt_mixinmethod
@@ -606,11 +600,11 @@ class WindowsUpdateApprovalData(ComPtr):
     def get_OptOutOfAutoReboot(self: win32more.Windows.Management.Update.IWindowsUpdateApprovalData) -> win32more.Windows.Foundation.IReference[Boolean]: ...
     @winrt_mixinmethod
     def put_OptOutOfAutoReboot(self: win32more.Windows.Management.Update.IWindowsUpdateApprovalData, value: win32more.Windows.Foundation.IReference[Boolean]) -> Void: ...
-    Seeker = property(get_Seeker, put_Seeker)
     AllowDownloadOnMetered = property(get_AllowDownloadOnMetered, put_AllowDownloadOnMetered)
     ComplianceDeadlineInDays = property(get_ComplianceDeadlineInDays, put_ComplianceDeadlineInDays)
     ComplianceGracePeriodInDays = property(get_ComplianceGracePeriodInDays, put_ComplianceGracePeriodInDays)
     OptOutOfAutoReboot = property(get_OptOutOfAutoReboot, put_OptOutOfAutoReboot)
+    Seeker = property(get_Seeker, put_Seeker)
 class WindowsUpdateAttentionRequiredInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateAttentionRequiredInfo
@@ -621,40 +615,40 @@ class WindowsUpdateAttentionRequiredInfo(ComPtr):
     def get_Timestamp(self: win32more.Windows.Management.Update.IWindowsUpdateAttentionRequiredInfo) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     Reason = property(get_Reason, None)
     Timestamp = property(get_Timestamp, None)
-WindowsUpdateAttentionRequiredReason = Int32
-WindowsUpdateAttentionRequiredReason_None: WindowsUpdateAttentionRequiredReason = 0
-WindowsUpdateAttentionRequiredReason_SeekerUpdate: WindowsUpdateAttentionRequiredReason = 1
-WindowsUpdateAttentionRequiredReason_ReadyToReboot: WindowsUpdateAttentionRequiredReason = 2
-WindowsUpdateAttentionRequiredReason_NeedNonMeteredNetwork: WindowsUpdateAttentionRequiredReason = 3
-WindowsUpdateAttentionRequiredReason_NeedUserAgreementForMeteredNetwork: WindowsUpdateAttentionRequiredReason = 4
-WindowsUpdateAttentionRequiredReason_NeedNetwork: WindowsUpdateAttentionRequiredReason = 5
-WindowsUpdateAttentionRequiredReason_NeedMoreSpace: WindowsUpdateAttentionRequiredReason = 6
-WindowsUpdateAttentionRequiredReason_BatterySaverEnabled: WindowsUpdateAttentionRequiredReason = 7
-WindowsUpdateAttentionRequiredReason_NeedUserInteraction: WindowsUpdateAttentionRequiredReason = 8
-WindowsUpdateAttentionRequiredReason_NeedUserAgreementForPolicy: WindowsUpdateAttentionRequiredReason = 9
-WindowsUpdateAttentionRequiredReason_CompatibilityError: WindowsUpdateAttentionRequiredReason = 10
-WindowsUpdateAttentionRequiredReason_NeedUserInteractionForEula: WindowsUpdateAttentionRequiredReason = 11
-WindowsUpdateAttentionRequiredReason_NeedUserInteractionForCta: WindowsUpdateAttentionRequiredReason = 12
-WindowsUpdateAttentionRequiredReason_Regulated: WindowsUpdateAttentionRequiredReason = 13
-WindowsUpdateAttentionRequiredReason_ExternalReboot: WindowsUpdateAttentionRequiredReason = 14
-WindowsUpdateAttentionRequiredReason_OtherUpdate: WindowsUpdateAttentionRequiredReason = 15
-WindowsUpdateAttentionRequiredReason_BlockedByProvider: WindowsUpdateAttentionRequiredReason = 16
-WindowsUpdateAttentionRequiredReason_BlockedByPostRebootFailure: WindowsUpdateAttentionRequiredReason = 17
-WindowsUpdateAttentionRequiredReason_UserEngaged: WindowsUpdateAttentionRequiredReason = 18
-WindowsUpdateAttentionRequiredReason_BlockedByBattery: WindowsUpdateAttentionRequiredReason = 19
-WindowsUpdateAttentionRequiredReason_Exclusivity: WindowsUpdateAttentionRequiredReason = 20
-WindowsUpdateAttentionRequiredReason_BlockedBySerialization: WindowsUpdateAttentionRequiredReason = 21
-WindowsUpdateAttentionRequiredReason_ConflictClass: WindowsUpdateAttentionRequiredReason = 22
-WindowsUpdateAttentionRequiredReason_BlockedByAdminApproval: WindowsUpdateAttentionRequiredReason = 23
-WindowsUpdateAttentionRequiredReason_BlockedByTooManyAttempts: WindowsUpdateAttentionRequiredReason = 24
-WindowsUpdateAttentionRequiredReason_BlockedByFailure: WindowsUpdateAttentionRequiredReason = 25
-WindowsUpdateAttentionRequiredReason_Demotion: WindowsUpdateAttentionRequiredReason = 26
-WindowsUpdateAttentionRequiredReason_BlockedByActiveHours: WindowsUpdateAttentionRequiredReason = 27
-WindowsUpdateAttentionRequiredReason_ScheduledForMaintenance: WindowsUpdateAttentionRequiredReason = 28
-WindowsUpdateAttentionRequiredReason_PolicyScheduledInstallTime: WindowsUpdateAttentionRequiredReason = 29
-WindowsUpdateAttentionRequiredReason_BlockedByOobe: WindowsUpdateAttentionRequiredReason = 30
-WindowsUpdateAttentionRequiredReason_DeferredDuringOobe: WindowsUpdateAttentionRequiredReason = 31
-WindowsUpdateAttentionRequiredReason_DeferredForSustainableTime: WindowsUpdateAttentionRequiredReason = 32
+class WindowsUpdateAttentionRequiredReason(Int32):  # enum
+    None_ = 0
+    SeekerUpdate = 1
+    ReadyToReboot = 2
+    NeedNonMeteredNetwork = 3
+    NeedUserAgreementForMeteredNetwork = 4
+    NeedNetwork = 5
+    NeedMoreSpace = 6
+    BatterySaverEnabled = 7
+    NeedUserInteraction = 8
+    NeedUserAgreementForPolicy = 9
+    CompatibilityError = 10
+    NeedUserInteractionForEula = 11
+    NeedUserInteractionForCta = 12
+    Regulated = 13
+    ExternalReboot = 14
+    OtherUpdate = 15
+    BlockedByProvider = 16
+    BlockedByPostRebootFailure = 17
+    UserEngaged = 18
+    BlockedByBattery = 19
+    Exclusivity = 20
+    BlockedBySerialization = 21
+    ConflictClass = 22
+    BlockedByAdminApproval = 23
+    BlockedByTooManyAttempts = 24
+    BlockedByFailure = 25
+    Demotion = 26
+    BlockedByActiveHours = 27
+    ScheduledForMaintenance = 28
+    PolicyScheduledInstallTime = 29
+    BlockedByOobe = 30
+    DeferredDuringOobe = 31
+    DeferredForSustainableTime = 32
 class WindowsUpdateAttentionRequiredReasonChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateAttentionRequiredReasonChangedEventArgs
@@ -663,8 +657,8 @@ class WindowsUpdateAttentionRequiredReasonChangedEventArgs(ComPtr):
     def get_Update(self: win32more.Windows.Management.Update.IWindowsUpdateAttentionRequiredReasonChangedEventArgs) -> win32more.Windows.Management.Update.WindowsUpdate: ...
     @winrt_mixinmethod
     def get_Reason(self: win32more.Windows.Management.Update.IWindowsUpdateAttentionRequiredReasonChangedEventArgs) -> win32more.Windows.Management.Update.WindowsUpdateAttentionRequiredReason: ...
-    Update = property(get_Update, None)
     Reason = property(get_Reason, None)
+    Update = property(get_Update, None)
 WindowsUpdateContract: UInt32 = 65536
 class WindowsUpdateGetAdministratorResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -696,18 +690,25 @@ class WindowsUpdateItem(ComPtr):
     def get_Category(self: win32more.Windows.Management.Update.IWindowsUpdateItem) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_Operation(self: win32more.Windows.Management.Update.IWindowsUpdateItem) -> WinRT_String: ...
-    ProviderId = property(get_ProviderId, None)
-    UpdateId = property(get_UpdateId, None)
-    Timestamp = property(get_Timestamp, None)
-    Title = property(get_Title, None)
+    Category = property(get_Category, None)
     Description = property(get_Description, None)
     MoreInfoUrl = property(get_MoreInfoUrl, None)
-    Category = property(get_Category, None)
     Operation = property(get_Operation, None)
+    ProviderId = property(get_ProviderId, None)
+    Timestamp = property(get_Timestamp, None)
+    Title = property(get_Title, None)
+    UpdateId = property(get_UpdateId, None)
 class WindowsUpdateManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateManager
     _classid_ = 'Windows.Management.Update.WindowsUpdateManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Management.Update.WindowsUpdateManager.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Management.Update.IWindowsUpdateManagerFactory, clientId: WinRT_String) -> win32more.Windows.Management.Update.WindowsUpdateManager: ...
     @winrt_mixinmethod
@@ -759,16 +760,27 @@ class WindowsUpdateProgressChangedEventArgs(ComPtr):
     def get_Update(self: win32more.Windows.Management.Update.IWindowsUpdateProgressChangedEventArgs) -> win32more.Windows.Management.Update.WindowsUpdate: ...
     @winrt_mixinmethod
     def get_ActionProgress(self: win32more.Windows.Management.Update.IWindowsUpdateProgressChangedEventArgs) -> win32more.Windows.Management.Update.WindowsUpdateActionProgress: ...
-    Update = property(get_Update, None)
     ActionProgress = property(get_ActionProgress, None)
+    Update = property(get_Update, None)
 class WindowsUpdateRestartRequestOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptions
     _classid_ = 'Windows.Management.Update.WindowsUpdateRestartRequestOptions'
-    @winrt_factorymethod
-    def CreateInstance(cls: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptionsFactory, title: WinRT_String, description: WinRT_String, moreInfoUrl: win32more.Windows.Foundation.Uri, complianceDeadlineInDays: Int32, complianceGracePeriodInDays: Int32) -> win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions.CreateInstance(*args)
+        elif len(args) == 5:
+            return win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_overload
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions: ...
+    @CreateInstance.register
+    @winrt_factorymethod
+    def CreateInstance(cls: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptionsFactory, title: WinRT_String, description: WinRT_String, moreInfoUrl: win32more.Windows.Foundation.Uri, complianceDeadlineInDays: Int32, complianceGracePeriodInDays: Int32) -> win32more.Windows.Management.Update.WindowsUpdateRestartRequestOptions: ...
     @winrt_mixinmethod
     def get_Title(self: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptions) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -797,13 +809,13 @@ class WindowsUpdateRestartRequestOptions(ComPtr):
     def get_OptOutOfAutoReboot(self: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptions) -> Boolean: ...
     @winrt_mixinmethod
     def put_OptOutOfAutoReboot(self: win32more.Windows.Management.Update.IWindowsUpdateRestartRequestOptions, value: Boolean) -> Void: ...
-    Title = property(get_Title, put_Title)
-    Description = property(get_Description, put_Description)
-    MoreInfoUrl = property(get_MoreInfoUrl, put_MoreInfoUrl)
     ComplianceDeadlineInDays = property(get_ComplianceDeadlineInDays, put_ComplianceDeadlineInDays)
     ComplianceGracePeriodInDays = property(get_ComplianceGracePeriodInDays, put_ComplianceGracePeriodInDays)
-    OrganizationName = property(get_OrganizationName, put_OrganizationName)
+    Description = property(get_Description, put_Description)
+    MoreInfoUrl = property(get_MoreInfoUrl, put_MoreInfoUrl)
     OptOutOfAutoReboot = property(get_OptOutOfAutoReboot, put_OptOutOfAutoReboot)
+    OrganizationName = property(get_OrganizationName, put_OrganizationName)
+    Title = property(get_Title, put_Title)
 class WindowsUpdateScanCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Management.Update.IWindowsUpdateScanCompletedEventArgs
@@ -816,8 +828,10 @@ class WindowsUpdateScanCompletedEventArgs(ComPtr):
     def get_ExtendedError(self: win32more.Windows.Management.Update.IWindowsUpdateScanCompletedEventArgs) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def get_Updates(self: win32more.Windows.Management.Update.IWindowsUpdateScanCompletedEventArgs) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Management.Update.WindowsUpdate]: ...
+    ExtendedError = property(get_ExtendedError, None)
     ProviderId = property(get_ProviderId, None)
     Succeeded = property(get_Succeeded, None)
-    ExtendedError = property(get_ExtendedError, None)
     Updates = property(get_Updates, None)
+
+
 make_ready(__name__)

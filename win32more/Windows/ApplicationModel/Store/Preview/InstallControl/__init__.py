@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Store.Preview.InstallControl
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Management.Deployment
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class AppInstallItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallItem
@@ -82,22 +69,29 @@ class AppInstallItem(ComPtr):
     def get_InstallInProgressToastNotificationMode(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallItem5) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallationToastNotificationMode: ...
     @winrt_mixinmethod
     def put_InstallInProgressToastNotificationMode(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallItem5, value: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallationToastNotificationMode) -> Void: ...
-    ProductId = property(get_ProductId, None)
-    PackageFamilyName = property(get_PackageFamilyName, None)
+    Children = property(get_Children, None)
+    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
+    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
     InstallType = property(get_InstallType, None)
     IsUserInitiated = property(get_IsUserInitiated, None)
-    Children = property(get_Children, None)
     ItemOperationsMightAffectOtherItems = property(get_ItemOperationsMightAffectOtherItems, None)
     LaunchAfterInstall = property(get_LaunchAfterInstall, put_LaunchAfterInstall)
+    PackageFamilyName = property(get_PackageFamilyName, None)
     PinToDesktopAfterInstall = property(get_PinToDesktopAfterInstall, put_PinToDesktopAfterInstall)
     PinToStartAfterInstall = property(get_PinToStartAfterInstall, put_PinToStartAfterInstall)
     PinToTaskbarAfterInstall = property(get_PinToTaskbarAfterInstall, put_PinToTaskbarAfterInstall)
-    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
-    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
+    ProductId = property(get_ProductId, None)
 class AppInstallManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallManager
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallManager.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallManager: ...
     @winrt_mixinmethod
@@ -196,10 +190,10 @@ class AppInstallManager(ComPtr):
     def GetIsPackageIdentityAllowedToInstallForUserAsync(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallManager6, user: win32more.Windows.System.User, correlationVector: WinRT_String, packageIdentityName: WinRT_String, publisherCertificateName: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_mixinmethod
     def get_CanInstallForAllUsers(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallManager7) -> Boolean: ...
-    AppInstallItems = property(get_AppInstallItems, None)
-    AutoUpdateSetting = property(get_AutoUpdateSetting, put_AutoUpdateSetting)
     AcquisitionIdentity = property(get_AcquisitionIdentity, put_AcquisitionIdentity)
+    AppInstallItems = property(get_AppInstallItems, None)
     AppInstallItemsWithGroupSupport = property(get_AppInstallItemsWithGroupSupport, None)
+    AutoUpdateSetting = property(get_AutoUpdateSetting, put_AutoUpdateSetting)
     CanInstallForAllUsers = property(get_CanInstallForAllUsers, None)
 class AppInstallManagerItemEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -212,6 +206,13 @@ class AppInstallOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallOptions
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallOptions: ...
     @winrt_mixinmethod
@@ -274,36 +275,36 @@ class AppInstallOptions(ComPtr):
     def get_ExtendedCampaignId(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallOptions2) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_ExtendedCampaignId(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallOptions2, value: WinRT_String) -> Void: ...
-    CatalogId = property(get_CatalogId, put_CatalogId)
-    ForceUseOfNonRemovableStorage = property(get_ForceUseOfNonRemovableStorage, put_ForceUseOfNonRemovableStorage)
     AllowForcedAppRestart = property(get_AllowForcedAppRestart, put_AllowForcedAppRestart)
-    Repair = property(get_Repair, put_Repair)
-    TargetVolume = property(get_TargetVolume, put_TargetVolume)
+    CampaignId = property(get_CampaignId, put_CampaignId)
+    CatalogId = property(get_CatalogId, put_CatalogId)
+    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
+    ExtendedCampaignId = property(get_ExtendedCampaignId, put_ExtendedCampaignId)
+    ForceUseOfNonRemovableStorage = property(get_ForceUseOfNonRemovableStorage, put_ForceUseOfNonRemovableStorage)
+    InstallForAllUsers = property(get_InstallForAllUsers, put_InstallForAllUsers)
+    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
     LaunchAfterInstall = property(get_LaunchAfterInstall, put_LaunchAfterInstall)
     PinToDesktopAfterInstall = property(get_PinToDesktopAfterInstall, put_PinToDesktopAfterInstall)
     PinToStartAfterInstall = property(get_PinToStartAfterInstall, put_PinToStartAfterInstall)
     PinToTaskbarAfterInstall = property(get_PinToTaskbarAfterInstall, put_PinToTaskbarAfterInstall)
-    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
-    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
-    InstallForAllUsers = property(get_InstallForAllUsers, put_InstallForAllUsers)
+    Repair = property(get_Repair, put_Repair)
     StageButDoNotInstall = property(get_StageButDoNotInstall, put_StageButDoNotInstall)
-    CampaignId = property(get_CampaignId, put_CampaignId)
-    ExtendedCampaignId = property(get_ExtendedCampaignId, put_ExtendedCampaignId)
-AppInstallState = Int32
-AppInstallState_Pending: AppInstallState = 0
-AppInstallState_Starting: AppInstallState = 1
-AppInstallState_AcquiringLicense: AppInstallState = 2
-AppInstallState_Downloading: AppInstallState = 3
-AppInstallState_RestoringData: AppInstallState = 4
-AppInstallState_Installing: AppInstallState = 5
-AppInstallState_Completed: AppInstallState = 6
-AppInstallState_Canceled: AppInstallState = 7
-AppInstallState_Paused: AppInstallState = 8
-AppInstallState_Error: AppInstallState = 9
-AppInstallState_PausedLowBattery: AppInstallState = 10
-AppInstallState_PausedWiFiRecommended: AppInstallState = 11
-AppInstallState_PausedWiFiRequired: AppInstallState = 12
-AppInstallState_ReadyToDownload: AppInstallState = 13
+    TargetVolume = property(get_TargetVolume, put_TargetVolume)
+class AppInstallState(Int32):  # enum
+    Pending = 0
+    Starting = 1
+    AcquiringLicense = 2
+    Downloading = 3
+    RestoringData = 4
+    Installing = 5
+    Completed = 6
+    Canceled = 7
+    Paused = 8
+    Error = 9
+    PausedLowBattery = 10
+    PausedWiFiRecommended = 11
+    PausedWiFiRequired = 12
+    ReadyToDownload = 13
 class AppInstallStatus(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus
@@ -324,27 +325,34 @@ class AppInstallStatus(ComPtr):
     def get_ReadyForLaunch(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus2) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsStaged(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus3) -> Boolean: ...
-    InstallState = property(get_InstallState, None)
-    DownloadSizeInBytes = property(get_DownloadSizeInBytes, None)
     BytesDownloaded = property(get_BytesDownloaded, None)
-    PercentComplete = property(get_PercentComplete, None)
+    DownloadSizeInBytes = property(get_DownloadSizeInBytes, None)
     ErrorCode = property(get_ErrorCode, None)
-    User = property(get_User, None)
-    ReadyForLaunch = property(get_ReadyForLaunch, None)
+    InstallState = property(get_InstallState, None)
     IsStaged = property(get_IsStaged, None)
-AppInstallType = Int32
-AppInstallType_Install: AppInstallType = 0
-AppInstallType_Update: AppInstallType = 1
-AppInstallType_Repair: AppInstallType = 2
-AppInstallationToastNotificationMode = Int32
-AppInstallationToastNotificationMode_Default: AppInstallationToastNotificationMode = 0
-AppInstallationToastNotificationMode_Toast: AppInstallationToastNotificationMode = 1
-AppInstallationToastNotificationMode_ToastWithoutPopup: AppInstallationToastNotificationMode = 2
-AppInstallationToastNotificationMode_NoToast: AppInstallationToastNotificationMode = 3
+    PercentComplete = property(get_PercentComplete, None)
+    ReadyForLaunch = property(get_ReadyForLaunch, None)
+    User = property(get_User, None)
+class AppInstallType(Int32):  # enum
+    Install = 0
+    Update = 1
+    Repair = 2
+class AppInstallationToastNotificationMode(Int32):  # enum
+    Default = 0
+    Toast = 1
+    ToastWithoutPopup = 2
+    NoToast = 3
 class AppUpdateOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppUpdateOptions
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.AppUpdateOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppUpdateOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppUpdateOptions: ...
     @winrt_mixinmethod
@@ -359,14 +367,14 @@ class AppUpdateOptions(ComPtr):
     def get_AutomaticallyDownloadAndInstallUpdateIfFound(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppUpdateOptions2) -> Boolean: ...
     @winrt_mixinmethod
     def put_AutomaticallyDownloadAndInstallUpdateIfFound(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IAppUpdateOptions2, value: Boolean) -> Void: ...
-    CatalogId = property(get_CatalogId, put_CatalogId)
     AllowForcedAppRestart = property(get_AllowForcedAppRestart, put_AllowForcedAppRestart)
     AutomaticallyDownloadAndInstallUpdateIfFound = property(get_AutomaticallyDownloadAndInstallUpdateIfFound, put_AutomaticallyDownloadAndInstallUpdateIfFound)
-AutoUpdateSetting = Int32
-AutoUpdateSetting_Disabled: AutoUpdateSetting = 0
-AutoUpdateSetting_Enabled: AutoUpdateSetting = 1
-AutoUpdateSetting_DisabledByPolicy: AutoUpdateSetting = 2
-AutoUpdateSetting_EnabledByPolicy: AutoUpdateSetting = 3
+    CatalogId = property(get_CatalogId, put_CatalogId)
+class AutoUpdateSetting(Int32):  # enum
+    Disabled = 0
+    Enabled = 1
+    DisabledByPolicy = 2
+    EnabledByPolicy = 3
 class GetEntitlementResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IGetEntitlementResult
@@ -374,11 +382,11 @@ class GetEntitlementResult(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.IGetEntitlementResult) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.GetEntitlementStatus: ...
     Status = property(get_Status, None)
-GetEntitlementStatus = Int32
-GetEntitlementStatus_Succeeded: GetEntitlementStatus = 0
-GetEntitlementStatus_NoStoreAccount: GetEntitlementStatus = 1
-GetEntitlementStatus_NetworkError: GetEntitlementStatus = 2
-GetEntitlementStatus_ServerError: GetEntitlementStatus = 3
+class GetEntitlementStatus(Int32):  # enum
+    Succeeded = 0
+    NoStoreAccount = 1
+    NetworkError = 2
+    ServerError = 3
 class IAppInstallItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallItem'
@@ -407,10 +415,10 @@ class IAppInstallItem(ComPtr):
     def add_StatusChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallItem, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(17)
     def remove_StatusChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    ProductId = property(get_ProductId, None)
-    PackageFamilyName = property(get_PackageFamilyName, None)
     InstallType = property(get_InstallType, None)
     IsUserInitiated = property(get_IsUserInitiated, None)
+    PackageFamilyName = property(get_PackageFamilyName, None)
+    ProductId = property(get_ProductId, None)
 class IAppInstallItem2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallItem2'
@@ -464,11 +472,11 @@ class IAppInstallItem5(ComPtr):
     def get_InstallInProgressToastNotificationMode(self) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallationToastNotificationMode: ...
     @winrt_commethod(15)
     def put_InstallInProgressToastNotificationMode(self, value: win32more.Windows.ApplicationModel.Store.Preview.InstallControl.AppInstallationToastNotificationMode) -> Void: ...
+    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
+    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
     PinToDesktopAfterInstall = property(get_PinToDesktopAfterInstall, put_PinToDesktopAfterInstall)
     PinToStartAfterInstall = property(get_PinToStartAfterInstall, put_PinToStartAfterInstall)
     PinToTaskbarAfterInstall = property(get_PinToTaskbarAfterInstall, put_PinToTaskbarAfterInstall)
-    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
-    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
 class IAppInstallManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallManager'
@@ -511,9 +519,9 @@ class IAppInstallManager(ComPtr):
     def IsStoreBlockedByPolicyAsync(self, storeClientName: WinRT_String, storeClientPublisher: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_commethod(24)
     def GetIsAppAllowedToInstallAsync(self, productId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
+    AcquisitionIdentity = property(get_AcquisitionIdentity, put_AcquisitionIdentity)
     AppInstallItems = property(get_AppInstallItems, None)
     AutoUpdateSetting = property(get_AutoUpdateSetting, put_AutoUpdateSetting)
-    AcquisitionIdentity = property(get_AcquisitionIdentity, put_AcquisitionIdentity)
 class IAppInstallManager2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallManager2'
@@ -633,12 +641,12 @@ class IAppInstallOptions(ComPtr):
     def get_LaunchAfterInstall(self) -> Boolean: ...
     @winrt_commethod(17)
     def put_LaunchAfterInstall(self, value: Boolean) -> Void: ...
+    AllowForcedAppRestart = property(get_AllowForcedAppRestart, put_AllowForcedAppRestart)
     CatalogId = property(get_CatalogId, put_CatalogId)
     ForceUseOfNonRemovableStorage = property(get_ForceUseOfNonRemovableStorage, put_ForceUseOfNonRemovableStorage)
-    AllowForcedAppRestart = property(get_AllowForcedAppRestart, put_AllowForcedAppRestart)
+    LaunchAfterInstall = property(get_LaunchAfterInstall, put_LaunchAfterInstall)
     Repair = property(get_Repair, put_Repair)
     TargetVolume = property(get_TargetVolume, put_TargetVolume)
-    LaunchAfterInstall = property(get_LaunchAfterInstall, put_LaunchAfterInstall)
 class IAppInstallOptions2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallOptions2'
@@ -679,15 +687,15 @@ class IAppInstallOptions2(ComPtr):
     def get_ExtendedCampaignId(self) -> WinRT_String: ...
     @winrt_commethod(23)
     def put_ExtendedCampaignId(self, value: WinRT_String) -> Void: ...
+    CampaignId = property(get_CampaignId, put_CampaignId)
+    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
+    ExtendedCampaignId = property(get_ExtendedCampaignId, put_ExtendedCampaignId)
+    InstallForAllUsers = property(get_InstallForAllUsers, put_InstallForAllUsers)
+    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
     PinToDesktopAfterInstall = property(get_PinToDesktopAfterInstall, put_PinToDesktopAfterInstall)
     PinToStartAfterInstall = property(get_PinToStartAfterInstall, put_PinToStartAfterInstall)
     PinToTaskbarAfterInstall = property(get_PinToTaskbarAfterInstall, put_PinToTaskbarAfterInstall)
-    CompletedInstallToastNotificationMode = property(get_CompletedInstallToastNotificationMode, put_CompletedInstallToastNotificationMode)
-    InstallInProgressToastNotificationMode = property(get_InstallInProgressToastNotificationMode, put_InstallInProgressToastNotificationMode)
-    InstallForAllUsers = property(get_InstallForAllUsers, put_InstallForAllUsers)
     StageButDoNotInstall = property(get_StageButDoNotInstall, put_StageButDoNotInstall)
-    CampaignId = property(get_CampaignId, put_CampaignId)
-    ExtendedCampaignId = property(get_ExtendedCampaignId, put_ExtendedCampaignId)
 class IAppInstallStatus(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus'
@@ -702,11 +710,11 @@ class IAppInstallStatus(ComPtr):
     def get_PercentComplete(self) -> Double: ...
     @winrt_commethod(10)
     def get_ErrorCode(self) -> win32more.Windows.Foundation.HResult: ...
-    InstallState = property(get_InstallState, None)
-    DownloadSizeInBytes = property(get_DownloadSizeInBytes, None)
     BytesDownloaded = property(get_BytesDownloaded, None)
-    PercentComplete = property(get_PercentComplete, None)
+    DownloadSizeInBytes = property(get_DownloadSizeInBytes, None)
     ErrorCode = property(get_ErrorCode, None)
+    InstallState = property(get_InstallState, None)
+    PercentComplete = property(get_PercentComplete, None)
 class IAppInstallStatus2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus2'
@@ -715,8 +723,8 @@ class IAppInstallStatus2(ComPtr):
     def get_User(self) -> win32more.Windows.System.User: ...
     @winrt_commethod(7)
     def get_ReadyForLaunch(self) -> Boolean: ...
-    User = property(get_User, None)
     ReadyForLaunch = property(get_ReadyForLaunch, None)
+    User = property(get_User, None)
 class IAppInstallStatus3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppInstallStatus3'
@@ -736,8 +744,8 @@ class IAppUpdateOptions(ComPtr):
     def get_AllowForcedAppRestart(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_AllowForcedAppRestart(self, value: Boolean) -> Void: ...
-    CatalogId = property(get_CatalogId, put_CatalogId)
     AllowForcedAppRestart = property(get_AllowForcedAppRestart, put_AllowForcedAppRestart)
+    CatalogId = property(get_CatalogId, put_CatalogId)
 class IAppUpdateOptions2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.InstallControl.IAppUpdateOptions2'
@@ -754,4 +762,6 @@ class IGetEntitlementResult(ComPtr):
     @winrt_commethod(6)
     def get_Status(self) -> win32more.Windows.ApplicationModel.Store.Preview.InstallControl.GetEntitlementStatus: ...
     Status = property(get_Status, None)
+
+
 make_ready(__name__)

@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.AppService
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -24,6 +10,7 @@ import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Media
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class AudioBuffer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IAudioBuffer
@@ -40,14 +27,21 @@ class AudioBuffer(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     Capacity = property(get_Capacity, None)
     Length = property(get_Length, put_Length)
-AudioBufferAccessMode = Int32
-AudioBufferAccessMode_Read: AudioBufferAccessMode = 0
-AudioBufferAccessMode_ReadWrite: AudioBufferAccessMode = 1
-AudioBufferAccessMode_Write: AudioBufferAccessMode = 2
+class AudioBufferAccessMode(Int32):  # enum
+    Read = 0
+    ReadWrite = 1
+    Write = 2
 class AudioFrame(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IAudioFrame
     _classid_ = 'Windows.Media.AudioFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.AudioFrame.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.IAudioFrameFactory, capacity: UInt32) -> win32more.Windows.Media.AudioFrame: ...
     @winrt_mixinmethod
@@ -76,16 +70,16 @@ class AudioFrame(ComPtr):
     def get_ExtendedProperties(self: win32more.Windows.Media.IMediaFrame) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    Type = property(get_Type, None)
+    Duration = property(get_Duration, put_Duration)
+    ExtendedProperties = property(get_ExtendedProperties, None)
+    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
     IsReadOnly = property(get_IsReadOnly, None)
     RelativeTime = property(get_RelativeTime, put_RelativeTime)
     SystemRelativeTime = property(get_SystemRelativeTime, put_SystemRelativeTime)
-    Duration = property(get_Duration, put_Duration)
-    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
-    ExtendedProperties = property(get_ExtendedProperties, None)
-AudioProcessing = Int32
-AudioProcessing_Default: AudioProcessing = 0
-AudioProcessing_Raw: AudioProcessing = 1
+    Type = property(get_Type, None)
+class AudioProcessing(Int32):  # enum
+    Default = 0
+    Raw = 1
 class AutoRepeatModeChangeRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IAutoRepeatModeChangeRequestedEventArgs
@@ -136,8 +130,8 @@ class IImageDisplayProperties(ComPtr):
     def get_Subtitle(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Subtitle(self, value: WinRT_String) -> Void: ...
-    Title = property(get_Title, put_Title)
     Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
 class IMediaControl(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMediaControl'
@@ -208,11 +202,11 @@ class IMediaControl(ComPtr):
     def put_AlbumArt(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
     @winrt_commethod(38)
     def get_AlbumArt(self) -> win32more.Windows.Foundation.Uri: ...
-    SoundLevel = property(get_SoundLevel, None)
-    TrackName = property(get_TrackName, put_TrackName)
+    AlbumArt = property(get_AlbumArt, put_AlbumArt)
     ArtistName = property(get_ArtistName, put_ArtistName)
     IsPlaying = property(get_IsPlaying, put_IsPlaying)
-    AlbumArt = property(get_AlbumArt, put_AlbumArt)
+    SoundLevel = property(get_SoundLevel, None)
+    TrackName = property(get_TrackName, put_TrackName)
 class IMediaExtension(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMediaExtension'
@@ -279,13 +273,13 @@ class IMediaFrame(ComPtr):
     def get_IsDiscontinuous(self) -> Boolean: ...
     @winrt_commethod(16)
     def get_ExtendedProperties(self) -> win32more.Windows.Foundation.Collections.IPropertySet: ...
-    Type = property(get_Type, None)
+    Duration = property(get_Duration, put_Duration)
+    ExtendedProperties = property(get_ExtendedProperties, None)
+    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
     IsReadOnly = property(get_IsReadOnly, None)
     RelativeTime = property(get_RelativeTime, put_RelativeTime)
     SystemRelativeTime = property(get_SystemRelativeTime, put_SystemRelativeTime)
-    Duration = property(get_Duration, put_Duration)
-    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
-    ExtendedProperties = property(get_ExtendedProperties, None)
+    Type = property(get_Type, None)
 class IMediaMarker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMediaMarker'
@@ -296,9 +290,9 @@ class IMediaMarker(ComPtr):
     def get_MediaMarkerType(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_Text(self) -> WinRT_String: ...
-    Time = property(get_Time, None)
     MediaMarkerType = property(get_MediaMarkerType, None)
     Text = property(get_Text, None)
+    Time = property(get_Time, None)
 class IMediaMarkerTypesStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMediaMarkerTypesStatics'
@@ -348,8 +342,8 @@ class IMediaTimelineController(ComPtr):
     def add_StateChanged(self, stateChangedEventHandler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.MediaTimelineController, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(17)
     def remove_StateChanged(self, eventCookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Position = property(get_Position, put_Position)
     ClockRate = property(get_ClockRate, put_ClockRate)
+    Position = property(get_Position, put_Position)
     State = property(get_State, None)
 class IMediaTimelineController2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -396,9 +390,9 @@ class IMusicDisplayProperties(ComPtr):
     def get_Artist(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def put_Artist(self, value: WinRT_String) -> Void: ...
-    Title = property(get_Title, put_Title)
     AlbumArtist = property(get_AlbumArtist, put_AlbumArtist)
     Artist = property(get_Artist, put_Artist)
+    Title = property(get_Title, put_Title)
 class IMusicDisplayProperties2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMusicDisplayProperties2'
@@ -414,8 +408,8 @@ class IMusicDisplayProperties2(ComPtr):
     @winrt_commethod(10)
     def get_Genres(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     AlbumTitle = property(get_AlbumTitle, put_AlbumTitle)
-    TrackNumber = property(get_TrackNumber, put_TrackNumber)
     Genres = property(get_Genres, None)
+    TrackNumber = property(get_TrackNumber, put_TrackNumber)
 class IMusicDisplayProperties3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IMusicDisplayProperties3'
@@ -510,20 +504,20 @@ class ISystemMediaTransportControls(ComPtr):
     def add_PropertyChanged(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.SystemMediaTransportControls, win32more.Windows.Media.SystemMediaTransportControlsPropertyChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(35)
     def remove_PropertyChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    PlaybackStatus = property(get_PlaybackStatus, put_PlaybackStatus)
     DisplayUpdater = property(get_DisplayUpdater, None)
-    SoundLevel = property(get_SoundLevel, None)
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    IsPlayEnabled = property(get_IsPlayEnabled, put_IsPlayEnabled)
-    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
-    IsPauseEnabled = property(get_IsPauseEnabled, put_IsPauseEnabled)
-    IsRecordEnabled = property(get_IsRecordEnabled, put_IsRecordEnabled)
-    IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
-    IsRewindEnabled = property(get_IsRewindEnabled, put_IsRewindEnabled)
-    IsPreviousEnabled = property(get_IsPreviousEnabled, put_IsPreviousEnabled)
-    IsNextEnabled = property(get_IsNextEnabled, put_IsNextEnabled)
-    IsChannelUpEnabled = property(get_IsChannelUpEnabled, put_IsChannelUpEnabled)
     IsChannelDownEnabled = property(get_IsChannelDownEnabled, put_IsChannelDownEnabled)
+    IsChannelUpEnabled = property(get_IsChannelUpEnabled, put_IsChannelUpEnabled)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
+    IsNextEnabled = property(get_IsNextEnabled, put_IsNextEnabled)
+    IsPauseEnabled = property(get_IsPauseEnabled, put_IsPauseEnabled)
+    IsPlayEnabled = property(get_IsPlayEnabled, put_IsPlayEnabled)
+    IsPreviousEnabled = property(get_IsPreviousEnabled, put_IsPreviousEnabled)
+    IsRecordEnabled = property(get_IsRecordEnabled, put_IsRecordEnabled)
+    IsRewindEnabled = property(get_IsRewindEnabled, put_IsRewindEnabled)
+    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
+    PlaybackStatus = property(get_PlaybackStatus, put_PlaybackStatus)
+    SoundLevel = property(get_SoundLevel, None)
 class ISystemMediaTransportControls2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.ISystemMediaTransportControls2'
@@ -559,8 +553,8 @@ class ISystemMediaTransportControls2(ComPtr):
     @winrt_commethod(20)
     def remove_AutoRepeatModeChangeRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     AutoRepeatMode = property(get_AutoRepeatMode, put_AutoRepeatMode)
-    ShuffleEnabled = property(get_ShuffleEnabled, put_ShuffleEnabled)
     PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
+    ShuffleEnabled = property(get_ShuffleEnabled, put_ShuffleEnabled)
 class ISystemMediaTransportControlsButtonPressedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.ISystemMediaTransportControlsButtonPressedEventArgs'
@@ -596,12 +590,12 @@ class ISystemMediaTransportControlsDisplayUpdater(ComPtr):
     def ClearAll(self) -> Void: ...
     @winrt_commethod(17)
     def Update(self) -> Void: ...
-    Type = property(get_Type, put_Type)
     AppMediaId = property(get_AppMediaId, put_AppMediaId)
-    Thumbnail = property(get_Thumbnail, put_Thumbnail)
-    MusicProperties = property(get_MusicProperties, None)
-    VideoProperties = property(get_VideoProperties, None)
     ImageProperties = property(get_ImageProperties, None)
+    MusicProperties = property(get_MusicProperties, None)
+    Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Type = property(get_Type, put_Type)
+    VideoProperties = property(get_VideoProperties, None)
 class ISystemMediaTransportControlsPropertyChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.ISystemMediaTransportControlsPropertyChangedEventArgs'
@@ -639,11 +633,11 @@ class ISystemMediaTransportControlsTimelineProperties(ComPtr):
     def get_Position(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(15)
     def put_Position(self, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-    StartTime = property(get_StartTime, put_StartTime)
     EndTime = property(get_EndTime, put_EndTime)
-    MinSeekTime = property(get_MinSeekTime, put_MinSeekTime)
     MaxSeekTime = property(get_MaxSeekTime, put_MaxSeekTime)
+    MinSeekTime = property(get_MinSeekTime, put_MinSeekTime)
     Position = property(get_Position, put_Position)
+    StartTime = property(get_StartTime, put_StartTime)
 class IVideoDisplayProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IVideoDisplayProperties'
@@ -656,8 +650,8 @@ class IVideoDisplayProperties(ComPtr):
     def get_Subtitle(self) -> WinRT_String: ...
     @winrt_commethod(9)
     def put_Subtitle(self, value: WinRT_String) -> Void: ...
-    Title = property(get_Title, put_Title)
     Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
 class IVideoDisplayProperties2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IVideoDisplayProperties2'
@@ -682,8 +676,8 @@ class IVideoFrame(ComPtr):
     def CopyToAsync(self, frame: win32more.Windows.Media.VideoFrame) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(8)
     def get_Direct3DSurface(self) -> win32more.Windows.Graphics.DirectX.Direct3D11.IDirect3DSurface: ...
-    SoftwareBitmap = property(get_SoftwareBitmap, None)
     Direct3DSurface = property(get_Direct3DSurface, None)
+    SoftwareBitmap = property(get_SoftwareBitmap, None)
 class IVideoFrame2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.IVideoFrame2'
@@ -722,8 +716,8 @@ class ImageDisplayProperties(ComPtr):
     def get_Subtitle(self: win32more.Windows.Media.IImageDisplayProperties) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_Subtitle(self: win32more.Windows.Media.IImageDisplayProperties, value: WinRT_String) -> Void: ...
-    Title = property(get_Title, put_Title)
     Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
 class _MediaControl_Meta_(ComPtr.__class__):
     pass
 class MediaControl(ComPtr, metaclass=_MediaControl_Meta_):
@@ -795,16 +789,23 @@ class MediaControl(ComPtr, metaclass=_MediaControl_Meta_):
     def put_AlbumArt(cls: win32more.Windows.Media.IMediaControl, value: win32more.Windows.Foundation.Uri) -> Void: ...
     @winrt_classmethod
     def get_AlbumArt(cls: win32more.Windows.Media.IMediaControl) -> win32more.Windows.Foundation.Uri: ...
-    _MediaControl_Meta_.SoundLevel = property(get_SoundLevel.__wrapped__, None)
-    _MediaControl_Meta_.TrackName = property(get_TrackName.__wrapped__, put_TrackName.__wrapped__)
+    _MediaControl_Meta_.AlbumArt = property(get_AlbumArt.__wrapped__, put_AlbumArt.__wrapped__)
     _MediaControl_Meta_.ArtistName = property(get_ArtistName.__wrapped__, put_ArtistName.__wrapped__)
     _MediaControl_Meta_.IsPlaying = property(get_IsPlaying.__wrapped__, put_IsPlaying.__wrapped__)
-    _MediaControl_Meta_.AlbumArt = property(get_AlbumArt.__wrapped__, put_AlbumArt.__wrapped__)
+    _MediaControl_Meta_.SoundLevel = property(get_SoundLevel.__wrapped__, None)
+    _MediaControl_Meta_.TrackName = property(get_TrackName.__wrapped__, put_TrackName.__wrapped__)
 MediaControlContract: UInt32 = 65536
 class MediaExtensionManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IMediaExtensionManager
     _classid_ = 'Windows.Media.MediaExtensionManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.MediaExtensionManager.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.MediaExtensionManager: ...
     @winrt_mixinmethod
@@ -841,21 +842,21 @@ class MediaMarkerTypes(ComPtr, metaclass=_MediaMarkerTypes_Meta_):
     @winrt_classmethod
     def get_Bookmark(cls: win32more.Windows.Media.IMediaMarkerTypesStatics) -> WinRT_String: ...
     _MediaMarkerTypes_Meta_.Bookmark = property(get_Bookmark.__wrapped__, None)
-MediaPlaybackAutoRepeatMode = Int32
-MediaPlaybackAutoRepeatMode_None: MediaPlaybackAutoRepeatMode = 0
-MediaPlaybackAutoRepeatMode_Track: MediaPlaybackAutoRepeatMode = 1
-MediaPlaybackAutoRepeatMode_List: MediaPlaybackAutoRepeatMode = 2
-MediaPlaybackStatus = Int32
-MediaPlaybackStatus_Closed: MediaPlaybackStatus = 0
-MediaPlaybackStatus_Changing: MediaPlaybackStatus = 1
-MediaPlaybackStatus_Stopped: MediaPlaybackStatus = 2
-MediaPlaybackStatus_Playing: MediaPlaybackStatus = 3
-MediaPlaybackStatus_Paused: MediaPlaybackStatus = 4
-MediaPlaybackType = Int32
-MediaPlaybackType_Unknown: MediaPlaybackType = 0
-MediaPlaybackType_Music: MediaPlaybackType = 1
-MediaPlaybackType_Video: MediaPlaybackType = 2
-MediaPlaybackType_Image: MediaPlaybackType = 3
+class MediaPlaybackAutoRepeatMode(Int32):  # enum
+    None_ = 0
+    Track = 1
+    List = 2
+class MediaPlaybackStatus(Int32):  # enum
+    Closed = 0
+    Changing = 1
+    Stopped = 2
+    Playing = 3
+    Paused = 4
+class MediaPlaybackType(Int32):  # enum
+    Unknown = 0
+    Music = 1
+    Video = 2
+    Image = 3
 class MediaProcessingTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IMediaProcessingTriggerDetails
@@ -870,6 +871,13 @@ class MediaTimelineController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IMediaTimelineController
     _classid_ = 'Windows.Media.MediaTimelineController'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.MediaTimelineController.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.MediaTimelineController: ...
     @winrt_mixinmethod
@@ -912,11 +920,11 @@ class MediaTimelineController(ComPtr):
     def add_Ended(self: win32more.Windows.Media.IMediaTimelineController2, eventHandler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.MediaTimelineController, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_Ended(self: win32more.Windows.Media.IMediaTimelineController2, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Position = property(get_Position, put_Position)
     ClockRate = property(get_ClockRate, put_ClockRate)
-    State = property(get_State, None)
     Duration = property(get_Duration, put_Duration)
     IsLoopingEnabled = property(get_IsLoopingEnabled, put_IsLoopingEnabled)
+    Position = property(get_Position, put_Position)
+    State = property(get_State, None)
 class MediaTimelineControllerFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IMediaTimelineControllerFailedEventArgs
@@ -924,11 +932,11 @@ class MediaTimelineControllerFailedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.IMediaTimelineControllerFailedEventArgs) -> win32more.Windows.Foundation.HResult: ...
     ExtendedError = property(get_ExtendedError, None)
-MediaTimelineControllerState = Int32
-MediaTimelineControllerState_Paused: MediaTimelineControllerState = 0
-MediaTimelineControllerState_Running: MediaTimelineControllerState = 1
-MediaTimelineControllerState_Stalled: MediaTimelineControllerState = 2
-MediaTimelineControllerState_Error: MediaTimelineControllerState = 3
+class MediaTimelineControllerState(Int32):  # enum
+    Paused = 0
+    Running = 1
+    Stalled = 2
+    Error = 3
 class MusicDisplayProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IMusicDisplayProperties
@@ -959,13 +967,13 @@ class MusicDisplayProperties(ComPtr):
     def get_AlbumTrackCount(self: win32more.Windows.Media.IMusicDisplayProperties3) -> UInt32: ...
     @winrt_mixinmethod
     def put_AlbumTrackCount(self: win32more.Windows.Media.IMusicDisplayProperties3, value: UInt32) -> Void: ...
-    Title = property(get_Title, put_Title)
     AlbumArtist = property(get_AlbumArtist, put_AlbumArtist)
-    Artist = property(get_Artist, put_Artist)
     AlbumTitle = property(get_AlbumTitle, put_AlbumTitle)
-    TrackNumber = property(get_TrackNumber, put_TrackNumber)
-    Genres = property(get_Genres, None)
     AlbumTrackCount = property(get_AlbumTrackCount, put_AlbumTrackCount)
+    Artist = property(get_Artist, put_Artist)
+    Genres = property(get_Genres, None)
+    Title = property(get_Title, put_Title)
+    TrackNumber = property(get_TrackNumber, put_TrackNumber)
 class PlaybackPositionChangeRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IPlaybackPositionChangeRequestedEventArgs
@@ -987,10 +995,10 @@ class ShuffleEnabledChangeRequestedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_RequestedShuffleEnabled(self: win32more.Windows.Media.IShuffleEnabledChangeRequestedEventArgs) -> Boolean: ...
     RequestedShuffleEnabled = property(get_RequestedShuffleEnabled, None)
-SoundLevel = Int32
-SoundLevel_Muted: SoundLevel = 0
-SoundLevel_Low: SoundLevel = 1
-SoundLevel_Full: SoundLevel = 2
+class SoundLevel(Int32):  # enum
+    Muted = 0
+    Low = 1
+    Full = 2
 class SystemMediaTransportControls(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.ISystemMediaTransportControls
@@ -1087,34 +1095,34 @@ class SystemMediaTransportControls(ComPtr):
     def remove_AutoRepeatModeChangeRequested(self: win32more.Windows.Media.ISystemMediaTransportControls2, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_classmethod
     def GetForCurrentView(cls: win32more.Windows.Media.ISystemMediaTransportControlsStatics) -> win32more.Windows.Media.SystemMediaTransportControls: ...
-    PlaybackStatus = property(get_PlaybackStatus, put_PlaybackStatus)
-    DisplayUpdater = property(get_DisplayUpdater, None)
-    SoundLevel = property(get_SoundLevel, None)
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    IsPlayEnabled = property(get_IsPlayEnabled, put_IsPlayEnabled)
-    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
-    IsPauseEnabled = property(get_IsPauseEnabled, put_IsPauseEnabled)
-    IsRecordEnabled = property(get_IsRecordEnabled, put_IsRecordEnabled)
-    IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
-    IsRewindEnabled = property(get_IsRewindEnabled, put_IsRewindEnabled)
-    IsPreviousEnabled = property(get_IsPreviousEnabled, put_IsPreviousEnabled)
-    IsNextEnabled = property(get_IsNextEnabled, put_IsNextEnabled)
-    IsChannelUpEnabled = property(get_IsChannelUpEnabled, put_IsChannelUpEnabled)
-    IsChannelDownEnabled = property(get_IsChannelDownEnabled, put_IsChannelDownEnabled)
     AutoRepeatMode = property(get_AutoRepeatMode, put_AutoRepeatMode)
-    ShuffleEnabled = property(get_ShuffleEnabled, put_ShuffleEnabled)
+    DisplayUpdater = property(get_DisplayUpdater, None)
+    IsChannelDownEnabled = property(get_IsChannelDownEnabled, put_IsChannelDownEnabled)
+    IsChannelUpEnabled = property(get_IsChannelUpEnabled, put_IsChannelUpEnabled)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
+    IsFastForwardEnabled = property(get_IsFastForwardEnabled, put_IsFastForwardEnabled)
+    IsNextEnabled = property(get_IsNextEnabled, put_IsNextEnabled)
+    IsPauseEnabled = property(get_IsPauseEnabled, put_IsPauseEnabled)
+    IsPlayEnabled = property(get_IsPlayEnabled, put_IsPlayEnabled)
+    IsPreviousEnabled = property(get_IsPreviousEnabled, put_IsPreviousEnabled)
+    IsRecordEnabled = property(get_IsRecordEnabled, put_IsRecordEnabled)
+    IsRewindEnabled = property(get_IsRewindEnabled, put_IsRewindEnabled)
+    IsStopEnabled = property(get_IsStopEnabled, put_IsStopEnabled)
     PlaybackRate = property(get_PlaybackRate, put_PlaybackRate)
-SystemMediaTransportControlsButton = Int32
-SystemMediaTransportControlsButton_Play: SystemMediaTransportControlsButton = 0
-SystemMediaTransportControlsButton_Pause: SystemMediaTransportControlsButton = 1
-SystemMediaTransportControlsButton_Stop: SystemMediaTransportControlsButton = 2
-SystemMediaTransportControlsButton_Record: SystemMediaTransportControlsButton = 3
-SystemMediaTransportControlsButton_FastForward: SystemMediaTransportControlsButton = 4
-SystemMediaTransportControlsButton_Rewind: SystemMediaTransportControlsButton = 5
-SystemMediaTransportControlsButton_Next: SystemMediaTransportControlsButton = 6
-SystemMediaTransportControlsButton_Previous: SystemMediaTransportControlsButton = 7
-SystemMediaTransportControlsButton_ChannelUp: SystemMediaTransportControlsButton = 8
-SystemMediaTransportControlsButton_ChannelDown: SystemMediaTransportControlsButton = 9
+    PlaybackStatus = property(get_PlaybackStatus, put_PlaybackStatus)
+    ShuffleEnabled = property(get_ShuffleEnabled, put_ShuffleEnabled)
+    SoundLevel = property(get_SoundLevel, None)
+class SystemMediaTransportControlsButton(Int32):  # enum
+    Play = 0
+    Pause = 1
+    Stop = 2
+    Record = 3
+    FastForward = 4
+    Rewind = 5
+    Next = 6
+    Previous = 7
+    ChannelUp = 8
+    ChannelDown = 9
 class SystemMediaTransportControlsButtonPressedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.ISystemMediaTransportControlsButtonPressedEventArgs
@@ -1150,14 +1158,14 @@ class SystemMediaTransportControlsDisplayUpdater(ComPtr):
     def ClearAll(self: win32more.Windows.Media.ISystemMediaTransportControlsDisplayUpdater) -> Void: ...
     @winrt_mixinmethod
     def Update(self: win32more.Windows.Media.ISystemMediaTransportControlsDisplayUpdater) -> Void: ...
-    Type = property(get_Type, put_Type)
     AppMediaId = property(get_AppMediaId, put_AppMediaId)
-    Thumbnail = property(get_Thumbnail, put_Thumbnail)
-    MusicProperties = property(get_MusicProperties, None)
-    VideoProperties = property(get_VideoProperties, None)
     ImageProperties = property(get_ImageProperties, None)
-SystemMediaTransportControlsProperty = Int32
-SystemMediaTransportControlsProperty_SoundLevel: SystemMediaTransportControlsProperty = 0
+    MusicProperties = property(get_MusicProperties, None)
+    Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Type = property(get_Type, put_Type)
+    VideoProperties = property(get_VideoProperties, None)
+class SystemMediaTransportControlsProperty(Int32):  # enum
+    SoundLevel = 0
 class SystemMediaTransportControlsPropertyChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.ISystemMediaTransportControlsPropertyChangedEventArgs
@@ -1169,6 +1177,13 @@ class SystemMediaTransportControlsTimelineProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.ISystemMediaTransportControlsTimelineProperties
     _classid_ = 'Windows.Media.SystemMediaTransportControlsTimelineProperties'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.SystemMediaTransportControlsTimelineProperties.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.SystemMediaTransportControlsTimelineProperties: ...
     @winrt_mixinmethod
@@ -1191,11 +1206,11 @@ class SystemMediaTransportControlsTimelineProperties(ComPtr):
     def get_Position(self: win32more.Windows.Media.ISystemMediaTransportControlsTimelineProperties) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
     def put_Position(self: win32more.Windows.Media.ISystemMediaTransportControlsTimelineProperties, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-    StartTime = property(get_StartTime, put_StartTime)
     EndTime = property(get_EndTime, put_EndTime)
-    MinSeekTime = property(get_MinSeekTime, put_MinSeekTime)
     MaxSeekTime = property(get_MaxSeekTime, put_MaxSeekTime)
+    MinSeekTime = property(get_MinSeekTime, put_MinSeekTime)
     Position = property(get_Position, put_Position)
+    StartTime = property(get_StartTime, put_StartTime)
 class VideoDisplayProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IVideoDisplayProperties
@@ -1210,9 +1225,9 @@ class VideoDisplayProperties(ComPtr):
     def put_Subtitle(self: win32more.Windows.Media.IVideoDisplayProperties, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def get_Genres(self: win32more.Windows.Media.IVideoDisplayProperties2) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    Title = property(get_Title, put_Title)
-    Subtitle = property(get_Subtitle, put_Subtitle)
     Genres = property(get_Genres, None)
+    Subtitle = property(get_Subtitle, put_Subtitle)
+    Title = property(get_Title, put_Title)
 class _VideoEffects_Meta_(ComPtr.__class__):
     pass
 class VideoEffects(ComPtr, metaclass=_VideoEffects_Meta_):
@@ -1225,6 +1240,15 @@ class VideoFrame(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.IVideoFrame
     _classid_ = 'Windows.Media.VideoFrame'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Media.VideoFrame.Create(*args)
+        elif len(args) == 4:
+            return win32more.Windows.Media.VideoFrame.CreateWithAlpha(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.IVideoFrameFactory, format: win32more.Windows.Graphics.Imaging.BitmapPixelFormat, width: Int32, height: Int32) -> win32more.Windows.Media.VideoFrame: ...
     @winrt_factorymethod
@@ -1269,13 +1293,15 @@ class VideoFrame(ComPtr):
     def CreateWithSoftwareBitmap(cls: win32more.Windows.Media.IVideoFrameStatics, bitmap: win32more.Windows.Graphics.Imaging.SoftwareBitmap) -> win32more.Windows.Media.VideoFrame: ...
     @winrt_classmethod
     def CreateWithDirect3D11Surface(cls: win32more.Windows.Media.IVideoFrameStatics, surface: win32more.Windows.Graphics.DirectX.Direct3D11.IDirect3DSurface) -> win32more.Windows.Media.VideoFrame: ...
-    SoftwareBitmap = property(get_SoftwareBitmap, None)
     Direct3DSurface = property(get_Direct3DSurface, None)
-    Type = property(get_Type, None)
+    Duration = property(get_Duration, put_Duration)
+    ExtendedProperties = property(get_ExtendedProperties, None)
+    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
     IsReadOnly = property(get_IsReadOnly, None)
     RelativeTime = property(get_RelativeTime, put_RelativeTime)
+    SoftwareBitmap = property(get_SoftwareBitmap, None)
     SystemRelativeTime = property(get_SystemRelativeTime, put_SystemRelativeTime)
-    Duration = property(get_Duration, put_Duration)
-    IsDiscontinuous = property(get_IsDiscontinuous, put_IsDiscontinuous)
-    ExtendedProperties = property(get_ExtendedProperties, None)
+    Type = property(get_Type, None)
+
+
 make_ready(__name__)

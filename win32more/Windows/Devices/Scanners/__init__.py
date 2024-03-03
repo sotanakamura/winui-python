@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Scanners
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.Printing
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IImageScanner(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Scanners.IImageScanner'
@@ -43,11 +30,11 @@ class IImageScanner(ComPtr):
     def ScanPreviewToStreamAsync(self, scanSource: win32more.Windows.Devices.Scanners.ImageScannerScanSource, targetStream: win32more.Windows.Storage.Streams.IRandomAccessStream) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Scanners.ImageScannerPreviewResult]: ...
     @winrt_commethod(14)
     def ScanFilesToFolderAsync(self, scanSource: win32more.Windows.Devices.Scanners.ImageScannerScanSource, storageFolder: win32more.Windows.Storage.StorageFolder) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Devices.Scanners.ImageScannerScanResult, UInt32]: ...
-    DeviceId = property(get_DeviceId, None)
-    DefaultScanSource = property(get_DefaultScanSource, None)
-    FlatbedConfiguration = property(get_FlatbedConfiguration, None)
-    FeederConfiguration = property(get_FeederConfiguration, None)
     AutoConfiguration = property(get_AutoConfiguration, None)
+    DefaultScanSource = property(get_DefaultScanSource, None)
+    DeviceId = property(get_DeviceId, None)
+    FeederConfiguration = property(get_FeederConfiguration, None)
+    FlatbedConfiguration = property(get_FlatbedConfiguration, None)
 class IImageScannerFeederConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Scanners.IImageScannerFeederConfiguration'
@@ -86,15 +73,15 @@ class IImageScannerFeederConfiguration(ComPtr):
     def get_ScanAhead(self) -> Boolean: ...
     @winrt_commethod(22)
     def put_ScanAhead(self, value: Boolean) -> Void: ...
-    CanAutoDetectPageSize = property(get_CanAutoDetectPageSize, None)
     AutoDetectPageSize = property(get_AutoDetectPageSize, put_AutoDetectPageSize)
-    PageSize = property(get_PageSize, put_PageSize)
-    PageOrientation = property(get_PageOrientation, put_PageOrientation)
-    PageSizeDimensions = property(get_PageSizeDimensions, None)
-    MaxNumberOfPages = property(get_MaxNumberOfPages, put_MaxNumberOfPages)
+    CanAutoDetectPageSize = property(get_CanAutoDetectPageSize, None)
+    CanScanAhead = property(get_CanScanAhead, None)
     CanScanDuplex = property(get_CanScanDuplex, None)
     Duplex = property(get_Duplex, put_Duplex)
-    CanScanAhead = property(get_CanScanAhead, None)
+    MaxNumberOfPages = property(get_MaxNumberOfPages, put_MaxNumberOfPages)
+    PageOrientation = property(get_PageOrientation, put_PageOrientation)
+    PageSize = property(get_PageSize, put_PageSize)
+    PageSizeDimensions = property(get_PageSizeDimensions, None)
     ScanAhead = property(get_ScanAhead, put_ScanAhead)
 class IImageScannerFormatConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -118,8 +105,8 @@ class IImageScannerPreviewResult(ComPtr):
     def get_Succeeded(self) -> Boolean: ...
     @winrt_commethod(7)
     def get_Format(self) -> win32more.Windows.Devices.Scanners.ImageScannerFormat: ...
-    Succeeded = property(get_Succeeded, None)
     Format = property(get_Format, None)
+    Succeeded = property(get_Succeeded, None)
 class IImageScannerScanResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Scanners.IImageScannerScanResult'
@@ -189,27 +176,27 @@ class IImageScannerSourceConfiguration(ComPtr):
     def get_Contrast(self) -> Int32: ...
     @winrt_commethod(34)
     def put_Contrast(self, value: Int32) -> Void: ...
-    MinScanArea = property(get_MinScanArea, None)
-    MaxScanArea = property(get_MaxScanArea, None)
-    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
-    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
-    MinResolution = property(get_MinResolution, None)
-    MaxResolution = property(get_MaxResolution, None)
-    OpticalResolution = property(get_OpticalResolution, None)
-    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
     ActualResolution = property(get_ActualResolution, None)
-    DefaultColorMode = property(get_DefaultColorMode, None)
-    ColorMode = property(get_ColorMode, put_ColorMode)
-    MinBrightness = property(get_MinBrightness, None)
-    MaxBrightness = property(get_MaxBrightness, None)
-    BrightnessStep = property(get_BrightnessStep, None)
-    DefaultBrightness = property(get_DefaultBrightness, None)
+    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
     Brightness = property(get_Brightness, put_Brightness)
-    MinContrast = property(get_MinContrast, None)
-    MaxContrast = property(get_MaxContrast, None)
-    ContrastStep = property(get_ContrastStep, None)
-    DefaultContrast = property(get_DefaultContrast, None)
+    BrightnessStep = property(get_BrightnessStep, None)
+    ColorMode = property(get_ColorMode, put_ColorMode)
     Contrast = property(get_Contrast, put_Contrast)
+    ContrastStep = property(get_ContrastStep, None)
+    DefaultBrightness = property(get_DefaultBrightness, None)
+    DefaultColorMode = property(get_DefaultColorMode, None)
+    DefaultContrast = property(get_DefaultContrast, None)
+    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
+    MaxBrightness = property(get_MaxBrightness, None)
+    MaxContrast = property(get_MaxContrast, None)
+    MaxResolution = property(get_MaxResolution, None)
+    MaxScanArea = property(get_MaxScanArea, None)
+    MinBrightness = property(get_MinBrightness, None)
+    MinContrast = property(get_MinContrast, None)
+    MinResolution = property(get_MinResolution, None)
+    MinScanArea = property(get_MinScanArea, None)
+    OpticalResolution = property(get_OpticalResolution, None)
+    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
 class IImageScannerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Scanners.IImageScannerStatics'
@@ -244,11 +231,11 @@ class ImageScanner(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Devices.Scanners.IImageScannerStatics, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Scanners.ImageScanner]: ...
     @winrt_classmethod
     def GetDeviceSelector(cls: win32more.Windows.Devices.Scanners.IImageScannerStatics) -> WinRT_String: ...
-    DeviceId = property(get_DeviceId, None)
-    DefaultScanSource = property(get_DefaultScanSource, None)
-    FlatbedConfiguration = property(get_FlatbedConfiguration, None)
-    FeederConfiguration = property(get_FeederConfiguration, None)
     AutoConfiguration = property(get_AutoConfiguration, None)
+    DefaultScanSource = property(get_DefaultScanSource, None)
+    DeviceId = property(get_DeviceId, None)
+    FeederConfiguration = property(get_FeederConfiguration, None)
+    FlatbedConfiguration = property(get_FlatbedConfiguration, None)
 class ImageScannerAutoConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Scanners.IImageScannerFormatConfiguration
@@ -263,15 +250,15 @@ class ImageScannerAutoConfiguration(ComPtr):
     def IsFormatSupported(self: win32more.Windows.Devices.Scanners.IImageScannerFormatConfiguration, value: win32more.Windows.Devices.Scanners.ImageScannerFormat) -> Boolean: ...
     DefaultFormat = property(get_DefaultFormat, None)
     Format = property(get_Format, put_Format)
-ImageScannerAutoCroppingMode = Int32
-ImageScannerAutoCroppingMode_Disabled: ImageScannerAutoCroppingMode = 0
-ImageScannerAutoCroppingMode_SingleRegion: ImageScannerAutoCroppingMode = 1
-ImageScannerAutoCroppingMode_MultipleRegion: ImageScannerAutoCroppingMode = 2
-ImageScannerColorMode = Int32
-ImageScannerColorMode_Color: ImageScannerColorMode = 0
-ImageScannerColorMode_Grayscale: ImageScannerColorMode = 1
-ImageScannerColorMode_Monochrome: ImageScannerColorMode = 2
-ImageScannerColorMode_AutoColor: ImageScannerColorMode = 3
+class ImageScannerAutoCroppingMode(Int32):  # enum
+    Disabled = 0
+    SingleRegion = 1
+    MultipleRegion = 2
+class ImageScannerColorMode(Int32):  # enum
+    Color = 0
+    Grayscale = 1
+    Monochrome = 2
+    AutoColor = 3
 class ImageScannerFeederConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Scanners.IImageScannerFormatConfiguration
@@ -376,39 +363,39 @@ class ImageScannerFeederConfiguration(ComPtr):
     def get_ScanAhead(self: win32more.Windows.Devices.Scanners.IImageScannerFeederConfiguration) -> Boolean: ...
     @winrt_mixinmethod
     def put_ScanAhead(self: win32more.Windows.Devices.Scanners.IImageScannerFeederConfiguration, value: Boolean) -> Void: ...
-    DefaultFormat = property(get_DefaultFormat, None)
-    Format = property(get_Format, put_Format)
-    MinScanArea = property(get_MinScanArea, None)
-    MaxScanArea = property(get_MaxScanArea, None)
-    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
-    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
-    MinResolution = property(get_MinResolution, None)
-    MaxResolution = property(get_MaxResolution, None)
-    OpticalResolution = property(get_OpticalResolution, None)
-    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
     ActualResolution = property(get_ActualResolution, None)
-    DefaultColorMode = property(get_DefaultColorMode, None)
-    ColorMode = property(get_ColorMode, put_ColorMode)
-    MinBrightness = property(get_MinBrightness, None)
-    MaxBrightness = property(get_MaxBrightness, None)
-    BrightnessStep = property(get_BrightnessStep, None)
-    DefaultBrightness = property(get_DefaultBrightness, None)
-    Brightness = property(get_Brightness, put_Brightness)
-    MinContrast = property(get_MinContrast, None)
-    MaxContrast = property(get_MaxContrast, None)
-    ContrastStep = property(get_ContrastStep, None)
-    DefaultContrast = property(get_DefaultContrast, None)
-    Contrast = property(get_Contrast, put_Contrast)
-    CanAutoDetectPageSize = property(get_CanAutoDetectPageSize, None)
+    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
     AutoDetectPageSize = property(get_AutoDetectPageSize, put_AutoDetectPageSize)
-    PageSize = property(get_PageSize, put_PageSize)
-    PageOrientation = property(get_PageOrientation, put_PageOrientation)
-    PageSizeDimensions = property(get_PageSizeDimensions, None)
-    MaxNumberOfPages = property(get_MaxNumberOfPages, put_MaxNumberOfPages)
-    CanScanDuplex = property(get_CanScanDuplex, None)
-    Duplex = property(get_Duplex, put_Duplex)
+    Brightness = property(get_Brightness, put_Brightness)
+    BrightnessStep = property(get_BrightnessStep, None)
+    CanAutoDetectPageSize = property(get_CanAutoDetectPageSize, None)
     CanScanAhead = property(get_CanScanAhead, None)
+    CanScanDuplex = property(get_CanScanDuplex, None)
+    ColorMode = property(get_ColorMode, put_ColorMode)
+    Contrast = property(get_Contrast, put_Contrast)
+    ContrastStep = property(get_ContrastStep, None)
+    DefaultBrightness = property(get_DefaultBrightness, None)
+    DefaultColorMode = property(get_DefaultColorMode, None)
+    DefaultContrast = property(get_DefaultContrast, None)
+    DefaultFormat = property(get_DefaultFormat, None)
+    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
+    Duplex = property(get_Duplex, put_Duplex)
+    Format = property(get_Format, put_Format)
+    MaxBrightness = property(get_MaxBrightness, None)
+    MaxContrast = property(get_MaxContrast, None)
+    MaxNumberOfPages = property(get_MaxNumberOfPages, put_MaxNumberOfPages)
+    MaxResolution = property(get_MaxResolution, None)
+    MaxScanArea = property(get_MaxScanArea, None)
+    MinBrightness = property(get_MinBrightness, None)
+    MinContrast = property(get_MinContrast, None)
+    MinResolution = property(get_MinResolution, None)
+    MinScanArea = property(get_MinScanArea, None)
+    OpticalResolution = property(get_OpticalResolution, None)
+    PageOrientation = property(get_PageOrientation, put_PageOrientation)
+    PageSize = property(get_PageSize, put_PageSize)
+    PageSizeDimensions = property(get_PageSizeDimensions, None)
     ScanAhead = property(get_ScanAhead, put_ScanAhead)
+    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
 class ImageScannerFlatbedConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Scanners.IImageScannerFormatConfiguration
@@ -479,37 +466,37 @@ class ImageScannerFlatbedConfiguration(ComPtr):
     def get_Contrast(self: win32more.Windows.Devices.Scanners.IImageScannerSourceConfiguration) -> Int32: ...
     @winrt_mixinmethod
     def put_Contrast(self: win32more.Windows.Devices.Scanners.IImageScannerSourceConfiguration, value: Int32) -> Void: ...
-    DefaultFormat = property(get_DefaultFormat, None)
-    Format = property(get_Format, put_Format)
-    MinScanArea = property(get_MinScanArea, None)
-    MaxScanArea = property(get_MaxScanArea, None)
-    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
-    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
-    MinResolution = property(get_MinResolution, None)
-    MaxResolution = property(get_MaxResolution, None)
-    OpticalResolution = property(get_OpticalResolution, None)
-    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
     ActualResolution = property(get_ActualResolution, None)
-    DefaultColorMode = property(get_DefaultColorMode, None)
-    ColorMode = property(get_ColorMode, put_ColorMode)
-    MinBrightness = property(get_MinBrightness, None)
-    MaxBrightness = property(get_MaxBrightness, None)
-    BrightnessStep = property(get_BrightnessStep, None)
-    DefaultBrightness = property(get_DefaultBrightness, None)
+    AutoCroppingMode = property(get_AutoCroppingMode, put_AutoCroppingMode)
     Brightness = property(get_Brightness, put_Brightness)
-    MinContrast = property(get_MinContrast, None)
-    MaxContrast = property(get_MaxContrast, None)
-    ContrastStep = property(get_ContrastStep, None)
-    DefaultContrast = property(get_DefaultContrast, None)
+    BrightnessStep = property(get_BrightnessStep, None)
+    ColorMode = property(get_ColorMode, put_ColorMode)
     Contrast = property(get_Contrast, put_Contrast)
-ImageScannerFormat = Int32
-ImageScannerFormat_Jpeg: ImageScannerFormat = 0
-ImageScannerFormat_Png: ImageScannerFormat = 1
-ImageScannerFormat_DeviceIndependentBitmap: ImageScannerFormat = 2
-ImageScannerFormat_Tiff: ImageScannerFormat = 3
-ImageScannerFormat_Xps: ImageScannerFormat = 4
-ImageScannerFormat_OpenXps: ImageScannerFormat = 5
-ImageScannerFormat_Pdf: ImageScannerFormat = 6
+    ContrastStep = property(get_ContrastStep, None)
+    DefaultBrightness = property(get_DefaultBrightness, None)
+    DefaultColorMode = property(get_DefaultColorMode, None)
+    DefaultContrast = property(get_DefaultContrast, None)
+    DefaultFormat = property(get_DefaultFormat, None)
+    DesiredResolution = property(get_DesiredResolution, put_DesiredResolution)
+    Format = property(get_Format, put_Format)
+    MaxBrightness = property(get_MaxBrightness, None)
+    MaxContrast = property(get_MaxContrast, None)
+    MaxResolution = property(get_MaxResolution, None)
+    MaxScanArea = property(get_MaxScanArea, None)
+    MinBrightness = property(get_MinBrightness, None)
+    MinContrast = property(get_MinContrast, None)
+    MinResolution = property(get_MinResolution, None)
+    MinScanArea = property(get_MinScanArea, None)
+    OpticalResolution = property(get_OpticalResolution, None)
+    SelectedScanRegion = property(get_SelectedScanRegion, put_SelectedScanRegion)
+class ImageScannerFormat(Int32):  # enum
+    Jpeg = 0
+    Png = 1
+    DeviceIndependentBitmap = 2
+    Tiff = 3
+    Xps = 4
+    OpenXps = 5
+    Pdf = 6
 class ImageScannerPreviewResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Scanners.IImageScannerPreviewResult
@@ -518,8 +505,8 @@ class ImageScannerPreviewResult(ComPtr):
     def get_Succeeded(self: win32more.Windows.Devices.Scanners.IImageScannerPreviewResult) -> Boolean: ...
     @winrt_mixinmethod
     def get_Format(self: win32more.Windows.Devices.Scanners.IImageScannerPreviewResult) -> win32more.Windows.Devices.Scanners.ImageScannerFormat: ...
-    Succeeded = property(get_Succeeded, None)
     Format = property(get_Format, None)
+    Succeeded = property(get_Succeeded, None)
 class ImageScannerResolution(EasyCastStructure):
     DpiX: Single
     DpiY: Single
@@ -530,10 +517,12 @@ class ImageScannerScanResult(ComPtr):
     @winrt_mixinmethod
     def get_ScannedFiles(self: win32more.Windows.Devices.Scanners.IImageScannerScanResult) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Storage.StorageFile]: ...
     ScannedFiles = property(get_ScannedFiles, None)
-ImageScannerScanSource = Int32
-ImageScannerScanSource_Default: ImageScannerScanSource = 0
-ImageScannerScanSource_Flatbed: ImageScannerScanSource = 1
-ImageScannerScanSource_Feeder: ImageScannerScanSource = 2
-ImageScannerScanSource_AutoConfigured: ImageScannerScanSource = 3
+class ImageScannerScanSource(Int32):  # enum
+    Default = 0
+    Flatbed = 1
+    Feeder = 2
+    AutoConfigured = 3
 ScannerDeviceContract: UInt32 = 65536
+
+
 make_ready(__name__)

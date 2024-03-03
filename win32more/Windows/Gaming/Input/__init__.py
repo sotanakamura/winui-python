@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Haptics
 import win32more.Windows.Devices.Power
 import win32more.Windows.Foundation
@@ -22,6 +8,7 @@ import win32more.Windows.Foundation.Collections
 import win32more.Windows.Gaming.Input
 import win32more.Windows.Gaming.Input.ForceFeedback
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class _ArcadeStick_Meta_(ComPtr.__class__):
     pass
 class ArcadeStick(ComPtr, metaclass=_ArcadeStick_Meta_):
@@ -68,20 +55,20 @@ class ArcadeStick(ComPtr, metaclass=_ArcadeStick_Meta_):
     IsWireless = property(get_IsWireless, None)
     User = property(get_User, None)
     _ArcadeStick_Meta_.ArcadeSticks = property(get_ArcadeSticks.__wrapped__, None)
-ArcadeStickButtons = UInt32
-ArcadeStickButtons_None: ArcadeStickButtons = 0
-ArcadeStickButtons_StickUp: ArcadeStickButtons = 1
-ArcadeStickButtons_StickDown: ArcadeStickButtons = 2
-ArcadeStickButtons_StickLeft: ArcadeStickButtons = 4
-ArcadeStickButtons_StickRight: ArcadeStickButtons = 8
-ArcadeStickButtons_Action1: ArcadeStickButtons = 16
-ArcadeStickButtons_Action2: ArcadeStickButtons = 32
-ArcadeStickButtons_Action3: ArcadeStickButtons = 64
-ArcadeStickButtons_Action4: ArcadeStickButtons = 128
-ArcadeStickButtons_Action5: ArcadeStickButtons = 256
-ArcadeStickButtons_Action6: ArcadeStickButtons = 512
-ArcadeStickButtons_Special1: ArcadeStickButtons = 1024
-ArcadeStickButtons_Special2: ArcadeStickButtons = 2048
+class ArcadeStickButtons(UInt32):  # enum
+    None_ = 0
+    StickUp = 1
+    StickDown = 2
+    StickLeft = 4
+    StickRight = 8
+    Action1 = 16
+    Action2 = 32
+    Action3 = 64
+    Action4 = 128
+    Action5 = 256
+    Action6 = 512
+    Special1 = 1024
+    Special2 = 2048
 class ArcadeStickReading(EasyCastStructure):
     Timestamp: UInt64
     Buttons: win32more.Windows.Gaming.Input.ArcadeStickButtons
@@ -134,10 +121,10 @@ class FlightStick(ComPtr, metaclass=_FlightStick_Meta_):
     IsWireless = property(get_IsWireless, None)
     User = property(get_User, None)
     _FlightStick_Meta_.FlightSticks = property(get_FlightSticks.__wrapped__, None)
-FlightStickButtons = UInt32
-FlightStickButtons_None: FlightStickButtons = 0
-FlightStickButtons_FirePrimary: FlightStickButtons = 1
-FlightStickButtons_FireSecondary: FlightStickButtons = 2
+class FlightStickButtons(UInt32):  # enum
+    None_ = 0
+    FirePrimary = 1
+    FireSecondary = 2
 class FlightStickReading(EasyCastStructure):
     Timestamp: UInt64
     Buttons: win32more.Windows.Gaming.Input.FlightStickButtons
@@ -146,90 +133,90 @@ class FlightStickReading(EasyCastStructure):
     Pitch: Double
     Yaw: Double
     Throttle: Double
-GameControllerButtonLabel = Int32
-GameControllerButtonLabel_None: GameControllerButtonLabel = 0
-GameControllerButtonLabel_XboxBack: GameControllerButtonLabel = 1
-GameControllerButtonLabel_XboxStart: GameControllerButtonLabel = 2
-GameControllerButtonLabel_XboxMenu: GameControllerButtonLabel = 3
-GameControllerButtonLabel_XboxView: GameControllerButtonLabel = 4
-GameControllerButtonLabel_XboxUp: GameControllerButtonLabel = 5
-GameControllerButtonLabel_XboxDown: GameControllerButtonLabel = 6
-GameControllerButtonLabel_XboxLeft: GameControllerButtonLabel = 7
-GameControllerButtonLabel_XboxRight: GameControllerButtonLabel = 8
-GameControllerButtonLabel_XboxA: GameControllerButtonLabel = 9
-GameControllerButtonLabel_XboxB: GameControllerButtonLabel = 10
-GameControllerButtonLabel_XboxX: GameControllerButtonLabel = 11
-GameControllerButtonLabel_XboxY: GameControllerButtonLabel = 12
-GameControllerButtonLabel_XboxLeftBumper: GameControllerButtonLabel = 13
-GameControllerButtonLabel_XboxLeftTrigger: GameControllerButtonLabel = 14
-GameControllerButtonLabel_XboxLeftStickButton: GameControllerButtonLabel = 15
-GameControllerButtonLabel_XboxRightBumper: GameControllerButtonLabel = 16
-GameControllerButtonLabel_XboxRightTrigger: GameControllerButtonLabel = 17
-GameControllerButtonLabel_XboxRightStickButton: GameControllerButtonLabel = 18
-GameControllerButtonLabel_XboxPaddle1: GameControllerButtonLabel = 19
-GameControllerButtonLabel_XboxPaddle2: GameControllerButtonLabel = 20
-GameControllerButtonLabel_XboxPaddle3: GameControllerButtonLabel = 21
-GameControllerButtonLabel_XboxPaddle4: GameControllerButtonLabel = 22
-GameControllerButtonLabel_Mode: GameControllerButtonLabel = 23
-GameControllerButtonLabel_Select: GameControllerButtonLabel = 24
-GameControllerButtonLabel_Menu: GameControllerButtonLabel = 25
-GameControllerButtonLabel_View: GameControllerButtonLabel = 26
-GameControllerButtonLabel_Back: GameControllerButtonLabel = 27
-GameControllerButtonLabel_Start: GameControllerButtonLabel = 28
-GameControllerButtonLabel_Options: GameControllerButtonLabel = 29
-GameControllerButtonLabel_Share: GameControllerButtonLabel = 30
-GameControllerButtonLabel_Up: GameControllerButtonLabel = 31
-GameControllerButtonLabel_Down: GameControllerButtonLabel = 32
-GameControllerButtonLabel_Left: GameControllerButtonLabel = 33
-GameControllerButtonLabel_Right: GameControllerButtonLabel = 34
-GameControllerButtonLabel_LetterA: GameControllerButtonLabel = 35
-GameControllerButtonLabel_LetterB: GameControllerButtonLabel = 36
-GameControllerButtonLabel_LetterC: GameControllerButtonLabel = 37
-GameControllerButtonLabel_LetterL: GameControllerButtonLabel = 38
-GameControllerButtonLabel_LetterR: GameControllerButtonLabel = 39
-GameControllerButtonLabel_LetterX: GameControllerButtonLabel = 40
-GameControllerButtonLabel_LetterY: GameControllerButtonLabel = 41
-GameControllerButtonLabel_LetterZ: GameControllerButtonLabel = 42
-GameControllerButtonLabel_Cross: GameControllerButtonLabel = 43
-GameControllerButtonLabel_Circle: GameControllerButtonLabel = 44
-GameControllerButtonLabel_Square: GameControllerButtonLabel = 45
-GameControllerButtonLabel_Triangle: GameControllerButtonLabel = 46
-GameControllerButtonLabel_LeftBumper: GameControllerButtonLabel = 47
-GameControllerButtonLabel_LeftTrigger: GameControllerButtonLabel = 48
-GameControllerButtonLabel_LeftStickButton: GameControllerButtonLabel = 49
-GameControllerButtonLabel_Left1: GameControllerButtonLabel = 50
-GameControllerButtonLabel_Left2: GameControllerButtonLabel = 51
-GameControllerButtonLabel_Left3: GameControllerButtonLabel = 52
-GameControllerButtonLabel_RightBumper: GameControllerButtonLabel = 53
-GameControllerButtonLabel_RightTrigger: GameControllerButtonLabel = 54
-GameControllerButtonLabel_RightStickButton: GameControllerButtonLabel = 55
-GameControllerButtonLabel_Right1: GameControllerButtonLabel = 56
-GameControllerButtonLabel_Right2: GameControllerButtonLabel = 57
-GameControllerButtonLabel_Right3: GameControllerButtonLabel = 58
-GameControllerButtonLabel_Paddle1: GameControllerButtonLabel = 59
-GameControllerButtonLabel_Paddle2: GameControllerButtonLabel = 60
-GameControllerButtonLabel_Paddle3: GameControllerButtonLabel = 61
-GameControllerButtonLabel_Paddle4: GameControllerButtonLabel = 62
-GameControllerButtonLabel_Plus: GameControllerButtonLabel = 63
-GameControllerButtonLabel_Minus: GameControllerButtonLabel = 64
-GameControllerButtonLabel_DownLeftArrow: GameControllerButtonLabel = 65
-GameControllerButtonLabel_DialLeft: GameControllerButtonLabel = 66
-GameControllerButtonLabel_DialRight: GameControllerButtonLabel = 67
-GameControllerButtonLabel_Suspension: GameControllerButtonLabel = 68
-GameControllerSwitchKind = Int32
-GameControllerSwitchKind_TwoWay: GameControllerSwitchKind = 0
-GameControllerSwitchKind_FourWay: GameControllerSwitchKind = 1
-GameControllerSwitchKind_EightWay: GameControllerSwitchKind = 2
-GameControllerSwitchPosition = Int32
-GameControllerSwitchPosition_Center: GameControllerSwitchPosition = 0
-GameControllerSwitchPosition_Up: GameControllerSwitchPosition = 1
-GameControllerSwitchPosition_UpRight: GameControllerSwitchPosition = 2
-GameControllerSwitchPosition_Right: GameControllerSwitchPosition = 3
-GameControllerSwitchPosition_DownRight: GameControllerSwitchPosition = 4
-GameControllerSwitchPosition_Down: GameControllerSwitchPosition = 5
-GameControllerSwitchPosition_DownLeft: GameControllerSwitchPosition = 6
-GameControllerSwitchPosition_Left: GameControllerSwitchPosition = 7
-GameControllerSwitchPosition_UpLeft: GameControllerSwitchPosition = 8
+class GameControllerButtonLabel(Int32):  # enum
+    None_ = 0
+    XboxBack = 1
+    XboxStart = 2
+    XboxMenu = 3
+    XboxView = 4
+    XboxUp = 5
+    XboxDown = 6
+    XboxLeft = 7
+    XboxRight = 8
+    XboxA = 9
+    XboxB = 10
+    XboxX = 11
+    XboxY = 12
+    XboxLeftBumper = 13
+    XboxLeftTrigger = 14
+    XboxLeftStickButton = 15
+    XboxRightBumper = 16
+    XboxRightTrigger = 17
+    XboxRightStickButton = 18
+    XboxPaddle1 = 19
+    XboxPaddle2 = 20
+    XboxPaddle3 = 21
+    XboxPaddle4 = 22
+    Mode = 23
+    Select = 24
+    Menu = 25
+    View = 26
+    Back = 27
+    Start = 28
+    Options = 29
+    Share = 30
+    Up = 31
+    Down = 32
+    Left = 33
+    Right = 34
+    LetterA = 35
+    LetterB = 36
+    LetterC = 37
+    LetterL = 38
+    LetterR = 39
+    LetterX = 40
+    LetterY = 41
+    LetterZ = 42
+    Cross = 43
+    Circle = 44
+    Square = 45
+    Triangle = 46
+    LeftBumper = 47
+    LeftTrigger = 48
+    LeftStickButton = 49
+    Left1 = 50
+    Left2 = 51
+    Left3 = 52
+    RightBumper = 53
+    RightTrigger = 54
+    RightStickButton = 55
+    Right1 = 56
+    Right2 = 57
+    Right3 = 58
+    Paddle1 = 59
+    Paddle2 = 60
+    Paddle3 = 61
+    Paddle4 = 62
+    Plus = 63
+    Minus = 64
+    DownLeftArrow = 65
+    DialLeft = 66
+    DialRight = 67
+    Suspension = 68
+class GameControllerSwitchKind(Int32):  # enum
+    TwoWay = 0
+    FourWay = 1
+    EightWay = 2
+class GameControllerSwitchPosition(Int32):  # enum
+    Center = 0
+    Up = 1
+    UpRight = 2
+    Right = 3
+    DownRight = 4
+    Down = 5
+    DownLeft = 6
+    Left = 7
+    UpLeft = 8
 class _Gamepad_Meta_(ComPtr.__class__):
     pass
 class Gamepad(ComPtr, metaclass=_Gamepad_Meta_):
@@ -276,31 +263,31 @@ class Gamepad(ComPtr, metaclass=_Gamepad_Meta_):
     def remove_GamepadRemoved(cls: win32more.Windows.Gaming.Input.IGamepadStatics, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_classmethod
     def get_Gamepads(cls: win32more.Windows.Gaming.Input.IGamepadStatics) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Gaming.Input.Gamepad]: ...
-    Vibration = property(get_Vibration, put_Vibration)
     Headset = property(get_Headset, None)
     IsWireless = property(get_IsWireless, None)
     User = property(get_User, None)
+    Vibration = property(get_Vibration, put_Vibration)
     _Gamepad_Meta_.Gamepads = property(get_Gamepads.__wrapped__, None)
-GamepadButtons = UInt32
-GamepadButtons_None: GamepadButtons = 0
-GamepadButtons_Menu: GamepadButtons = 1
-GamepadButtons_View: GamepadButtons = 2
-GamepadButtons_A: GamepadButtons = 4
-GamepadButtons_B: GamepadButtons = 8
-GamepadButtons_X: GamepadButtons = 16
-GamepadButtons_Y: GamepadButtons = 32
-GamepadButtons_DPadUp: GamepadButtons = 64
-GamepadButtons_DPadDown: GamepadButtons = 128
-GamepadButtons_DPadLeft: GamepadButtons = 256
-GamepadButtons_DPadRight: GamepadButtons = 512
-GamepadButtons_LeftShoulder: GamepadButtons = 1024
-GamepadButtons_RightShoulder: GamepadButtons = 2048
-GamepadButtons_LeftThumbstick: GamepadButtons = 4096
-GamepadButtons_RightThumbstick: GamepadButtons = 8192
-GamepadButtons_Paddle1: GamepadButtons = 16384
-GamepadButtons_Paddle2: GamepadButtons = 32768
-GamepadButtons_Paddle3: GamepadButtons = 65536
-GamepadButtons_Paddle4: GamepadButtons = 131072
+class GamepadButtons(UInt32):  # enum
+    None_ = 0
+    Menu = 1
+    View = 2
+    A = 4
+    B = 8
+    X = 16
+    Y = 32
+    DPadUp = 64
+    DPadDown = 128
+    DPadLeft = 256
+    DPadRight = 512
+    LeftShoulder = 1024
+    RightShoulder = 2048
+    LeftThumbstick = 4096
+    RightThumbstick = 8192
+    Paddle1 = 16384
+    Paddle2 = 32768
+    Paddle3 = 65536
+    Paddle4 = 131072
 class GamepadReading(EasyCastStructure):
     Timestamp: UInt64
     Buttons: win32more.Windows.Gaming.Input.GamepadButtons
@@ -549,9 +536,9 @@ class IRawGameController2(ComPtr):
     def get_NonRoamableId(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_DisplayName(self) -> WinRT_String: ...
-    SimpleHapticsControllers = property(get_SimpleHapticsControllers, None)
-    NonRoamableId = property(get_NonRoamableId, None)
     DisplayName = property(get_DisplayName, None)
+    NonRoamableId = property(get_NonRoamableId, None)
+    SimpleHapticsControllers = property(get_SimpleHapticsControllers, None)
 class IRawGameControllerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Gaming.Input.IRawGameControllerStatics'
@@ -600,20 +587,20 @@ class IUINavigationControllerStatics2(ComPtr):
     _iid_ = Guid('{e0cb28e3-b20b-4b0b-9ed4-f3d53cec0de4}')
     @winrt_commethod(6)
     def FromGameController(self, gameController: win32more.Windows.Gaming.Input.IGameController) -> win32more.Windows.Gaming.Input.UINavigationController: ...
-OptionalUINavigationButtons = UInt32
-OptionalUINavigationButtons_None: OptionalUINavigationButtons = 0
-OptionalUINavigationButtons_Context1: OptionalUINavigationButtons = 1
-OptionalUINavigationButtons_Context2: OptionalUINavigationButtons = 2
-OptionalUINavigationButtons_Context3: OptionalUINavigationButtons = 4
-OptionalUINavigationButtons_Context4: OptionalUINavigationButtons = 8
-OptionalUINavigationButtons_PageUp: OptionalUINavigationButtons = 16
-OptionalUINavigationButtons_PageDown: OptionalUINavigationButtons = 32
-OptionalUINavigationButtons_PageLeft: OptionalUINavigationButtons = 64
-OptionalUINavigationButtons_PageRight: OptionalUINavigationButtons = 128
-OptionalUINavigationButtons_ScrollUp: OptionalUINavigationButtons = 256
-OptionalUINavigationButtons_ScrollDown: OptionalUINavigationButtons = 512
-OptionalUINavigationButtons_ScrollLeft: OptionalUINavigationButtons = 1024
-OptionalUINavigationButtons_ScrollRight: OptionalUINavigationButtons = 2048
+class OptionalUINavigationButtons(UInt32):  # enum
+    None_ = 0
+    Context1 = 1
+    Context2 = 2
+    Context3 = 4
+    Context4 = 8
+    PageUp = 16
+    PageDown = 32
+    PageLeft = 64
+    PageRight = 128
+    ScrollUp = 256
+    ScrollDown = 512
+    ScrollLeft = 1024
+    ScrollRight = 2048
 class _RacingWheel_Meta_(ComPtr.__class__):
     pass
 class RacingWheel(ComPtr, metaclass=_RacingWheel_Meta_):
@@ -671,37 +658,37 @@ class RacingWheel(ComPtr, metaclass=_RacingWheel_Meta_):
     HasClutch = property(get_HasClutch, None)
     HasHandbrake = property(get_HasHandbrake, None)
     HasPatternShifter = property(get_HasPatternShifter, None)
-    MaxPatternShifterGear = property(get_MaxPatternShifterGear, None)
-    MaxWheelAngle = property(get_MaxWheelAngle, None)
-    WheelMotor = property(get_WheelMotor, None)
     Headset = property(get_Headset, None)
     IsWireless = property(get_IsWireless, None)
+    MaxPatternShifterGear = property(get_MaxPatternShifterGear, None)
+    MaxWheelAngle = property(get_MaxWheelAngle, None)
     User = property(get_User, None)
+    WheelMotor = property(get_WheelMotor, None)
     _RacingWheel_Meta_.RacingWheels = property(get_RacingWheels.__wrapped__, None)
-RacingWheelButtons = UInt32
-RacingWheelButtons_None: RacingWheelButtons = 0
-RacingWheelButtons_PreviousGear: RacingWheelButtons = 1
-RacingWheelButtons_NextGear: RacingWheelButtons = 2
-RacingWheelButtons_DPadUp: RacingWheelButtons = 4
-RacingWheelButtons_DPadDown: RacingWheelButtons = 8
-RacingWheelButtons_DPadLeft: RacingWheelButtons = 16
-RacingWheelButtons_DPadRight: RacingWheelButtons = 32
-RacingWheelButtons_Button1: RacingWheelButtons = 64
-RacingWheelButtons_Button2: RacingWheelButtons = 128
-RacingWheelButtons_Button3: RacingWheelButtons = 256
-RacingWheelButtons_Button4: RacingWheelButtons = 512
-RacingWheelButtons_Button5: RacingWheelButtons = 1024
-RacingWheelButtons_Button6: RacingWheelButtons = 2048
-RacingWheelButtons_Button7: RacingWheelButtons = 4096
-RacingWheelButtons_Button8: RacingWheelButtons = 8192
-RacingWheelButtons_Button9: RacingWheelButtons = 16384
-RacingWheelButtons_Button10: RacingWheelButtons = 32768
-RacingWheelButtons_Button11: RacingWheelButtons = 65536
-RacingWheelButtons_Button12: RacingWheelButtons = 131072
-RacingWheelButtons_Button13: RacingWheelButtons = 262144
-RacingWheelButtons_Button14: RacingWheelButtons = 524288
-RacingWheelButtons_Button15: RacingWheelButtons = 1048576
-RacingWheelButtons_Button16: RacingWheelButtons = 2097152
+class RacingWheelButtons(UInt32):  # enum
+    None_ = 0
+    PreviousGear = 1
+    NextGear = 2
+    DPadUp = 4
+    DPadDown = 8
+    DPadLeft = 16
+    DPadRight = 32
+    Button1 = 64
+    Button2 = 128
+    Button3 = 256
+    Button4 = 512
+    Button5 = 1024
+    Button6 = 2048
+    Button7 = 4096
+    Button8 = 8192
+    Button9 = 16384
+    Button10 = 32768
+    Button11 = 65536
+    Button12 = 131072
+    Button13 = 262144
+    Button14 = 524288
+    Button15 = 1048576
+    Button16 = 2097152
 class RacingWheelReading(EasyCastStructure):
     Timestamp: UInt64
     Buttons: win32more.Windows.Gaming.Input.RacingWheelButtons
@@ -775,27 +762,27 @@ class RawGameController(ComPtr, metaclass=_RawGameController_Meta_):
     def FromGameController(cls: win32more.Windows.Gaming.Input.IRawGameControllerStatics, gameController: win32more.Windows.Gaming.Input.IGameController) -> win32more.Windows.Gaming.Input.RawGameController: ...
     AxisCount = property(get_AxisCount, None)
     ButtonCount = property(get_ButtonCount, None)
+    DisplayName = property(get_DisplayName, None)
     ForceFeedbackMotors = property(get_ForceFeedbackMotors, None)
     HardwareProductId = property(get_HardwareProductId, None)
     HardwareVendorId = property(get_HardwareVendorId, None)
-    SwitchCount = property(get_SwitchCount, None)
     Headset = property(get_Headset, None)
     IsWireless = property(get_IsWireless, None)
-    User = property(get_User, None)
-    SimpleHapticsControllers = property(get_SimpleHapticsControllers, None)
     NonRoamableId = property(get_NonRoamableId, None)
-    DisplayName = property(get_DisplayName, None)
+    SimpleHapticsControllers = property(get_SimpleHapticsControllers, None)
+    SwitchCount = property(get_SwitchCount, None)
+    User = property(get_User, None)
     _RawGameController_Meta_.RawGameControllers = property(get_RawGameControllers.__wrapped__, None)
-RequiredUINavigationButtons = UInt32
-RequiredUINavigationButtons_None: RequiredUINavigationButtons = 0
-RequiredUINavigationButtons_Menu: RequiredUINavigationButtons = 1
-RequiredUINavigationButtons_View: RequiredUINavigationButtons = 2
-RequiredUINavigationButtons_Accept: RequiredUINavigationButtons = 4
-RequiredUINavigationButtons_Cancel: RequiredUINavigationButtons = 8
-RequiredUINavigationButtons_Up: RequiredUINavigationButtons = 16
-RequiredUINavigationButtons_Down: RequiredUINavigationButtons = 32
-RequiredUINavigationButtons_Left: RequiredUINavigationButtons = 64
-RequiredUINavigationButtons_Right: RequiredUINavigationButtons = 128
+class RequiredUINavigationButtons(UInt32):  # enum
+    None_ = 0
+    Menu = 1
+    View = 2
+    Accept = 4
+    Cancel = 8
+    Up = 16
+    Down = 32
+    Left = 64
+    Right = 128
 class _UINavigationController_Meta_(ComPtr.__class__):
     pass
 class UINavigationController(ComPtr, metaclass=_UINavigationController_Meta_):
@@ -848,4 +835,6 @@ class UINavigationReading(EasyCastStructure):
     Timestamp: UInt64
     RequiredButtons: win32more.Windows.Gaming.Input.RequiredUINavigationButtons
     OptionalButtons: win32more.Windows.Gaming.Input.OptionalUINavigationButtons
+
+
 make_ready(__name__)

@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.System.Update
+import win32more.Windows.Win32.System.WinRT
 class ISystemUpdateItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Update.ISystemUpdateItem'
@@ -38,14 +25,14 @@ class ISystemUpdateItem(ComPtr):
     def get_InstallProgress(self) -> Double: ...
     @winrt_commethod(13)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
+    Description = property(get_Description, None)
+    DownloadProgress = property(get_DownloadProgress, None)
+    ExtendedError = property(get_ExtendedError, None)
+    Id = property(get_Id, None)
+    InstallProgress = property(get_InstallProgress, None)
+    Revision = property(get_Revision, None)
     State = property(get_State, None)
     Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    Id = property(get_Id, None)
-    Revision = property(get_Revision, None)
-    DownloadProgress = property(get_DownloadProgress, None)
-    InstallProgress = property(get_InstallProgress, None)
-    ExtendedError = property(get_ExtendedError, None)
 class ISystemUpdateLastErrorInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Update.ISystemUpdateLastErrorInfo'
@@ -56,9 +43,9 @@ class ISystemUpdateLastErrorInfo(ComPtr):
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
     @winrt_commethod(8)
     def get_IsInteractive(self) -> Boolean: ...
-    State = property(get_State, None)
     ExtendedError = property(get_ExtendedError, None)
     IsInteractive = property(get_IsInteractive, None)
+    State = property(get_State, None)
 class ISystemUpdateManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Update.ISystemUpdateManagerStatics'
@@ -111,23 +98,23 @@ class ISystemUpdateManagerStatics(ComPtr):
     def RebootToCompleteInstall(self) -> Void: ...
     @winrt_commethod(29)
     def StartCancelUpdates(self) -> Void: ...
-    State = property(get_State, None)
+    AttentionRequiredReason = property(get_AttentionRequiredReason, None)
     DownloadProgress = property(get_DownloadProgress, None)
+    ExtendedError = property(get_ExtendedError, None)
     InstallProgress = property(get_InstallProgress, None)
-    UserActiveHoursStart = property(get_UserActiveHoursStart, None)
-    UserActiveHoursEnd = property(get_UserActiveHoursEnd, None)
-    UserActiveHoursMax = property(get_UserActiveHoursMax, None)
+    LastErrorInfo = property(get_LastErrorInfo, None)
     LastUpdateCheckTime = property(get_LastUpdateCheckTime, None)
     LastUpdateInstallTime = property(get_LastUpdateInstallTime, None)
-    LastErrorInfo = property(get_LastErrorInfo, None)
-    ExtendedError = property(get_ExtendedError, None)
-    AttentionRequiredReason = property(get_AttentionRequiredReason, None)
-SystemUpdateAttentionRequiredReason = Int32
-SystemUpdateAttentionRequiredReason_None: SystemUpdateAttentionRequiredReason = 0
-SystemUpdateAttentionRequiredReason_NetworkRequired: SystemUpdateAttentionRequiredReason = 1
-SystemUpdateAttentionRequiredReason_InsufficientDiskSpace: SystemUpdateAttentionRequiredReason = 2
-SystemUpdateAttentionRequiredReason_InsufficientBattery: SystemUpdateAttentionRequiredReason = 3
-SystemUpdateAttentionRequiredReason_UpdateBlocked: SystemUpdateAttentionRequiredReason = 4
+    State = property(get_State, None)
+    UserActiveHoursEnd = property(get_UserActiveHoursEnd, None)
+    UserActiveHoursMax = property(get_UserActiveHoursMax, None)
+    UserActiveHoursStart = property(get_UserActiveHoursStart, None)
+class SystemUpdateAttentionRequiredReason(Int32):  # enum
+    None_ = 0
+    NetworkRequired = 1
+    InsufficientDiskSpace = 2
+    InsufficientBattery = 3
+    UpdateBlocked = 4
 class SystemUpdateItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.System.Update.ISystemUpdateItem
@@ -148,24 +135,24 @@ class SystemUpdateItem(ComPtr):
     def get_InstallProgress(self: win32more.Windows.System.Update.ISystemUpdateItem) -> Double: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.System.Update.ISystemUpdateItem) -> win32more.Windows.Foundation.HResult: ...
+    Description = property(get_Description, None)
+    DownloadProgress = property(get_DownloadProgress, None)
+    ExtendedError = property(get_ExtendedError, None)
+    Id = property(get_Id, None)
+    InstallProgress = property(get_InstallProgress, None)
+    Revision = property(get_Revision, None)
     State = property(get_State, None)
     Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    Id = property(get_Id, None)
-    Revision = property(get_Revision, None)
-    DownloadProgress = property(get_DownloadProgress, None)
-    InstallProgress = property(get_InstallProgress, None)
-    ExtendedError = property(get_ExtendedError, None)
-SystemUpdateItemState = Int32
-SystemUpdateItemState_NotStarted: SystemUpdateItemState = 0
-SystemUpdateItemState_Initializing: SystemUpdateItemState = 1
-SystemUpdateItemState_Preparing: SystemUpdateItemState = 2
-SystemUpdateItemState_Calculating: SystemUpdateItemState = 3
-SystemUpdateItemState_Downloading: SystemUpdateItemState = 4
-SystemUpdateItemState_Installing: SystemUpdateItemState = 5
-SystemUpdateItemState_Completed: SystemUpdateItemState = 6
-SystemUpdateItemState_RebootRequired: SystemUpdateItemState = 7
-SystemUpdateItemState_Error: SystemUpdateItemState = 8
+class SystemUpdateItemState(Int32):  # enum
+    NotStarted = 0
+    Initializing = 1
+    Preparing = 2
+    Calculating = 3
+    Downloading = 4
+    Installing = 5
+    Completed = 6
+    RebootRequired = 7
+    Error = 8
 class SystemUpdateLastErrorInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.System.Update.ISystemUpdateLastErrorInfo
@@ -176,9 +163,9 @@ class SystemUpdateLastErrorInfo(ComPtr):
     def get_ExtendedError(self: win32more.Windows.System.Update.ISystemUpdateLastErrorInfo) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def get_IsInteractive(self: win32more.Windows.System.Update.ISystemUpdateLastErrorInfo) -> Boolean: ...
-    State = property(get_State, None)
     ExtendedError = property(get_ExtendedError, None)
     IsInteractive = property(get_IsInteractive, None)
+    State = property(get_State, None)
 class _SystemUpdateManager_Meta_(ComPtr.__class__):
     pass
 class SystemUpdateManager(ComPtr, metaclass=_SystemUpdateManager_Meta_):
@@ -232,31 +219,33 @@ class SystemUpdateManager(ComPtr, metaclass=_SystemUpdateManager_Meta_):
     def RebootToCompleteInstall(cls: win32more.Windows.System.Update.ISystemUpdateManagerStatics) -> Void: ...
     @winrt_classmethod
     def StartCancelUpdates(cls: win32more.Windows.System.Update.ISystemUpdateManagerStatics) -> Void: ...
-    _SystemUpdateManager_Meta_.State = property(get_State.__wrapped__, None)
+    _SystemUpdateManager_Meta_.AttentionRequiredReason = property(get_AttentionRequiredReason.__wrapped__, None)
     _SystemUpdateManager_Meta_.DownloadProgress = property(get_DownloadProgress.__wrapped__, None)
+    _SystemUpdateManager_Meta_.ExtendedError = property(get_ExtendedError.__wrapped__, None)
     _SystemUpdateManager_Meta_.InstallProgress = property(get_InstallProgress.__wrapped__, None)
-    _SystemUpdateManager_Meta_.UserActiveHoursStart = property(get_UserActiveHoursStart.__wrapped__, None)
-    _SystemUpdateManager_Meta_.UserActiveHoursEnd = property(get_UserActiveHoursEnd.__wrapped__, None)
-    _SystemUpdateManager_Meta_.UserActiveHoursMax = property(get_UserActiveHoursMax.__wrapped__, None)
+    _SystemUpdateManager_Meta_.LastErrorInfo = property(get_LastErrorInfo.__wrapped__, None)
     _SystemUpdateManager_Meta_.LastUpdateCheckTime = property(get_LastUpdateCheckTime.__wrapped__, None)
     _SystemUpdateManager_Meta_.LastUpdateInstallTime = property(get_LastUpdateInstallTime.__wrapped__, None)
-    _SystemUpdateManager_Meta_.LastErrorInfo = property(get_LastErrorInfo.__wrapped__, None)
-    _SystemUpdateManager_Meta_.ExtendedError = property(get_ExtendedError.__wrapped__, None)
-    _SystemUpdateManager_Meta_.AttentionRequiredReason = property(get_AttentionRequiredReason.__wrapped__, None)
-SystemUpdateManagerState = Int32
-SystemUpdateManagerState_Idle: SystemUpdateManagerState = 0
-SystemUpdateManagerState_Detecting: SystemUpdateManagerState = 1
-SystemUpdateManagerState_ReadyToDownload: SystemUpdateManagerState = 2
-SystemUpdateManagerState_Downloading: SystemUpdateManagerState = 3
-SystemUpdateManagerState_ReadyToInstall: SystemUpdateManagerState = 4
-SystemUpdateManagerState_Installing: SystemUpdateManagerState = 5
-SystemUpdateManagerState_RebootRequired: SystemUpdateManagerState = 6
-SystemUpdateManagerState_ReadyToFinalize: SystemUpdateManagerState = 7
-SystemUpdateManagerState_Finalizing: SystemUpdateManagerState = 8
-SystemUpdateManagerState_Completed: SystemUpdateManagerState = 9
-SystemUpdateManagerState_AttentionRequired: SystemUpdateManagerState = 10
-SystemUpdateManagerState_Error: SystemUpdateManagerState = 11
-SystemUpdateStartInstallAction = Int32
-SystemUpdateStartInstallAction_UpToReboot: SystemUpdateStartInstallAction = 0
-SystemUpdateStartInstallAction_AllowReboot: SystemUpdateStartInstallAction = 1
+    _SystemUpdateManager_Meta_.State = property(get_State.__wrapped__, None)
+    _SystemUpdateManager_Meta_.UserActiveHoursEnd = property(get_UserActiveHoursEnd.__wrapped__, None)
+    _SystemUpdateManager_Meta_.UserActiveHoursMax = property(get_UserActiveHoursMax.__wrapped__, None)
+    _SystemUpdateManager_Meta_.UserActiveHoursStart = property(get_UserActiveHoursStart.__wrapped__, None)
+class SystemUpdateManagerState(Int32):  # enum
+    Idle = 0
+    Detecting = 1
+    ReadyToDownload = 2
+    Downloading = 3
+    ReadyToInstall = 4
+    Installing = 5
+    RebootRequired = 6
+    ReadyToFinalize = 7
+    Finalizing = 8
+    Completed = 9
+    AttentionRequired = 10
+    Error = 11
+class SystemUpdateStartInstallAction(Int32):  # enum
+    UpToReboot = 0
+    AllowReboot = 1
+
+
 make_ready(__name__)

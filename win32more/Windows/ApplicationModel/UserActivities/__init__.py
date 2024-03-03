@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.UserActivities
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -22,6 +8,7 @@ import win32more.Windows.Security.Credentials
 import win32more.Windows.System
 import win32more.Windows.UI
 import win32more.Windows.UI.Shell
+import win32more.Windows.Win32.System.WinRT
 class IUserActivity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserActivities.IUserActivity'
@@ -56,14 +43,14 @@ class IUserActivity(ComPtr):
     def SaveAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(20)
     def CreateSession(self) -> win32more.Windows.ApplicationModel.UserActivities.UserActivitySession: ...
-    State = property(get_State, None)
-    ActivityId = property(get_ActivityId, None)
-    VisualElements = property(get_VisualElements, None)
-    ContentUri = property(get_ContentUri, put_ContentUri)
-    ContentType = property(get_ContentType, put_ContentType)
-    FallbackUri = property(get_FallbackUri, put_FallbackUri)
     ActivationUri = property(get_ActivationUri, put_ActivationUri)
+    ActivityId = property(get_ActivityId, None)
     ContentInfo = property(get_ContentInfo, put_ContentInfo)
+    ContentType = property(get_ContentType, put_ContentType)
+    ContentUri = property(get_ContentUri, put_ContentUri)
+    FallbackUri = property(get_FallbackUri, put_FallbackUri)
+    State = property(get_State, None)
+    VisualElements = property(get_VisualElements, None)
 class IUserActivity2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserActivities.IUserActivity2'
@@ -95,9 +82,9 @@ class IUserActivityAttribution(ComPtr):
     def get_AddImageQuery(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_AddImageQuery(self, value: Boolean) -> Void: ...
-    IconUri = property(get_IconUri, put_IconUri)
-    AlternateText = property(get_AlternateText, put_AlternateText)
     AddImageQuery = property(get_AddImageQuery, put_AddImageQuery)
+    AlternateText = property(get_AlternateText, put_AlternateText)
+    IconUri = property(get_IconUri, put_IconUri)
 class IUserActivityAttributionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserActivities.IUserActivityAttributionFactory'
@@ -206,9 +193,9 @@ class IUserActivitySessionHistoryItem(ComPtr):
     def get_StartTime(self) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_commethod(8)
     def get_EndTime(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
-    UserActivity = property(get_UserActivity, None)
-    StartTime = property(get_StartTime, None)
     EndTime = property(get_EndTime, None)
+    StartTime = property(get_StartTime, None)
+    UserActivity = property(get_UserActivity, None)
 class IUserActivityStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserActivities.IUserActivityStatics'
@@ -243,11 +230,11 @@ class IUserActivityVisualElements(ComPtr):
     def put_Content(self, value: win32more.Windows.UI.Shell.IAdaptiveCard) -> Void: ...
     @winrt_commethod(15)
     def get_Content(self) -> win32more.Windows.UI.Shell.IAdaptiveCard: ...
-    DisplayText = property(get_DisplayText, put_DisplayText)
-    Description = property(get_Description, put_Description)
-    BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     Attribution = property(get_Attribution, put_Attribution)
+    BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     Content = property(get_Content, put_Content)
+    Description = property(get_Description, put_Description)
+    DisplayText = property(get_DisplayText, put_DisplayText)
 class IUserActivityVisualElements2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserActivities.IUserActivityVisualElements2'
@@ -261,6 +248,13 @@ class UserActivity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserActivities.IUserActivity
     _classid_ = 'Windows.ApplicationModel.UserActivities.UserActivity'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.UserActivities.UserActivity.CreateWithActivityId(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateWithActivityId(cls: win32more.Windows.ApplicationModel.UserActivities.IUserActivityFactory, activityId: WinRT_String) -> win32more.Windows.ApplicationModel.UserActivities.UserActivity: ...
     @winrt_mixinmethod
@@ -305,23 +299,32 @@ class UserActivity(ComPtr):
     def TryParseFromJsonArray(cls: win32more.Windows.ApplicationModel.UserActivities.IUserActivityStatics, json: WinRT_String) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.ApplicationModel.UserActivities.UserActivity]: ...
     @winrt_classmethod
     def ToJsonArray(cls: win32more.Windows.ApplicationModel.UserActivities.IUserActivityStatics, activities: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.UserActivities.UserActivity]) -> WinRT_String: ...
-    State = property(get_State, None)
-    ActivityId = property(get_ActivityId, None)
-    VisualElements = property(get_VisualElements, None)
-    ContentUri = property(get_ContentUri, put_ContentUri)
-    ContentType = property(get_ContentType, put_ContentType)
-    FallbackUri = property(get_FallbackUri, put_FallbackUri)
     ActivationUri = property(get_ActivationUri, put_ActivationUri)
+    ActivityId = property(get_ActivityId, None)
     ContentInfo = property(get_ContentInfo, put_ContentInfo)
+    ContentType = property(get_ContentType, put_ContentType)
+    ContentUri = property(get_ContentUri, put_ContentUri)
+    FallbackUri = property(get_FallbackUri, put_FallbackUri)
     IsRoamable = property(get_IsRoamable, put_IsRoamable)
+    State = property(get_State, None)
+    VisualElements = property(get_VisualElements, None)
 class UserActivityAttribution(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttribution
     _classid_ = 'Windows.ApplicationModel.UserActivities.UserActivityAttribution'
-    @winrt_factorymethod
-    def CreateWithUri(cls: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttributionFactory, iconUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.UserActivities.UserActivityAttribution: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserActivities.UserActivityAttribution.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.UserActivities.UserActivityAttribution.CreateWithUri(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserActivities.UserActivityAttribution: ...
+    @winrt_factorymethod
+    def CreateWithUri(cls: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttributionFactory, iconUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.UserActivities.UserActivityAttribution: ...
     @winrt_mixinmethod
     def get_IconUri(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttribution) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
@@ -334,9 +337,9 @@ class UserActivityAttribution(ComPtr):
     def get_AddImageQuery(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttribution) -> Boolean: ...
     @winrt_mixinmethod
     def put_AddImageQuery(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivityAttribution, value: Boolean) -> Void: ...
-    IconUri = property(get_IconUri, put_IconUri)
-    AlternateText = property(get_AlternateText, put_AlternateText)
     AddImageQuery = property(get_AddImageQuery, put_AddImageQuery)
+    AlternateText = property(get_AlternateText, put_AlternateText)
+    IconUri = property(get_IconUri, put_IconUri)
 class UserActivityChannel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserActivities.IUserActivityChannel
@@ -411,12 +414,12 @@ class UserActivitySessionHistoryItem(ComPtr):
     def get_StartTime(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivitySessionHistoryItem) -> win32more.Windows.Foundation.DateTime: ...
     @winrt_mixinmethod
     def get_EndTime(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivitySessionHistoryItem) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
-    UserActivity = property(get_UserActivity, None)
-    StartTime = property(get_StartTime, None)
     EndTime = property(get_EndTime, None)
-UserActivityState = Int32
-UserActivityState_New: UserActivityState = 0
-UserActivityState_Published: UserActivityState = 1
+    StartTime = property(get_StartTime, None)
+    UserActivity = property(get_UserActivity, None)
+class UserActivityState(Int32):  # enum
+    New = 0
+    Published = 1
 class UserActivityVisualElements(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserActivities.IUserActivityVisualElements
@@ -445,10 +448,12 @@ class UserActivityVisualElements(ComPtr):
     def get_AttributionDisplayText(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivityVisualElements2) -> WinRT_String: ...
     @winrt_mixinmethod
     def put_AttributionDisplayText(self: win32more.Windows.ApplicationModel.UserActivities.IUserActivityVisualElements2, value: WinRT_String) -> Void: ...
-    DisplayText = property(get_DisplayText, put_DisplayText)
-    Description = property(get_Description, put_Description)
-    BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
     Attribution = property(get_Attribution, put_Attribution)
-    Content = property(get_Content, put_Content)
     AttributionDisplayText = property(get_AttributionDisplayText, put_AttributionDisplayText)
+    BackgroundColor = property(get_BackgroundColor, put_BackgroundColor)
+    Content = property(get_Content, put_Content)
+    Description = property(get_Description, put_Description)
+    DisplayText = property(get_DisplayText, put_DisplayText)
+
+
 make_ready(__name__)

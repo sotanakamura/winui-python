@@ -1,37 +1,24 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Geolocation
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Services.Maps
 import win32more.Windows.Services.Maps.Guidance
 import win32more.Windows.UI
-GuidanceAudioMeasurementSystem = Int32
-GuidanceAudioMeasurementSystem_Meters: GuidanceAudioMeasurementSystem = 0
-GuidanceAudioMeasurementSystem_MilesAndYards: GuidanceAudioMeasurementSystem = 1
-GuidanceAudioMeasurementSystem_MilesAndFeet: GuidanceAudioMeasurementSystem = 2
-GuidanceAudioNotificationKind = Int32
-GuidanceAudioNotificationKind_Maneuver: GuidanceAudioNotificationKind = 0
-GuidanceAudioNotificationKind_Route: GuidanceAudioNotificationKind = 1
-GuidanceAudioNotificationKind_Gps: GuidanceAudioNotificationKind = 2
-GuidanceAudioNotificationKind_SpeedLimit: GuidanceAudioNotificationKind = 3
-GuidanceAudioNotificationKind_Traffic: GuidanceAudioNotificationKind = 4
-GuidanceAudioNotificationKind_TrafficCamera: GuidanceAudioNotificationKind = 5
+import win32more.Windows.Win32.System.WinRT
+class GuidanceAudioMeasurementSystem(Int32):  # enum
+    Meters = 0
+    MilesAndYards = 1
+    MilesAndFeet = 2
+class GuidanceAudioNotificationKind(Int32):  # enum
+    Maneuver = 0
+    Route = 1
+    Gps = 2
+    SpeedLimit = 3
+    Traffic = 4
+    TrafficCamera = 5
 class GuidanceAudioNotificationRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceAudioNotificationRequestedEventArgs
@@ -42,17 +29,17 @@ class GuidanceAudioNotificationRequestedEventArgs(ComPtr):
     def get_AudioFilePaths(self: win32more.Windows.Services.Maps.Guidance.IGuidanceAudioNotificationRequestedEventArgs) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
     def get_AudioText(self: win32more.Windows.Services.Maps.Guidance.IGuidanceAudioNotificationRequestedEventArgs) -> WinRT_String: ...
-    AudioNotification = property(get_AudioNotification, None)
     AudioFilePaths = property(get_AudioFilePaths, None)
+    AudioNotification = property(get_AudioNotification, None)
     AudioText = property(get_AudioText, None)
-GuidanceAudioNotifications = UInt32
-GuidanceAudioNotifications_None: GuidanceAudioNotifications = 0
-GuidanceAudioNotifications_Maneuver: GuidanceAudioNotifications = 1
-GuidanceAudioNotifications_Route: GuidanceAudioNotifications = 2
-GuidanceAudioNotifications_Gps: GuidanceAudioNotifications = 4
-GuidanceAudioNotifications_SpeedLimit: GuidanceAudioNotifications = 8
-GuidanceAudioNotifications_Traffic: GuidanceAudioNotifications = 16
-GuidanceAudioNotifications_TrafficCamera: GuidanceAudioNotifications = 32
+class GuidanceAudioNotifications(UInt32):  # enum
+    None_ = 0
+    Maneuver = 1
+    Route = 2
+    Gps = 4
+    SpeedLimit = 8
+    Traffic = 16
+    TrafficCamera = 32
 class GuidanceLaneInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceLaneInfo
@@ -61,20 +48,20 @@ class GuidanceLaneInfo(ComPtr):
     def get_LaneMarkers(self: win32more.Windows.Services.Maps.Guidance.IGuidanceLaneInfo) -> win32more.Windows.Services.Maps.Guidance.GuidanceLaneMarkers: ...
     @winrt_mixinmethod
     def get_IsOnRoute(self: win32more.Windows.Services.Maps.Guidance.IGuidanceLaneInfo) -> Boolean: ...
-    LaneMarkers = property(get_LaneMarkers, None)
     IsOnRoute = property(get_IsOnRoute, None)
-GuidanceLaneMarkers = UInt32
-GuidanceLaneMarkers_None: GuidanceLaneMarkers = 0
-GuidanceLaneMarkers_LightRight: GuidanceLaneMarkers = 1
-GuidanceLaneMarkers_Right: GuidanceLaneMarkers = 2
-GuidanceLaneMarkers_HardRight: GuidanceLaneMarkers = 4
-GuidanceLaneMarkers_Straight: GuidanceLaneMarkers = 8
-GuidanceLaneMarkers_UTurnLeft: GuidanceLaneMarkers = 16
-GuidanceLaneMarkers_HardLeft: GuidanceLaneMarkers = 32
-GuidanceLaneMarkers_Left: GuidanceLaneMarkers = 64
-GuidanceLaneMarkers_LightLeft: GuidanceLaneMarkers = 128
-GuidanceLaneMarkers_UTurnRight: GuidanceLaneMarkers = 256
-GuidanceLaneMarkers_Unknown: GuidanceLaneMarkers = 4294967295
+    LaneMarkers = property(get_LaneMarkers, None)
+class GuidanceLaneMarkers(UInt32):  # enum
+    None_ = 0
+    LightRight = 1
+    Right = 2
+    HardRight = 4
+    Straight = 8
+    UTurnLeft = 16
+    HardLeft = 32
+    Left = 64
+    LightLeft = 128
+    UTurnRight = 256
+    Unknown = 4294967295
 class GuidanceManeuver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceManeuver
@@ -103,67 +90,67 @@ class GuidanceManeuver(ComPtr):
     def get_RoadSignpost(self: win32more.Windows.Services.Maps.Guidance.IGuidanceManeuver) -> win32more.Windows.Services.Maps.Guidance.GuidanceRoadSignpost: ...
     @winrt_mixinmethod
     def get_InstructionText(self: win32more.Windows.Services.Maps.Guidance.IGuidanceManeuver) -> WinRT_String: ...
-    StartLocation = property(get_StartLocation, None)
-    DistanceFromRouteStart = property(get_DistanceFromRouteStart, None)
-    DistanceFromPreviousManeuver = property(get_DistanceFromPreviousManeuver, None)
     DepartureRoadName = property(get_DepartureRoadName, None)
-    NextRoadName = property(get_NextRoadName, None)
     DepartureShortRoadName = property(get_DepartureShortRoadName, None)
-    NextShortRoadName = property(get_NextShortRoadName, None)
-    Kind = property(get_Kind, None)
-    StartAngle = property(get_StartAngle, None)
+    DistanceFromPreviousManeuver = property(get_DistanceFromPreviousManeuver, None)
+    DistanceFromRouteStart = property(get_DistanceFromRouteStart, None)
     EndAngle = property(get_EndAngle, None)
-    RoadSignpost = property(get_RoadSignpost, None)
     InstructionText = property(get_InstructionText, None)
-GuidanceManeuverKind = Int32
-GuidanceManeuverKind_None: GuidanceManeuverKind = 0
-GuidanceManeuverKind_GoStraight: GuidanceManeuverKind = 1
-GuidanceManeuverKind_UTurnRight: GuidanceManeuverKind = 2
-GuidanceManeuverKind_UTurnLeft: GuidanceManeuverKind = 3
-GuidanceManeuverKind_TurnKeepRight: GuidanceManeuverKind = 4
-GuidanceManeuverKind_TurnLightRight: GuidanceManeuverKind = 5
-GuidanceManeuverKind_TurnRight: GuidanceManeuverKind = 6
-GuidanceManeuverKind_TurnHardRight: GuidanceManeuverKind = 7
-GuidanceManeuverKind_KeepMiddle: GuidanceManeuverKind = 8
-GuidanceManeuverKind_TurnKeepLeft: GuidanceManeuverKind = 9
-GuidanceManeuverKind_TurnLightLeft: GuidanceManeuverKind = 10
-GuidanceManeuverKind_TurnLeft: GuidanceManeuverKind = 11
-GuidanceManeuverKind_TurnHardLeft: GuidanceManeuverKind = 12
-GuidanceManeuverKind_FreewayEnterRight: GuidanceManeuverKind = 13
-GuidanceManeuverKind_FreewayEnterLeft: GuidanceManeuverKind = 14
-GuidanceManeuverKind_FreewayLeaveRight: GuidanceManeuverKind = 15
-GuidanceManeuverKind_FreewayLeaveLeft: GuidanceManeuverKind = 16
-GuidanceManeuverKind_FreewayKeepRight: GuidanceManeuverKind = 17
-GuidanceManeuverKind_FreewayKeepLeft: GuidanceManeuverKind = 18
-GuidanceManeuverKind_TrafficCircleRight1: GuidanceManeuverKind = 19
-GuidanceManeuverKind_TrafficCircleRight2: GuidanceManeuverKind = 20
-GuidanceManeuverKind_TrafficCircleRight3: GuidanceManeuverKind = 21
-GuidanceManeuverKind_TrafficCircleRight4: GuidanceManeuverKind = 22
-GuidanceManeuverKind_TrafficCircleRight5: GuidanceManeuverKind = 23
-GuidanceManeuverKind_TrafficCircleRight6: GuidanceManeuverKind = 24
-GuidanceManeuverKind_TrafficCircleRight7: GuidanceManeuverKind = 25
-GuidanceManeuverKind_TrafficCircleRight8: GuidanceManeuverKind = 26
-GuidanceManeuverKind_TrafficCircleRight9: GuidanceManeuverKind = 27
-GuidanceManeuverKind_TrafficCircleRight10: GuidanceManeuverKind = 28
-GuidanceManeuverKind_TrafficCircleRight11: GuidanceManeuverKind = 29
-GuidanceManeuverKind_TrafficCircleRight12: GuidanceManeuverKind = 30
-GuidanceManeuverKind_TrafficCircleLeft1: GuidanceManeuverKind = 31
-GuidanceManeuverKind_TrafficCircleLeft2: GuidanceManeuverKind = 32
-GuidanceManeuverKind_TrafficCircleLeft3: GuidanceManeuverKind = 33
-GuidanceManeuverKind_TrafficCircleLeft4: GuidanceManeuverKind = 34
-GuidanceManeuverKind_TrafficCircleLeft5: GuidanceManeuverKind = 35
-GuidanceManeuverKind_TrafficCircleLeft6: GuidanceManeuverKind = 36
-GuidanceManeuverKind_TrafficCircleLeft7: GuidanceManeuverKind = 37
-GuidanceManeuverKind_TrafficCircleLeft8: GuidanceManeuverKind = 38
-GuidanceManeuverKind_TrafficCircleLeft9: GuidanceManeuverKind = 39
-GuidanceManeuverKind_TrafficCircleLeft10: GuidanceManeuverKind = 40
-GuidanceManeuverKind_TrafficCircleLeft11: GuidanceManeuverKind = 41
-GuidanceManeuverKind_TrafficCircleLeft12: GuidanceManeuverKind = 42
-GuidanceManeuverKind_Start: GuidanceManeuverKind = 43
-GuidanceManeuverKind_End: GuidanceManeuverKind = 44
-GuidanceManeuverKind_TakeFerry: GuidanceManeuverKind = 45
-GuidanceManeuverKind_PassTransitStation: GuidanceManeuverKind = 46
-GuidanceManeuverKind_LeaveTransitStation: GuidanceManeuverKind = 47
+    Kind = property(get_Kind, None)
+    NextRoadName = property(get_NextRoadName, None)
+    NextShortRoadName = property(get_NextShortRoadName, None)
+    RoadSignpost = property(get_RoadSignpost, None)
+    StartAngle = property(get_StartAngle, None)
+    StartLocation = property(get_StartLocation, None)
+class GuidanceManeuverKind(Int32):  # enum
+    None_ = 0
+    GoStraight = 1
+    UTurnRight = 2
+    UTurnLeft = 3
+    TurnKeepRight = 4
+    TurnLightRight = 5
+    TurnRight = 6
+    TurnHardRight = 7
+    KeepMiddle = 8
+    TurnKeepLeft = 9
+    TurnLightLeft = 10
+    TurnLeft = 11
+    TurnHardLeft = 12
+    FreewayEnterRight = 13
+    FreewayEnterLeft = 14
+    FreewayLeaveRight = 15
+    FreewayLeaveLeft = 16
+    FreewayKeepRight = 17
+    FreewayKeepLeft = 18
+    TrafficCircleRight1 = 19
+    TrafficCircleRight2 = 20
+    TrafficCircleRight3 = 21
+    TrafficCircleRight4 = 22
+    TrafficCircleRight5 = 23
+    TrafficCircleRight6 = 24
+    TrafficCircleRight7 = 25
+    TrafficCircleRight8 = 26
+    TrafficCircleRight9 = 27
+    TrafficCircleRight10 = 28
+    TrafficCircleRight11 = 29
+    TrafficCircleRight12 = 30
+    TrafficCircleLeft1 = 31
+    TrafficCircleLeft2 = 32
+    TrafficCircleLeft3 = 33
+    TrafficCircleLeft4 = 34
+    TrafficCircleLeft5 = 35
+    TrafficCircleLeft6 = 36
+    TrafficCircleLeft7 = 37
+    TrafficCircleLeft8 = 38
+    TrafficCircleLeft9 = 39
+    TrafficCircleLeft10 = 40
+    TrafficCircleLeft11 = 41
+    TrafficCircleLeft12 = 42
+    Start = 43
+    End = 44
+    TakeFerry = 45
+    PassTransitStation = 46
+    LeaveTransitStation = 47
 class GuidanceMapMatchedCoordinate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceMapMatchedCoordinate
@@ -178,16 +165,16 @@ class GuidanceMapMatchedCoordinate(ComPtr):
     def get_IsOnStreet(self: win32more.Windows.Services.Maps.Guidance.IGuidanceMapMatchedCoordinate) -> Boolean: ...
     @winrt_mixinmethod
     def get_Road(self: win32more.Windows.Services.Maps.Guidance.IGuidanceMapMatchedCoordinate) -> win32more.Windows.Services.Maps.Guidance.GuidanceRoadSegment: ...
-    Location = property(get_Location, None)
     CurrentHeading = property(get_CurrentHeading, None)
     CurrentSpeed = property(get_CurrentSpeed, None)
     IsOnStreet = property(get_IsOnStreet, None)
+    Location = property(get_Location, None)
     Road = property(get_Road, None)
-GuidanceMode = Int32
-GuidanceMode_None: GuidanceMode = 0
-GuidanceMode_Simulation: GuidanceMode = 1
-GuidanceMode_Navigation: GuidanceMode = 2
-GuidanceMode_Tracking: GuidanceMode = 3
+class GuidanceMode(Int32):  # enum
+    None_ = 0
+    Simulation = 1
+    Navigation = 2
+    Tracking = 3
 class _GuidanceNavigator_Meta_(ComPtr.__class__):
     pass
 class GuidanceNavigator(ComPtr, metaclass=_GuidanceNavigator_Meta_):
@@ -297,16 +284,16 @@ class GuidanceRoadSegment(ComPtr):
     def get_IsTollRoad(self: win32more.Windows.Services.Maps.Guidance.IGuidanceRoadSegment) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsScenic(self: win32more.Windows.Services.Maps.Guidance.IGuidanceRoadSegment2) -> Boolean: ...
+    Id = property(get_Id, None)
+    IsHighway = property(get_IsHighway, None)
+    IsScenic = property(get_IsScenic, None)
+    IsTollRoad = property(get_IsTollRoad, None)
+    IsTunnel = property(get_IsTunnel, None)
+    Path = property(get_Path, None)
     RoadName = property(get_RoadName, None)
     ShortRoadName = property(get_ShortRoadName, None)
     SpeedLimit = property(get_SpeedLimit, None)
     TravelTime = property(get_TravelTime, None)
-    Path = property(get_Path, None)
-    Id = property(get_Id, None)
-    IsHighway = property(get_IsHighway, None)
-    IsTunnel = property(get_IsTunnel, None)
-    IsTollRoad = property(get_IsTollRoad, None)
-    IsScenic = property(get_IsScenic, None)
 class GuidanceRoadSignpost(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceRoadSignpost
@@ -321,11 +308,11 @@ class GuidanceRoadSignpost(ComPtr):
     def get_ForegroundColor(self: win32more.Windows.Services.Maps.Guidance.IGuidanceRoadSignpost) -> win32more.Windows.UI.Color: ...
     @winrt_mixinmethod
     def get_ExitDirections(self: win32more.Windows.Services.Maps.Guidance.IGuidanceRoadSignpost) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
-    ExitNumber = property(get_ExitNumber, None)
-    Exit = property(get_Exit, None)
     BackgroundColor = property(get_BackgroundColor, None)
-    ForegroundColor = property(get_ForegroundColor, None)
+    Exit = property(get_Exit, None)
     ExitDirections = property(get_ExitDirections, None)
+    ExitNumber = property(get_ExitNumber, None)
+    ForegroundColor = property(get_ForegroundColor, None)
 class GuidanceRoute(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Services.Maps.Guidance.IGuidanceRoute
@@ -348,10 +335,10 @@ class GuidanceRoute(ComPtr):
     def CanCreateFromMapRoute(cls: win32more.Windows.Services.Maps.Guidance.IGuidanceRouteStatics, mapRoute: win32more.Windows.Services.Maps.MapRoute) -> Boolean: ...
     @winrt_classmethod
     def TryCreateFromMapRoute(cls: win32more.Windows.Services.Maps.Guidance.IGuidanceRouteStatics, mapRoute: win32more.Windows.Services.Maps.MapRoute) -> win32more.Windows.Services.Maps.Guidance.GuidanceRoute: ...
-    Duration = property(get_Duration, None)
-    Distance = property(get_Distance, None)
-    Maneuvers = property(get_Maneuvers, None)
     BoundingBox = property(get_BoundingBox, None)
+    Distance = property(get_Distance, None)
+    Duration = property(get_Duration, None)
+    Maneuvers = property(get_Maneuvers, None)
     Path = property(get_Path, None)
     RoadSegments = property(get_RoadSegments, None)
 class GuidanceTelemetryCollector(ComPtr):
@@ -409,20 +396,20 @@ class GuidanceUpdatedEventArgs(ComPtr):
     def get_IsNewManeuver(self: win32more.Windows.Services.Maps.Guidance.IGuidanceUpdatedEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def get_LaneInfo(self: win32more.Windows.Services.Maps.Guidance.IGuidanceUpdatedEventArgs) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Services.Maps.Guidance.GuidanceLaneInfo]: ...
-    Mode = property(get_Mode, None)
-    NextManeuver = property(get_NextManeuver, None)
-    NextManeuverDistance = property(get_NextManeuverDistance, None)
     AfterNextManeuver = property(get_AfterNextManeuver, None)
     AfterNextManeuverDistance = property(get_AfterNextManeuverDistance, None)
+    CurrentLocation = property(get_CurrentLocation, None)
     DistanceToDestination = property(get_DistanceToDestination, None)
     ElapsedDistance = property(get_ElapsedDistance, None)
     ElapsedTime = property(get_ElapsedTime, None)
-    TimeToDestination = property(get_TimeToDestination, None)
-    RoadName = property(get_RoadName, None)
-    Route = property(get_Route, None)
-    CurrentLocation = property(get_CurrentLocation, None)
     IsNewManeuver = property(get_IsNewManeuver, None)
     LaneInfo = property(get_LaneInfo, None)
+    Mode = property(get_Mode, None)
+    NextManeuver = property(get_NextManeuver, None)
+    NextManeuverDistance = property(get_NextManeuverDistance, None)
+    RoadName = property(get_RoadName, None)
+    Route = property(get_Route, None)
+    TimeToDestination = property(get_TimeToDestination, None)
 class IGuidanceAudioNotificationRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Maps.Guidance.IGuidanceAudioNotificationRequestedEventArgs'
@@ -433,8 +420,8 @@ class IGuidanceAudioNotificationRequestedEventArgs(ComPtr):
     def get_AudioFilePaths(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_commethod(8)
     def get_AudioText(self) -> WinRT_String: ...
-    AudioNotification = property(get_AudioNotification, None)
     AudioFilePaths = property(get_AudioFilePaths, None)
+    AudioNotification = property(get_AudioNotification, None)
     AudioText = property(get_AudioText, None)
 class IGuidanceLaneInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -444,8 +431,8 @@ class IGuidanceLaneInfo(ComPtr):
     def get_LaneMarkers(self) -> win32more.Windows.Services.Maps.Guidance.GuidanceLaneMarkers: ...
     @winrt_commethod(7)
     def get_IsOnRoute(self) -> Boolean: ...
-    LaneMarkers = property(get_LaneMarkers, None)
     IsOnRoute = property(get_IsOnRoute, None)
+    LaneMarkers = property(get_LaneMarkers, None)
 class IGuidanceManeuver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Maps.Guidance.IGuidanceManeuver'
@@ -474,18 +461,18 @@ class IGuidanceManeuver(ComPtr):
     def get_RoadSignpost(self) -> win32more.Windows.Services.Maps.Guidance.GuidanceRoadSignpost: ...
     @winrt_commethod(17)
     def get_InstructionText(self) -> WinRT_String: ...
-    StartLocation = property(get_StartLocation, None)
-    DistanceFromRouteStart = property(get_DistanceFromRouteStart, None)
-    DistanceFromPreviousManeuver = property(get_DistanceFromPreviousManeuver, None)
     DepartureRoadName = property(get_DepartureRoadName, None)
-    NextRoadName = property(get_NextRoadName, None)
     DepartureShortRoadName = property(get_DepartureShortRoadName, None)
-    NextShortRoadName = property(get_NextShortRoadName, None)
-    Kind = property(get_Kind, None)
-    StartAngle = property(get_StartAngle, None)
+    DistanceFromPreviousManeuver = property(get_DistanceFromPreviousManeuver, None)
+    DistanceFromRouteStart = property(get_DistanceFromRouteStart, None)
     EndAngle = property(get_EndAngle, None)
-    RoadSignpost = property(get_RoadSignpost, None)
     InstructionText = property(get_InstructionText, None)
+    Kind = property(get_Kind, None)
+    NextRoadName = property(get_NextRoadName, None)
+    NextShortRoadName = property(get_NextShortRoadName, None)
+    RoadSignpost = property(get_RoadSignpost, None)
+    StartAngle = property(get_StartAngle, None)
+    StartLocation = property(get_StartLocation, None)
 class IGuidanceMapMatchedCoordinate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Maps.Guidance.IGuidanceMapMatchedCoordinate'
@@ -500,10 +487,10 @@ class IGuidanceMapMatchedCoordinate(ComPtr):
     def get_IsOnStreet(self) -> Boolean: ...
     @winrt_commethod(10)
     def get_Road(self) -> win32more.Windows.Services.Maps.Guidance.GuidanceRoadSegment: ...
-    Location = property(get_Location, None)
     CurrentHeading = property(get_CurrentHeading, None)
     CurrentSpeed = property(get_CurrentSpeed, None)
     IsOnStreet = property(get_IsOnStreet, None)
+    Location = property(get_Location, None)
     Road = property(get_Road, None)
 class IGuidanceNavigator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -622,15 +609,15 @@ class IGuidanceRoadSegment(ComPtr):
     def get_IsTunnel(self) -> Boolean: ...
     @winrt_commethod(14)
     def get_IsTollRoad(self) -> Boolean: ...
+    Id = property(get_Id, None)
+    IsHighway = property(get_IsHighway, None)
+    IsTollRoad = property(get_IsTollRoad, None)
+    IsTunnel = property(get_IsTunnel, None)
+    Path = property(get_Path, None)
     RoadName = property(get_RoadName, None)
     ShortRoadName = property(get_ShortRoadName, None)
     SpeedLimit = property(get_SpeedLimit, None)
     TravelTime = property(get_TravelTime, None)
-    Path = property(get_Path, None)
-    Id = property(get_Id, None)
-    IsHighway = property(get_IsHighway, None)
-    IsTunnel = property(get_IsTunnel, None)
-    IsTollRoad = property(get_IsTollRoad, None)
 class IGuidanceRoadSegment2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Maps.Guidance.IGuidanceRoadSegment2'
@@ -652,11 +639,11 @@ class IGuidanceRoadSignpost(ComPtr):
     def get_ForegroundColor(self) -> win32more.Windows.UI.Color: ...
     @winrt_commethod(10)
     def get_ExitDirections(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
-    ExitNumber = property(get_ExitNumber, None)
-    Exit = property(get_Exit, None)
     BackgroundColor = property(get_BackgroundColor, None)
-    ForegroundColor = property(get_ForegroundColor, None)
+    Exit = property(get_Exit, None)
     ExitDirections = property(get_ExitDirections, None)
+    ExitNumber = property(get_ExitNumber, None)
+    ForegroundColor = property(get_ForegroundColor, None)
 class IGuidanceRoute(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Services.Maps.Guidance.IGuidanceRoute'
@@ -675,10 +662,10 @@ class IGuidanceRoute(ComPtr):
     def get_RoadSegments(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Services.Maps.Guidance.GuidanceRoadSegment]: ...
     @winrt_commethod(12)
     def ConvertToMapRoute(self) -> win32more.Windows.Services.Maps.MapRoute: ...
-    Duration = property(get_Duration, None)
-    Distance = property(get_Distance, None)
-    Maneuvers = property(get_Maneuvers, None)
     BoundingBox = property(get_BoundingBox, None)
+    Distance = property(get_Distance, None)
+    Duration = property(get_Duration, None)
+    Maneuvers = property(get_Maneuvers, None)
     Path = property(get_Path, None)
     RoadSegments = property(get_RoadSegments, None)
 class IGuidanceRouteStatics(ComPtr):
@@ -748,18 +735,20 @@ class IGuidanceUpdatedEventArgs(ComPtr):
     def get_IsNewManeuver(self) -> Boolean: ...
     @winrt_commethod(19)
     def get_LaneInfo(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Services.Maps.Guidance.GuidanceLaneInfo]: ...
-    Mode = property(get_Mode, None)
-    NextManeuver = property(get_NextManeuver, None)
-    NextManeuverDistance = property(get_NextManeuverDistance, None)
     AfterNextManeuver = property(get_AfterNextManeuver, None)
     AfterNextManeuverDistance = property(get_AfterNextManeuverDistance, None)
+    CurrentLocation = property(get_CurrentLocation, None)
     DistanceToDestination = property(get_DistanceToDestination, None)
     ElapsedDistance = property(get_ElapsedDistance, None)
     ElapsedTime = property(get_ElapsedTime, None)
-    TimeToDestination = property(get_TimeToDestination, None)
-    RoadName = property(get_RoadName, None)
-    Route = property(get_Route, None)
-    CurrentLocation = property(get_CurrentLocation, None)
     IsNewManeuver = property(get_IsNewManeuver, None)
     LaneInfo = property(get_LaneInfo, None)
+    Mode = property(get_Mode, None)
+    NextManeuver = property(get_NextManeuver, None)
+    NextManeuverDistance = property(get_NextManeuverDistance, None)
+    RoadName = property(get_RoadName, None)
+    Route = property(get_Route, None)
+    TimeToDestination = property(get_TimeToDestination, None)
+
+
 make_ready(__name__)

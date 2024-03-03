@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Networking.Sockets
@@ -23,10 +9,20 @@ import win32more.Windows.Storage.Streams
 import win32more.Windows.Web.Http
 import win32more.Windows.Web.Http.Filters
 import win32more.Windows.Web.Http.Headers
+import win32more.Windows.Win32.System.WinRT
 class HttpBufferContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpBufferContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpBufferContent.CreateFromBuffer(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Web.Http.HttpBufferContent.CreateFromBufferWithOffset(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFromBuffer(cls: win32more.Windows.Web.Http.IHttpBufferContentFactory, content: win32more.Windows.Storage.Streams.IBuffer) -> win32more.Windows.Web.Http.HttpBufferContent: ...
     @winrt_factorymethod
@@ -54,6 +50,15 @@ class HttpClient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpClient
     _classid_ = 'Windows.Web.Http.HttpClient'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.HttpClient.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpClient.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.HttpClient: ...
     @winrt_factorymethod
@@ -108,15 +113,22 @@ class HttpClient(ComPtr):
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def ToString(self: win32more.Windows.Foundation.IStringable) -> WinRT_String: ...
-    DefaultRequestHeaders = property(get_DefaultRequestHeaders, None)
     DefaultPrivacyAnnotation = property(get_DefaultPrivacyAnnotation, put_DefaultPrivacyAnnotation)
-HttpCompletionOption = Int32
-HttpCompletionOption_ResponseContentRead: HttpCompletionOption = 0
-HttpCompletionOption_ResponseHeadersRead: HttpCompletionOption = 1
+    DefaultRequestHeaders = property(get_DefaultRequestHeaders, None)
+class HttpCompletionOption(Int32):  # enum
+    ResponseContentRead = 0
+    ResponseHeadersRead = 1
 class HttpCookie(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpCookie
     _classid_ = 'Windows.Web.Http.HttpCookie'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Web.Http.HttpCookie.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Web.Http.IHttpCookieFactory, name: WinRT_String, domain: WinRT_String, path: WinRT_String) -> win32more.Windows.Web.Http.HttpCookie: ...
     @winrt_mixinmethod
@@ -143,11 +155,11 @@ class HttpCookie(ComPtr):
     def put_Value(self: win32more.Windows.Web.Http.IHttpCookie, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def ToString(self: win32more.Windows.Foundation.IStringable) -> WinRT_String: ...
-    Name = property(get_Name, None)
     Domain = property(get_Domain, None)
-    Path = property(get_Path, None)
     Expires = property(get_Expires, put_Expires)
     HttpOnly = property(get_HttpOnly, put_HttpOnly)
+    Name = property(get_Name, None)
+    Path = property(get_Path, None)
     Secure = property(get_Secure, put_Secure)
     Value = property(get_Value, put_Value)
 class HttpCookieCollection(ComPtr):
@@ -181,6 +193,13 @@ class HttpFormUrlEncodedContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpFormUrlEncodedContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpFormUrlEncodedContent.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Web.Http.IHttpFormUrlEncodedContentFactory, content: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Foundation.Collections.IKeyValuePair[WinRT_String, WinRT_String]]) -> win32more.Windows.Web.Http.HttpFormUrlEncodedContent: ...
     @winrt_mixinmethod
@@ -277,6 +296,13 @@ class HttpMethod(ComPtr, metaclass=_HttpMethod_Meta_):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpMethod
     _classid_ = 'Windows.Web.Http.HttpMethod'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpMethod.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Web.Http.IHttpMethodFactory, method: WinRT_String) -> win32more.Windows.Web.Http.HttpMethod: ...
     @winrt_mixinmethod
@@ -309,6 +335,17 @@ class HttpMultipartContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpMultipartContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.HttpMultipartContent.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpMultipartContent.CreateWithSubtype(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Web.Http.HttpMultipartContent.CreateWithSubtypeAndBoundary(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.HttpMultipartContent: ...
     @winrt_factorymethod
@@ -342,10 +379,19 @@ class HttpMultipartFormDataContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpMultipartFormDataContent'
-    @winrt_factorymethod
-    def CreateWithBoundary(cls: win32more.Windows.Web.Http.IHttpMultipartFormDataContentFactory, boundary: WinRT_String) -> win32more.Windows.Web.Http.HttpMultipartFormDataContent: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.HttpMultipartFormDataContent.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpMultipartFormDataContent.CreateWithBoundary(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.HttpMultipartFormDataContent: ...
+    @winrt_factorymethod
+    def CreateWithBoundary(cls: win32more.Windows.Web.Http.IHttpMultipartFormDataContentFactory, boundary: WinRT_String) -> win32more.Windows.Web.Http.HttpMultipartFormDataContent: ...
     @winrt_mixinmethod
     def Add(self: win32more.Windows.Web.Http.IHttpMultipartFormDataContent, content: win32more.Windows.Web.Http.IHttpContent) -> Void: ...
     @winrt_mixinmethod
@@ -380,25 +426,34 @@ class HttpProgress(EasyCastStructure):
     BytesReceived: UInt64
     TotalBytesToReceive: win32more.Windows.Foundation.IReference[UInt64]
     Retries: UInt32
-HttpProgressStage = Int32
-HttpProgressStage_None: HttpProgressStage = 0
-HttpProgressStage_DetectingProxy: HttpProgressStage = 10
-HttpProgressStage_ResolvingName: HttpProgressStage = 20
-HttpProgressStage_ConnectingToServer: HttpProgressStage = 30
-HttpProgressStage_NegotiatingSsl: HttpProgressStage = 40
-HttpProgressStage_SendingHeaders: HttpProgressStage = 50
-HttpProgressStage_SendingContent: HttpProgressStage = 60
-HttpProgressStage_WaitingForResponse: HttpProgressStage = 70
-HttpProgressStage_ReceivingHeaders: HttpProgressStage = 80
-HttpProgressStage_ReceivingContent: HttpProgressStage = 90
+class HttpProgressStage(Int32):  # enum
+    None_ = 0
+    DetectingProxy = 10
+    ResolvingName = 20
+    ConnectingToServer = 30
+    NegotiatingSsl = 40
+    SendingHeaders = 50
+    SendingContent = 60
+    WaitingForResponse = 70
+    ReceivingHeaders = 80
+    ReceivingContent = 90
 class HttpRequestMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpRequestMessage
     _classid_ = 'Windows.Web.Http.HttpRequestMessage'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.Web.Http.IHttpRequestMessageFactory, method: win32more.Windows.Web.Http.HttpMethod, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Web.Http.HttpRequestMessage: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.HttpRequestMessage.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Web.Http.HttpRequestMessage.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.HttpRequestMessage: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.Web.Http.IHttpRequestMessageFactory, method: win32more.Windows.Web.Http.HttpMethod, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Web.Http.HttpRequestMessage: ...
     @winrt_mixinmethod
     def get_Content(self: win32more.Windows.Web.Http.IHttpRequestMessage) -> win32more.Windows.Web.Http.IHttpContent: ...
     @winrt_mixinmethod
@@ -428,10 +483,10 @@ class HttpRequestMessage(ComPtr):
     Content = property(get_Content, put_Content)
     Headers = property(get_Headers, None)
     Method = property(get_Method, put_Method)
+    PrivacyAnnotation = property(get_PrivacyAnnotation, put_PrivacyAnnotation)
     Properties = property(get_Properties, None)
     RequestUri = property(get_RequestUri, put_RequestUri)
     TransportInformation = property(get_TransportInformation, None)
-    PrivacyAnnotation = property(get_PrivacyAnnotation, put_PrivacyAnnotation)
 class HttpRequestResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpRequestResult
@@ -456,10 +511,19 @@ class HttpResponseMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpResponseMessage
     _classid_ = 'Windows.Web.Http.HttpResponseMessage'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.Web.Http.IHttpResponseMessageFactory, statusCode: win32more.Windows.Web.Http.HttpStatusCode) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Web.Http.HttpResponseMessage.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpResponseMessage.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.Web.Http.IHttpResponseMessageFactory, statusCode: win32more.Windows.Web.Http.HttpStatusCode) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
     @winrt_mixinmethod
     def get_Content(self: win32more.Windows.Web.Http.IHttpResponseMessage) -> win32more.Windows.Web.Http.IHttpContent: ...
     @winrt_mixinmethod
@@ -502,73 +566,80 @@ class HttpResponseMessage(ComPtr):
     Source = property(get_Source, put_Source)
     StatusCode = property(get_StatusCode, put_StatusCode)
     Version = property(get_Version, put_Version)
-HttpResponseMessageSource = Int32
-HttpResponseMessageSource_None: HttpResponseMessageSource = 0
-HttpResponseMessageSource_Cache: HttpResponseMessageSource = 1
-HttpResponseMessageSource_Network: HttpResponseMessageSource = 2
-HttpStatusCode = Int32
-HttpStatusCode_None: HttpStatusCode = 0
-HttpStatusCode_Continue: HttpStatusCode = 100
-HttpStatusCode_SwitchingProtocols: HttpStatusCode = 101
-HttpStatusCode_Processing: HttpStatusCode = 102
-HttpStatusCode_Ok: HttpStatusCode = 200
-HttpStatusCode_Created: HttpStatusCode = 201
-HttpStatusCode_Accepted: HttpStatusCode = 202
-HttpStatusCode_NonAuthoritativeInformation: HttpStatusCode = 203
-HttpStatusCode_NoContent: HttpStatusCode = 204
-HttpStatusCode_ResetContent: HttpStatusCode = 205
-HttpStatusCode_PartialContent: HttpStatusCode = 206
-HttpStatusCode_MultiStatus: HttpStatusCode = 207
-HttpStatusCode_AlreadyReported: HttpStatusCode = 208
-HttpStatusCode_IMUsed: HttpStatusCode = 226
-HttpStatusCode_MultipleChoices: HttpStatusCode = 300
-HttpStatusCode_MovedPermanently: HttpStatusCode = 301
-HttpStatusCode_Found: HttpStatusCode = 302
-HttpStatusCode_SeeOther: HttpStatusCode = 303
-HttpStatusCode_NotModified: HttpStatusCode = 304
-HttpStatusCode_UseProxy: HttpStatusCode = 305
-HttpStatusCode_TemporaryRedirect: HttpStatusCode = 307
-HttpStatusCode_PermanentRedirect: HttpStatusCode = 308
-HttpStatusCode_BadRequest: HttpStatusCode = 400
-HttpStatusCode_Unauthorized: HttpStatusCode = 401
-HttpStatusCode_PaymentRequired: HttpStatusCode = 402
-HttpStatusCode_Forbidden: HttpStatusCode = 403
-HttpStatusCode_NotFound: HttpStatusCode = 404
-HttpStatusCode_MethodNotAllowed: HttpStatusCode = 405
-HttpStatusCode_NotAcceptable: HttpStatusCode = 406
-HttpStatusCode_ProxyAuthenticationRequired: HttpStatusCode = 407
-HttpStatusCode_RequestTimeout: HttpStatusCode = 408
-HttpStatusCode_Conflict: HttpStatusCode = 409
-HttpStatusCode_Gone: HttpStatusCode = 410
-HttpStatusCode_LengthRequired: HttpStatusCode = 411
-HttpStatusCode_PreconditionFailed: HttpStatusCode = 412
-HttpStatusCode_RequestEntityTooLarge: HttpStatusCode = 413
-HttpStatusCode_RequestUriTooLong: HttpStatusCode = 414
-HttpStatusCode_UnsupportedMediaType: HttpStatusCode = 415
-HttpStatusCode_RequestedRangeNotSatisfiable: HttpStatusCode = 416
-HttpStatusCode_ExpectationFailed: HttpStatusCode = 417
-HttpStatusCode_UnprocessableEntity: HttpStatusCode = 422
-HttpStatusCode_Locked: HttpStatusCode = 423
-HttpStatusCode_FailedDependency: HttpStatusCode = 424
-HttpStatusCode_UpgradeRequired: HttpStatusCode = 426
-HttpStatusCode_PreconditionRequired: HttpStatusCode = 428
-HttpStatusCode_TooManyRequests: HttpStatusCode = 429
-HttpStatusCode_RequestHeaderFieldsTooLarge: HttpStatusCode = 431
-HttpStatusCode_InternalServerError: HttpStatusCode = 500
-HttpStatusCode_NotImplemented: HttpStatusCode = 501
-HttpStatusCode_BadGateway: HttpStatusCode = 502
-HttpStatusCode_ServiceUnavailable: HttpStatusCode = 503
-HttpStatusCode_GatewayTimeout: HttpStatusCode = 504
-HttpStatusCode_HttpVersionNotSupported: HttpStatusCode = 505
-HttpStatusCode_VariantAlsoNegotiates: HttpStatusCode = 506
-HttpStatusCode_InsufficientStorage: HttpStatusCode = 507
-HttpStatusCode_LoopDetected: HttpStatusCode = 508
-HttpStatusCode_NotExtended: HttpStatusCode = 510
-HttpStatusCode_NetworkAuthenticationRequired: HttpStatusCode = 511
+class HttpResponseMessageSource(Int32):  # enum
+    None_ = 0
+    Cache = 1
+    Network = 2
+class HttpStatusCode(Int32):  # enum
+    None_ = 0
+    Continue = 100
+    SwitchingProtocols = 101
+    Processing = 102
+    Ok = 200
+    Created = 201
+    Accepted = 202
+    NonAuthoritativeInformation = 203
+    NoContent = 204
+    ResetContent = 205
+    PartialContent = 206
+    MultiStatus = 207
+    AlreadyReported = 208
+    IMUsed = 226
+    MultipleChoices = 300
+    MovedPermanently = 301
+    Found = 302
+    SeeOther = 303
+    NotModified = 304
+    UseProxy = 305
+    TemporaryRedirect = 307
+    PermanentRedirect = 308
+    BadRequest = 400
+    Unauthorized = 401
+    PaymentRequired = 402
+    Forbidden = 403
+    NotFound = 404
+    MethodNotAllowed = 405
+    NotAcceptable = 406
+    ProxyAuthenticationRequired = 407
+    RequestTimeout = 408
+    Conflict = 409
+    Gone = 410
+    LengthRequired = 411
+    PreconditionFailed = 412
+    RequestEntityTooLarge = 413
+    RequestUriTooLong = 414
+    UnsupportedMediaType = 415
+    RequestedRangeNotSatisfiable = 416
+    ExpectationFailed = 417
+    UnprocessableEntity = 422
+    Locked = 423
+    FailedDependency = 424
+    UpgradeRequired = 426
+    PreconditionRequired = 428
+    TooManyRequests = 429
+    RequestHeaderFieldsTooLarge = 431
+    InternalServerError = 500
+    NotImplemented = 501
+    BadGateway = 502
+    ServiceUnavailable = 503
+    GatewayTimeout = 504
+    HttpVersionNotSupported = 505
+    VariantAlsoNegotiates = 506
+    InsufficientStorage = 507
+    LoopDetected = 508
+    NotExtended = 510
+    NetworkAuthenticationRequired = 511
 class HttpStreamContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpStreamContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpStreamContent.CreateFromInputStream(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFromInputStream(cls: win32more.Windows.Web.Http.IHttpStreamContentFactory, content: win32more.Windows.Storage.Streams.IInputStream) -> win32more.Windows.Web.Http.HttpStreamContent: ...
     @winrt_mixinmethod
@@ -594,6 +665,17 @@ class HttpStringContent(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Web.Http.IHttpContent
     _classid_ = 'Windows.Web.Http.HttpStringContent'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Web.Http.HttpStringContent.CreateFromString(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Web.Http.HttpStringContent.CreateFromStringWithEncoding(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Web.Http.HttpStringContent.CreateFromStringWithEncodingAndMediaType(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateFromString(cls: win32more.Windows.Web.Http.IHttpStringContentFactory, content: WinRT_String) -> win32more.Windows.Web.Http.HttpStringContent: ...
     @winrt_factorymethod
@@ -637,11 +719,11 @@ class HttpTransportInformation(ComPtr):
     ServerCertificateErrorSeverity = property(get_ServerCertificateErrorSeverity, None)
     ServerCertificateErrors = property(get_ServerCertificateErrors, None)
     ServerIntermediateCertificates = property(get_ServerIntermediateCertificates, None)
-HttpVersion = Int32
-HttpVersion_None: HttpVersion = 0
-HttpVersion_Http10: HttpVersion = 1
-HttpVersion_Http11: HttpVersion = 2
-HttpVersion_Http20: HttpVersion = 3
+class HttpVersion(Int32):  # enum
+    None_ = 0
+    Http10 = 1
+    Http11 = 2
+    Http20 = 3
 class IHttpBufferContentFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Web.Http.IHttpBufferContentFactory'
@@ -761,11 +843,11 @@ class IHttpCookie(ComPtr):
     def get_Value(self) -> WinRT_String: ...
     @winrt_commethod(16)
     def put_Value(self, value: WinRT_String) -> Void: ...
-    Name = property(get_Name, None)
     Domain = property(get_Domain, None)
-    Path = property(get_Path, None)
     Expires = property(get_Expires, put_Expires)
     HttpOnly = property(get_HttpOnly, put_HttpOnly)
+    Name = property(get_Name, None)
+    Path = property(get_Path, None)
     Secure = property(get_Secure, put_Secure)
     Value = property(get_Value, put_Value)
 class IHttpCookieFactory(ComPtr):
@@ -1056,4 +1138,6 @@ class IHttpTransportInformation(ComPtr):
     ServerCertificateErrorSeverity = property(get_ServerCertificateErrorSeverity, None)
     ServerCertificateErrors = property(get_ServerCertificateErrors, None)
     ServerIntermediateCertificates = property(get_ServerIntermediateCertificates, None)
+
+
 make_ready(__name__)

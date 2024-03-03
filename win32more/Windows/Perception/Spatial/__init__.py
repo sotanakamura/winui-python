@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Foundation.Numerics
@@ -22,6 +8,7 @@ import win32more.Windows.Perception
 import win32more.Windows.Perception.Spatial
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System.RemoteSystems
+import win32more.Windows.Win32.System.WinRT
 class ISpatialAnchor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialAnchor'
@@ -54,8 +41,8 @@ class ISpatialAnchorExportSufficiency(ComPtr):
     @winrt_commethod(8)
     def get_RecommendedSufficiencyLevel(self) -> Double: ...
     IsMinimallySufficient = property(get_IsMinimallySufficient, None)
-    SufficiencyLevel = property(get_SufficiencyLevel, None)
     RecommendedSufficiencyLevel = property(get_RecommendedSufficiencyLevel, None)
+    SufficiencyLevel = property(get_SufficiencyLevel, None)
 class ISpatialAnchorExporter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialAnchorExporter'
@@ -149,8 +136,8 @@ class ISpatialEntity(ComPtr):
     def get_Anchor(self) -> win32more.Windows.Perception.Spatial.SpatialAnchor: ...
     @winrt_commethod(8)
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.ValueSet: ...
-    Id = property(get_Id, None)
     Anchor = property(get_Anchor, None)
+    Id = property(get_Id, None)
     Properties = property(get_Properties, None)
 class ISpatialEntityAddedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -243,12 +230,12 @@ class ISpatialLocation(ComPtr):
     def get_AbsoluteAngularVelocity(self) -> win32more.Windows.Foundation.Numerics.Quaternion: ...
     @winrt_commethod(11)
     def get_AbsoluteAngularAcceleration(self) -> win32more.Windows.Foundation.Numerics.Quaternion: ...
-    Position = property(get_Position, None)
-    Orientation = property(get_Orientation, None)
-    AbsoluteLinearVelocity = property(get_AbsoluteLinearVelocity, None)
-    AbsoluteLinearAcceleration = property(get_AbsoluteLinearAcceleration, None)
-    AbsoluteAngularVelocity = property(get_AbsoluteAngularVelocity, None)
     AbsoluteAngularAcceleration = property(get_AbsoluteAngularAcceleration, None)
+    AbsoluteAngularVelocity = property(get_AbsoluteAngularVelocity, None)
+    AbsoluteLinearAcceleration = property(get_AbsoluteLinearAcceleration, None)
+    AbsoluteLinearVelocity = property(get_AbsoluteLinearVelocity, None)
+    Orientation = property(get_Orientation, None)
+    Position = property(get_Position, None)
 class ISpatialLocation2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialLocation2'
@@ -257,8 +244,8 @@ class ISpatialLocation2(ComPtr):
     def get_AbsoluteAngularVelocityAxisAngle(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_commethod(7)
     def get_AbsoluteAngularAccelerationAxisAngle(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
-    AbsoluteAngularVelocityAxisAngle = property(get_AbsoluteAngularVelocityAxisAngle, None)
     AbsoluteAngularAccelerationAxisAngle = property(get_AbsoluteAngularAccelerationAxisAngle, None)
+    AbsoluteAngularVelocityAxisAngle = property(get_AbsoluteAngularVelocityAxisAngle, None)
 class ISpatialLocator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialLocator'
@@ -310,8 +297,8 @@ class ISpatialLocatorAttachedFrameOfReference(ComPtr):
     def GetStationaryCoordinateSystemAtTimestamp(self, timestamp: win32more.Windows.Perception.PerceptionTimestamp) -> win32more.Windows.Perception.Spatial.SpatialCoordinateSystem: ...
     @winrt_commethod(12)
     def TryGetRelativeHeadingAtTimestamp(self, timestamp: win32more.Windows.Perception.PerceptionTimestamp) -> win32more.Windows.Foundation.IReference[Double]: ...
-    RelativePosition = property(get_RelativePosition, put_RelativePosition)
     RelativeOrientation = property(get_RelativeOrientation, put_RelativeOrientation)
+    RelativePosition = property(get_RelativePosition, put_RelativePosition)
 class ISpatialLocatorPositionalTrackingDeactivatingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialLocatorPositionalTrackingDeactivatingEventArgs'
@@ -342,8 +329,8 @@ class ISpatialStageFrameOfReference(ComPtr):
     @winrt_commethod(10)
     def TryGetMovementBounds(self, coordinateSystem: win32more.Windows.Perception.Spatial.SpatialCoordinateSystem) -> SZArray[win32more.Windows.Foundation.Numerics.Vector3]: ...
     CoordinateSystem = property(get_CoordinateSystem, None)
-    MovementRange = property(get_MovementRange, None)
     LookDirectionRange = property(get_LookDirectionRange, None)
+    MovementRange = property(get_MovementRange, None)
 class ISpatialStageFrameOfReferenceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Perception.Spatial.ISpatialStageFrameOfReferenceStatics'
@@ -387,9 +374,9 @@ class SpatialAnchor(ComPtr):
     CoordinateSystem = property(get_CoordinateSystem, None)
     RawCoordinateSystem = property(get_RawCoordinateSystem, None)
     RemovedByUser = property(get_RemovedByUser, None)
-SpatialAnchorExportPurpose = Int32
-SpatialAnchorExportPurpose_Relocalization: SpatialAnchorExportPurpose = 0
-SpatialAnchorExportPurpose_Sharing: SpatialAnchorExportPurpose = 1
+class SpatialAnchorExportPurpose(Int32):  # enum
+    Relocalization = 0
+    Sharing = 1
 class SpatialAnchorExportSufficiency(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialAnchorExportSufficiency
@@ -401,8 +388,8 @@ class SpatialAnchorExportSufficiency(ComPtr):
     @winrt_mixinmethod
     def get_RecommendedSufficiencyLevel(self: win32more.Windows.Perception.Spatial.ISpatialAnchorExportSufficiency) -> Double: ...
     IsMinimallySufficient = property(get_IsMinimallySufficient, None)
-    SufficiencyLevel = property(get_SufficiencyLevel, None)
     RecommendedSufficiencyLevel = property(get_RecommendedSufficiencyLevel, None)
+    SufficiencyLevel = property(get_SufficiencyLevel, None)
 class SpatialAnchorExporter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialAnchorExporter
@@ -487,6 +474,15 @@ class SpatialEntity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialEntity
     _classid_ = 'Windows.Perception.Spatial.SpatialEntity'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Perception.Spatial.SpatialEntity.CreateWithSpatialAnchor(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Perception.Spatial.SpatialEntity.CreateWithSpatialAnchorAndProperties(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateWithSpatialAnchor(cls: win32more.Windows.Perception.Spatial.ISpatialEntityFactory, spatialAnchor: win32more.Windows.Perception.Spatial.SpatialAnchor) -> win32more.Windows.Perception.Spatial.SpatialEntity: ...
     @winrt_factorymethod
@@ -497,8 +493,8 @@ class SpatialEntity(ComPtr):
     def get_Anchor(self: win32more.Windows.Perception.Spatial.ISpatialEntity) -> win32more.Windows.Perception.Spatial.SpatialAnchor: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.Perception.Spatial.ISpatialEntity) -> win32more.Windows.Foundation.Collections.ValueSet: ...
-    Id = property(get_Id, None)
     Anchor = property(get_Anchor, None)
+    Id = property(get_Id, None)
     Properties = property(get_Properties, None)
 class SpatialEntityAddedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -565,19 +561,19 @@ class SpatialEntityWatcher(ComPtr):
     @winrt_mixinmethod
     def Stop(self: win32more.Windows.Perception.Spatial.ISpatialEntityWatcher) -> Void: ...
     Status = property(get_Status, None)
-SpatialEntityWatcherStatus = Int32
-SpatialEntityWatcherStatus_Created: SpatialEntityWatcherStatus = 0
-SpatialEntityWatcherStatus_Started: SpatialEntityWatcherStatus = 1
-SpatialEntityWatcherStatus_EnumerationCompleted: SpatialEntityWatcherStatus = 2
-SpatialEntityWatcherStatus_Stopping: SpatialEntityWatcherStatus = 3
-SpatialEntityWatcherStatus_Stopped: SpatialEntityWatcherStatus = 4
-SpatialEntityWatcherStatus_Aborted: SpatialEntityWatcherStatus = 5
-SpatialLocatability = Int32
-SpatialLocatability_Unavailable: SpatialLocatability = 0
-SpatialLocatability_OrientationOnly: SpatialLocatability = 1
-SpatialLocatability_PositionalTrackingActivating: SpatialLocatability = 2
-SpatialLocatability_PositionalTrackingActive: SpatialLocatability = 3
-SpatialLocatability_PositionalTrackingInhibited: SpatialLocatability = 4
+class SpatialEntityWatcherStatus(Int32):  # enum
+    Created = 0
+    Started = 1
+    EnumerationCompleted = 2
+    Stopping = 3
+    Stopped = 4
+    Aborted = 5
+class SpatialLocatability(Int32):  # enum
+    Unavailable = 0
+    OrientationOnly = 1
+    PositionalTrackingActivating = 2
+    PositionalTrackingActive = 3
+    PositionalTrackingInhibited = 4
 class SpatialLocation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialLocation
@@ -598,14 +594,14 @@ class SpatialLocation(ComPtr):
     def get_AbsoluteAngularVelocityAxisAngle(self: win32more.Windows.Perception.Spatial.ISpatialLocation2) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_mixinmethod
     def get_AbsoluteAngularAccelerationAxisAngle(self: win32more.Windows.Perception.Spatial.ISpatialLocation2) -> win32more.Windows.Foundation.Numerics.Vector3: ...
-    Position = property(get_Position, None)
-    Orientation = property(get_Orientation, None)
-    AbsoluteLinearVelocity = property(get_AbsoluteLinearVelocity, None)
-    AbsoluteLinearAcceleration = property(get_AbsoluteLinearAcceleration, None)
-    AbsoluteAngularVelocity = property(get_AbsoluteAngularVelocity, None)
     AbsoluteAngularAcceleration = property(get_AbsoluteAngularAcceleration, None)
-    AbsoluteAngularVelocityAxisAngle = property(get_AbsoluteAngularVelocityAxisAngle, None)
     AbsoluteAngularAccelerationAxisAngle = property(get_AbsoluteAngularAccelerationAxisAngle, None)
+    AbsoluteAngularVelocity = property(get_AbsoluteAngularVelocity, None)
+    AbsoluteAngularVelocityAxisAngle = property(get_AbsoluteAngularVelocityAxisAngle, None)
+    AbsoluteLinearAcceleration = property(get_AbsoluteLinearAcceleration, None)
+    AbsoluteLinearVelocity = property(get_AbsoluteLinearVelocity, None)
+    Orientation = property(get_Orientation, None)
+    Position = property(get_Position, None)
 class SpatialLocator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialLocator
@@ -659,8 +655,8 @@ class SpatialLocatorAttachedFrameOfReference(ComPtr):
     def GetStationaryCoordinateSystemAtTimestamp(self: win32more.Windows.Perception.Spatial.ISpatialLocatorAttachedFrameOfReference, timestamp: win32more.Windows.Perception.PerceptionTimestamp) -> win32more.Windows.Perception.Spatial.SpatialCoordinateSystem: ...
     @winrt_mixinmethod
     def TryGetRelativeHeadingAtTimestamp(self: win32more.Windows.Perception.Spatial.ISpatialLocatorAttachedFrameOfReference, timestamp: win32more.Windows.Perception.PerceptionTimestamp) -> win32more.Windows.Foundation.IReference[Double]: ...
-    RelativePosition = property(get_RelativePosition, put_RelativePosition)
     RelativeOrientation = property(get_RelativeOrientation, put_RelativeOrientation)
+    RelativePosition = property(get_RelativePosition, put_RelativePosition)
 class SpatialLocatorPositionalTrackingDeactivatingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Perception.Spatial.ISpatialLocatorPositionalTrackingDeactivatingEventArgs
@@ -670,17 +666,17 @@ class SpatialLocatorPositionalTrackingDeactivatingEventArgs(ComPtr):
     @winrt_mixinmethod
     def put_Canceled(self: win32more.Windows.Perception.Spatial.ISpatialLocatorPositionalTrackingDeactivatingEventArgs, value: Boolean) -> Void: ...
     Canceled = property(get_Canceled, put_Canceled)
-SpatialLookDirectionRange = Int32
-SpatialLookDirectionRange_ForwardOnly: SpatialLookDirectionRange = 0
-SpatialLookDirectionRange_Omnidirectional: SpatialLookDirectionRange = 1
-SpatialMovementRange = Int32
-SpatialMovementRange_NoMovement: SpatialMovementRange = 0
-SpatialMovementRange_Bounded: SpatialMovementRange = 1
-SpatialPerceptionAccessStatus = Int32
-SpatialPerceptionAccessStatus_Unspecified: SpatialPerceptionAccessStatus = 0
-SpatialPerceptionAccessStatus_Allowed: SpatialPerceptionAccessStatus = 1
-SpatialPerceptionAccessStatus_DeniedByUser: SpatialPerceptionAccessStatus = 2
-SpatialPerceptionAccessStatus_DeniedBySystem: SpatialPerceptionAccessStatus = 3
+class SpatialLookDirectionRange(Int32):  # enum
+    ForwardOnly = 0
+    Omnidirectional = 1
+class SpatialMovementRange(Int32):  # enum
+    NoMovement = 0
+    Bounded = 1
+class SpatialPerceptionAccessStatus(Int32):  # enum
+    Unspecified = 0
+    Allowed = 1
+    DeniedByUser = 2
+    DeniedBySystem = 3
 class SpatialRay(EasyCastStructure):
     Origin: win32more.Windows.Foundation.Numerics.Vector3
     Direction: win32more.Windows.Foundation.Numerics.Vector3
@@ -709,8 +705,8 @@ class SpatialStageFrameOfReference(ComPtr, metaclass=_SpatialStageFrameOfReferen
     @winrt_classmethod
     def RequestNewStageAsync(cls: win32more.Windows.Perception.Spatial.ISpatialStageFrameOfReferenceStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Perception.Spatial.SpatialStageFrameOfReference]: ...
     CoordinateSystem = property(get_CoordinateSystem, None)
-    MovementRange = property(get_MovementRange, None)
     LookDirectionRange = property(get_LookDirectionRange, None)
+    MovementRange = property(get_MovementRange, None)
     _SpatialStageFrameOfReference_Meta_.Current = property(get_Current.__wrapped__, None)
 class SpatialStationaryFrameOfReference(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -719,4 +715,6 @@ class SpatialStationaryFrameOfReference(ComPtr):
     @winrt_mixinmethod
     def get_CoordinateSystem(self: win32more.Windows.Perception.Spatial.ISpatialStationaryFrameOfReference) -> win32more.Windows.Perception.Spatial.SpatialCoordinateSystem: ...
     CoordinateSystem = property(get_CoordinateSystem, None)
+
+
 make_ready(__name__)

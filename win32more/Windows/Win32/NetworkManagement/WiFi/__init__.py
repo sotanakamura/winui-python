@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Devices.Properties
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.NetworkManagement.Ndis
@@ -491,42 +491,68 @@ DOT11_MANUFACTURING_CALLBACK_REVISION_1: UInt32 = 1
 DOT11_SSID_MAX_LENGTH: UInt32 = 32
 DOT11_OI_MAX_LENGTH: UInt32 = 5
 DOT11_OI_MIN_LENGTH: UInt32 = 3
-def DEVPKEY_PciRootBus_SecondaryInterface():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=1)
-def DEVPKEY_PciRootBus_CurrentSpeedAndMode():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=2)
-def DEVPKEY_PciRootBus_SupportedSpeedsAndModes():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=3)
-def DEVPKEY_PciRootBus_DeviceIDMessagingCapable():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=4)
-def DEVPKEY_PciRootBus_SecondaryBusWidth():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=5)
-def DEVPKEY_PciRootBus_ExtendedConfigAvailable():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=6)
-def DEVPKEY_PciRootBus_ExtendedPCIConfigOpRegionSupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=7)
-def DEVPKEY_PciRootBus_ASPMSupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=8)
-def DEVPKEY_PciRootBus_ClockPowerManagementSupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=9)
-def DEVPKEY_PciRootBus_PCISegmentGroupsSupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=10)
-def DEVPKEY_PciRootBus_MSISupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=11)
-def DEVPKEY_PciRootBus_PCIExpressNativeHotPlugControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=12)
-def DEVPKEY_PciRootBus_SHPCNativeHotPlugControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=13)
-def DEVPKEY_PciRootBus_PCIExpressNativePMEControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=14)
-def DEVPKEY_PciRootBus_PCIExpressAERControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=15)
-def DEVPKEY_PciRootBus_PCIExpressCapabilityControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=16)
-def DEVPKEY_PciRootBus_NativePciExpressControl():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=17)
-def DEVPKEY_PciRootBus_SystemMsiSupport():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=18)
+DEVPKEY_PciRootBus_SecondaryInterface: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=1)
+DEVPKEY_PciRootBus_CurrentSpeedAndMode: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=2)
+DEVPKEY_PciRootBus_SupportedSpeedsAndModes: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=3)
+DEVPKEY_PciRootBus_DeviceIDMessagingCapable: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=4)
+DEVPKEY_PciRootBus_SecondaryBusWidth: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=5)
+DEVPKEY_PciRootBus_ExtendedConfigAvailable: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=6)
+DEVPKEY_PciRootBus_ExtendedPCIConfigOpRegionSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=7)
+DEVPKEY_PciRootBus_ASPMSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=8)
+DEVPKEY_PciRootBus_ClockPowerManagementSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=9)
+DEVPKEY_PciRootBus_PCISegmentGroupsSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=10)
+DEVPKEY_PciRootBus_MSISupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=11)
+DEVPKEY_PciRootBus_PCIExpressNativeHotPlugControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=12)
+DEVPKEY_PciRootBus_SHPCNativeHotPlugControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=13)
+DEVPKEY_PciRootBus_PCIExpressNativePMEControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=14)
+DEVPKEY_PciRootBus_PCIExpressAERControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=15)
+DEVPKEY_PciRootBus_PCIExpressCapabilityControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=16)
+DEVPKEY_PciRootBus_NativePciExpressControl: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=17)
+DEVPKEY_PciRootBus_SystemMsiSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{d817fc28-793e-4b9e-9970-469d8be63073}'), pid=18)
+DEVPKEY_PciDevice_DeviceType: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=1)
+DEVPKEY_PciDevice_CurrentSpeedAndMode: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=2)
+DEVPKEY_PciDevice_BaseClass: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=3)
+DEVPKEY_PciDevice_SubClass: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=4)
+DEVPKEY_PciDevice_ProgIf: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=5)
+DEVPKEY_PciDevice_CurrentPayloadSize: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=6)
+DEVPKEY_PciDevice_MaxPayloadSize: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=7)
+DEVPKEY_PciDevice_MaxReadRequestSize: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=8)
+DEVPKEY_PciDevice_CurrentLinkSpeed: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=9)
+DEVPKEY_PciDevice_CurrentLinkWidth: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=10)
+DEVPKEY_PciDevice_MaxLinkSpeed: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=11)
+DEVPKEY_PciDevice_MaxLinkWidth: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=12)
+DEVPKEY_PciDevice_ExpressSpecVersion: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=13)
+DEVPKEY_PciDevice_InterruptSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=14)
+DEVPKEY_PciDevice_InterruptMessageMaximum: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=15)
+DEVPKEY_PciDevice_BarTypes: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=16)
+DEVPKEY_PciDevice_AERCapabilityPresent: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=17)
+DEVPKEY_PciDevice_FirmwareErrorHandling: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=18)
+DEVPKEY_PciDevice_Uncorrectable_Error_Mask: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=19)
+DEVPKEY_PciDevice_Uncorrectable_Error_Severity: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=20)
+DEVPKEY_PciDevice_Correctable_Error_Mask: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=21)
+DEVPKEY_PciDevice_ECRC_Errors: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=22)
+DEVPKEY_PciDevice_Error_Reporting: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=23)
+DEVPKEY_PciDevice_RootError_Reporting: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=24)
+DEVPKEY_PciDevice_S0WakeupSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=25)
+DEVPKEY_PciDevice_SriovSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=26)
+DEVPKEY_PciDevice_Label_Id: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=27)
+DEVPKEY_PciDevice_Label_String: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=28)
+DEVPKEY_PciDevice_AcsSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=29)
+DEVPKEY_PciDevice_AriSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=30)
+DEVPKEY_PciDevice_AcsCompatibleUpHierarchy: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=31)
+DEVPKEY_PciDevice_AcsCapabilityRegister: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=32)
+DEVPKEY_PciDevice_AtsSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=33)
+DEVPKEY_PciDevice_RequiresReservedMemoryRegion: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=34)
+DEVPKEY_PciDevice_AtomicsSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=35)
+DEVPKEY_PciDevice_SupportedLinkSubState: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=36)
+DEVPKEY_PciDevice_OnPostPath: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=37)
+DEVPKEY_PciDevice_D3ColdSupport: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=38)
+DEVPKEY_PciDevice_SerialNumber: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=40)
+DEVPKEY_PciDevice_UsbDvsecPortType: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=41)
+DEVPKEY_PciDevice_UsbDvsecPortSpecificAttributes: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=42)
+DEVPKEY_PciDevice_UsbComponentRelation: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=43)
+DEVPKEY_PciDevice_UsbHostRouterName: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=44)
+DEVPKEY_PciDevice_ParentSerialNumber: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{3ab22e31-8264-4b4e-9af5-a8d2d8e33e62}'), pid=45)
 WLAN_API_VERSION_1_0: UInt32 = 1
 WLAN_API_VERSION_2_0: UInt32 = 2
 WLAN_API_VERSION: UInt32 = 2
@@ -702,84 +728,45 @@ WLAN_UI_API_INITIAL_VERSION: UInt32 = 1
 GUID_DEVINTERFACE_WIFIDIRECT_DEVICE: Guid = Guid('{439b20af-8955-405b-99f0-a62af0c68d43}')
 GUID_AEPSERVICE_WIFIDIRECT_DEVICE: Guid = Guid('{cc29827c-9caf-4928-99a9-18f7c2381389}')
 GUID_DEVINTERFACE_ASP_INFRA_DEVICE: Guid = Guid('{ff823995-7a72-4c80-8757-c67ee13d1a49}')
-def DEVPKEY_WiFiDirect_DeviceAddress():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=1)
-def DEVPKEY_WiFiDirect_InterfaceAddress():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=2)
-def DEVPKEY_WiFiDirect_InterfaceGuid():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=3)
-def DEVPKEY_WiFiDirect_GroupId():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=4)
-def DEVPKEY_WiFiDirect_IsConnected():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=5)
-def DEVPKEY_WiFiDirect_IsVisible():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=6)
-def DEVPKEY_WiFiDirect_IsLegacyDevice():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=7)
-def DEVPKEY_WiFiDirect_MiracastVersion():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=8)
-def DEVPKEY_WiFiDirect_IsMiracastLCPSupported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=9)
-def DEVPKEY_WiFiDirect_Services():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=10)
-def DEVPKEY_WiFiDirect_SupportedChannelList():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=11)
-def DEVPKEY_WiFiDirect_InformationElements():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=12)
-def DEVPKEY_WiFiDirect_DeviceAddressCopy():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=13)
-def DEVPKEY_WiFiDirect_IsRecentlyAssociated():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=14)
-def DEVPKEY_WiFiDirect_Service_Aeps():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=15)
-def DEVPKEY_WiFiDirect_NoMiracastAutoProject():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=16)
-def DEVPKEY_InfraCast_Supported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=17)
-def DEVPKEY_InfraCast_StreamSecuritySupported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=18)
-def DEVPKEY_InfraCast_AccessPointBssid():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=19)
-def DEVPKEY_InfraCast_SinkHostName():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=20)
-def DEVPKEY_InfraCast_ChallengeAep():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=21)
-def DEVPKEY_WiFiDirect_IsDMGCapable():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=22)
-def DEVPKEY_InfraCast_DevnodeAep():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=23)
-def DEVPKEY_WiFiDirect_FoundWsbService():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=24)
-def DEVPKEY_InfraCast_HostName_ResolutionMode():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=25)
-def DEVPKEY_InfraCast_SinkIpAddress():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=26)
-def DEVPKEY_WiFiDirect_TransientAssociation():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=27)
-def DEVPKEY_WiFiDirect_LinkQuality():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=28)
-def DEVPKEY_InfraCast_PinSupported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=29)
-def DEVPKEY_InfraCast_RtspTcpConnectionParametersSupported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=30)
-def DEVPKEY_WiFiDirect_Miracast_SessionMgmtControlPort():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=31)
-def DEVPKEY_WiFiDirect_RtspTcpConnectionParametersSupported():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=32)
-def DEVPKEY_WiFiDirectServices_ServiceAddress():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=2)
-def DEVPKEY_WiFiDirectServices_ServiceName():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=3)
-def DEVPKEY_WiFiDirectServices_ServiceInformation():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=4)
-def DEVPKEY_WiFiDirectServices_AdvertisementId():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=5)
-def DEVPKEY_WiFiDirectServices_ServiceConfigMethods():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=6)
-def DEVPKEY_WiFiDirectServices_RequestServiceInformation():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=7)
-def DEVPKEY_WiFi_InterfaceGuid():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{ef1167eb-cbfc-4341-a568-a7c91a68982c}'), pid=2)
+DEVPKEY_WiFiDirect_DeviceAddress: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=1)
+DEVPKEY_WiFiDirect_InterfaceAddress: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=2)
+DEVPKEY_WiFiDirect_InterfaceGuid: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=3)
+DEVPKEY_WiFiDirect_GroupId: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=4)
+DEVPKEY_WiFiDirect_IsConnected: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=5)
+DEVPKEY_WiFiDirect_IsVisible: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=6)
+DEVPKEY_WiFiDirect_IsLegacyDevice: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=7)
+DEVPKEY_WiFiDirect_MiracastVersion: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=8)
+DEVPKEY_WiFiDirect_IsMiracastLCPSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=9)
+DEVPKEY_WiFiDirect_Services: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=10)
+DEVPKEY_WiFiDirect_SupportedChannelList: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=11)
+DEVPKEY_WiFiDirect_InformationElements: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=12)
+DEVPKEY_WiFiDirect_DeviceAddressCopy: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=13)
+DEVPKEY_WiFiDirect_IsRecentlyAssociated: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=14)
+DEVPKEY_WiFiDirect_Service_Aeps: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=15)
+DEVPKEY_WiFiDirect_NoMiracastAutoProject: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=16)
+DEVPKEY_InfraCast_Supported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=17)
+DEVPKEY_InfraCast_StreamSecuritySupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=18)
+DEVPKEY_InfraCast_AccessPointBssid: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=19)
+DEVPKEY_InfraCast_SinkHostName: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=20)
+DEVPKEY_InfraCast_ChallengeAep: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=21)
+DEVPKEY_WiFiDirect_IsDMGCapable: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=22)
+DEVPKEY_InfraCast_DevnodeAep: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=23)
+DEVPKEY_WiFiDirect_FoundWsbService: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=24)
+DEVPKEY_InfraCast_HostName_ResolutionMode: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=25)
+DEVPKEY_InfraCast_SinkIpAddress: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=26)
+DEVPKEY_WiFiDirect_TransientAssociation: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=27)
+DEVPKEY_WiFiDirect_LinkQuality: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=28)
+DEVPKEY_InfraCast_PinSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=29)
+DEVPKEY_InfraCast_RtspTcpConnectionParametersSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=30)
+DEVPKEY_WiFiDirect_Miracast_SessionMgmtControlPort: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=31)
+DEVPKEY_WiFiDirect_RtspTcpConnectionParametersSupported: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{1506935d-e3e7-450f-8637-82233ebe5f6e}'), pid=32)
+DEVPKEY_WiFiDirectServices_ServiceAddress: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=2)
+DEVPKEY_WiFiDirectServices_ServiceName: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=3)
+DEVPKEY_WiFiDirectServices_ServiceInformation: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=4)
+DEVPKEY_WiFiDirectServices_AdvertisementId: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=5)
+DEVPKEY_WiFiDirectServices_ServiceConfigMethods: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=6)
+DEVPKEY_WiFiDirectServices_RequestServiceInformation: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{31b37743-7c5e-4005-93e6-e953f92b82e9}'), pid=7)
+DEVPKEY_WiFi_InterfaceGuid: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{ef1167eb-cbfc-4341-a568-a7c91a68982c}'), pid=2)
 DOT11EXT_PSK_MAX_LENGTH: UInt32 = 64
 WDIAG_IHV_WLAN_ID_FLAG_SECURITY_ENABLED: UInt32 = 1
 IHV_VERSION_FUNCTION_NAME: String = 'Dot11ExtIhvGetVersionInfo'
@@ -1123,11 +1110,11 @@ class DOT11EXT_IHV_HANDLERS(EasyCastStructure):
     Dot11ExtIhvOnexIndicateResult: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXTIHV_ONEX_INDICATE_RESULT
     Dot11ExtIhvControl: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXTIHV_CONTROL
 DOT11EXT_IHV_INDICATION_TYPE = Int32
-DOT11EXT_IHV_INDICATION_TYPE_IndicationTypeNicSpecificNotification: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 0
-DOT11EXT_IHV_INDICATION_TYPE_IndicationTypePmkidCandidateList: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 1
-DOT11EXT_IHV_INDICATION_TYPE_IndicationTypeTkipMicFailure: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 2
-DOT11EXT_IHV_INDICATION_TYPE_IndicationTypePhyStateChange: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 3
-DOT11EXT_IHV_INDICATION_TYPE_IndicationTypeLinkQuality: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 4
+IndicationTypeNicSpecificNotification: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 0
+IndicationTypePmkidCandidateList: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 1
+IndicationTypeTkipMicFailure: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 2
+IndicationTypePhyStateChange: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 3
+IndicationTypeLinkQuality: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_INDICATION_TYPE = 4
 class DOT11EXT_IHV_PARAMS(EasyCastStructure):
     dot11ExtIhvProfileParams: win32more.Windows.Win32.NetworkManagement.WiFi.DOT11EXT_IHV_PROFILE_PARAMS
     wstrProfileName: Char * 256
@@ -2920,12 +2907,12 @@ class L2_NOTIFICATION_DATA(EasyCastStructure):
     dwDataSize: UInt32
     pData: VoidPtr
 ONEX_AUTH_IDENTITY = Int32
-ONEX_AUTH_IDENTITY_OneXAuthIdentityNone: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 0
-ONEX_AUTH_IDENTITY_OneXAuthIdentityMachine: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 1
-ONEX_AUTH_IDENTITY_OneXAuthIdentityUser: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 2
-ONEX_AUTH_IDENTITY_OneXAuthIdentityExplicitUser: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 3
-ONEX_AUTH_IDENTITY_OneXAuthIdentityGuest: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 4
-ONEX_AUTH_IDENTITY_OneXAuthIdentityInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 5
+OneXAuthIdentityNone: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 0
+OneXAuthIdentityMachine: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 1
+OneXAuthIdentityUser: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 2
+OneXAuthIdentityExplicitUser: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 3
+OneXAuthIdentityGuest: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 4
+OneXAuthIdentityInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_IDENTITY = 5
 class ONEX_AUTH_PARAMS(EasyCastStructure):
     fUpdatePending: win32more.Windows.Win32.Foundation.BOOL
     oneXConnProfile: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_VARIABLE_BLOB
@@ -2939,22 +2926,22 @@ class ONEX_AUTH_PARAMS(EasyCastStructure):
     UserName: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_VARIABLE_BLOB
     Domain: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_VARIABLE_BLOB
 ONEX_AUTH_RESTART_REASON = Int32
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonPeerInitiated: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 0
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonMsmInitiated: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 1
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonOneXHeldStateTimeout: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 2
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonOneXAuthTimeout: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 3
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonOneXConfigurationChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 4
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonOneXUserChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 5
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonQuarantineStateChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 6
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonAltCredsTrial: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 7
-ONEX_AUTH_RESTART_REASON_OneXRestartReasonInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 8
+OneXRestartReasonPeerInitiated: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 0
+OneXRestartReasonMsmInitiated: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 1
+OneXRestartReasonOneXHeldStateTimeout: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 2
+OneXRestartReasonOneXAuthTimeout: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 3
+OneXRestartReasonOneXConfigurationChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 4
+OneXRestartReasonOneXUserChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 5
+OneXRestartReasonQuarantineStateChanged: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 6
+OneXRestartReasonAltCredsTrial: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 7
+OneXRestartReasonInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_RESTART_REASON = 8
 ONEX_AUTH_STATUS = Int32
-ONEX_AUTH_STATUS_OneXAuthNotStarted: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 0
-ONEX_AUTH_STATUS_OneXAuthInProgress: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 1
-ONEX_AUTH_STATUS_OneXAuthNoAuthenticatorFound: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 2
-ONEX_AUTH_STATUS_OneXAuthSuccess: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 3
-ONEX_AUTH_STATUS_OneXAuthFailure: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 4
-ONEX_AUTH_STATUS_OneXAuthInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 5
+OneXAuthNotStarted: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 0
+OneXAuthInProgress: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 1
+OneXAuthNoAuthenticatorFound: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 2
+OneXAuthSuccess: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 3
+OneXAuthFailure: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 4
+OneXAuthInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_AUTH_STATUS = 5
 class ONEX_EAP_ERROR(EasyCastStructure):
     dwWinError: UInt32
     type: win32more.Windows.Win32.Security.ExtensibleAuthenticationProtocol.EAP_METHOD_TYPE
@@ -2966,15 +2953,15 @@ class ONEX_EAP_ERROR(EasyCastStructure):
     RootCauseString: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_VARIABLE_BLOB
     RepairString: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_VARIABLE_BLOB
 ONEX_EAP_METHOD_BACKEND_SUPPORT = Int32
-ONEX_EAP_METHOD_BACKEND_SUPPORT_OneXEapMethodBackendSupportUnknown: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 0
-ONEX_EAP_METHOD_BACKEND_SUPPORT_OneXEapMethodBackendSupported: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 1
-ONEX_EAP_METHOD_BACKEND_SUPPORT_OneXEapMethodBackendUnsupported: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 2
+OneXEapMethodBackendSupportUnknown: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 0
+OneXEapMethodBackendSupported: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 1
+OneXEapMethodBackendUnsupported: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_EAP_METHOD_BACKEND_SUPPORT = 2
 ONEX_NOTIFICATION_TYPE = Int32
-ONEX_NOTIFICATION_TYPE_OneXPublicNotificationBase: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 0
-ONEX_NOTIFICATION_TYPE_OneXNotificationTypeResultUpdate: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 1
-ONEX_NOTIFICATION_TYPE_OneXNotificationTypeAuthRestarted: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 2
-ONEX_NOTIFICATION_TYPE_OneXNotificationTypeEventInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 3
-ONEX_NOTIFICATION_TYPE_OneXNumNotifications: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 3
+OneXPublicNotificationBase: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 0
+OneXNotificationTypeResultUpdate: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 1
+OneXNotificationTypeAuthRestarted: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 2
+OneXNotificationTypeEventInvalid: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 3
+OneXNumNotifications: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_NOTIFICATION_TYPE = 3
 ONEX_REASON_CODE = Int32
 ONEX_REASON_CODE_SUCCESS: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_REASON_CODE = 0
 ONEX_REASON_START: win32more.Windows.Win32.NetworkManagement.WiFi.ONEX_REASON_CODE = 327680
@@ -3503,9 +3490,9 @@ class WLAN_STATISTICS(EasyCastStructure):
     dwNumberOfPhys: UInt32
     PhyCounters: win32more.Windows.Win32.NetworkManagement.WiFi.WLAN_PHY_FRAME_STATISTICS * 1
 WL_DISPLAY_PAGES = Int32
-WL_DISPLAY_PAGES_WLConnectionPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 0
-WL_DISPLAY_PAGES_WLSecurityPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 1
-WL_DISPLAY_PAGES_WLAdvPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 2
+WLConnectionPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 0
+WLSecurityPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 1
+WLAdvPage: win32more.Windows.Win32.NetworkManagement.WiFi.WL_DISPLAY_PAGES = 2
 
 
 make_ready(__name__)

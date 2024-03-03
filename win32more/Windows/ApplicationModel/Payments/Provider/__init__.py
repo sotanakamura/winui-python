@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Payments
 import win32more.Windows.ApplicationModel.Payments.Provider
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IPaymentAppCanMakePaymentTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.Provider.IPaymentAppCanMakePaymentTriggerDetails'
@@ -69,10 +56,10 @@ class IPaymentTransaction(ComPtr):
     def AcceptAsync(self, paymentToken: win32more.Windows.ApplicationModel.Payments.PaymentToken) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Payments.Provider.PaymentTransactionAcceptResult]: ...
     @winrt_commethod(16)
     def Reject(self) -> Void: ...
-    PaymentRequest = property(get_PaymentRequest, None)
     PayerEmail = property(get_PayerEmail, put_PayerEmail)
     PayerName = property(get_PayerName, put_PayerName)
     PayerPhoneNumber = property(get_PayerPhoneNumber, put_PayerPhoneNumber)
+    PaymentRequest = property(get_PaymentRequest, None)
 class IPaymentTransactionAcceptResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.Provider.IPaymentTransactionAcceptResult'
@@ -136,10 +123,10 @@ class PaymentTransaction(ComPtr):
     def Reject(self: win32more.Windows.ApplicationModel.Payments.Provider.IPaymentTransaction) -> Void: ...
     @winrt_classmethod
     def FromIdAsync(cls: win32more.Windows.ApplicationModel.Payments.Provider.IPaymentTransactionStatics, id: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Payments.Provider.PaymentTransaction]: ...
-    PaymentRequest = property(get_PaymentRequest, None)
     PayerEmail = property(get_PayerEmail, put_PayerEmail)
     PayerName = property(get_PayerName, put_PayerName)
     PayerPhoneNumber = property(get_PayerPhoneNumber, put_PayerPhoneNumber)
+    PaymentRequest = property(get_PaymentRequest, None)
 class PaymentTransactionAcceptResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.Provider.IPaymentTransactionAcceptResult
@@ -147,4 +134,6 @@ class PaymentTransactionAcceptResult(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.ApplicationModel.Payments.Provider.IPaymentTransactionAcceptResult) -> win32more.Windows.ApplicationModel.Payments.PaymentRequestCompletionStatus: ...
     Status = property(get_Status, None)
+
+
 make_ready(__name__)

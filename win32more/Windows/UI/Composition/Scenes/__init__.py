@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Foundation.Numerics
 import win32more.Windows.Graphics.DirectX
 import win32more.Windows.UI.Composition
 import win32more.Windows.UI.Composition.Scenes
+import win32more.Windows.Win32.System.WinRT
 class ISceneBoundingBox(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Composition.Scenes.ISceneBoundingBox'
@@ -142,8 +129,8 @@ class ISceneMetallicRoughnessMaterial(ComPtr):
     def get_RoughnessFactor(self) -> Single: ...
     @winrt_commethod(15)
     def put_RoughnessFactor(self, value: Single) -> Void: ...
-    BaseColorInput = property(get_BaseColorInput, put_BaseColorInput)
     BaseColorFactor = property(get_BaseColorFactor, put_BaseColorFactor)
+    BaseColorInput = property(get_BaseColorInput, put_BaseColorInput)
     MetallicFactor = property(get_MetallicFactor, put_MetallicFactor)
     MetallicRoughnessInput = property(get_MetallicRoughnessInput, put_MetallicRoughnessInput)
     RoughnessFactor = property(get_RoughnessFactor, put_RoughnessFactor)
@@ -265,8 +252,8 @@ class IScenePbrMaterial(ComPtr):
     def put_OcclusionStrength(self, value: Single) -> Void: ...
     AlphaCutoff = property(get_AlphaCutoff, put_AlphaCutoff)
     AlphaMode = property(get_AlphaMode, put_AlphaMode)
-    EmissiveInput = property(get_EmissiveInput, put_EmissiveInput)
     EmissiveFactor = property(get_EmissiveFactor, put_EmissiveFactor)
+    EmissiveInput = property(get_EmissiveInput, put_EmissiveInput)
     IsDoubleSided = property(get_IsDoubleSided, put_IsDoubleSided)
     NormalInput = property(get_NormalInput, put_NormalInput)
     NormalScale = property(get_NormalScale, put_NormalScale)
@@ -329,18 +316,18 @@ class ISceneVisualStatics(ComPtr):
     _iid_ = Guid('{b8347e9a-50aa-4527-8d34-de4cb8ea88b4}')
     @winrt_commethod(6)
     def Create(self, compositor: win32more.Windows.UI.Composition.Compositor) -> win32more.Windows.UI.Composition.Scenes.SceneVisual: ...
-SceneAlphaMode = Int32
-SceneAlphaMode_Opaque: SceneAlphaMode = 0
-SceneAlphaMode_AlphaTest: SceneAlphaMode = 1
-SceneAlphaMode_Blend: SceneAlphaMode = 2
-SceneAttributeSemantic = Int32
-SceneAttributeSemantic_Index: SceneAttributeSemantic = 0
-SceneAttributeSemantic_Vertex: SceneAttributeSemantic = 1
-SceneAttributeSemantic_Normal: SceneAttributeSemantic = 2
-SceneAttributeSemantic_TexCoord0: SceneAttributeSemantic = 3
-SceneAttributeSemantic_TexCoord1: SceneAttributeSemantic = 4
-SceneAttributeSemantic_Color: SceneAttributeSemantic = 5
-SceneAttributeSemantic_Tangent: SceneAttributeSemantic = 6
+class SceneAlphaMode(Int32):  # enum
+    Opaque = 0
+    AlphaTest = 1
+    Blend = 2
+class SceneAttributeSemantic(Int32):  # enum
+    Index = 0
+    Vertex = 1
+    Normal = 2
+    TexCoord0 = 3
+    TexCoord1 = 4
+    Color = 5
+    Tangent = 6
 class SceneBoundingBox(ComPtr):
     extends: win32more.Windows.UI.Composition.Scenes.SceneObject
     default_interface: win32more.Windows.UI.Composition.Scenes.ISceneBoundingBox
@@ -398,8 +385,8 @@ class SceneComponentCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Composition.Scenes.SceneComponent]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.UI.Composition.Scenes.SceneComponent]: ...
     Size = property(get_Size, None)
-SceneComponentType = Int32
-SceneComponentType_MeshRendererComponent: SceneComponentType = 0
+class SceneComponentType(Int32):  # enum
+    MeshRendererComponent = 0
 class SceneMaterial(ComPtr):
     extends: win32more.Windows.UI.Composition.Scenes.SceneObject
     default_interface: win32more.Windows.UI.Composition.Scenes.ISceneMaterial
@@ -490,8 +477,8 @@ class SceneMetallicRoughnessMaterial(ComPtr):
     def put_RoughnessFactor(self: win32more.Windows.UI.Composition.Scenes.ISceneMetallicRoughnessMaterial, value: Single) -> Void: ...
     @winrt_classmethod
     def Create(cls: win32more.Windows.UI.Composition.Scenes.ISceneMetallicRoughnessMaterialStatics, compositor: win32more.Windows.UI.Composition.Compositor) -> win32more.Windows.UI.Composition.Scenes.SceneMetallicRoughnessMaterial: ...
-    BaseColorInput = property(get_BaseColorInput, put_BaseColorInput)
     BaseColorFactor = property(get_BaseColorFactor, put_BaseColorFactor)
+    BaseColorInput = property(get_BaseColorInput, put_BaseColorInput)
     MetallicFactor = property(get_MetallicFactor, put_MetallicFactor)
     MetallicRoughnessInput = property(get_MetallicRoughnessInput, put_MetallicRoughnessInput)
     RoughnessFactor = property(get_RoughnessFactor, put_RoughnessFactor)
@@ -626,8 +613,8 @@ class ScenePbrMaterial(ComPtr):
     def put_OcclusionStrength(self: win32more.Windows.UI.Composition.Scenes.IScenePbrMaterial, value: Single) -> Void: ...
     AlphaCutoff = property(get_AlphaCutoff, put_AlphaCutoff)
     AlphaMode = property(get_AlphaMode, put_AlphaMode)
-    EmissiveInput = property(get_EmissiveInput, put_EmissiveInput)
     EmissiveFactor = property(get_EmissiveFactor, put_EmissiveFactor)
+    EmissiveInput = property(get_EmissiveInput, put_EmissiveInput)
     IsDoubleSided = property(get_IsDoubleSided, put_IsDoubleSided)
     NormalInput = property(get_NormalInput, put_NormalInput)
     NormalScale = property(get_NormalScale, put_NormalScale)
@@ -674,8 +661,10 @@ class SceneVisual(ComPtr):
     @winrt_classmethod
     def Create(cls: win32more.Windows.UI.Composition.Scenes.ISceneVisualStatics, compositor: win32more.Windows.UI.Composition.Compositor) -> win32more.Windows.UI.Composition.Scenes.SceneVisual: ...
     Root = property(get_Root, put_Root)
-SceneWrappingMode = Int32
-SceneWrappingMode_ClampToEdge: SceneWrappingMode = 0
-SceneWrappingMode_MirroredRepeat: SceneWrappingMode = 1
-SceneWrappingMode_Repeat: SceneWrappingMode = 2
+class SceneWrappingMode(Int32):  # enum
+    ClampToEdge = 0
+    MirroredRepeat = 1
+    Repeat = 2
+
+
 make_ready(__name__)

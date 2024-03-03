@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Core
 import win32more.Windows.Media.Streaming.Adaptive
 import win32more.Windows.Storage.Streams
 import win32more.Windows.Web.Http
+import win32more.Windows.Win32.System.WinRT
 class AdaptiveMediaSource(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSource
@@ -103,22 +90,22 @@ class AdaptiveMediaSource(ComPtr):
     def CreateFromStreamAsync(cls: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceStatics, stream: win32more.Windows.Storage.Streams.IInputStream, uri: win32more.Windows.Foundation.Uri, contentType: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceCreationResult]: ...
     @winrt_classmethod
     def CreateFromStreamWithDownloaderAsync(cls: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceStatics, stream: win32more.Windows.Storage.Streams.IInputStream, uri: win32more.Windows.Foundation.Uri, contentType: WinRT_String, httpClient: win32more.Windows.Web.Http.HttpClient) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceCreationResult]: ...
-    IsLive = property(get_IsLive, None)
-    DesiredLiveOffset = property(get_DesiredLiveOffset, put_DesiredLiveOffset)
-    InitialBitrate = property(get_InitialBitrate, put_InitialBitrate)
+    AdvancedSettings = property(get_AdvancedSettings, None)
+    AudioOnlyPlayback = property(get_AudioOnlyPlayback, None)
+    AvailableBitrates = property(get_AvailableBitrates, None)
     CurrentDownloadBitrate = property(get_CurrentDownloadBitrate, None)
     CurrentPlaybackBitrate = property(get_CurrentPlaybackBitrate, None)
-    AvailableBitrates = property(get_AvailableBitrates, None)
-    DesiredMinBitrate = property(get_DesiredMinBitrate, put_DesiredMinBitrate)
+    DesiredLiveOffset = property(get_DesiredLiveOffset, put_DesiredLiveOffset)
     DesiredMaxBitrate = property(get_DesiredMaxBitrate, put_DesiredMaxBitrate)
-    AudioOnlyPlayback = property(get_AudioOnlyPlayback, None)
-    InboundBitsPerSecond = property(get_InboundBitsPerSecond, None)
-    InboundBitsPerSecondWindow = property(get_InboundBitsPerSecondWindow, put_InboundBitsPerSecondWindow)
-    AdvancedSettings = property(get_AdvancedSettings, None)
-    MinLiveOffset = property(get_MinLiveOffset, None)
-    MaxSeekableWindowSize = property(get_MaxSeekableWindowSize, None)
+    DesiredMinBitrate = property(get_DesiredMinBitrate, put_DesiredMinBitrate)
     DesiredSeekableWindowSize = property(get_DesiredSeekableWindowSize, put_DesiredSeekableWindowSize)
     Diagnostics = property(get_Diagnostics, None)
+    InboundBitsPerSecond = property(get_InboundBitsPerSecond, None)
+    InboundBitsPerSecondWindow = property(get_InboundBitsPerSecondWindow, put_InboundBitsPerSecondWindow)
+    InitialBitrate = property(get_InitialBitrate, put_InitialBitrate)
+    IsLive = property(get_IsLive, None)
+    MaxSeekableWindowSize = property(get_MaxSeekableWindowSize, None)
+    MinLiveOffset = property(get_MinLiveOffset, None)
 class AdaptiveMediaSourceAdvancedSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceAdvancedSettings
@@ -136,8 +123,8 @@ class AdaptiveMediaSourceAdvancedSettings(ComPtr):
     @winrt_mixinmethod
     def put_BitrateDowngradeTriggerRatio(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceAdvancedSettings, value: win32more.Windows.Foundation.IReference[Double]) -> Void: ...
     AllSegmentsIndependent = property(get_AllSegmentsIndependent, put_AllSegmentsIndependent)
-    DesiredBitrateHeadroomRatio = property(get_DesiredBitrateHeadroomRatio, put_DesiredBitrateHeadroomRatio)
     BitrateDowngradeTriggerRatio = property(get_BitrateDowngradeTriggerRatio, put_BitrateDowngradeTriggerRatio)
+    DesiredBitrateHeadroomRatio = property(get_DesiredBitrateHeadroomRatio, put_DesiredBitrateHeadroomRatio)
 class AdaptiveMediaSourceCorrelatedTimes(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceCorrelatedTimes
@@ -163,18 +150,18 @@ class AdaptiveMediaSourceCreationResult(ComPtr):
     def get_HttpResponseMessage(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceCreationResult) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceCreationResult2) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
-    MediaSource = property(get_MediaSource, None)
-    HttpResponseMessage = property(get_HttpResponseMessage, None)
     ExtendedError = property(get_ExtendedError, None)
-AdaptiveMediaSourceCreationStatus = Int32
-AdaptiveMediaSourceCreationStatus_Success: AdaptiveMediaSourceCreationStatus = 0
-AdaptiveMediaSourceCreationStatus_ManifestDownloadFailure: AdaptiveMediaSourceCreationStatus = 1
-AdaptiveMediaSourceCreationStatus_ManifestParseFailure: AdaptiveMediaSourceCreationStatus = 2
-AdaptiveMediaSourceCreationStatus_UnsupportedManifestContentType: AdaptiveMediaSourceCreationStatus = 3
-AdaptiveMediaSourceCreationStatus_UnsupportedManifestVersion: AdaptiveMediaSourceCreationStatus = 4
-AdaptiveMediaSourceCreationStatus_UnsupportedManifestProfile: AdaptiveMediaSourceCreationStatus = 5
-AdaptiveMediaSourceCreationStatus_UnknownFailure: AdaptiveMediaSourceCreationStatus = 6
+    HttpResponseMessage = property(get_HttpResponseMessage, None)
+    MediaSource = property(get_MediaSource, None)
+    Status = property(get_Status, None)
+class AdaptiveMediaSourceCreationStatus(Int32):  # enum
+    Success = 0
+    ManifestDownloadFailure = 1
+    ManifestParseFailure = 2
+    UnsupportedManifestContentType = 3
+    UnsupportedManifestVersion = 4
+    UnsupportedManifestProfile = 5
+    UnknownFailure = 6
 class AdaptiveMediaSourceDiagnosticAvailableEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnosticAvailableEventArgs
@@ -203,28 +190,28 @@ class AdaptiveMediaSourceDiagnosticAvailableEventArgs(ComPtr):
     def get_ResourceDuration(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnosticAvailableEventArgs3) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_mixinmethod
     def get_ResourceContentType(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnosticAvailableEventArgs3) -> WinRT_String: ...
+    Bitrate = property(get_Bitrate, None)
     DiagnosticType = property(get_DiagnosticType, None)
-    RequestId = property(get_RequestId, None)
+    ExtendedError = property(get_ExtendedError, None)
     Position = property(get_Position, None)
-    SegmentId = property(get_SegmentId, None)
+    RequestId = property(get_RequestId, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
+    ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    Bitrate = property(get_Bitrate, None)
-    ExtendedError = property(get_ExtendedError, None)
-    ResourceDuration = property(get_ResourceDuration, None)
-    ResourceContentType = property(get_ResourceContentType, None)
-AdaptiveMediaSourceDiagnosticType = Int32
-AdaptiveMediaSourceDiagnosticType_ManifestUnchangedUponReload: AdaptiveMediaSourceDiagnosticType = 0
-AdaptiveMediaSourceDiagnosticType_ManifestMismatchUponReload: AdaptiveMediaSourceDiagnosticType = 1
-AdaptiveMediaSourceDiagnosticType_ManifestSignaledEndOfLiveEventUponReload: AdaptiveMediaSourceDiagnosticType = 2
-AdaptiveMediaSourceDiagnosticType_MediaSegmentSkipped: AdaptiveMediaSourceDiagnosticType = 3
-AdaptiveMediaSourceDiagnosticType_ResourceNotFound: AdaptiveMediaSourceDiagnosticType = 4
-AdaptiveMediaSourceDiagnosticType_ResourceTimedOut: AdaptiveMediaSourceDiagnosticType = 5
-AdaptiveMediaSourceDiagnosticType_ResourceParsingError: AdaptiveMediaSourceDiagnosticType = 6
-AdaptiveMediaSourceDiagnosticType_BitrateDisabled: AdaptiveMediaSourceDiagnosticType = 7
-AdaptiveMediaSourceDiagnosticType_FatalMediaSourceError: AdaptiveMediaSourceDiagnosticType = 8
+    SegmentId = property(get_SegmentId, None)
+class AdaptiveMediaSourceDiagnosticType(Int32):  # enum
+    ManifestUnchangedUponReload = 0
+    ManifestMismatchUponReload = 1
+    ManifestSignaledEndOfLiveEventUponReload = 2
+    MediaSegmentSkipped = 3
+    ResourceNotFound = 4
+    ResourceTimedOut = 5
+    ResourceParsingError = 6
+    BitrateDisabled = 7
+    FatalMediaSourceError = 8
 class AdaptiveMediaSourceDiagnostics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnostics
@@ -243,17 +230,17 @@ class AdaptiveMediaSourceDownloadBitrateChangedEventArgs(ComPtr):
     def get_NewValue(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadBitrateChangedEventArgs) -> UInt32: ...
     @winrt_mixinmethod
     def get_Reason(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadBitrateChangedEventArgs2) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadBitrateChangedReason: ...
-    OldValue = property(get_OldValue, None)
     NewValue = property(get_NewValue, None)
+    OldValue = property(get_OldValue, None)
     Reason = property(get_Reason, None)
-AdaptiveMediaSourceDownloadBitrateChangedReason = Int32
-AdaptiveMediaSourceDownloadBitrateChangedReason_SufficientInboundBitsPerSecond: AdaptiveMediaSourceDownloadBitrateChangedReason = 0
-AdaptiveMediaSourceDownloadBitrateChangedReason_InsufficientInboundBitsPerSecond: AdaptiveMediaSourceDownloadBitrateChangedReason = 1
-AdaptiveMediaSourceDownloadBitrateChangedReason_LowBufferLevel: AdaptiveMediaSourceDownloadBitrateChangedReason = 2
-AdaptiveMediaSourceDownloadBitrateChangedReason_PositionChanged: AdaptiveMediaSourceDownloadBitrateChangedReason = 3
-AdaptiveMediaSourceDownloadBitrateChangedReason_TrackSelectionChanged: AdaptiveMediaSourceDownloadBitrateChangedReason = 4
-AdaptiveMediaSourceDownloadBitrateChangedReason_DesiredBitratesChanged: AdaptiveMediaSourceDownloadBitrateChangedReason = 5
-AdaptiveMediaSourceDownloadBitrateChangedReason_ErrorInPreviousBitrate: AdaptiveMediaSourceDownloadBitrateChangedReason = 6
+class AdaptiveMediaSourceDownloadBitrateChangedReason(Int32):  # enum
+    SufficientInboundBitsPerSecond = 0
+    InsufficientInboundBitsPerSecond = 1
+    LowBufferLevel = 2
+    PositionChanged = 3
+    TrackSelectionChanged = 4
+    DesiredBitratesChanged = 5
+    ErrorInPreviousBitrate = 6
 class AdaptiveMediaSourceDownloadCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadCompletedEventArgs
@@ -278,16 +265,16 @@ class AdaptiveMediaSourceDownloadCompletedEventArgs(ComPtr):
     def get_ResourceDuration(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadCompletedEventArgs3) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_mixinmethod
     def get_ResourceContentType(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadCompletedEventArgs3) -> WinRT_String: ...
+    HttpResponseMessage = property(get_HttpResponseMessage, None)
+    Position = property(get_Position, None)
+    RequestId = property(get_RequestId, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
+    ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    HttpResponseMessage = property(get_HttpResponseMessage, None)
-    RequestId = property(get_RequestId, None)
     Statistics = property(get_Statistics, None)
-    Position = property(get_Position, None)
-    ResourceDuration = property(get_ResourceDuration, None)
-    ResourceContentType = property(get_ResourceContentType, None)
 class AdaptiveMediaSourceDownloadFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs
@@ -314,17 +301,17 @@ class AdaptiveMediaSourceDownloadFailedEventArgs(ComPtr):
     def get_ResourceDuration(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs3) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_mixinmethod
     def get_ResourceContentType(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs3) -> WinRT_String: ...
+    ExtendedError = property(get_ExtendedError, None)
+    HttpResponseMessage = property(get_HttpResponseMessage, None)
+    Position = property(get_Position, None)
+    RequestId = property(get_RequestId, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
+    ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    HttpResponseMessage = property(get_HttpResponseMessage, None)
-    RequestId = property(get_RequestId, None)
-    ExtendedError = property(get_ExtendedError, None)
     Statistics = property(get_Statistics, None)
-    Position = property(get_Position, None)
-    ResourceDuration = property(get_ResourceDuration, None)
-    ResourceContentType = property(get_ResourceContentType, None)
 class AdaptiveMediaSourceDownloadRequestedDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadRequestedDeferral
@@ -355,15 +342,15 @@ class AdaptiveMediaSourceDownloadRequestedEventArgs(ComPtr):
     def get_ResourceDuration(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadRequestedEventArgs3) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_mixinmethod
     def get_ResourceContentType(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadRequestedEventArgs3) -> WinRT_String: ...
+    Position = property(get_Position, None)
+    RequestId = property(get_RequestId, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
+    ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
     Result = property(get_Result, None)
-    RequestId = property(get_RequestId, None)
-    Position = property(get_Position, None)
-    ResourceDuration = property(get_ResourceDuration, None)
-    ResourceContentType = property(get_ResourceContentType, None)
 class AdaptiveMediaSourceDownloadResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadResult
@@ -396,13 +383,13 @@ class AdaptiveMediaSourceDownloadResult(ComPtr):
     def get_ResourceByteRangeLength(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadResult2) -> win32more.Windows.Foundation.IReference[UInt64]: ...
     @winrt_mixinmethod
     def put_ResourceByteRangeLength(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadResult2, value: win32more.Windows.Foundation.IReference[UInt64]) -> Void: ...
-    ResourceUri = property(get_ResourceUri, put_ResourceUri)
-    InputStream = property(get_InputStream, put_InputStream)
     Buffer = property(get_Buffer, put_Buffer)
     ContentType = property(get_ContentType, put_ContentType)
     ExtendedStatus = property(get_ExtendedStatus, put_ExtendedStatus)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, put_ResourceByteRangeOffset)
+    InputStream = property(get_InputStream, put_InputStream)
     ResourceByteRangeLength = property(get_ResourceByteRangeLength, put_ResourceByteRangeLength)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, put_ResourceByteRangeOffset)
+    ResourceUri = property(get_ResourceUri, put_ResourceUri)
 class AdaptiveMediaSourceDownloadStatistics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadStatistics
@@ -416,8 +403,8 @@ class AdaptiveMediaSourceDownloadStatistics(ComPtr):
     @winrt_mixinmethod
     def get_TimeToLastByteReceived(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadStatistics) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     ContentBytesReceivedCount = property(get_ContentBytesReceivedCount, None)
-    TimeToHeadersReceived = property(get_TimeToHeadersReceived, None)
     TimeToFirstByteReceived = property(get_TimeToFirstByteReceived, None)
+    TimeToHeadersReceived = property(get_TimeToHeadersReceived, None)
     TimeToLastByteReceived = property(get_TimeToLastByteReceived, None)
 class AdaptiveMediaSourcePlaybackBitrateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -429,16 +416,16 @@ class AdaptiveMediaSourcePlaybackBitrateChangedEventArgs(ComPtr):
     def get_NewValue(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourcePlaybackBitrateChangedEventArgs) -> UInt32: ...
     @winrt_mixinmethod
     def get_AudioOnly(self: win32more.Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourcePlaybackBitrateChangedEventArgs) -> Boolean: ...
-    OldValue = property(get_OldValue, None)
-    NewValue = property(get_NewValue, None)
     AudioOnly = property(get_AudioOnly, None)
-AdaptiveMediaSourceResourceType = Int32
-AdaptiveMediaSourceResourceType_Manifest: AdaptiveMediaSourceResourceType = 0
-AdaptiveMediaSourceResourceType_InitializationSegment: AdaptiveMediaSourceResourceType = 1
-AdaptiveMediaSourceResourceType_MediaSegment: AdaptiveMediaSourceResourceType = 2
-AdaptiveMediaSourceResourceType_Key: AdaptiveMediaSourceResourceType = 3
-AdaptiveMediaSourceResourceType_InitializationVector: AdaptiveMediaSourceResourceType = 4
-AdaptiveMediaSourceResourceType_MediaSegmentIndex: AdaptiveMediaSourceResourceType = 5
+    NewValue = property(get_NewValue, None)
+    OldValue = property(get_OldValue, None)
+class AdaptiveMediaSourceResourceType(Int32):  # enum
+    Manifest = 0
+    InitializationSegment = 1
+    MediaSegment = 2
+    Key = 3
+    InitializationVector = 4
+    MediaSegmentIndex = 5
 class IAdaptiveMediaSource(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSource'
@@ -495,17 +482,17 @@ class IAdaptiveMediaSource(ComPtr):
     def add_DownloadFailed(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSource, win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadFailedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(31)
     def remove_DownloadFailed(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsLive = property(get_IsLive, None)
-    DesiredLiveOffset = property(get_DesiredLiveOffset, put_DesiredLiveOffset)
-    InitialBitrate = property(get_InitialBitrate, put_InitialBitrate)
+    AudioOnlyPlayback = property(get_AudioOnlyPlayback, None)
+    AvailableBitrates = property(get_AvailableBitrates, None)
     CurrentDownloadBitrate = property(get_CurrentDownloadBitrate, None)
     CurrentPlaybackBitrate = property(get_CurrentPlaybackBitrate, None)
-    AvailableBitrates = property(get_AvailableBitrates, None)
-    DesiredMinBitrate = property(get_DesiredMinBitrate, put_DesiredMinBitrate)
+    DesiredLiveOffset = property(get_DesiredLiveOffset, put_DesiredLiveOffset)
     DesiredMaxBitrate = property(get_DesiredMaxBitrate, put_DesiredMaxBitrate)
-    AudioOnlyPlayback = property(get_AudioOnlyPlayback, None)
+    DesiredMinBitrate = property(get_DesiredMinBitrate, put_DesiredMinBitrate)
     InboundBitsPerSecond = property(get_InboundBitsPerSecond, None)
     InboundBitsPerSecondWindow = property(get_InboundBitsPerSecondWindow, put_InboundBitsPerSecondWindow)
+    InitialBitrate = property(get_InitialBitrate, put_InitialBitrate)
+    IsLive = property(get_IsLive, None)
 class IAdaptiveMediaSource2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSource2'
@@ -529,10 +516,10 @@ class IAdaptiveMediaSource3(ComPtr):
     def get_Diagnostics(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDiagnostics: ...
     @winrt_commethod(11)
     def GetCorrelatedTimes(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceCorrelatedTimes: ...
-    MinLiveOffset = property(get_MinLiveOffset, None)
-    MaxSeekableWindowSize = property(get_MaxSeekableWindowSize, None)
     DesiredSeekableWindowSize = property(get_DesiredSeekableWindowSize, put_DesiredSeekableWindowSize)
     Diagnostics = property(get_Diagnostics, None)
+    MaxSeekableWindowSize = property(get_MaxSeekableWindowSize, None)
+    MinLiveOffset = property(get_MinLiveOffset, None)
 class IAdaptiveMediaSourceAdvancedSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceAdvancedSettings'
@@ -550,8 +537,8 @@ class IAdaptiveMediaSourceAdvancedSettings(ComPtr):
     @winrt_commethod(11)
     def put_BitrateDowngradeTriggerRatio(self, value: win32more.Windows.Foundation.IReference[Double]) -> Void: ...
     AllSegmentsIndependent = property(get_AllSegmentsIndependent, put_AllSegmentsIndependent)
-    DesiredBitrateHeadroomRatio = property(get_DesiredBitrateHeadroomRatio, put_DesiredBitrateHeadroomRatio)
     BitrateDowngradeTriggerRatio = property(get_BitrateDowngradeTriggerRatio, put_BitrateDowngradeTriggerRatio)
+    DesiredBitrateHeadroomRatio = property(get_DesiredBitrateHeadroomRatio, put_DesiredBitrateHeadroomRatio)
 class IAdaptiveMediaSourceCorrelatedTimes(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceCorrelatedTimes'
@@ -575,9 +562,9 @@ class IAdaptiveMediaSourceCreationResult(ComPtr):
     def get_MediaSource(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSource: ...
     @winrt_commethod(8)
     def get_HttpResponseMessage(self) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
-    Status = property(get_Status, None)
-    MediaSource = property(get_MediaSource, None)
     HttpResponseMessage = property(get_HttpResponseMessage, None)
+    MediaSource = property(get_MediaSource, None)
+    Status = property(get_Status, None)
 class IAdaptiveMediaSourceCreationResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceCreationResult2'
@@ -607,15 +594,15 @@ class IAdaptiveMediaSourceDiagnosticAvailableEventArgs(ComPtr):
     def get_ResourceByteRangeLength(self) -> win32more.Windows.Foundation.IReference[UInt64]: ...
     @winrt_commethod(14)
     def get_Bitrate(self) -> win32more.Windows.Foundation.IReference[UInt32]: ...
+    Bitrate = property(get_Bitrate, None)
     DiagnosticType = property(get_DiagnosticType, None)
-    RequestId = property(get_RequestId, None)
     Position = property(get_Position, None)
-    SegmentId = property(get_SegmentId, None)
+    RequestId = property(get_RequestId, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    Bitrate = property(get_Bitrate, None)
+    SegmentId = property(get_SegmentId, None)
 class IAdaptiveMediaSourceDiagnosticAvailableEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnosticAvailableEventArgs2'
@@ -631,8 +618,8 @@ class IAdaptiveMediaSourceDiagnosticAvailableEventArgs3(ComPtr):
     def get_ResourceDuration(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_commethod(7)
     def get_ResourceContentType(self) -> WinRT_String: ...
-    ResourceDuration = property(get_ResourceDuration, None)
     ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
 class IAdaptiveMediaSourceDiagnostics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDiagnostics'
@@ -649,8 +636,8 @@ class IAdaptiveMediaSourceDownloadBitrateChangedEventArgs(ComPtr):
     def get_OldValue(self) -> UInt32: ...
     @winrt_commethod(7)
     def get_NewValue(self) -> UInt32: ...
-    OldValue = property(get_OldValue, None)
     NewValue = property(get_NewValue, None)
+    OldValue = property(get_OldValue, None)
 class IAdaptiveMediaSourceDownloadBitrateChangedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadBitrateChangedEventArgs2'
@@ -672,11 +659,11 @@ class IAdaptiveMediaSourceDownloadCompletedEventArgs(ComPtr):
     def get_ResourceByteRangeLength(self) -> win32more.Windows.Foundation.IReference[UInt64]: ...
     @winrt_commethod(10)
     def get_HttpResponseMessage(self) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
+    HttpResponseMessage = property(get_HttpResponseMessage, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    HttpResponseMessage = property(get_HttpResponseMessage, None)
 class IAdaptiveMediaSourceDownloadCompletedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadCompletedEventArgs2'
@@ -687,9 +674,9 @@ class IAdaptiveMediaSourceDownloadCompletedEventArgs2(ComPtr):
     def get_Statistics(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadStatistics: ...
     @winrt_commethod(8)
     def get_Position(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
+    Position = property(get_Position, None)
     RequestId = property(get_RequestId, None)
     Statistics = property(get_Statistics, None)
-    Position = property(get_Position, None)
 class IAdaptiveMediaSourceDownloadCompletedEventArgs3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadCompletedEventArgs3'
@@ -698,8 +685,8 @@ class IAdaptiveMediaSourceDownloadCompletedEventArgs3(ComPtr):
     def get_ResourceDuration(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_commethod(7)
     def get_ResourceContentType(self) -> WinRT_String: ...
-    ResourceDuration = property(get_ResourceDuration, None)
     ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
 class IAdaptiveMediaSourceDownloadFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs'
@@ -714,11 +701,11 @@ class IAdaptiveMediaSourceDownloadFailedEventArgs(ComPtr):
     def get_ResourceByteRangeLength(self) -> win32more.Windows.Foundation.IReference[UInt64]: ...
     @winrt_commethod(10)
     def get_HttpResponseMessage(self) -> win32more.Windows.Web.Http.HttpResponseMessage: ...
+    HttpResponseMessage = property(get_HttpResponseMessage, None)
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
-    HttpResponseMessage = property(get_HttpResponseMessage, None)
 class IAdaptiveMediaSourceDownloadFailedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs2'
@@ -731,10 +718,10 @@ class IAdaptiveMediaSourceDownloadFailedEventArgs2(ComPtr):
     def get_Statistics(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadStatistics: ...
     @winrt_commethod(9)
     def get_Position(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
-    RequestId = property(get_RequestId, None)
     ExtendedError = property(get_ExtendedError, None)
-    Statistics = property(get_Statistics, None)
     Position = property(get_Position, None)
+    RequestId = property(get_RequestId, None)
+    Statistics = property(get_Statistics, None)
 class IAdaptiveMediaSourceDownloadFailedEventArgs3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadFailedEventArgs3'
@@ -743,8 +730,8 @@ class IAdaptiveMediaSourceDownloadFailedEventArgs3(ComPtr):
     def get_ResourceDuration(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_commethod(7)
     def get_ResourceContentType(self) -> WinRT_String: ...
-    ResourceDuration = property(get_ResourceDuration, None)
     ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
 class IAdaptiveMediaSourceDownloadRequestedDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadRequestedDeferral'
@@ -767,10 +754,10 @@ class IAdaptiveMediaSourceDownloadRequestedEventArgs(ComPtr):
     def get_Result(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadResult: ...
     @winrt_commethod(11)
     def GetDeferral(self) -> win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceDownloadRequestedDeferral: ...
+    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
     ResourceType = property(get_ResourceType, None)
     ResourceUri = property(get_ResourceUri, None)
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, None)
-    ResourceByteRangeLength = property(get_ResourceByteRangeLength, None)
     Result = property(get_Result, None)
 class IAdaptiveMediaSourceDownloadRequestedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -780,8 +767,8 @@ class IAdaptiveMediaSourceDownloadRequestedEventArgs2(ComPtr):
     def get_RequestId(self) -> Int32: ...
     @winrt_commethod(7)
     def get_Position(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
-    RequestId = property(get_RequestId, None)
     Position = property(get_Position, None)
+    RequestId = property(get_RequestId, None)
 class IAdaptiveMediaSourceDownloadRequestedEventArgs3(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadRequestedEventArgs3'
@@ -790,8 +777,8 @@ class IAdaptiveMediaSourceDownloadRequestedEventArgs3(ComPtr):
     def get_ResourceDuration(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     @winrt_commethod(7)
     def get_ResourceContentType(self) -> WinRT_String: ...
-    ResourceDuration = property(get_ResourceDuration, None)
     ResourceContentType = property(get_ResourceContentType, None)
+    ResourceDuration = property(get_ResourceDuration, None)
 class IAdaptiveMediaSourceDownloadResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadResult'
@@ -816,11 +803,11 @@ class IAdaptiveMediaSourceDownloadResult(ComPtr):
     def get_ExtendedStatus(self) -> UInt32: ...
     @winrt_commethod(15)
     def put_ExtendedStatus(self, value: UInt32) -> Void: ...
-    ResourceUri = property(get_ResourceUri, put_ResourceUri)
-    InputStream = property(get_InputStream, put_InputStream)
     Buffer = property(get_Buffer, put_Buffer)
     ContentType = property(get_ContentType, put_ContentType)
     ExtendedStatus = property(get_ExtendedStatus, put_ExtendedStatus)
+    InputStream = property(get_InputStream, put_InputStream)
+    ResourceUri = property(get_ResourceUri, put_ResourceUri)
 class IAdaptiveMediaSourceDownloadResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadResult2'
@@ -833,8 +820,8 @@ class IAdaptiveMediaSourceDownloadResult2(ComPtr):
     def get_ResourceByteRangeLength(self) -> win32more.Windows.Foundation.IReference[UInt64]: ...
     @winrt_commethod(9)
     def put_ResourceByteRangeLength(self, value: win32more.Windows.Foundation.IReference[UInt64]) -> Void: ...
-    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, put_ResourceByteRangeOffset)
     ResourceByteRangeLength = property(get_ResourceByteRangeLength, put_ResourceByteRangeLength)
+    ResourceByteRangeOffset = property(get_ResourceByteRangeOffset, put_ResourceByteRangeOffset)
 class IAdaptiveMediaSourceDownloadStatistics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceDownloadStatistics'
@@ -848,8 +835,8 @@ class IAdaptiveMediaSourceDownloadStatistics(ComPtr):
     @winrt_commethod(9)
     def get_TimeToLastByteReceived(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.TimeSpan]: ...
     ContentBytesReceivedCount = property(get_ContentBytesReceivedCount, None)
-    TimeToHeadersReceived = property(get_TimeToHeadersReceived, None)
     TimeToFirstByteReceived = property(get_TimeToFirstByteReceived, None)
+    TimeToHeadersReceived = property(get_TimeToHeadersReceived, None)
     TimeToLastByteReceived = property(get_TimeToLastByteReceived, None)
 class IAdaptiveMediaSourcePlaybackBitrateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -861,9 +848,9 @@ class IAdaptiveMediaSourcePlaybackBitrateChangedEventArgs(ComPtr):
     def get_NewValue(self) -> UInt32: ...
     @winrt_commethod(8)
     def get_AudioOnly(self) -> Boolean: ...
-    OldValue = property(get_OldValue, None)
-    NewValue = property(get_NewValue, None)
     AudioOnly = property(get_AudioOnly, None)
+    NewValue = property(get_NewValue, None)
+    OldValue = property(get_OldValue, None)
 class IAdaptiveMediaSourceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Streaming.Adaptive.IAdaptiveMediaSourceStatics'
@@ -878,4 +865,6 @@ class IAdaptiveMediaSourceStatics(ComPtr):
     def CreateFromStreamAsync(self, stream: win32more.Windows.Storage.Streams.IInputStream, uri: win32more.Windows.Foundation.Uri, contentType: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceCreationResult]: ...
     @winrt_commethod(10)
     def CreateFromStreamWithDownloaderAsync(self, stream: win32more.Windows.Storage.Streams.IInputStream, uri: win32more.Windows.Foundation.Uri, contentType: WinRT_String, httpClient: win32more.Windows.Web.Http.HttpClient) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Streaming.Adaptive.AdaptiveMediaSourceCreationResult]: ...
+
+
 make_ready(__name__)

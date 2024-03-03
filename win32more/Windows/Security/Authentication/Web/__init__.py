@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Security.Authentication.Web
+import win32more.Windows.Win32.System.WinRT
 class IWebAuthenticationBrokerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.IWebAuthenticationBrokerStatics'
@@ -53,12 +40,12 @@ class IWebAuthenticationResult(ComPtr):
     @winrt_commethod(8)
     def get_ResponseErrorDetail(self) -> UInt32: ...
     ResponseData = property(get_ResponseData, None)
-    ResponseStatus = property(get_ResponseStatus, None)
     ResponseErrorDetail = property(get_ResponseErrorDetail, None)
-TokenBindingKeyType = Int32
-TokenBindingKeyType_Rsa2048: TokenBindingKeyType = 0
-TokenBindingKeyType_EcdsaP256: TokenBindingKeyType = 1
-TokenBindingKeyType_AnyExisting: TokenBindingKeyType = 2
+    ResponseStatus = property(get_ResponseStatus, None)
+class TokenBindingKeyType(Int32):  # enum
+    Rsa2048 = 0
+    EcdsaP256 = 1
+    AnyExisting = 2
 class WebAuthenticationBroker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.WebAuthenticationBroker'
@@ -78,12 +65,12 @@ class WebAuthenticationBroker(ComPtr):
     def AuthenticateWithoutCallbackUriAsync(cls: win32more.Windows.Security.Authentication.Web.IWebAuthenticationBrokerStatics, options: win32more.Windows.Security.Authentication.Web.WebAuthenticationOptions, requestUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Authentication.Web.WebAuthenticationResult]: ...
     @winrt_classmethod
     def GetCurrentApplicationCallbackUri(cls: win32more.Windows.Security.Authentication.Web.IWebAuthenticationBrokerStatics) -> win32more.Windows.Foundation.Uri: ...
-WebAuthenticationOptions = UInt32
-WebAuthenticationOptions_None: WebAuthenticationOptions = 0
-WebAuthenticationOptions_SilentMode: WebAuthenticationOptions = 1
-WebAuthenticationOptions_UseTitle: WebAuthenticationOptions = 2
-WebAuthenticationOptions_UseHttpPost: WebAuthenticationOptions = 4
-WebAuthenticationOptions_UseCorporateNetwork: WebAuthenticationOptions = 8
+class WebAuthenticationOptions(UInt32):  # enum
+    None_ = 0
+    SilentMode = 1
+    UseTitle = 2
+    UseHttpPost = 4
+    UseCorporateNetwork = 8
 class WebAuthenticationResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.IWebAuthenticationResult
@@ -95,10 +82,12 @@ class WebAuthenticationResult(ComPtr):
     @winrt_mixinmethod
     def get_ResponseErrorDetail(self: win32more.Windows.Security.Authentication.Web.IWebAuthenticationResult) -> UInt32: ...
     ResponseData = property(get_ResponseData, None)
-    ResponseStatus = property(get_ResponseStatus, None)
     ResponseErrorDetail = property(get_ResponseErrorDetail, None)
-WebAuthenticationStatus = Int32
-WebAuthenticationStatus_Success: WebAuthenticationStatus = 0
-WebAuthenticationStatus_UserCancel: WebAuthenticationStatus = 1
-WebAuthenticationStatus_ErrorHttp: WebAuthenticationStatus = 2
+    ResponseStatus = property(get_ResponseStatus, None)
+class WebAuthenticationStatus(Int32):  # enum
+    Success = 0
+    UserCancel = 1
+    ErrorHttp = 2
+
+
 make_ready(__name__)

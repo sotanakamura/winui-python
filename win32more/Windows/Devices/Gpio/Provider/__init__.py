@@ -1,27 +1,21 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Gpio.Provider
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class GpioPinProviderValueChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Gpio.Provider.IGpioPinProviderValueChangedEventArgs
     _classid_ = 'Windows.Devices.Gpio.Provider.GpioPinProviderValueChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Gpio.Provider.GpioPinProviderValueChangedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Gpio.Provider.IGpioPinProviderValueChangedEventArgsFactory, edge: win32more.Windows.Devices.Gpio.Provider.ProviderGpioPinEdge) -> win32more.Windows.Devices.Gpio.Provider.GpioPinProviderValueChangedEventArgs: ...
     @winrt_mixinmethod
@@ -84,22 +78,24 @@ class IGpioProvider(ComPtr):
     _iid_ = Guid('{44e82707-08ca-434a-afe0-d61580446f7e}')
     @winrt_commethod(6)
     def GetControllers(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Gpio.Provider.IGpioControllerProvider]: ...
-ProviderGpioPinDriveMode = Int32
-ProviderGpioPinDriveMode_Input: ProviderGpioPinDriveMode = 0
-ProviderGpioPinDriveMode_Output: ProviderGpioPinDriveMode = 1
-ProviderGpioPinDriveMode_InputPullUp: ProviderGpioPinDriveMode = 2
-ProviderGpioPinDriveMode_InputPullDown: ProviderGpioPinDriveMode = 3
-ProviderGpioPinDriveMode_OutputOpenDrain: ProviderGpioPinDriveMode = 4
-ProviderGpioPinDriveMode_OutputOpenDrainPullUp: ProviderGpioPinDriveMode = 5
-ProviderGpioPinDriveMode_OutputOpenSource: ProviderGpioPinDriveMode = 6
-ProviderGpioPinDriveMode_OutputOpenSourcePullDown: ProviderGpioPinDriveMode = 7
-ProviderGpioPinEdge = Int32
-ProviderGpioPinEdge_FallingEdge: ProviderGpioPinEdge = 0
-ProviderGpioPinEdge_RisingEdge: ProviderGpioPinEdge = 1
-ProviderGpioPinValue = Int32
-ProviderGpioPinValue_Low: ProviderGpioPinValue = 0
-ProviderGpioPinValue_High: ProviderGpioPinValue = 1
-ProviderGpioSharingMode = Int32
-ProviderGpioSharingMode_Exclusive: ProviderGpioSharingMode = 0
-ProviderGpioSharingMode_SharedReadOnly: ProviderGpioSharingMode = 1
+class ProviderGpioPinDriveMode(Int32):  # enum
+    Input = 0
+    Output = 1
+    InputPullUp = 2
+    InputPullDown = 3
+    OutputOpenDrain = 4
+    OutputOpenDrainPullUp = 5
+    OutputOpenSource = 6
+    OutputOpenSourcePullDown = 7
+class ProviderGpioPinEdge(Int32):  # enum
+    FallingEdge = 0
+    RisingEdge = 1
+class ProviderGpioPinValue(Int32):  # enum
+    Low = 0
+    High = 1
+class ProviderGpioSharingMode(Int32):  # enum
+    Exclusive = 0
+    SharedReadOnly = 1
+
+
 make_ready(__name__)

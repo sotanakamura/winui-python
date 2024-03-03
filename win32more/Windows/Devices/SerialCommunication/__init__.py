@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.SerialCommunication
 import win32more.Windows.Foundation
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class ErrorReceivedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.SerialCommunication.IErrorReceivedEventArgs
@@ -117,17 +104,17 @@ class ISerialDevice(ComPtr):
     DataBits = property(get_DataBits, put_DataBits)
     DataSetReadyState = property(get_DataSetReadyState, None)
     Handshake = property(get_Handshake, put_Handshake)
+    InputStream = property(get_InputStream, None)
     IsDataTerminalReadyEnabled = property(get_IsDataTerminalReadyEnabled, put_IsDataTerminalReadyEnabled)
     IsRequestToSendEnabled = property(get_IsRequestToSendEnabled, put_IsRequestToSendEnabled)
+    OutputStream = property(get_OutputStream, None)
     Parity = property(get_Parity, put_Parity)
     PortName = property(get_PortName, None)
     ReadTimeout = property(get_ReadTimeout, put_ReadTimeout)
     StopBits = property(get_StopBits, put_StopBits)
-    UsbVendorId = property(get_UsbVendorId, None)
     UsbProductId = property(get_UsbProductId, None)
+    UsbVendorId = property(get_UsbVendorId, None)
     WriteTimeout = property(get_WriteTimeout, put_WriteTimeout)
-    InputStream = property(get_InputStream, None)
-    OutputStream = property(get_OutputStream, None)
 class ISerialDeviceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.SerialCommunication.ISerialDeviceStatics'
@@ -235,42 +222,44 @@ class SerialDevice(ComPtr):
     DataBits = property(get_DataBits, put_DataBits)
     DataSetReadyState = property(get_DataSetReadyState, None)
     Handshake = property(get_Handshake, put_Handshake)
+    InputStream = property(get_InputStream, None)
     IsDataTerminalReadyEnabled = property(get_IsDataTerminalReadyEnabled, put_IsDataTerminalReadyEnabled)
     IsRequestToSendEnabled = property(get_IsRequestToSendEnabled, put_IsRequestToSendEnabled)
+    OutputStream = property(get_OutputStream, None)
     Parity = property(get_Parity, put_Parity)
     PortName = property(get_PortName, None)
     ReadTimeout = property(get_ReadTimeout, put_ReadTimeout)
     StopBits = property(get_StopBits, put_StopBits)
-    UsbVendorId = property(get_UsbVendorId, None)
     UsbProductId = property(get_UsbProductId, None)
+    UsbVendorId = property(get_UsbVendorId, None)
     WriteTimeout = property(get_WriteTimeout, put_WriteTimeout)
-    InputStream = property(get_InputStream, None)
-    OutputStream = property(get_OutputStream, None)
-SerialError = Int32
-SerialError_Frame: SerialError = 0
-SerialError_BufferOverrun: SerialError = 1
-SerialError_ReceiveFull: SerialError = 2
-SerialError_ReceiveParity: SerialError = 3
-SerialError_TransmitFull: SerialError = 4
-SerialHandshake = Int32
-SerialHandshake_None: SerialHandshake = 0
-SerialHandshake_RequestToSend: SerialHandshake = 1
-SerialHandshake_XOnXOff: SerialHandshake = 2
-SerialHandshake_RequestToSendXOnXOff: SerialHandshake = 3
-SerialParity = Int32
-SerialParity_None: SerialParity = 0
-SerialParity_Odd: SerialParity = 1
-SerialParity_Even: SerialParity = 2
-SerialParity_Mark: SerialParity = 3
-SerialParity_Space: SerialParity = 4
-SerialPinChange = Int32
-SerialPinChange_BreakSignal: SerialPinChange = 0
-SerialPinChange_CarrierDetect: SerialPinChange = 1
-SerialPinChange_ClearToSend: SerialPinChange = 2
-SerialPinChange_DataSetReady: SerialPinChange = 3
-SerialPinChange_RingIndicator: SerialPinChange = 4
-SerialStopBitCount = Int32
-SerialStopBitCount_One: SerialStopBitCount = 0
-SerialStopBitCount_OnePointFive: SerialStopBitCount = 1
-SerialStopBitCount_Two: SerialStopBitCount = 2
+class SerialError(Int32):  # enum
+    Frame = 0
+    BufferOverrun = 1
+    ReceiveFull = 2
+    ReceiveParity = 3
+    TransmitFull = 4
+class SerialHandshake(Int32):  # enum
+    None_ = 0
+    RequestToSend = 1
+    XOnXOff = 2
+    RequestToSendXOnXOff = 3
+class SerialParity(Int32):  # enum
+    None_ = 0
+    Odd = 1
+    Even = 2
+    Mark = 3
+    Space = 4
+class SerialPinChange(Int32):  # enum
+    BreakSignal = 0
+    CarrierDetect = 1
+    ClearToSend = 2
+    DataSetReady = 3
+    RingIndicator = 4
+class SerialStopBitCount(Int32):  # enum
+    One = 0
+    OnePointFive = 1
+    Two = 2
+
+
 make_ready(__name__)

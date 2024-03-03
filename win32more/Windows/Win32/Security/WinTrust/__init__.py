@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security.Cryptography
 import win32more.Windows.Win32.Security.Cryptography.Sip
@@ -236,11 +236,20 @@ class CONFIG_CI_PROV_INFO(EasyCastStructure):
     pPolicies: POINTER(win32more.Windows.Win32.Security.Cryptography.CRYPT_INTEGER_BLOB)
     result: win32more.Windows.Win32.Security.WinTrust.CONFIG_CI_PROV_INFO_RESULT
     dwScenario: UInt32
+    result2: POINTER(win32more.Windows.Win32.Security.WinTrust.CONFIG_CI_PROV_INFO_RESULT2)
 class CONFIG_CI_PROV_INFO_RESULT(EasyCastStructure):
     hr: win32more.Windows.Win32.Foundation.HRESULT
     dwResult: UInt32
     dwPolicyIndex: UInt32
     fIsExplicitDeny: win32more.Windows.Win32.Foundation.BOOLEAN
+class CONFIG_CI_PROV_INFO_RESULT2(EasyCastStructure):
+    cbSize: UInt32
+    hr: win32more.Windows.Win32.Foundation.HRESULT
+    dwResult: UInt32
+    dwPolicyIndex: UInt32
+    fIsExplicitDeny: win32more.Windows.Win32.Foundation.BOOLEAN
+    cbCalculatedFileHash: UInt32
+    pbCalculatedFileHash: POINTER(Byte)
 class CRYPT_PROVIDER_CERT(EasyCastStructure):
     cbStruct: UInt32
     pCert: POINTER(win32more.Windows.Win32.Security.Cryptography.CERT_CONTEXT)

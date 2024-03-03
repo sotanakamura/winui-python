@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.AllJoyn
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Foundation
@@ -23,6 +9,7 @@ import win32more.Windows.Globalization
 import win32more.Windows.Networking.Sockets
 import win32more.Windows.Security.Credentials
 import win32more.Windows.Security.Cryptography.Certificates
+import win32more.Windows.Win32.System.WinRT
 class AllJoynAboutData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynAboutData
@@ -69,18 +56,18 @@ class AllJoynAboutData(ComPtr):
     def get_AppId(self: win32more.Windows.Devices.AllJoyn.IAllJoynAboutData) -> Guid: ...
     @winrt_mixinmethod
     def put_AppId(self: win32more.Windows.Devices.AllJoyn.IAllJoynAboutData, value: Guid) -> Void: ...
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    DefaultAppName = property(get_DefaultAppName, put_DefaultAppName)
+    AppId = property(get_AppId, put_AppId)
     AppNames = property(get_AppNames, None)
     DateOfManufacture = property(get_DateOfManufacture, put_DateOfManufacture)
+    DefaultAppName = property(get_DefaultAppName, put_DefaultAppName)
     DefaultDescription = property(get_DefaultDescription, put_DefaultDescription)
-    Descriptions = property(get_Descriptions, None)
     DefaultManufacturer = property(get_DefaultManufacturer, put_DefaultManufacturer)
+    Descriptions = property(get_Descriptions, None)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
     Manufacturers = property(get_Manufacturers, None)
     ModelNumber = property(get_ModelNumber, put_ModelNumber)
     SoftwareVersion = property(get_SoftwareVersion, put_SoftwareVersion)
     SupportUrl = property(get_SupportUrl, put_SupportUrl)
-    AppId = property(get_AppId, put_AppId)
 class AllJoynAboutDataView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynAboutDataView
@@ -121,26 +108,33 @@ class AllJoynAboutDataView(ComPtr):
     def GetDataBySessionPortAsync(cls: win32more.Windows.Devices.AllJoyn.IAllJoynAboutDataViewStatics, uniqueName: WinRT_String, busAttachment: win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment, sessionPort: UInt16) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.AllJoyn.AllJoynAboutDataView]: ...
     @winrt_classmethod
     def GetDataBySessionPortWithLanguageAsync(cls: win32more.Windows.Devices.AllJoyn.IAllJoynAboutDataViewStatics, uniqueName: WinRT_String, busAttachment: win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment, sessionPort: UInt16, language: win32more.Windows.Globalization.Language) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.AllJoyn.AllJoynAboutDataView]: ...
-    Status = property(get_Status, None)
-    Properties = property(get_Properties, None)
     AJSoftwareVersion = property(get_AJSoftwareVersion, None)
     AppId = property(get_AppId, None)
+    AppName = property(get_AppName, None)
     DateOfManufacture = property(get_DateOfManufacture, None)
     DefaultLanguage = property(get_DefaultLanguage, None)
-    DeviceId = property(get_DeviceId, None)
-    HardwareVersion = property(get_HardwareVersion, None)
-    ModelNumber = property(get_ModelNumber, None)
-    SoftwareVersion = property(get_SoftwareVersion, None)
-    SupportedLanguages = property(get_SupportedLanguages, None)
-    SupportUrl = property(get_SupportUrl, None)
-    AppName = property(get_AppName, None)
     Description = property(get_Description, None)
+    DeviceId = property(get_DeviceId, None)
     DeviceName = property(get_DeviceName, None)
+    HardwareVersion = property(get_HardwareVersion, None)
     Manufacturer = property(get_Manufacturer, None)
+    ModelNumber = property(get_ModelNumber, None)
+    Properties = property(get_Properties, None)
+    SoftwareVersion = property(get_SoftwareVersion, None)
+    Status = property(get_Status, None)
+    SupportUrl = property(get_SupportUrl, None)
+    SupportedLanguages = property(get_SupportedLanguages, None)
 class AllJoynAcceptSessionJoinerEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoinerEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynAcceptSessionJoinerEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 5:
+            return win32more.Windows.Devices.AllJoyn.AllJoynAcceptSessionJoinerEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoinerEventArgsFactory, uniqueName: WinRT_String, sessionPort: UInt16, trafficType: win32more.Windows.Devices.AllJoyn.AllJoynTrafficType, proximity: Byte, acceptSessionJoiner: win32more.Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoiner) -> win32more.Windows.Devices.AllJoyn.AllJoynAcceptSessionJoinerEventArgs: ...
     @winrt_mixinmethod
@@ -155,11 +149,11 @@ class AllJoynAcceptSessionJoinerEventArgs(ComPtr):
     def get_SameNetwork(self: win32more.Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoinerEventArgs) -> Boolean: ...
     @winrt_mixinmethod
     def Accept(self: win32more.Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoinerEventArgs) -> Void: ...
-    UniqueName = property(get_UniqueName, None)
+    SameNetwork = property(get_SameNetwork, None)
+    SamePhysicalNode = property(get_SamePhysicalNode, None)
     SessionPort = property(get_SessionPort, None)
     TrafficType = property(get_TrafficType, None)
-    SamePhysicalNode = property(get_SamePhysicalNode, None)
-    SameNetwork = property(get_SameNetwork, None)
+    UniqueName = property(get_UniqueName, None)
 class AllJoynAuthenticationCompleteEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynAuthenticationCompleteEventArgs
@@ -173,18 +167,27 @@ class AllJoynAuthenticationCompleteEventArgs(ComPtr):
     AuthenticationMechanism = property(get_AuthenticationMechanism, None)
     PeerUniqueName = property(get_PeerUniqueName, None)
     Succeeded = property(get_Succeeded, None)
-AllJoynAuthenticationMechanism = Int32
-AllJoynAuthenticationMechanism_None: AllJoynAuthenticationMechanism = 0
-AllJoynAuthenticationMechanism_SrpAnonymous: AllJoynAuthenticationMechanism = 1
-AllJoynAuthenticationMechanism_SrpLogon: AllJoynAuthenticationMechanism = 2
-AllJoynAuthenticationMechanism_EcdheNull: AllJoynAuthenticationMechanism = 3
-AllJoynAuthenticationMechanism_EcdhePsk: AllJoynAuthenticationMechanism = 4
-AllJoynAuthenticationMechanism_EcdheEcdsa: AllJoynAuthenticationMechanism = 5
-AllJoynAuthenticationMechanism_EcdheSpeke: AllJoynAuthenticationMechanism = 6
+class AllJoynAuthenticationMechanism(Int32):  # enum
+    None_ = 0
+    SrpAnonymous = 1
+    SrpLogon = 2
+    EcdheNull = 3
+    EcdhePsk = 4
+    EcdheEcdsa = 5
+    EcdheSpeke = 6
 class AllJoynBusAttachment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynBusAttachment
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynBusAttachment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment: ...
     @winrt_factorymethod
@@ -238,15 +241,15 @@ class AllJoynBusAttachment(ComPtr):
     @winrt_classmethod
     def GetWatcher(cls: win32more.Windows.Devices.AllJoyn.IAllJoynBusAttachmentStatics, requiredInterfaces: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Devices.Enumeration.DeviceWatcher: ...
     AboutData = property(get_AboutData, None)
+    AuthenticationMechanisms = property(get_AuthenticationMechanisms, None)
     ConnectionSpecification = property(get_ConnectionSpecification, None)
     State = property(get_State, None)
     UniqueName = property(get_UniqueName, None)
-    AuthenticationMechanisms = property(get_AuthenticationMechanisms, None)
-AllJoynBusAttachmentState = Int32
-AllJoynBusAttachmentState_Disconnected: AllJoynBusAttachmentState = 0
-AllJoynBusAttachmentState_Connecting: AllJoynBusAttachmentState = 1
-AllJoynBusAttachmentState_Connected: AllJoynBusAttachmentState = 2
-AllJoynBusAttachmentState_Disconnecting: AllJoynBusAttachmentState = 3
+class AllJoynBusAttachmentState(Int32):  # enum
+    Disconnected = 0
+    Connecting = 1
+    Connected = 2
+    Disconnecting = 3
 class AllJoynBusAttachmentStateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynBusAttachmentStateChangedEventArgs
@@ -261,12 +264,23 @@ class AllJoynBusObject(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynBusObject
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynBusObject'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusObject.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusObject.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusObject.CreateWithBusAttachment(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_activatemethod
+    def CreateInstance(cls) -> win32more.Windows.Devices.AllJoyn.AllJoynBusObject: ...
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynBusObjectFactory, objectPath: WinRT_String) -> win32more.Windows.Devices.AllJoyn.AllJoynBusObject: ...
     @winrt_factorymethod
     def CreateWithBusAttachment(cls: win32more.Windows.Devices.AllJoyn.IAllJoynBusObjectFactory, objectPath: WinRT_String, busAttachment: win32more.Windows.Devices.AllJoyn.AllJoynBusAttachment) -> win32more.Windows.Devices.AllJoyn.AllJoynBusObject: ...
-    @winrt_activatemethod
-    def CreateInstance(cls) -> win32more.Windows.Devices.AllJoyn.AllJoynBusObject: ...
     @winrt_mixinmethod
     def Start(self: win32more.Windows.Devices.AllJoyn.IAllJoynBusObject) -> Void: ...
     @winrt_mixinmethod
@@ -287,6 +301,13 @@ class AllJoynBusObjectStoppedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynBusObjectStoppedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynBusObjectStoppedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynBusObjectStoppedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynBusObjectStoppedEventArgsFactory, status: Int32) -> win32more.Windows.Devices.AllJoyn.AllJoynBusObjectStoppedEventArgs: ...
     @winrt_mixinmethod
@@ -353,15 +374,22 @@ class AllJoynCredentialsVerificationRequestedEventArgs(ComPtr):
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Devices.AllJoyn.IAllJoynCredentialsVerificationRequestedEventArgs) -> win32more.Windows.Foundation.Deferral: ...
     AuthenticationMechanism = property(get_AuthenticationMechanism, None)
-    PeerUniqueName = property(get_PeerUniqueName, None)
     PeerCertificate = property(get_PeerCertificate, None)
     PeerCertificateErrorSeverity = property(get_PeerCertificateErrorSeverity, None)
     PeerCertificateErrors = property(get_PeerCertificateErrors, None)
     PeerIntermediateCertificates = property(get_PeerIntermediateCertificates, None)
+    PeerUniqueName = property(get_PeerUniqueName, None)
 class AllJoynMessageInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynMessageInfo
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynMessageInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynMessageInfo.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynMessageInfoFactory, senderUniqueName: WinRT_String) -> win32more.Windows.Devices.AllJoyn.AllJoynMessageInfo: ...
     @winrt_mixinmethod
@@ -371,6 +399,13 @@ class AllJoynProducerStoppedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynProducerStoppedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynProducerStoppedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynProducerStoppedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynProducerStoppedEventArgsFactory, status: Int32) -> win32more.Windows.Devices.AllJoyn.AllJoynProducerStoppedEventArgs: ...
     @winrt_mixinmethod
@@ -380,6 +415,13 @@ class AllJoynServiceInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfo
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynServiceInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.AllJoyn.AllJoynServiceInfo.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfoFactory, uniqueName: WinRT_String, objectPath: WinRT_String, sessionPort: UInt16) -> win32more.Windows.Devices.AllJoyn.AllJoynServiceInfo: ...
     @winrt_mixinmethod
@@ -390,13 +432,20 @@ class AllJoynServiceInfo(ComPtr):
     def get_SessionPort(self: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfo) -> UInt16: ...
     @winrt_classmethod
     def FromIdAsync(cls: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfoStatics, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.AllJoyn.AllJoynServiceInfo]: ...
-    UniqueName = property(get_UniqueName, None)
     ObjectPath = property(get_ObjectPath, None)
     SessionPort = property(get_SessionPort, None)
+    UniqueName = property(get_UniqueName, None)
 class AllJoynServiceInfoRemovedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfoRemovedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynServiceInfoRemovedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynServiceInfoRemovedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynServiceInfoRemovedEventArgsFactory, uniqueName: WinRT_String) -> win32more.Windows.Devices.AllJoyn.AllJoynServiceInfoRemovedEventArgs: ...
     @winrt_mixinmethod
@@ -434,6 +483,13 @@ class AllJoynSessionJoinedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynSessionJoinedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynSessionJoinedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynSessionJoinedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynSessionJoinedEventArgsFactory, session: win32more.Windows.Devices.AllJoyn.AllJoynSession) -> win32more.Windows.Devices.AllJoyn.AllJoynSessionJoinedEventArgs: ...
     @winrt_mixinmethod
@@ -443,22 +499,36 @@ class AllJoynSessionLostEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynSessionLostEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynSessionLostEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynSessionLostEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynSessionLostEventArgsFactory, reason: win32more.Windows.Devices.AllJoyn.AllJoynSessionLostReason) -> win32more.Windows.Devices.AllJoyn.AllJoynSessionLostEventArgs: ...
     @winrt_mixinmethod
     def get_Reason(self: win32more.Windows.Devices.AllJoyn.IAllJoynSessionLostEventArgs) -> win32more.Windows.Devices.AllJoyn.AllJoynSessionLostReason: ...
     Reason = property(get_Reason, None)
-AllJoynSessionLostReason = Int32
-AllJoynSessionLostReason_None: AllJoynSessionLostReason = 0
-AllJoynSessionLostReason_ProducerLeftSession: AllJoynSessionLostReason = 1
-AllJoynSessionLostReason_ProducerClosedAbruptly: AllJoynSessionLostReason = 2
-AllJoynSessionLostReason_RemovedByProducer: AllJoynSessionLostReason = 3
-AllJoynSessionLostReason_LinkTimeout: AllJoynSessionLostReason = 4
-AllJoynSessionLostReason_Other: AllJoynSessionLostReason = 5
+class AllJoynSessionLostReason(Int32):  # enum
+    None_ = 0
+    ProducerLeftSession = 1
+    ProducerClosedAbruptly = 2
+    RemovedByProducer = 3
+    LinkTimeout = 4
+    Other = 5
 class AllJoynSessionMemberAddedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynSessionMemberAddedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynSessionMemberAddedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynSessionMemberAddedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynSessionMemberAddedEventArgsFactory, uniqueName: WinRT_String) -> win32more.Windows.Devices.AllJoyn.AllJoynSessionMemberAddedEventArgs: ...
     @winrt_mixinmethod
@@ -468,6 +538,13 @@ class AllJoynSessionMemberRemovedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynSessionMemberRemovedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynSessionMemberRemovedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynSessionMemberRemovedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynSessionMemberRemovedEventArgsFactory, uniqueName: WinRT_String) -> win32more.Windows.Devices.AllJoyn.AllJoynSessionMemberRemovedEventArgs: ...
     @winrt_mixinmethod
@@ -514,15 +591,10 @@ class AllJoynStatus(ComPtr, metaclass=_AllJoynStatus_Meta_):
     def get_InvalidArgument7(cls: win32more.Windows.Devices.AllJoyn.IAllJoynStatusStatics) -> Int32: ...
     @winrt_classmethod
     def get_InvalidArgument8(cls: win32more.Windows.Devices.AllJoyn.IAllJoynStatusStatics) -> Int32: ...
-    _AllJoynStatus_Meta_.Ok = property(get_Ok.__wrapped__, None)
-    _AllJoynStatus_Meta_.Fail = property(get_Fail.__wrapped__, None)
-    _AllJoynStatus_Meta_.OperationTimedOut = property(get_OperationTimedOut.__wrapped__, None)
-    _AllJoynStatus_Meta_.OtherEndClosed = property(get_OtherEndClosed.__wrapped__, None)
-    _AllJoynStatus_Meta_.ConnectionRefused = property(get_ConnectionRefused.__wrapped__, None)
     _AllJoynStatus_Meta_.AuthenticationFailed = property(get_AuthenticationFailed.__wrapped__, None)
     _AllJoynStatus_Meta_.AuthenticationRejectedByUser = property(get_AuthenticationRejectedByUser.__wrapped__, None)
-    _AllJoynStatus_Meta_.SslConnectFailed = property(get_SslConnectFailed.__wrapped__, None)
-    _AllJoynStatus_Meta_.SslIdentityVerificationFailed = property(get_SslIdentityVerificationFailed.__wrapped__, None)
+    _AllJoynStatus_Meta_.ConnectionRefused = property(get_ConnectionRefused.__wrapped__, None)
+    _AllJoynStatus_Meta_.Fail = property(get_Fail.__wrapped__, None)
     _AllJoynStatus_Meta_.InsufficientSecurity = property(get_InsufficientSecurity.__wrapped__, None)
     _AllJoynStatus_Meta_.InvalidArgument1 = property(get_InvalidArgument1.__wrapped__, None)
     _AllJoynStatus_Meta_.InvalidArgument2 = property(get_InvalidArgument2.__wrapped__, None)
@@ -532,15 +604,27 @@ class AllJoynStatus(ComPtr, metaclass=_AllJoynStatus_Meta_):
     _AllJoynStatus_Meta_.InvalidArgument6 = property(get_InvalidArgument6.__wrapped__, None)
     _AllJoynStatus_Meta_.InvalidArgument7 = property(get_InvalidArgument7.__wrapped__, None)
     _AllJoynStatus_Meta_.InvalidArgument8 = property(get_InvalidArgument8.__wrapped__, None)
-AllJoynTrafficType = Int32
-AllJoynTrafficType_Unknown: AllJoynTrafficType = 0
-AllJoynTrafficType_Messages: AllJoynTrafficType = 1
-AllJoynTrafficType_RawUnreliable: AllJoynTrafficType = 2
-AllJoynTrafficType_RawReliable: AllJoynTrafficType = 4
+    _AllJoynStatus_Meta_.Ok = property(get_Ok.__wrapped__, None)
+    _AllJoynStatus_Meta_.OperationTimedOut = property(get_OperationTimedOut.__wrapped__, None)
+    _AllJoynStatus_Meta_.OtherEndClosed = property(get_OtherEndClosed.__wrapped__, None)
+    _AllJoynStatus_Meta_.SslConnectFailed = property(get_SslConnectFailed.__wrapped__, None)
+    _AllJoynStatus_Meta_.SslIdentityVerificationFailed = property(get_SslIdentityVerificationFailed.__wrapped__, None)
+class AllJoynTrafficType(Int32):  # enum
+    Unknown = 0
+    Messages = 1
+    RawUnreliable = 2
+    RawReliable = 4
 class AllJoynWatcherStoppedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.AllJoyn.IAllJoynWatcherStoppedEventArgs
     _classid_ = 'Windows.Devices.AllJoyn.AllJoynWatcherStoppedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.AllJoyn.AllJoynWatcherStoppedEventArgs.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.AllJoyn.IAllJoynWatcherStoppedEventArgsFactory, status: Int32) -> win32more.Windows.Devices.AllJoyn.AllJoynWatcherStoppedEventArgs: ...
     @winrt_mixinmethod
@@ -592,18 +676,18 @@ class IAllJoynAboutData(ComPtr):
     def get_AppId(self) -> Guid: ...
     @winrt_commethod(26)
     def put_AppId(self, value: Guid) -> Void: ...
-    IsEnabled = property(get_IsEnabled, put_IsEnabled)
-    DefaultAppName = property(get_DefaultAppName, put_DefaultAppName)
+    AppId = property(get_AppId, put_AppId)
     AppNames = property(get_AppNames, None)
     DateOfManufacture = property(get_DateOfManufacture, put_DateOfManufacture)
+    DefaultAppName = property(get_DefaultAppName, put_DefaultAppName)
     DefaultDescription = property(get_DefaultDescription, put_DefaultDescription)
-    Descriptions = property(get_Descriptions, None)
     DefaultManufacturer = property(get_DefaultManufacturer, put_DefaultManufacturer)
+    Descriptions = property(get_Descriptions, None)
+    IsEnabled = property(get_IsEnabled, put_IsEnabled)
     Manufacturers = property(get_Manufacturers, None)
     ModelNumber = property(get_ModelNumber, put_ModelNumber)
     SoftwareVersion = property(get_SoftwareVersion, put_SoftwareVersion)
     SupportUrl = property(get_SupportUrl, put_SupportUrl)
-    AppId = property(get_AppId, put_AppId)
 class IAllJoynAboutDataView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynAboutDataView'
@@ -640,22 +724,22 @@ class IAllJoynAboutDataView(ComPtr):
     def get_DeviceName(self) -> WinRT_String: ...
     @winrt_commethod(21)
     def get_Manufacturer(self) -> WinRT_String: ...
-    Status = property(get_Status, None)
-    Properties = property(get_Properties, None)
     AJSoftwareVersion = property(get_AJSoftwareVersion, None)
     AppId = property(get_AppId, None)
+    AppName = property(get_AppName, None)
     DateOfManufacture = property(get_DateOfManufacture, None)
     DefaultLanguage = property(get_DefaultLanguage, None)
-    DeviceId = property(get_DeviceId, None)
-    HardwareVersion = property(get_HardwareVersion, None)
-    ModelNumber = property(get_ModelNumber, None)
-    SoftwareVersion = property(get_SoftwareVersion, None)
-    SupportedLanguages = property(get_SupportedLanguages, None)
-    SupportUrl = property(get_SupportUrl, None)
-    AppName = property(get_AppName, None)
     Description = property(get_Description, None)
+    DeviceId = property(get_DeviceId, None)
     DeviceName = property(get_DeviceName, None)
+    HardwareVersion = property(get_HardwareVersion, None)
     Manufacturer = property(get_Manufacturer, None)
+    ModelNumber = property(get_ModelNumber, None)
+    Properties = property(get_Properties, None)
+    SoftwareVersion = property(get_SoftwareVersion, None)
+    Status = property(get_Status, None)
+    SupportUrl = property(get_SupportUrl, None)
+    SupportedLanguages = property(get_SupportedLanguages, None)
 class IAllJoynAboutDataViewStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynAboutDataViewStatics'
@@ -686,11 +770,11 @@ class IAllJoynAcceptSessionJoinerEventArgs(ComPtr):
     def get_SameNetwork(self) -> Boolean: ...
     @winrt_commethod(11)
     def Accept(self) -> Void: ...
-    UniqueName = property(get_UniqueName, None)
+    SameNetwork = property(get_SameNetwork, None)
+    SamePhysicalNode = property(get_SamePhysicalNode, None)
     SessionPort = property(get_SessionPort, None)
     TrafficType = property(get_TrafficType, None)
-    SamePhysicalNode = property(get_SamePhysicalNode, None)
-    SameNetwork = property(get_SameNetwork, None)
+    UniqueName = property(get_UniqueName, None)
 class IAllJoynAcceptSessionJoinerEventArgsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynAcceptSessionJoinerEventArgsFactory'
@@ -747,10 +831,10 @@ class IAllJoynBusAttachment(ComPtr):
     @winrt_commethod(21)
     def remove_AuthenticationComplete(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     AboutData = property(get_AboutData, None)
+    AuthenticationMechanisms = property(get_AuthenticationMechanisms, None)
     ConnectionSpecification = property(get_ConnectionSpecification, None)
     State = property(get_State, None)
     UniqueName = property(get_UniqueName, None)
-    AuthenticationMechanisms = property(get_AuthenticationMechanisms, None)
 class IAllJoynBusAttachment2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynBusAttachment2'
@@ -893,11 +977,11 @@ class IAllJoynCredentialsVerificationRequestedEventArgs(ComPtr):
     @winrt_commethod(13)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
     AuthenticationMechanism = property(get_AuthenticationMechanism, None)
-    PeerUniqueName = property(get_PeerUniqueName, None)
     PeerCertificate = property(get_PeerCertificate, None)
     PeerCertificateErrorSeverity = property(get_PeerCertificateErrorSeverity, None)
     PeerCertificateErrors = property(get_PeerCertificateErrors, None)
     PeerIntermediateCertificates = property(get_PeerIntermediateCertificates, None)
+    PeerUniqueName = property(get_PeerUniqueName, None)
 class IAllJoynMessageInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynMessageInfo'
@@ -940,9 +1024,9 @@ class IAllJoynServiceInfo(ComPtr):
     def get_ObjectPath(self) -> WinRT_String: ...
     @winrt_commethod(8)
     def get_SessionPort(self) -> UInt16: ...
-    UniqueName = property(get_UniqueName, None)
     ObjectPath = property(get_ObjectPath, None)
     SessionPort = property(get_SessionPort, None)
+    UniqueName = property(get_UniqueName, None)
 class IAllJoynServiceInfoFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynServiceInfoFactory'
@@ -1092,15 +1176,10 @@ class IAllJoynStatusStatics(ComPtr):
     def get_InvalidArgument7(self) -> Int32: ...
     @winrt_commethod(23)
     def get_InvalidArgument8(self) -> Int32: ...
-    Ok = property(get_Ok, None)
-    Fail = property(get_Fail, None)
-    OperationTimedOut = property(get_OperationTimedOut, None)
-    OtherEndClosed = property(get_OtherEndClosed, None)
-    ConnectionRefused = property(get_ConnectionRefused, None)
     AuthenticationFailed = property(get_AuthenticationFailed, None)
     AuthenticationRejectedByUser = property(get_AuthenticationRejectedByUser, None)
-    SslConnectFailed = property(get_SslConnectFailed, None)
-    SslIdentityVerificationFailed = property(get_SslIdentityVerificationFailed, None)
+    ConnectionRefused = property(get_ConnectionRefused, None)
+    Fail = property(get_Fail, None)
     InsufficientSecurity = property(get_InsufficientSecurity, None)
     InvalidArgument1 = property(get_InvalidArgument1, None)
     InvalidArgument2 = property(get_InvalidArgument2, None)
@@ -1110,6 +1189,11 @@ class IAllJoynStatusStatics(ComPtr):
     InvalidArgument6 = property(get_InvalidArgument6, None)
     InvalidArgument7 = property(get_InvalidArgument7, None)
     InvalidArgument8 = property(get_InvalidArgument8, None)
+    Ok = property(get_Ok, None)
+    OperationTimedOut = property(get_OperationTimedOut, None)
+    OtherEndClosed = property(get_OtherEndClosed, None)
+    SslConnectFailed = property(get_SslConnectFailed, None)
+    SslIdentityVerificationFailed = property(get_SslIdentityVerificationFailed, None)
 class IAllJoynWatcherStoppedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.AllJoyn.IAllJoynWatcherStoppedEventArgs'
@@ -1123,4 +1207,6 @@ class IAllJoynWatcherStoppedEventArgsFactory(ComPtr):
     _iid_ = Guid('{878fa5a8-2d50-47e1-904a-20bf0d48c782}')
     @winrt_commethod(6)
     def Create(self, status: Int32) -> win32more.Windows.Devices.AllJoyn.AllJoynWatcherStoppedEventArgs: ...
+
+
 make_ready(__name__)

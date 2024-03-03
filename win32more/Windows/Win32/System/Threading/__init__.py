@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security
 import win32more.Windows.Win32.System.Com
@@ -20,7 +20,22 @@ AVRT_PRIORITY_LOW: win32more.Windows.Win32.System.Threading.AVRT_PRIORITY = -1
 AVRT_PRIORITY_NORMAL: win32more.Windows.Win32.System.Threading.AVRT_PRIORITY = 0
 AVRT_PRIORITY_HIGH: win32more.Windows.Win32.System.Threading.AVRT_PRIORITY = 1
 AVRT_PRIORITY_CRITICAL: win32more.Windows.Win32.System.Threading.AVRT_PRIORITY = 2
+CONDITION_VARIABLE_LOCKMODE_SHARED: UInt32 = 1
+INIT_ONCE_CHECK_ONLY: UInt32 = 1
+INIT_ONCE_ASYNC: UInt32 = 2
+INIT_ONCE_INIT_FAILED: UInt32 = 4
+INIT_ONCE_CTX_RESERVED_BITS: UInt32 = 2
+CONDITION_VARIABLE_INIT: win32more.Windows.Win32.System.Threading.CONDITION_VARIABLE = ConstantLazyLoader(0)
+SRWLOCK_INIT: win32more.Windows.Win32.System.Threading.SRWLOCK = ConstantLazyLoader(0)
+INIT_ONCE_STATIC_INIT: win32more.Windows.Win32.System.Threading.INIT_ONCE = ConstantLazyLoader(0)
 ALL_PROCESSOR_GROUPS: UInt16 = 65535
+RTL_CRITICAL_SECTION_FLAG_NO_DEBUG_INFO: UInt32 = 16777216
+RTL_CRITICAL_SECTION_FLAG_DYNAMIC_SPIN: UInt32 = 33554432
+RTL_CRITICAL_SECTION_FLAG_STATIC_INIT: UInt32 = 67108864
+RTL_CRITICAL_SECTION_FLAG_RESOURCE_TYPE: UInt32 = 134217728
+RTL_CRITICAL_SECTION_FLAG_FORCE_DEBUG_INFO: UInt32 = 268435456
+RTL_CRITICAL_SECTION_ALL_FLAG_BITS: UInt32 = 4278190080
+RTL_CRITICAL_SECTION_DEBUG_FLAG_STATIC_INIT: UInt32 = 1
 FLS_OUT_OF_INDEXES: UInt32 = 4294967295
 PRIVATE_NAMESPACE_FLAG_DESTROY: UInt32 = 1
 TLS_OUT_OF_INDEXES: UInt32 = 4294967295
@@ -36,11 +51,6 @@ PROCESS_POWER_THROTTLING_EXECUTION_SPEED: UInt32 = 1
 PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION: UInt32 = 4
 PROCESS_LEAP_SECOND_INFO_FLAG_ENABLE_SIXTY_SECOND: UInt32 = 1
 PROCESS_LEAP_SECOND_INFO_VALID_FLAGS: UInt32 = 1
-INIT_ONCE_CHECK_ONLY: UInt32 = 1
-INIT_ONCE_ASYNC: UInt32 = 2
-INIT_ONCE_INIT_FAILED: UInt32 = 4
-INIT_ONCE_CTX_RESERVED_BITS: UInt32 = 2
-CONDITION_VARIABLE_LOCKMODE_SHARED: UInt32 = 1
 CREATE_MUTEX_INITIAL_OWNER: UInt32 = 1
 CREATE_WAITABLE_TIMER_MANUAL_RESET: UInt32 = 1
 CREATE_WAITABLE_TIMER_HIGH_RESOLUTION: UInt32 = 2
@@ -813,9 +823,9 @@ LPPROC_THREAD_ATTRIBUTE_LIST = VoidPtr
 @winfunctype_pointer
 def LPTHREAD_START_ROUTINE(lpThreadParameter: VoidPtr) -> UInt32: ...
 MACHINE_ATTRIBUTES = Int32
-MACHINE_ATTRIBUTES_UserEnabled: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 1
-MACHINE_ATTRIBUTES_KernelEnabled: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 2
-MACHINE_ATTRIBUTES_Wow64Container: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 4
+UserEnabled: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 1
+KernelEnabled: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 2
+Wow64Container: win32more.Windows.Win32.System.Threading.MACHINE_ATTRIBUTES = 4
 MEMORY_PRIORITY = UInt32
 MEMORY_PRIORITY_VERY_LOW: win32more.Windows.Win32.System.Threading.MEMORY_PRIORITY = 1
 MEMORY_PRIORITY_LOW: win32more.Windows.Win32.System.Threading.MEMORY_PRIORITY = 2
@@ -824,6 +834,8 @@ MEMORY_PRIORITY_BELOW_NORMAL: win32more.Windows.Win32.System.Threading.MEMORY_PR
 MEMORY_PRIORITY_NORMAL: win32more.Windows.Win32.System.Threading.MEMORY_PRIORITY = 5
 class MEMORY_PRIORITY_INFORMATION(EasyCastStructure):
     MemoryPriority: win32more.Windows.Win32.System.Threading.MEMORY_PRIORITY
+class OVERRIDE_PREFETCH_PARAMETER(EasyCastStructure):
+    Value: UInt32
 class PEB(EasyCastStructure):
     Reserved1: Byte * 2
     BeingDebugged: Byte
@@ -995,17 +1007,19 @@ class PROCESS_INFORMATION(EasyCastStructure):
     dwProcessId: UInt32
     dwThreadId: UInt32
 PROCESS_INFORMATION_CLASS = Int32
-PROCESS_INFORMATION_CLASS_ProcessMemoryPriority: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 0
-PROCESS_INFORMATION_CLASS_ProcessMemoryExhaustionInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 1
-PROCESS_INFORMATION_CLASS_ProcessAppMemoryInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 2
-PROCESS_INFORMATION_CLASS_ProcessInPrivateInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 3
-PROCESS_INFORMATION_CLASS_ProcessPowerThrottling: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 4
-PROCESS_INFORMATION_CLASS_ProcessReservedValue1: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 5
-PROCESS_INFORMATION_CLASS_ProcessTelemetryCoverageInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 6
-PROCESS_INFORMATION_CLASS_ProcessProtectionLevelInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 7
-PROCESS_INFORMATION_CLASS_ProcessLeapSecondInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 8
-PROCESS_INFORMATION_CLASS_ProcessMachineTypeInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 9
-PROCESS_INFORMATION_CLASS_ProcessInformationClassMax: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 10
+ProcessMemoryPriority: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 0
+ProcessMemoryExhaustionInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 1
+ProcessAppMemoryInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 2
+ProcessInPrivateInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 3
+ProcessPowerThrottling: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 4
+ProcessReservedValue1: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 5
+ProcessTelemetryCoverageInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 6
+ProcessProtectionLevelInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 7
+ProcessLeapSecondInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 8
+ProcessMachineTypeInfo: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 9
+ProcessOverrideSubsequentPrefetchParameter: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 10
+ProcessMaxOverridePrefetchParameter: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 11
+ProcessInformationClassMax: win32more.Windows.Win32.System.Threading.PROCESS_INFORMATION_CLASS = 12
 class PROCESS_LEAP_SECOND_INFO(EasyCastStructure):
     Flags: UInt32
     Reserved: UInt32
@@ -1019,29 +1033,30 @@ class PROCESS_MEMORY_EXHAUSTION_INFO(EasyCastStructure):
     Type: win32more.Windows.Win32.System.Threading.PROCESS_MEMORY_EXHAUSTION_TYPE
     Value: UIntPtr
 PROCESS_MEMORY_EXHAUSTION_TYPE = Int32
-PROCESS_MEMORY_EXHAUSTION_TYPE_PMETypeFailFastOnCommitFailure: win32more.Windows.Win32.System.Threading.PROCESS_MEMORY_EXHAUSTION_TYPE = 0
-PROCESS_MEMORY_EXHAUSTION_TYPE_PMETypeMax: win32more.Windows.Win32.System.Threading.PROCESS_MEMORY_EXHAUSTION_TYPE = 1
+PMETypeFailFastOnCommitFailure: win32more.Windows.Win32.System.Threading.PROCESS_MEMORY_EXHAUSTION_TYPE = 0
+PMETypeMax: win32more.Windows.Win32.System.Threading.PROCESS_MEMORY_EXHAUSTION_TYPE = 1
 PROCESS_MITIGATION_POLICY = Int32
-PROCESS_MITIGATION_POLICY_ProcessDEPPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 0
-PROCESS_MITIGATION_POLICY_ProcessASLRPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 1
-PROCESS_MITIGATION_POLICY_ProcessDynamicCodePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 2
-PROCESS_MITIGATION_POLICY_ProcessStrictHandleCheckPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 3
-PROCESS_MITIGATION_POLICY_ProcessSystemCallDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 4
-PROCESS_MITIGATION_POLICY_ProcessMitigationOptionsMask: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 5
-PROCESS_MITIGATION_POLICY_ProcessExtensionPointDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 6
-PROCESS_MITIGATION_POLICY_ProcessControlFlowGuardPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 7
-PROCESS_MITIGATION_POLICY_ProcessSignaturePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 8
-PROCESS_MITIGATION_POLICY_ProcessFontDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 9
-PROCESS_MITIGATION_POLICY_ProcessImageLoadPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 10
-PROCESS_MITIGATION_POLICY_ProcessSystemCallFilterPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 11
-PROCESS_MITIGATION_POLICY_ProcessPayloadRestrictionPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 12
-PROCESS_MITIGATION_POLICY_ProcessChildProcessPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 13
-PROCESS_MITIGATION_POLICY_ProcessSideChannelIsolationPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 14
-PROCESS_MITIGATION_POLICY_ProcessUserShadowStackPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 15
-PROCESS_MITIGATION_POLICY_ProcessRedirectionTrustPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 16
-PROCESS_MITIGATION_POLICY_ProcessUserPointerAuthPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 17
-PROCESS_MITIGATION_POLICY_ProcessSEHOPPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 18
-PROCESS_MITIGATION_POLICY_MaxProcessMitigationPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 19
+ProcessDEPPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 0
+ProcessASLRPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 1
+ProcessDynamicCodePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 2
+ProcessStrictHandleCheckPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 3
+ProcessSystemCallDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 4
+ProcessMitigationOptionsMask: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 5
+ProcessExtensionPointDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 6
+ProcessControlFlowGuardPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 7
+ProcessSignaturePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 8
+ProcessFontDisablePolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 9
+ProcessImageLoadPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 10
+ProcessSystemCallFilterPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 11
+ProcessPayloadRestrictionPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 12
+ProcessChildProcessPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 13
+ProcessSideChannelIsolationPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 14
+ProcessUserShadowStackPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 15
+ProcessRedirectionTrustPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 16
+ProcessUserPointerAuthPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 17
+ProcessSEHOPPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 18
+ProcessActivationContextTrustPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 19
+MaxProcessMitigationPolicy: win32more.Windows.Win32.System.Threading.PROCESS_MITIGATION_POLICY = 20
 PROCESS_NAME_FORMAT = UInt32
 PROCESS_NAME_WIN32: win32more.Windows.Win32.System.Threading.PROCESS_NAME_FORMAT = 0
 PROCESS_NAME_NATIVE: win32more.Windows.Win32.System.Threading.PROCESS_NAME_FORMAT = 1
@@ -1063,27 +1078,27 @@ PROTECTION_LEVEL_NONE: win32more.Windows.Win32.System.Threading.PROCESS_PROTECTI
 class PROCESS_PROTECTION_LEVEL_INFORMATION(EasyCastStructure):
     ProtectionLevel: win32more.Windows.Win32.System.Threading.PROCESS_PROTECTION_LEVEL
 PROC_THREAD_ATTRIBUTE_NUM = UInt32
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeParentProcess: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 0
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeHandleList: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 2
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeGroupAffinity: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 3
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributePreferredNode: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 4
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeIdealProcessor: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 5
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeUmsThread: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 6
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeMitigationPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 7
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeSecurityCapabilities: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 9
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeProtectionLevel: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 11
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeJobList: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 13
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeChildProcessPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 14
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeAllApplicationPackagesPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 15
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeWin32kFilter: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 16
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeSafeOpenPromptOriginClaim: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 17
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeDesktopAppPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 18
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributePseudoConsole: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 22
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeMitigationAuditPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 24
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeMachineType: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 25
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeComponentFilter: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 26
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeEnableOptionalXStateFeatures: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 27
-PROC_THREAD_ATTRIBUTE_NUM_ProcThreadAttributeTrustedApp: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 29
+ProcThreadAttributeParentProcess: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 0
+ProcThreadAttributeHandleList: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 2
+ProcThreadAttributeGroupAffinity: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 3
+ProcThreadAttributePreferredNode: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 4
+ProcThreadAttributeIdealProcessor: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 5
+ProcThreadAttributeUmsThread: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 6
+ProcThreadAttributeMitigationPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 7
+ProcThreadAttributeSecurityCapabilities: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 9
+ProcThreadAttributeProtectionLevel: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 11
+ProcThreadAttributeJobList: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 13
+ProcThreadAttributeChildProcessPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 14
+ProcThreadAttributeAllApplicationPackagesPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 15
+ProcThreadAttributeWin32kFilter: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 16
+ProcThreadAttributeSafeOpenPromptOriginClaim: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 17
+ProcThreadAttributeDesktopAppPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 18
+ProcThreadAttributePseudoConsole: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 22
+ProcThreadAttributeMitigationAuditPolicy: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 24
+ProcThreadAttributeMachineType: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 25
+ProcThreadAttributeComponentFilter: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 26
+ProcThreadAttributeEnableOptionalXStateFeatures: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 27
+ProcThreadAttributeTrustedApp: win32more.Windows.Win32.System.Threading.PROC_THREAD_ATTRIBUTE_NUM = 29
 @winfunctype_pointer
 def PRTL_UMS_SCHEDULER_ENTRY_POINT(Reason: win32more.Windows.Win32.System.SystemServices.RTL_UMS_SCHEDULER_REASON, ActivationPayload: UIntPtr, SchedulerParam: VoidPtr) -> Void: ...
 @winfunctype_pointer
@@ -1254,11 +1269,11 @@ THREAD_CREATE_RUN_IMMEDIATELY: win32more.Windows.Win32.System.Threading.THREAD_C
 THREAD_CREATE_SUSPENDED: win32more.Windows.Win32.System.Threading.THREAD_CREATION_FLAGS = 4
 STACK_SIZE_PARAM_IS_A_RESERVATION: win32more.Windows.Win32.System.Threading.THREAD_CREATION_FLAGS = 65536
 THREAD_INFORMATION_CLASS = Int32
-THREAD_INFORMATION_CLASS_ThreadMemoryPriority: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 0
-THREAD_INFORMATION_CLASS_ThreadAbsoluteCpuPriority: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 1
-THREAD_INFORMATION_CLASS_ThreadDynamicCodePolicy: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 2
-THREAD_INFORMATION_CLASS_ThreadPowerThrottling: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 3
-THREAD_INFORMATION_CLASS_ThreadInformationClassMax: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 4
+ThreadMemoryPriority: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 0
+ThreadAbsoluteCpuPriority: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 1
+ThreadDynamicCodePolicy: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 2
+ThreadPowerThrottling: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 3
+ThreadInformationClassMax: win32more.Windows.Win32.System.Threading.THREAD_INFORMATION_CLASS = 4
 class THREAD_POWER_THROTTLING_STATE(EasyCastStructure):
     Version: UInt32
     ControlMask: UInt32
@@ -1313,14 +1328,14 @@ class UMS_SYSTEM_THREAD_INFORMATION(EasyCastStructure):
         class _Anonymous_e__Struct(EasyCastStructure):
             _bitfield: UInt32
 UMS_THREAD_INFO_CLASS = Int32
-UMS_THREAD_INFO_CLASS_UmsThreadInvalidInfoClass: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 0
-UMS_THREAD_INFO_CLASS_UmsThreadUserContext: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 1
-UMS_THREAD_INFO_CLASS_UmsThreadPriority: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 2
-UMS_THREAD_INFO_CLASS_UmsThreadAffinity: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 3
-UMS_THREAD_INFO_CLASS_UmsThreadTeb: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 4
-UMS_THREAD_INFO_CLASS_UmsThreadIsSuspended: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 5
-UMS_THREAD_INFO_CLASS_UmsThreadIsTerminated: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 6
-UMS_THREAD_INFO_CLASS_UmsThreadMaxInfoClass: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 7
+UmsThreadInvalidInfoClass: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 0
+UmsThreadUserContext: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 1
+UmsThreadPriority: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 2
+UmsThreadAffinity: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 3
+UmsThreadTeb: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 4
+UmsThreadIsSuspended: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 5
+UmsThreadIsTerminated: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 6
+UmsThreadMaxInfoClass: win32more.Windows.Win32.System.Threading.UMS_THREAD_INFO_CLASS = 7
 @winfunctype_pointer
 def WAITORTIMERCALLBACK(param0: VoidPtr, param1: win32more.Windows.Win32.Foundation.BOOLEAN) -> Void: ...
 @winfunctype_pointer

@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Diagnostics
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.WinRT
 class AsyncCausalityTracer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.Diagnostics.AsyncCausalityTracer'
@@ -35,24 +22,24 @@ class AsyncCausalityTracer(ComPtr):
     def add_TracingStatusChanged(cls: win32more.Windows.Foundation.Diagnostics.IAsyncCausalityTracerStatics, handler: win32more.Windows.Foundation.EventHandler[win32more.Windows.Foundation.Diagnostics.TracingStatusChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_classmethod
     def remove_TracingStatusChanged(cls: win32more.Windows.Foundation.Diagnostics.IAsyncCausalityTracerStatics, cookie: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-CausalityRelation = Int32
-CausalityRelation_AssignDelegate: CausalityRelation = 0
-CausalityRelation_Join: CausalityRelation = 1
-CausalityRelation_Choice: CausalityRelation = 2
-CausalityRelation_Cancel: CausalityRelation = 3
-CausalityRelation_Error: CausalityRelation = 4
-CausalitySource = Int32
-CausalitySource_Application: CausalitySource = 0
-CausalitySource_Library: CausalitySource = 1
-CausalitySource_System: CausalitySource = 2
-CausalitySynchronousWork = Int32
-CausalitySynchronousWork_CompletionNotification: CausalitySynchronousWork = 0
-CausalitySynchronousWork_ProgressNotification: CausalitySynchronousWork = 1
-CausalitySynchronousWork_Execution: CausalitySynchronousWork = 2
-CausalityTraceLevel = Int32
-CausalityTraceLevel_Required: CausalityTraceLevel = 0
-CausalityTraceLevel_Important: CausalityTraceLevel = 1
-CausalityTraceLevel_Verbose: CausalityTraceLevel = 2
+class CausalityRelation(Int32):  # enum
+    AssignDelegate = 0
+    Join = 1
+    Choice = 2
+    Cancel = 3
+    Error = 4
+class CausalitySource(Int32):  # enum
+    Application = 0
+    Library = 1
+    System = 2
+class CausalitySynchronousWork(Int32):  # enum
+    CompletionNotification = 0
+    ProgressNotification = 1
+    Execution = 2
+class CausalityTraceLevel(Int32):  # enum
+    Required = 0
+    Important = 1
+    Verbose = 2
 class ErrorDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.IErrorDetails
@@ -66,18 +53,25 @@ class ErrorDetails(ComPtr):
     @winrt_classmethod
     def CreateFromHResultAsync(cls: win32more.Windows.Foundation.Diagnostics.IErrorDetailsStatics, errorCode: Int32) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Diagnostics.ErrorDetails]: ...
     Description = property(get_Description, None)
-    LongDescription = property(get_LongDescription, None)
     HelpUri = property(get_HelpUri, None)
-ErrorOptions = UInt32
-ErrorOptions_None: ErrorOptions = 0
-ErrorOptions_SuppressExceptions: ErrorOptions = 1
-ErrorOptions_ForceExceptions: ErrorOptions = 2
-ErrorOptions_UseSetErrorInfo: ErrorOptions = 4
-ErrorOptions_SuppressSetErrorInfo: ErrorOptions = 8
+    LongDescription = property(get_LongDescription, None)
+class ErrorOptions(UInt32):  # enum
+    None_ = 0
+    SuppressExceptions = 1
+    ForceExceptions = 2
+    UseSetErrorInfo = 4
+    SuppressSetErrorInfo = 8
 class FileLoggingSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.IFileLoggingSession
     _classid_ = 'Windows.Foundation.Diagnostics.FileLoggingSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Diagnostics.FileLoggingSession.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Foundation.Diagnostics.IFileLoggingSessionFactory, name: WinRT_String) -> win32more.Windows.Foundation.Diagnostics.FileLoggingSession: ...
     @winrt_mixinmethod
@@ -126,8 +120,8 @@ class IErrorDetails(ComPtr):
     @winrt_commethod(8)
     def get_HelpUri(self) -> win32more.Windows.Foundation.Uri: ...
     Description = property(get_Description, None)
-    LongDescription = property(get_LongDescription, None)
     HelpUri = property(get_HelpUri, None)
+    LongDescription = property(get_LongDescription, None)
 class IErrorDetailsStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.Diagnostics.IErrorDetailsStatics'
@@ -182,8 +176,8 @@ class ILoggingActivity(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_Id(self) -> Guid: ...
-    Name = property(get_Name, None)
     Id = property(get_Id, None)
+    Name = property(get_Name, None)
 class ILoggingActivity2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.Diagnostics.ILoggingActivity2'
@@ -227,9 +221,9 @@ class ILoggingChannel(ComPtr):
     def add_LoggingEnabled(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Foundation.Diagnostics.ILoggingChannel, win32more.Windows.Win32.System.WinRT.IInspectable]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(14)
     def remove_LoggingEnabled(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Name = property(get_Name, None)
     Enabled = property(get_Enabled, None)
     Level = property(get_Level, None)
+    Name = property(get_Name, None)
 class ILoggingChannel2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.Diagnostics.ILoggingChannel2'
@@ -528,12 +522,12 @@ class ILoggingOptions(ComPtr):
     def get_RelatedActivityId(self) -> Guid: ...
     @winrt_commethod(17)
     def put_RelatedActivityId(self, value: Guid) -> Void: ...
+    ActivityId = property(get_ActivityId, put_ActivityId)
     Keywords = property(get_Keywords, put_Keywords)
+    Opcode = property(get_Opcode, put_Opcode)
+    RelatedActivityId = property(get_RelatedActivityId, put_RelatedActivityId)
     Tags = property(get_Tags, put_Tags)
     Task = property(get_Task, put_Task)
-    Opcode = property(get_Opcode, put_Opcode)
-    ActivityId = property(get_ActivityId, put_ActivityId)
-    RelatedActivityId = property(get_RelatedActivityId, put_RelatedActivityId)
 class ILoggingOptionsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Foundation.Diagnostics.ILoggingOptionsFactory'
@@ -608,6 +602,15 @@ class LoggingActivity(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingActivity
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingActivity'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Foundation.Diagnostics.LoggingActivity.CreateLoggingActivity(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Foundation.Diagnostics.LoggingActivity.CreateLoggingActivityWithLevel(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateLoggingActivity(cls: win32more.Windows.Foundation.Diagnostics.ILoggingActivityFactory, activityName: WinRT_String, loggingChannel: win32more.Windows.Foundation.Diagnostics.ILoggingChannel) -> win32more.Windows.Foundation.Diagnostics.LoggingActivity: ...
     @winrt_factorymethod
@@ -648,13 +651,24 @@ class LoggingActivity(ComPtr):
     def StartActivityWithFieldsAndLevel(self: win32more.Windows.Foundation.Diagnostics.ILoggingTarget, startEventName: WinRT_String, fields: win32more.Windows.Foundation.Diagnostics.LoggingFields, level: win32more.Windows.Foundation.Diagnostics.LoggingLevel) -> win32more.Windows.Foundation.Diagnostics.LoggingActivity: ...
     @winrt_mixinmethod
     def StartActivityWithFieldsAndOptions(self: win32more.Windows.Foundation.Diagnostics.ILoggingTarget, startEventName: WinRT_String, fields: win32more.Windows.Foundation.Diagnostics.LoggingFields, level: win32more.Windows.Foundation.Diagnostics.LoggingLevel, options: win32more.Windows.Foundation.Diagnostics.LoggingOptions) -> win32more.Windows.Foundation.Diagnostics.LoggingActivity: ...
-    Name = property(get_Name, None)
-    Id = property(get_Id, None)
     Channel = property(get_Channel, None)
+    Id = property(get_Id, None)
+    Name = property(get_Name, None)
 class LoggingChannel(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingChannel
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingChannel'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Diagnostics.LoggingChannel.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Foundation.Diagnostics.LoggingChannel.CreateWithOptions(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Foundation.Diagnostics.LoggingChannel.CreateWithOptionsAndId(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Foundation.Diagnostics.ILoggingChannelFactory, name: WinRT_String) -> win32more.Windows.Foundation.Diagnostics.LoggingChannel: ...
     @winrt_factorymethod
@@ -705,47 +719,63 @@ class LoggingChannel(ComPtr):
     def StartActivityWithFieldsAndLevel(self: win32more.Windows.Foundation.Diagnostics.ILoggingTarget, startEventName: WinRT_String, fields: win32more.Windows.Foundation.Diagnostics.LoggingFields, level: win32more.Windows.Foundation.Diagnostics.LoggingLevel) -> win32more.Windows.Foundation.Diagnostics.LoggingActivity: ...
     @winrt_mixinmethod
     def StartActivityWithFieldsAndOptions(self: win32more.Windows.Foundation.Diagnostics.ILoggingTarget, startEventName: WinRT_String, fields: win32more.Windows.Foundation.Diagnostics.LoggingFields, level: win32more.Windows.Foundation.Diagnostics.LoggingLevel, options: win32more.Windows.Foundation.Diagnostics.LoggingOptions) -> win32more.Windows.Foundation.Diagnostics.LoggingActivity: ...
-    Name = property(get_Name, None)
     Enabled = property(get_Enabled, None)
-    Level = property(get_Level, None)
     Id = property(get_Id, None)
+    Level = property(get_Level, None)
+    Name = property(get_Name, None)
 class LoggingChannelOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingChannelOptions
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingChannelOptions'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.Foundation.Diagnostics.ILoggingChannelOptionsFactory, group: Guid) -> win32more.Windows.Foundation.Diagnostics.LoggingChannelOptions: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Foundation.Diagnostics.LoggingChannelOptions.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Diagnostics.LoggingChannelOptions.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Foundation.Diagnostics.LoggingChannelOptions: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.Foundation.Diagnostics.ILoggingChannelOptionsFactory, group: Guid) -> win32more.Windows.Foundation.Diagnostics.LoggingChannelOptions: ...
     @winrt_mixinmethod
     def get_Group(self: win32more.Windows.Foundation.Diagnostics.ILoggingChannelOptions) -> Guid: ...
     @winrt_mixinmethod
     def put_Group(self: win32more.Windows.Foundation.Diagnostics.ILoggingChannelOptions, value: Guid) -> Void: ...
     Group = property(get_Group, put_Group)
-LoggingFieldFormat = Int32
-LoggingFieldFormat_Default: LoggingFieldFormat = 0
-LoggingFieldFormat_Hidden: LoggingFieldFormat = 1
-LoggingFieldFormat_String: LoggingFieldFormat = 2
-LoggingFieldFormat_Boolean: LoggingFieldFormat = 3
-LoggingFieldFormat_Hexadecimal: LoggingFieldFormat = 4
-LoggingFieldFormat_ProcessId: LoggingFieldFormat = 5
-LoggingFieldFormat_ThreadId: LoggingFieldFormat = 6
-LoggingFieldFormat_Port: LoggingFieldFormat = 7
-LoggingFieldFormat_Ipv4Address: LoggingFieldFormat = 8
-LoggingFieldFormat_Ipv6Address: LoggingFieldFormat = 9
-LoggingFieldFormat_SocketAddress: LoggingFieldFormat = 10
-LoggingFieldFormat_Xml: LoggingFieldFormat = 11
-LoggingFieldFormat_Json: LoggingFieldFormat = 12
-LoggingFieldFormat_Win32Error: LoggingFieldFormat = 13
-LoggingFieldFormat_NTStatus: LoggingFieldFormat = 14
-LoggingFieldFormat_HResult: LoggingFieldFormat = 15
-LoggingFieldFormat_FileTime: LoggingFieldFormat = 16
-LoggingFieldFormat_Signed: LoggingFieldFormat = 17
-LoggingFieldFormat_Unsigned: LoggingFieldFormat = 18
+class LoggingFieldFormat(Int32):  # enum
+    Default = 0
+    Hidden = 1
+    String = 2
+    Boolean = 3
+    Hexadecimal = 4
+    ProcessId = 5
+    ThreadId = 6
+    Port = 7
+    Ipv4Address = 8
+    Ipv6Address = 9
+    SocketAddress = 10
+    Xml = 11
+    Json = 12
+    Win32Error = 13
+    NTStatus = 14
+    HResult = 15
+    FileTime = 16
+    Signed = 17
+    Unsigned = 18
 class LoggingFields(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingFields
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingFields'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Foundation.Diagnostics.LoggingFields.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Foundation.Diagnostics.LoggingFields: ...
     @winrt_mixinmethod
@@ -978,28 +1008,37 @@ class LoggingFields(ComPtr):
     def AddRectArrayWithFormat(self: win32more.Windows.Foundation.Diagnostics.ILoggingFields, name: WinRT_String, value: Annotated[SZArray[win32more.Windows.Foundation.Rect], 'In'], format: win32more.Windows.Foundation.Diagnostics.LoggingFieldFormat) -> Void: ...
     @winrt_mixinmethod
     def AddRectArrayWithFormatAndTags(self: win32more.Windows.Foundation.Diagnostics.ILoggingFields, name: WinRT_String, value: Annotated[SZArray[win32more.Windows.Foundation.Rect], 'In'], format: win32more.Windows.Foundation.Diagnostics.LoggingFieldFormat, tags: Int32) -> Void: ...
-LoggingLevel = Int32
-LoggingLevel_Verbose: LoggingLevel = 0
-LoggingLevel_Information: LoggingLevel = 1
-LoggingLevel_Warning: LoggingLevel = 2
-LoggingLevel_Error: LoggingLevel = 3
-LoggingLevel_Critical: LoggingLevel = 4
-LoggingOpcode = Int32
-LoggingOpcode_Info: LoggingOpcode = 0
-LoggingOpcode_Start: LoggingOpcode = 1
-LoggingOpcode_Stop: LoggingOpcode = 2
-LoggingOpcode_Reply: LoggingOpcode = 6
-LoggingOpcode_Resume: LoggingOpcode = 7
-LoggingOpcode_Suspend: LoggingOpcode = 8
-LoggingOpcode_Send: LoggingOpcode = 9
+class LoggingLevel(Int32):  # enum
+    Verbose = 0
+    Information = 1
+    Warning = 2
+    Error = 3
+    Critical = 4
+class LoggingOpcode(Int32):  # enum
+    Info = 0
+    Start = 1
+    Stop = 2
+    Reply = 6
+    Resume = 7
+    Suspend = 8
+    Send = 9
 class LoggingOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingOptions
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingOptions'
-    @winrt_factorymethod
-    def CreateWithKeywords(cls: win32more.Windows.Foundation.Diagnostics.ILoggingOptionsFactory, keywords: Int64) -> win32more.Windows.Foundation.Diagnostics.LoggingOptions: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Foundation.Diagnostics.LoggingOptions.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Diagnostics.LoggingOptions.CreateWithKeywords(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Foundation.Diagnostics.LoggingOptions: ...
+    @winrt_factorymethod
+    def CreateWithKeywords(cls: win32more.Windows.Foundation.Diagnostics.ILoggingOptionsFactory, keywords: Int64) -> win32more.Windows.Foundation.Diagnostics.LoggingOptions: ...
     @winrt_mixinmethod
     def get_Keywords(self: win32more.Windows.Foundation.Diagnostics.ILoggingOptions) -> Int64: ...
     @winrt_mixinmethod
@@ -1024,16 +1063,23 @@ class LoggingOptions(ComPtr):
     def get_RelatedActivityId(self: win32more.Windows.Foundation.Diagnostics.ILoggingOptions) -> Guid: ...
     @winrt_mixinmethod
     def put_RelatedActivityId(self: win32more.Windows.Foundation.Diagnostics.ILoggingOptions, value: Guid) -> Void: ...
+    ActivityId = property(get_ActivityId, put_ActivityId)
     Keywords = property(get_Keywords, put_Keywords)
+    Opcode = property(get_Opcode, put_Opcode)
+    RelatedActivityId = property(get_RelatedActivityId, put_RelatedActivityId)
     Tags = property(get_Tags, put_Tags)
     Task = property(get_Task, put_Task)
-    Opcode = property(get_Opcode, put_Opcode)
-    ActivityId = property(get_ActivityId, put_ActivityId)
-    RelatedActivityId = property(get_RelatedActivityId, put_RelatedActivityId)
 class LoggingSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.ILoggingSession
     _classid_ = 'Windows.Foundation.Diagnostics.LoggingSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Foundation.Diagnostics.LoggingSession.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Foundation.Diagnostics.ILoggingSessionFactory, name: WinRT_String) -> win32more.Windows.Foundation.Diagnostics.LoggingSession: ...
     @winrt_mixinmethod
@@ -1053,6 +1099,13 @@ class RuntimeBrokerErrorSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Diagnostics.IErrorReportingSettings
     _classid_ = 'Windows.Foundation.Diagnostics.RuntimeBrokerErrorSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Foundation.Diagnostics.RuntimeBrokerErrorSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Foundation.Diagnostics.RuntimeBrokerErrorSettings: ...
     @winrt_mixinmethod
@@ -1069,4 +1122,6 @@ class TracingStatusChangedEventArgs(ComPtr):
     def get_TraceLevel(self: win32more.Windows.Foundation.Diagnostics.ITracingStatusChangedEventArgs) -> win32more.Windows.Foundation.Diagnostics.CausalityTraceLevel: ...
     Enabled = property(get_Enabled, None)
     TraceLevel = property(get_TraceLevel, None)
+
+
 make_ready(__name__)

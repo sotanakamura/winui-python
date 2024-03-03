@@ -1,22 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.System.Threading
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class IThreadPoolStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Threading.IThreadPoolStatics'
@@ -37,8 +25,8 @@ class IThreadPoolTimer(ComPtr):
     def get_Delay(self) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_commethod(8)
     def Cancel(self) -> Void: ...
-    Period = property(get_Period, None)
     Delay = property(get_Delay, None)
+    Period = property(get_Period, None)
 class IThreadPoolTimerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Threading.IThreadPoolTimerStatics'
@@ -78,8 +66,8 @@ class ThreadPoolTimer(ComPtr):
     def CreatePeriodicTimerWithCompletion(cls: win32more.Windows.System.Threading.IThreadPoolTimerStatics, handler: win32more.Windows.System.Threading.TimerElapsedHandler, period: win32more.Windows.Foundation.TimeSpan, destroyed: win32more.Windows.System.Threading.TimerDestroyedHandler) -> win32more.Windows.System.Threading.ThreadPoolTimer: ...
     @winrt_classmethod
     def CreateTimerWithCompletion(cls: win32more.Windows.System.Threading.IThreadPoolTimerStatics, handler: win32more.Windows.System.Threading.TimerElapsedHandler, delay: win32more.Windows.Foundation.TimeSpan, destroyed: win32more.Windows.System.Threading.TimerDestroyedHandler) -> win32more.Windows.System.Threading.ThreadPoolTimer: ...
-    Period = property(get_Period, None)
     Delay = property(get_Delay, None)
+    Period = property(get_Period, None)
 class TimerDestroyedHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{34ed19fa-8384-4eb9-8209-fb5094eeec35}')
@@ -92,11 +80,13 @@ class WorkItemHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{1d1a8b8b-fa66-414f-9cbd-b65fc99d17fa}')
     def Invoke(self, operation: win32more.Windows.Foundation.IAsyncAction) -> Void: ...
-WorkItemOptions = UInt32
-WorkItemOptions_None: WorkItemOptions = 0
-WorkItemOptions_TimeSliced: WorkItemOptions = 1
-WorkItemPriority = Int32
-WorkItemPriority_Low: WorkItemPriority = -1
-WorkItemPriority_Normal: WorkItemPriority = 0
-WorkItemPriority_High: WorkItemPriority = 1
+class WorkItemOptions(UInt32):  # enum
+    None_ = 0
+    TimeSliced = 1
+class WorkItemPriority(Int32):  # enum
+    Low = -1
+    Normal = 0
+    High = 1
+
+
 make_ready(__name__)

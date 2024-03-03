@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.ApplicationModel.Resources
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IKnownResourceQualifierNameStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.Resources.IKnownResourceQualifierNameStatics'
@@ -61,10 +48,10 @@ class IResourceCandidate(ComPtr):
     def get_Kind(self) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind: ...
     @winrt_commethod(9)
     def get_QualifierValues(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, WinRT_String]: ...
-    ValueAsString = property(get_ValueAsString, None)
-    ValueAsBytes = property(get_ValueAsBytes, None)
     Kind = property(get_Kind, None)
     QualifierValues = property(get_QualifierValues, None)
+    ValueAsBytes = property(get_ValueAsBytes, None)
+    ValueAsString = property(get_ValueAsString, None)
 class IResourceCandidateFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.Resources.IResourceCandidateFactory'
@@ -201,10 +188,19 @@ class ResourceCandidate(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidate
     _classid_ = 'Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate'
-    @winrt_factorymethod
-    def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidateFactory, kind: win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind, data: WinRT_String) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.CreateInstance2(*args)
+        elif len(args) == 2:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance2(cls: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidateFactory, data: Annotated[SZArray[Byte], 'In']) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate: ...
+    @winrt_factorymethod
+    def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidateFactory, kind: win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind, data: WinRT_String) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate: ...
     @winrt_mixinmethod
     def get_ValueAsString(self: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidate) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -213,15 +209,15 @@ class ResourceCandidate(ComPtr):
     def get_Kind(self: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidate) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind: ...
     @winrt_mixinmethod
     def get_QualifierValues(self: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceCandidate) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, WinRT_String]: ...
-    ValueAsString = property(get_ValueAsString, None)
-    ValueAsBytes = property(get_ValueAsBytes, None)
     Kind = property(get_Kind, None)
     QualifierValues = property(get_QualifierValues, None)
-ResourceCandidateKind = Int32
-ResourceCandidateKind_Unknown: ResourceCandidateKind = 0
-ResourceCandidateKind_String: ResourceCandidateKind = 1
-ResourceCandidateKind_FilePath: ResourceCandidateKind = 2
-ResourceCandidateKind_EmbeddedData: ResourceCandidateKind = 3
+    ValueAsBytes = property(get_ValueAsBytes, None)
+    ValueAsString = property(get_ValueAsString, None)
+class ResourceCandidateKind(Int32):  # enum
+    Unknown = 0
+    String = 1
+    FilePath = 2
+    EmbeddedData = 3
 class ResourceContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceContext
@@ -233,8 +229,21 @@ class ResourceLoader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceLoader
     _classid_ = 'Microsoft.Windows.ApplicationModel.Resources.ResourceLoader'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.CreateInstance2(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_overload
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceLoader: ...
+    @CreateInstance.register
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceLoaderFactory, fileName: WinRT_String) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceLoader: ...
     @winrt_factorymethod
@@ -249,8 +258,19 @@ class ResourceManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceManager
     _classid_ = 'Microsoft.Windows.ApplicationModel.Resources.ResourceManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceManager.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceManager.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_overload
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceManager: ...
+    @CreateInstance.register
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceManagerFactory, fileName: WinRT_String) -> win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceManager: ...
     @winrt_mixinmethod
@@ -297,4 +317,6 @@ class ResourceNotFoundEventArgs(ComPtr):
     def SetResolvedCandidate(self: win32more.Microsoft.Windows.ApplicationModel.Resources.IResourceNotFoundEventArgs, candidate: win32more.Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate) -> Void: ...
     Context = property(get_Context, None)
     Name = property(get_Name, None)
+
+
 make_ready(__name__)

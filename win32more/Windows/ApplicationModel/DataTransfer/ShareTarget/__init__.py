@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.ApplicationModel.DataTransfer
 import win32more.Windows.ApplicationModel.DataTransfer.ShareTarget
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IQuickLink(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.DataTransfer.ShareTarget.IQuickLink'
@@ -40,11 +27,11 @@ class IQuickLink(ComPtr):
     def get_SupportedDataFormats(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     @winrt_commethod(13)
     def get_SupportedFileTypes(self) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    Title = property(get_Title, put_Title)
-    Thumbnail = property(get_Thumbnail, put_Thumbnail)
     Id = property(get_Id, put_Id)
     SupportedDataFormats = property(get_SupportedDataFormats, None)
     SupportedFileTypes = property(get_SupportedFileTypes, None)
+    Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Title = property(get_Title, put_Title)
 class IShareOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation'
@@ -86,6 +73,13 @@ class QuickLink(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IQuickLink
     _classid_ = 'Windows.ApplicationModel.DataTransfer.ShareTarget.QuickLink'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.QuickLink.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.QuickLink: ...
     @winrt_mixinmethod
@@ -104,11 +98,11 @@ class QuickLink(ComPtr):
     def get_SupportedDataFormats(self: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IQuickLink) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
     @winrt_mixinmethod
     def get_SupportedFileTypes(self: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IQuickLink) -> win32more.Windows.Foundation.Collections.IVector[WinRT_String]: ...
-    Title = property(get_Title, put_Title)
-    Thumbnail = property(get_Thumbnail, put_Thumbnail)
     Id = property(get_Id, put_Id)
     SupportedDataFormats = property(get_SupportedDataFormats, None)
     SupportedFileTypes = property(get_SupportedFileTypes, None)
+    Thumbnail = property(get_Thumbnail, put_Thumbnail)
+    Title = property(get_Title, put_Title)
 class ShareOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation
@@ -135,7 +129,9 @@ class ShareOperation(ComPtr):
     def DismissUI(self: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation2) -> Void: ...
     @winrt_mixinmethod
     def get_Contacts(self: win32more.Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation3) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Contacts.Contact]: ...
+    Contacts = property(get_Contacts, None)
     Data = property(get_Data, None)
     QuickLinkId = property(get_QuickLinkId, None)
-    Contacts = property(get_Contacts, None)
+
+
 make_ready(__name__)

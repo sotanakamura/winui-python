@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.UserDataTasks
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class IUserDataTask(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTask'
@@ -77,21 +64,21 @@ class IUserDataTask(ComPtr):
     def get_StartDate(self) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     @winrt_commethod(32)
     def put_StartDate(self, value: win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]) -> Void: ...
-    Id = property(get_Id, None)
-    ListId = property(get_ListId, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
     CompletedDate = property(get_CompletedDate, put_CompletedDate)
     Details = property(get_Details, put_Details)
     DetailsKind = property(get_DetailsKind, put_DetailsKind)
     DueDate = property(get_DueDate, put_DueDate)
+    Id = property(get_Id, None)
     Kind = property(get_Kind, None)
+    ListId = property(get_ListId, None)
     Priority = property(get_Priority, put_Priority)
     RecurrenceProperties = property(get_RecurrenceProperties, put_RecurrenceProperties)
     RegenerationProperties = property(get_RegenerationProperties, put_RegenerationProperties)
     Reminder = property(get_Reminder, put_Reminder)
+    RemoteId = property(get_RemoteId, put_RemoteId)
     Sensitivity = property(get_Sensitivity, put_Sensitivity)
-    Subject = property(get_Subject, put_Subject)
     StartDate = property(get_StartDate, put_StartDate)
+    Subject = property(get_Subject, put_Subject)
 class IUserDataTaskBatch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTaskBatch'
@@ -141,14 +128,14 @@ class IUserDataTaskList(ComPtr):
     def DeleteAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(24)
     def SaveAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Id = property(get_Id, None)
-    UserDataAccountId = property(get_UserDataAccountId, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    SourceDisplayName = property(get_SourceDisplayName, None)
+    Id = property(get_Id, None)
+    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     OtherAppWriteAccess = property(get_OtherAppWriteAccess, put_OtherAppWriteAccess)
-    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
+    SourceDisplayName = property(get_SourceDisplayName, None)
     SyncManager = property(get_SyncManager, None)
+    UserDataAccountId = property(get_UserDataAccountId, None)
 class IUserDataTaskListLimitedWriteOperations(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTaskListLimitedWriteOperations'
@@ -215,8 +202,8 @@ class IUserDataTaskQueryOptions(ComPtr):
     def get_Kind(self) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryKind: ...
     @winrt_commethod(9)
     def put_Kind(self, value: win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryKind) -> Void: ...
-    SortProperty = property(get_SortProperty, put_SortProperty)
     Kind = property(get_Kind, put_Kind)
+    SortProperty = property(get_SortProperty, put_SortProperty)
 class IUserDataTaskReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTaskReader'
@@ -259,14 +246,14 @@ class IUserDataTaskRecurrenceProperties(ComPtr):
     def get_Day(self) -> win32more.Windows.Foundation.IReference[Int32]: ...
     @winrt_commethod(21)
     def put_Day(self, value: win32more.Windows.Foundation.IReference[Int32]) -> Void: ...
-    Unit = property(get_Unit, put_Unit)
-    Occurrences = property(get_Occurrences, put_Occurrences)
-    Until = property(get_Until, put_Until)
-    Interval = property(get_Interval, put_Interval)
-    DaysOfWeek = property(get_DaysOfWeek, put_DaysOfWeek)
-    WeekOfMonth = property(get_WeekOfMonth, put_WeekOfMonth)
-    Month = property(get_Month, put_Month)
     Day = property(get_Day, put_Day)
+    DaysOfWeek = property(get_DaysOfWeek, put_DaysOfWeek)
+    Interval = property(get_Interval, put_Interval)
+    Month = property(get_Month, put_Month)
+    Occurrences = property(get_Occurrences, put_Occurrences)
+    Unit = property(get_Unit, put_Unit)
+    Until = property(get_Until, put_Until)
+    WeekOfMonth = property(get_WeekOfMonth, put_WeekOfMonth)
 class IUserDataTaskRegenerationProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTaskRegenerationProperties'
@@ -287,10 +274,10 @@ class IUserDataTaskRegenerationProperties(ComPtr):
     def get_Interval(self) -> Int32: ...
     @winrt_commethod(13)
     def put_Interval(self, value: Int32) -> Void: ...
-    Unit = property(get_Unit, put_Unit)
-    Occurrences = property(get_Occurrences, put_Occurrences)
-    Until = property(get_Until, put_Until)
     Interval = property(get_Interval, put_Interval)
+    Occurrences = property(get_Occurrences, put_Occurrences)
+    Unit = property(get_Unit, put_Unit)
+    Until = property(get_Until, put_Until)
 class IUserDataTaskStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.IUserDataTaskStore'
@@ -307,6 +294,13 @@ class UserDataTask(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTask
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.UserDataTask'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserDataTasks.UserDataTask.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTask: ...
     @winrt_mixinmethod
@@ -363,21 +357,21 @@ class UserDataTask(ComPtr):
     def get_StartDate(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTask) -> win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]: ...
     @winrt_mixinmethod
     def put_StartDate(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTask, value: win32more.Windows.Foundation.IReference[win32more.Windows.Foundation.DateTime]) -> Void: ...
-    Id = property(get_Id, None)
-    ListId = property(get_ListId, None)
-    RemoteId = property(get_RemoteId, put_RemoteId)
     CompletedDate = property(get_CompletedDate, put_CompletedDate)
     Details = property(get_Details, put_Details)
     DetailsKind = property(get_DetailsKind, put_DetailsKind)
     DueDate = property(get_DueDate, put_DueDate)
+    Id = property(get_Id, None)
     Kind = property(get_Kind, None)
+    ListId = property(get_ListId, None)
     Priority = property(get_Priority, put_Priority)
     RecurrenceProperties = property(get_RecurrenceProperties, put_RecurrenceProperties)
     RegenerationProperties = property(get_RegenerationProperties, put_RegenerationProperties)
     Reminder = property(get_Reminder, put_Reminder)
+    RemoteId = property(get_RemoteId, put_RemoteId)
     Sensitivity = property(get_Sensitivity, put_Sensitivity)
-    Subject = property(get_Subject, put_Subject)
     StartDate = property(get_StartDate, put_StartDate)
+    Subject = property(get_Subject, put_Subject)
 class UserDataTaskBatch(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskBatch
@@ -385,22 +379,22 @@ class UserDataTaskBatch(ComPtr):
     @winrt_mixinmethod
     def get_Tasks(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskBatch) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.UserDataTasks.UserDataTask]: ...
     Tasks = property(get_Tasks, None)
-UserDataTaskDaysOfWeek = UInt32
-UserDataTaskDaysOfWeek_None: UserDataTaskDaysOfWeek = 0
-UserDataTaskDaysOfWeek_Sunday: UserDataTaskDaysOfWeek = 1
-UserDataTaskDaysOfWeek_Monday: UserDataTaskDaysOfWeek = 2
-UserDataTaskDaysOfWeek_Tuesday: UserDataTaskDaysOfWeek = 4
-UserDataTaskDaysOfWeek_Wednesday: UserDataTaskDaysOfWeek = 8
-UserDataTaskDaysOfWeek_Thursday: UserDataTaskDaysOfWeek = 16
-UserDataTaskDaysOfWeek_Friday: UserDataTaskDaysOfWeek = 32
-UserDataTaskDaysOfWeek_Saturday: UserDataTaskDaysOfWeek = 64
-UserDataTaskDetailsKind = Int32
-UserDataTaskDetailsKind_PlainText: UserDataTaskDetailsKind = 0
-UserDataTaskDetailsKind_Html: UserDataTaskDetailsKind = 1
-UserDataTaskKind = Int32
-UserDataTaskKind_Single: UserDataTaskKind = 0
-UserDataTaskKind_Recurring: UserDataTaskKind = 1
-UserDataTaskKind_Regenerating: UserDataTaskKind = 2
+class UserDataTaskDaysOfWeek(UInt32):  # enum
+    None_ = 0
+    Sunday = 1
+    Monday = 2
+    Tuesday = 4
+    Wednesday = 8
+    Thursday = 16
+    Friday = 32
+    Saturday = 64
+class UserDataTaskDetailsKind(Int32):  # enum
+    PlainText = 0
+    Html = 1
+class UserDataTaskKind(Int32):  # enum
+    Single = 0
+    Recurring = 1
+    Regenerating = 2
 class UserDataTaskList(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskList
@@ -443,14 +437,14 @@ class UserDataTaskList(ComPtr):
     def DeleteAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskList) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def SaveAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskList) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Id = property(get_Id, None)
-    UserDataAccountId = property(get_UserDataAccountId, None)
     DisplayName = property(get_DisplayName, put_DisplayName)
-    SourceDisplayName = property(get_SourceDisplayName, None)
+    Id = property(get_Id, None)
+    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
     OtherAppReadAccess = property(get_OtherAppReadAccess, put_OtherAppReadAccess)
     OtherAppWriteAccess = property(get_OtherAppWriteAccess, put_OtherAppWriteAccess)
-    LimitedWriteOperations = property(get_LimitedWriteOperations, None)
+    SourceDisplayName = property(get_SourceDisplayName, None)
     SyncManager = property(get_SyncManager, None)
+    UserDataAccountId = property(get_UserDataAccountId, None)
 class UserDataTaskListLimitedWriteOperations(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskListLimitedWriteOperations
@@ -463,13 +457,13 @@ class UserDataTaskListLimitedWriteOperations(ComPtr):
     def TryDeleteTaskAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskListLimitedWriteOperations, userDataTaskId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
     @winrt_mixinmethod
     def TrySkipOccurrenceAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskListLimitedWriteOperations, userDataTaskId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-UserDataTaskListOtherAppReadAccess = Int32
-UserDataTaskListOtherAppReadAccess_Full: UserDataTaskListOtherAppReadAccess = 0
-UserDataTaskListOtherAppReadAccess_SystemOnly: UserDataTaskListOtherAppReadAccess = 1
-UserDataTaskListOtherAppReadAccess_None: UserDataTaskListOtherAppReadAccess = 2
-UserDataTaskListOtherAppWriteAccess = Int32
-UserDataTaskListOtherAppWriteAccess_Limited: UserDataTaskListOtherAppWriteAccess = 0
-UserDataTaskListOtherAppWriteAccess_None: UserDataTaskListOtherAppWriteAccess = 1
+class UserDataTaskListOtherAppReadAccess(Int32):  # enum
+    Full = 0
+    SystemOnly = 1
+    None_ = 2
+class UserDataTaskListOtherAppWriteAccess(Int32):  # enum
+    Limited = 0
+    None_ = 1
 class UserDataTaskListSyncManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskListSyncManager
@@ -495,13 +489,13 @@ class UserDataTaskListSyncManager(ComPtr):
     LastAttemptedSyncTime = property(get_LastAttemptedSyncTime, put_LastAttemptedSyncTime)
     LastSuccessfulSyncTime = property(get_LastSuccessfulSyncTime, put_LastSuccessfulSyncTime)
     Status = property(get_Status, put_Status)
-UserDataTaskListSyncStatus = Int32
-UserDataTaskListSyncStatus_Idle: UserDataTaskListSyncStatus = 0
-UserDataTaskListSyncStatus_Syncing: UserDataTaskListSyncStatus = 1
-UserDataTaskListSyncStatus_UpToDate: UserDataTaskListSyncStatus = 2
-UserDataTaskListSyncStatus_AuthenticationError: UserDataTaskListSyncStatus = 3
-UserDataTaskListSyncStatus_PolicyError: UserDataTaskListSyncStatus = 4
-UserDataTaskListSyncStatus_UnknownError: UserDataTaskListSyncStatus = 5
+class UserDataTaskListSyncStatus(Int32):  # enum
+    Idle = 0
+    Syncing = 1
+    UpToDate = 2
+    AuthenticationError = 3
+    PolicyError = 4
+    UnknownError = 5
 class UserDataTaskManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskManager
@@ -515,18 +509,25 @@ class UserDataTaskManager(ComPtr):
     @winrt_classmethod
     def GetForUser(cls: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskManagerStatics, user: win32more.Windows.System.User) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskManager: ...
     User = property(get_User, None)
-UserDataTaskPriority = Int32
-UserDataTaskPriority_Normal: UserDataTaskPriority = 0
-UserDataTaskPriority_Low: UserDataTaskPriority = -1
-UserDataTaskPriority_High: UserDataTaskPriority = 1
-UserDataTaskQueryKind = Int32
-UserDataTaskQueryKind_All: UserDataTaskQueryKind = 0
-UserDataTaskQueryKind_Incomplete: UserDataTaskQueryKind = 1
-UserDataTaskQueryKind_Complete: UserDataTaskQueryKind = 2
+class UserDataTaskPriority(Int32):  # enum
+    Normal = 0
+    Low = -1
+    High = 1
+class UserDataTaskQueryKind(Int32):  # enum
+    All = 0
+    Incomplete = 1
+    Complete = 2
 class UserDataTaskQueryOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskQueryOptions
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryOptions: ...
     @winrt_mixinmethod
@@ -537,10 +538,10 @@ class UserDataTaskQueryOptions(ComPtr):
     def get_Kind(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskQueryOptions) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryKind: ...
     @winrt_mixinmethod
     def put_Kind(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskQueryOptions, value: win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskQueryKind) -> Void: ...
-    SortProperty = property(get_SortProperty, put_SortProperty)
     Kind = property(get_Kind, put_Kind)
-UserDataTaskQuerySortProperty = Int32
-UserDataTaskQuerySortProperty_DueDate: UserDataTaskQuerySortProperty = 0
+    SortProperty = property(get_SortProperty, put_SortProperty)
+class UserDataTaskQuerySortProperty(Int32):  # enum
+    DueDate = 0
 class UserDataTaskReader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskReader
@@ -551,6 +552,13 @@ class UserDataTaskRecurrenceProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRecurrenceProperties
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.UserDataTaskRecurrenceProperties'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskRecurrenceProperties.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskRecurrenceProperties: ...
     @winrt_mixinmethod
@@ -585,25 +593,32 @@ class UserDataTaskRecurrenceProperties(ComPtr):
     def get_Day(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRecurrenceProperties) -> win32more.Windows.Foundation.IReference[Int32]: ...
     @winrt_mixinmethod
     def put_Day(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRecurrenceProperties, value: win32more.Windows.Foundation.IReference[Int32]) -> Void: ...
-    Unit = property(get_Unit, put_Unit)
-    Occurrences = property(get_Occurrences, put_Occurrences)
-    Until = property(get_Until, put_Until)
-    Interval = property(get_Interval, put_Interval)
-    DaysOfWeek = property(get_DaysOfWeek, put_DaysOfWeek)
-    WeekOfMonth = property(get_WeekOfMonth, put_WeekOfMonth)
-    Month = property(get_Month, put_Month)
     Day = property(get_Day, put_Day)
-UserDataTaskRecurrenceUnit = Int32
-UserDataTaskRecurrenceUnit_Daily: UserDataTaskRecurrenceUnit = 0
-UserDataTaskRecurrenceUnit_Weekly: UserDataTaskRecurrenceUnit = 1
-UserDataTaskRecurrenceUnit_Monthly: UserDataTaskRecurrenceUnit = 2
-UserDataTaskRecurrenceUnit_MonthlyOnDay: UserDataTaskRecurrenceUnit = 3
-UserDataTaskRecurrenceUnit_Yearly: UserDataTaskRecurrenceUnit = 4
-UserDataTaskRecurrenceUnit_YearlyOnDay: UserDataTaskRecurrenceUnit = 5
+    DaysOfWeek = property(get_DaysOfWeek, put_DaysOfWeek)
+    Interval = property(get_Interval, put_Interval)
+    Month = property(get_Month, put_Month)
+    Occurrences = property(get_Occurrences, put_Occurrences)
+    Unit = property(get_Unit, put_Unit)
+    Until = property(get_Until, put_Until)
+    WeekOfMonth = property(get_WeekOfMonth, put_WeekOfMonth)
+class UserDataTaskRecurrenceUnit(Int32):  # enum
+    Daily = 0
+    Weekly = 1
+    Monthly = 2
+    MonthlyOnDay = 3
+    Yearly = 4
+    YearlyOnDay = 5
 class UserDataTaskRegenerationProperties(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRegenerationProperties
     _classid_ = 'Windows.ApplicationModel.UserDataTasks.UserDataTaskRegenerationProperties'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskRegenerationProperties.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskRegenerationProperties: ...
     @winrt_mixinmethod
@@ -622,18 +637,18 @@ class UserDataTaskRegenerationProperties(ComPtr):
     def get_Interval(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRegenerationProperties) -> Int32: ...
     @winrt_mixinmethod
     def put_Interval(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskRegenerationProperties, value: Int32) -> Void: ...
-    Unit = property(get_Unit, put_Unit)
-    Occurrences = property(get_Occurrences, put_Occurrences)
-    Until = property(get_Until, put_Until)
     Interval = property(get_Interval, put_Interval)
-UserDataTaskRegenerationUnit = Int32
-UserDataTaskRegenerationUnit_Daily: UserDataTaskRegenerationUnit = 0
-UserDataTaskRegenerationUnit_Weekly: UserDataTaskRegenerationUnit = 1
-UserDataTaskRegenerationUnit_Monthly: UserDataTaskRegenerationUnit = 2
-UserDataTaskRegenerationUnit_Yearly: UserDataTaskRegenerationUnit = 4
-UserDataTaskSensitivity = Int32
-UserDataTaskSensitivity_Public: UserDataTaskSensitivity = 0
-UserDataTaskSensitivity_Private: UserDataTaskSensitivity = 1
+    Occurrences = property(get_Occurrences, put_Occurrences)
+    Unit = property(get_Unit, put_Unit)
+    Until = property(get_Until, put_Until)
+class UserDataTaskRegenerationUnit(Int32):  # enum
+    Daily = 0
+    Weekly = 1
+    Monthly = 2
+    Yearly = 4
+class UserDataTaskSensitivity(Int32):  # enum
+    Public = 0
+    Private = 1
 class UserDataTaskStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskStore
@@ -646,13 +661,15 @@ class UserDataTaskStore(ComPtr):
     def FindListsAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskStore) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskList]]: ...
     @winrt_mixinmethod
     def GetListAsync(self: win32more.Windows.ApplicationModel.UserDataTasks.IUserDataTaskStore, taskListId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.UserDataTasks.UserDataTaskList]: ...
-UserDataTaskStoreAccessType = Int32
-UserDataTaskStoreAccessType_AppTasksReadWrite: UserDataTaskStoreAccessType = 0
-UserDataTaskStoreAccessType_AllTasksLimitedReadWrite: UserDataTaskStoreAccessType = 1
-UserDataTaskWeekOfMonth = Int32
-UserDataTaskWeekOfMonth_First: UserDataTaskWeekOfMonth = 0
-UserDataTaskWeekOfMonth_Second: UserDataTaskWeekOfMonth = 1
-UserDataTaskWeekOfMonth_Third: UserDataTaskWeekOfMonth = 2
-UserDataTaskWeekOfMonth_Fourth: UserDataTaskWeekOfMonth = 3
-UserDataTaskWeekOfMonth_Last: UserDataTaskWeekOfMonth = 4
+class UserDataTaskStoreAccessType(Int32):  # enum
+    AppTasksReadWrite = 0
+    AllTasksLimitedReadWrite = 1
+class UserDataTaskWeekOfMonth(Int32):  # enum
+    First = 0
+    Second = 1
+    Third = 2
+    Fourth = 3
+    Last = 4
+
+
 make_ready(__name__)

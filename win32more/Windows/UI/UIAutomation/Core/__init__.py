@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.UI.UIAutomation
 import win32more.Windows.UI.UIAutomation.Core
+import win32more.Windows.Win32.System.WinRT
 class AutomationAnnotationTypeRegistration(EasyCastStructure):
     LocalId: Int32
 class AutomationRemoteOperationOperandId(EasyCastStructure):
@@ -36,15 +23,15 @@ class AutomationRemoteOperationResult(ComPtr):
     def HasOperand(self: win32more.Windows.UI.UIAutomation.Core.IAutomationRemoteOperationResult, operandId: win32more.Windows.UI.UIAutomation.Core.AutomationRemoteOperationOperandId) -> Boolean: ...
     @winrt_mixinmethod
     def GetOperand(self: win32more.Windows.UI.UIAutomation.Core.IAutomationRemoteOperationResult, operandId: win32more.Windows.UI.UIAutomation.Core.AutomationRemoteOperationOperandId) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Status = property(get_Status, None)
-    ExtendedError = property(get_ExtendedError, None)
     ErrorLocation = property(get_ErrorLocation, None)
-AutomationRemoteOperationStatus = Int32
-AutomationRemoteOperationStatus_Success: AutomationRemoteOperationStatus = 0
-AutomationRemoteOperationStatus_MalformedBytecode: AutomationRemoteOperationStatus = 1
-AutomationRemoteOperationStatus_InstructionLimitExceeded: AutomationRemoteOperationStatus = 2
-AutomationRemoteOperationStatus_UnhandledException: AutomationRemoteOperationStatus = 3
-AutomationRemoteOperationStatus_ExecutionFailure: AutomationRemoteOperationStatus = 4
+    ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
+class AutomationRemoteOperationStatus(Int32):  # enum
+    Success = 0
+    MalformedBytecode = 1
+    InstructionLimitExceeded = 2
+    UnhandledException = 3
+    ExecutionFailure = 4
 class CoreAutomationRegistrar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.UIAutomation.Core.CoreAutomationRegistrar'
@@ -56,6 +43,13 @@ class CoreAutomationRemoteOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.UIAutomation.Core.ICoreAutomationRemoteOperation
     _classid_ = 'Windows.UI.UIAutomation.Core.CoreAutomationRemoteOperation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.UIAutomation.Core.CoreAutomationRemoteOperation.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.UIAutomation.Core.CoreAutomationRemoteOperation: ...
     @winrt_mixinmethod
@@ -94,9 +88,9 @@ class IAutomationRemoteOperationResult(ComPtr):
     def HasOperand(self, operandId: win32more.Windows.UI.UIAutomation.Core.AutomationRemoteOperationOperandId) -> Boolean: ...
     @winrt_commethod(10)
     def GetOperand(self, operandId: win32more.Windows.UI.UIAutomation.Core.AutomationRemoteOperationOperandId) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
-    Status = property(get_Status, None)
-    ExtendedError = property(get_ExtendedError, None)
     ErrorLocation = property(get_ErrorLocation, None)
+    ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class ICoreAutomationConnectionBoundObjectProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.UIAutomation.Core.ICoreAutomationConnectionBoundObjectProvider'
@@ -215,6 +209,15 @@ class RemoteAutomationClientSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.UIAutomation.Core.IRemoteAutomationClientSession
     _classid_ = 'Windows.UI.UIAutomation.Core.RemoteAutomationClientSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.UIAutomation.Core.RemoteAutomationClientSession.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.UI.UIAutomation.Core.RemoteAutomationClientSession.CreateInstance2(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.UIAutomation.Core.IRemoteAutomationClientSessionFactory, name: WinRT_String) -> win32more.Windows.UI.UIAutomation.Core.RemoteAutomationClientSession: ...
     @winrt_factorymethod
@@ -267,4 +270,6 @@ class RemoteAutomationWindow(ComPtr):
     @winrt_mixinmethod
     def UnregisterAsync(self: win32more.Windows.UI.UIAutomation.Core.IRemoteAutomationWindow) -> win32more.Windows.Foundation.IAsyncAction: ...
     AutomationProvider = property(get_AutomationProvider, None)
+
+
 make_ready(__name__)

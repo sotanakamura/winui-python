@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.Com
 import win32more.Windows.Win32.System.WinRT
@@ -9,7 +9,7 @@ class ICompositionCapabilitiesInteropFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _iid_ = Guid('{2c9db356-e70d-4642-8298-bc4aa5b4865c}')
     @commethod(6)
-    def GetForWindow(self, hwnd: win32more.Windows.Win32.Foundation.HWND, result: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def GetForWindow(self, hwnd: win32more.Windows.Win32.Foundation.HWND, result: POINTER(win32more.Windows.UI.Composition.CompositionCapabilities)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class ICompositionDrawingSurfaceInterop(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{fd04e6e3-fe0c-4c3c-ab19-a07601a576ee}')
@@ -37,22 +37,34 @@ class ICompositionGraphicsDeviceInterop(ComPtr):
     def GetRenderingDevice(self, value: POINTER(win32more.Windows.Win32.System.Com.IUnknown)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
     def SetRenderingDevice(self, value: win32more.Windows.Win32.System.Com.IUnknown) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+class ICompositionTextureInterop(ComPtr):
+    extends: win32more.Windows.Win32.System.Com.IUnknown
+    _iid_ = Guid('{d528a265-f0a5-422f-a39d-ef62d7cd1cc4}')
+    @commethod(3)
+    def GetAvailableFence(self, fenceValue: POINTER(UInt64), iid: POINTER(Guid), availableFence: POINTER(VoidPtr)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class ICompositorDesktopInterop(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{29e691fa-4567-4dca-b319-d0f207eb6807}')
     @commethod(3)
-    def CreateDesktopWindowTarget(self, hwndTarget: win32more.Windows.Win32.Foundation.HWND, isTopmost: win32more.Windows.Win32.Foundation.BOOL, result: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def CreateDesktopWindowTarget(self, hwndTarget: win32more.Windows.Win32.Foundation.HWND, isTopmost: win32more.Windows.Win32.Foundation.BOOL, result: POINTER(win32more.Windows.UI.Composition.Desktop.DesktopWindowTarget)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
     def EnsureOnThread(self, threadId: UInt32) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class ICompositorInterop(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{25297d5c-3ad4-4c9c-b5cf-e36a38512330}')
     @commethod(3)
-    def CreateCompositionSurfaceForHandle(self, swapChain: win32more.Windows.Win32.Foundation.HANDLE, result: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def CreateCompositionSurfaceForHandle(self, swapChain: win32more.Windows.Win32.Foundation.HANDLE, result: POINTER(win32more.Windows.UI.Composition.ICompositionSurface)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
-    def CreateCompositionSurfaceForSwapChain(self, swapChain: win32more.Windows.Win32.System.Com.IUnknown, result: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def CreateCompositionSurfaceForSwapChain(self, swapChain: win32more.Windows.Win32.System.Com.IUnknown, result: POINTER(win32more.Windows.UI.Composition.ICompositionSurface)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(5)
-    def CreateGraphicsDevice(self, renderingDevice: win32more.Windows.Win32.System.Com.IUnknown, result: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    def CreateGraphicsDevice(self, renderingDevice: win32more.Windows.Win32.System.Com.IUnknown, result: POINTER(win32more.Windows.UI.Composition.CompositionGraphicsDevice)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+class ICompositorInterop2(ComPtr):
+    extends: win32more.Windows.Win32.System.Com.IUnknown
+    _iid_ = Guid('{d3eef34c-0667-4afc-8d13-867607b0fe91}')
+    @commethod(3)
+    def CheckCompositionTextureSupport(self, renderingDevice: win32more.Windows.Win32.System.Com.IUnknown, supportsCompositionTextures: POINTER(win32more.Windows.Win32.Foundation.BOOL)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    @commethod(4)
+    def CreateCompositionTexture(self, d3dTexture: win32more.Windows.Win32.System.Com.IUnknown, compositionTexture: POINTER(win32more.Windows.UI.Composition.ICompositionTexture)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class IDesktopWindowTargetInterop(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{35dbf59e-e3f9-45b0-81e7-fe75f4145dc9}')

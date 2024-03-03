@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Contacts
 import win32more.Windows.ApplicationModel.Contacts.DataProvider
 import win32more.Windows.Foundation
+import win32more.Windows.Win32.System.WinRT
 class ContactDataProviderConnection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactDataProviderConnection
@@ -59,8 +46,8 @@ class ContactListCreateOrUpdateContactRequest(ComPtr):
     def ReportCompletedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListCreateOrUpdateContactRequest, createdOrUpdatedContact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def ReportFailedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListCreateOrUpdateContactRequest) -> win32more.Windows.Foundation.IAsyncAction: ...
-    ContactListId = property(get_ContactListId, None)
     Contact = property(get_Contact, None)
+    ContactListId = property(get_ContactListId, None)
 class ContactListCreateOrUpdateContactRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListCreateOrUpdateContactRequestEventArgs
@@ -82,8 +69,8 @@ class ContactListDeleteContactRequest(ComPtr):
     def ReportCompletedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListDeleteContactRequest) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def ReportFailedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListDeleteContactRequest) -> win32more.Windows.Foundation.IAsyncAction: ...
-    ContactListId = property(get_ContactListId, None)
     ContactId = property(get_ContactId, None)
+    ContactListId = property(get_ContactListId, None)
 class ContactListDeleteContactRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListDeleteContactRequestEventArgs
@@ -111,9 +98,9 @@ class ContactListServerSearchReadBatchRequest(ComPtr):
     def ReportCompletedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListServerSearchReadBatchRequest) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def ReportFailedAsync(self: win32more.Windows.ApplicationModel.Contacts.DataProvider.IContactListServerSearchReadBatchRequest, batchStatus: win32more.Windows.ApplicationModel.Contacts.ContactBatchStatus) -> win32more.Windows.Foundation.IAsyncAction: ...
-    SessionId = property(get_SessionId, None)
     ContactListId = property(get_ContactListId, None)
     Options = property(get_Options, None)
+    SessionId = property(get_SessionId, None)
     SuggestedBatchSize = property(get_SuggestedBatchSize, None)
 class ContactListServerSearchReadBatchRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -189,8 +176,8 @@ class IContactListCreateOrUpdateContactRequest(ComPtr):
     def ReportCompletedAsync(self, createdOrUpdatedContact: win32more.Windows.ApplicationModel.Contacts.Contact) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(9)
     def ReportFailedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
-    ContactListId = property(get_ContactListId, None)
     Contact = property(get_Contact, None)
+    ContactListId = property(get_ContactListId, None)
 class IContactListCreateOrUpdateContactRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.DataProvider.IContactListCreateOrUpdateContactRequestEventArgs'
@@ -212,8 +199,8 @@ class IContactListDeleteContactRequest(ComPtr):
     def ReportCompletedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(9)
     def ReportFailedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
-    ContactListId = property(get_ContactListId, None)
     ContactId = property(get_ContactId, None)
+    ContactListId = property(get_ContactListId, None)
 class IContactListDeleteContactRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Contacts.DataProvider.IContactListDeleteContactRequestEventArgs'
@@ -241,9 +228,9 @@ class IContactListServerSearchReadBatchRequest(ComPtr):
     def ReportCompletedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(12)
     def ReportFailedAsync(self, batchStatus: win32more.Windows.ApplicationModel.Contacts.ContactBatchStatus) -> win32more.Windows.Foundation.IAsyncAction: ...
-    SessionId = property(get_SessionId, None)
     ContactListId = property(get_ContactListId, None)
     Options = property(get_Options, None)
+    SessionId = property(get_SessionId, None)
     SuggestedBatchSize = property(get_SuggestedBatchSize, None)
 class IContactListServerSearchReadBatchRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -274,4 +261,6 @@ class IContactListSyncManagerSyncRequestEventArgs(ComPtr):
     @winrt_commethod(7)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
     Request = property(get_Request, None)
+
+
 make_ready(__name__)

@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Storage.Streams
 import win32more.Windows.Web
+import win32more.Windows.Win32.System.WinRT
 class IUriToStreamResolver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Web.IUriToStreamResolver'
@@ -35,60 +22,62 @@ class WebError(ComPtr):
     _classid_ = 'Windows.Web.WebError'
     @winrt_classmethod
     def GetStatus(cls: win32more.Windows.Web.IWebErrorStatics, hresult: Int32) -> win32more.Windows.Web.WebErrorStatus: ...
-WebErrorStatus = Int32
-WebErrorStatus_Unknown: WebErrorStatus = 0
-WebErrorStatus_CertificateCommonNameIsIncorrect: WebErrorStatus = 1
-WebErrorStatus_CertificateExpired: WebErrorStatus = 2
-WebErrorStatus_CertificateContainsErrors: WebErrorStatus = 3
-WebErrorStatus_CertificateRevoked: WebErrorStatus = 4
-WebErrorStatus_CertificateIsInvalid: WebErrorStatus = 5
-WebErrorStatus_ServerUnreachable: WebErrorStatus = 6
-WebErrorStatus_Timeout: WebErrorStatus = 7
-WebErrorStatus_ErrorHttpInvalidServerResponse: WebErrorStatus = 8
-WebErrorStatus_ConnectionAborted: WebErrorStatus = 9
-WebErrorStatus_ConnectionReset: WebErrorStatus = 10
-WebErrorStatus_Disconnected: WebErrorStatus = 11
-WebErrorStatus_HttpToHttpsOnRedirection: WebErrorStatus = 12
-WebErrorStatus_HttpsToHttpOnRedirection: WebErrorStatus = 13
-WebErrorStatus_CannotConnect: WebErrorStatus = 14
-WebErrorStatus_HostNameNotResolved: WebErrorStatus = 15
-WebErrorStatus_OperationCanceled: WebErrorStatus = 16
-WebErrorStatus_RedirectFailed: WebErrorStatus = 17
-WebErrorStatus_UnexpectedStatusCode: WebErrorStatus = 18
-WebErrorStatus_UnexpectedRedirection: WebErrorStatus = 19
-WebErrorStatus_UnexpectedClientError: WebErrorStatus = 20
-WebErrorStatus_UnexpectedServerError: WebErrorStatus = 21
-WebErrorStatus_InsufficientRangeSupport: WebErrorStatus = 22
-WebErrorStatus_MissingContentLengthSupport: WebErrorStatus = 23
-WebErrorStatus_MultipleChoices: WebErrorStatus = 300
-WebErrorStatus_MovedPermanently: WebErrorStatus = 301
-WebErrorStatus_Found: WebErrorStatus = 302
-WebErrorStatus_SeeOther: WebErrorStatus = 303
-WebErrorStatus_NotModified: WebErrorStatus = 304
-WebErrorStatus_UseProxy: WebErrorStatus = 305
-WebErrorStatus_TemporaryRedirect: WebErrorStatus = 307
-WebErrorStatus_BadRequest: WebErrorStatus = 400
-WebErrorStatus_Unauthorized: WebErrorStatus = 401
-WebErrorStatus_PaymentRequired: WebErrorStatus = 402
-WebErrorStatus_Forbidden: WebErrorStatus = 403
-WebErrorStatus_NotFound: WebErrorStatus = 404
-WebErrorStatus_MethodNotAllowed: WebErrorStatus = 405
-WebErrorStatus_NotAcceptable: WebErrorStatus = 406
-WebErrorStatus_ProxyAuthenticationRequired: WebErrorStatus = 407
-WebErrorStatus_RequestTimeout: WebErrorStatus = 408
-WebErrorStatus_Conflict: WebErrorStatus = 409
-WebErrorStatus_Gone: WebErrorStatus = 410
-WebErrorStatus_LengthRequired: WebErrorStatus = 411
-WebErrorStatus_PreconditionFailed: WebErrorStatus = 412
-WebErrorStatus_RequestEntityTooLarge: WebErrorStatus = 413
-WebErrorStatus_RequestUriTooLong: WebErrorStatus = 414
-WebErrorStatus_UnsupportedMediaType: WebErrorStatus = 415
-WebErrorStatus_RequestedRangeNotSatisfiable: WebErrorStatus = 416
-WebErrorStatus_ExpectationFailed: WebErrorStatus = 417
-WebErrorStatus_InternalServerError: WebErrorStatus = 500
-WebErrorStatus_NotImplemented: WebErrorStatus = 501
-WebErrorStatus_BadGateway: WebErrorStatus = 502
-WebErrorStatus_ServiceUnavailable: WebErrorStatus = 503
-WebErrorStatus_GatewayTimeout: WebErrorStatus = 504
-WebErrorStatus_HttpVersionNotSupported: WebErrorStatus = 505
+class WebErrorStatus(Int32):  # enum
+    Unknown = 0
+    CertificateCommonNameIsIncorrect = 1
+    CertificateExpired = 2
+    CertificateContainsErrors = 3
+    CertificateRevoked = 4
+    CertificateIsInvalid = 5
+    ServerUnreachable = 6
+    Timeout = 7
+    ErrorHttpInvalidServerResponse = 8
+    ConnectionAborted = 9
+    ConnectionReset = 10
+    Disconnected = 11
+    HttpToHttpsOnRedirection = 12
+    HttpsToHttpOnRedirection = 13
+    CannotConnect = 14
+    HostNameNotResolved = 15
+    OperationCanceled = 16
+    RedirectFailed = 17
+    UnexpectedStatusCode = 18
+    UnexpectedRedirection = 19
+    UnexpectedClientError = 20
+    UnexpectedServerError = 21
+    InsufficientRangeSupport = 22
+    MissingContentLengthSupport = 23
+    MultipleChoices = 300
+    MovedPermanently = 301
+    Found = 302
+    SeeOther = 303
+    NotModified = 304
+    UseProxy = 305
+    TemporaryRedirect = 307
+    BadRequest = 400
+    Unauthorized = 401
+    PaymentRequired = 402
+    Forbidden = 403
+    NotFound = 404
+    MethodNotAllowed = 405
+    NotAcceptable = 406
+    ProxyAuthenticationRequired = 407
+    RequestTimeout = 408
+    Conflict = 409
+    Gone = 410
+    LengthRequired = 411
+    PreconditionFailed = 412
+    RequestEntityTooLarge = 413
+    RequestUriTooLong = 414
+    UnsupportedMediaType = 415
+    RequestedRangeNotSatisfiable = 416
+    ExpectationFailed = 417
+    InternalServerError = 500
+    NotImplemented = 501
+    BadGateway = 502
+    ServiceUnavailable = 503
+    GatewayTimeout = 504
+    HttpVersionNotSupported = 505
+
+
 make_ready(__name__)

@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Display
 import win32more.Windows.Foundation
 import win32more.Windows.Graphics
+import win32more.Windows.Win32.System.WinRT
 class DisplayMonitor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Display.IDisplayMonitor
@@ -70,47 +57,47 @@ class DisplayMonitor(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Devices.Display.IDisplayMonitorStatics, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Display.DisplayMonitor]: ...
     @winrt_classmethod
     def FromInterfaceIdAsync(cls: win32more.Windows.Devices.Display.IDisplayMonitorStatics, deviceInterfaceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Display.DisplayMonitor]: ...
-    DeviceId = property(get_DeviceId, None)
-    DisplayName = property(get_DisplayName, None)
+    BluePrimary = property(get_BluePrimary, None)
     ConnectionKind = property(get_ConnectionKind, None)
-    PhysicalConnector = property(get_PhysicalConnector, None)
+    DeviceId = property(get_DeviceId, None)
     DisplayAdapterDeviceId = property(get_DisplayAdapterDeviceId, None)
     DisplayAdapterId = property(get_DisplayAdapterId, None)
     DisplayAdapterTargetId = property(get_DisplayAdapterTargetId, None)
-    UsageKind = property(get_UsageKind, None)
+    DisplayName = property(get_DisplayName, None)
+    GreenPrimary = property(get_GreenPrimary, None)
+    IsDolbyVisionSupportedInHdrMode = property(get_IsDolbyVisionSupportedInHdrMode, None)
+    MaxAverageFullFrameLuminanceInNits = property(get_MaxAverageFullFrameLuminanceInNits, None)
+    MaxLuminanceInNits = property(get_MaxLuminanceInNits, None)
+    MinLuminanceInNits = property(get_MinLuminanceInNits, None)
     NativeResolutionInRawPixels = property(get_NativeResolutionInRawPixels, None)
+    PhysicalConnector = property(get_PhysicalConnector, None)
     PhysicalSizeInInches = property(get_PhysicalSizeInInches, None)
     RawDpiX = property(get_RawDpiX, None)
     RawDpiY = property(get_RawDpiY, None)
     RedPrimary = property(get_RedPrimary, None)
-    GreenPrimary = property(get_GreenPrimary, None)
-    BluePrimary = property(get_BluePrimary, None)
+    UsageKind = property(get_UsageKind, None)
     WhitePoint = property(get_WhitePoint, None)
-    MaxLuminanceInNits = property(get_MaxLuminanceInNits, None)
-    MinLuminanceInNits = property(get_MinLuminanceInNits, None)
-    MaxAverageFullFrameLuminanceInNits = property(get_MaxAverageFullFrameLuminanceInNits, None)
-    IsDolbyVisionSupportedInHdrMode = property(get_IsDolbyVisionSupportedInHdrMode, None)
-DisplayMonitorConnectionKind = Int32
-DisplayMonitorConnectionKind_Internal: DisplayMonitorConnectionKind = 0
-DisplayMonitorConnectionKind_Wired: DisplayMonitorConnectionKind = 1
-DisplayMonitorConnectionKind_Wireless: DisplayMonitorConnectionKind = 2
-DisplayMonitorConnectionKind_Virtual: DisplayMonitorConnectionKind = 3
-DisplayMonitorDescriptorKind = Int32
-DisplayMonitorDescriptorKind_Edid: DisplayMonitorDescriptorKind = 0
-DisplayMonitorDescriptorKind_DisplayId: DisplayMonitorDescriptorKind = 1
-DisplayMonitorPhysicalConnectorKind = Int32
-DisplayMonitorPhysicalConnectorKind_Unknown: DisplayMonitorPhysicalConnectorKind = 0
-DisplayMonitorPhysicalConnectorKind_HD15: DisplayMonitorPhysicalConnectorKind = 1
-DisplayMonitorPhysicalConnectorKind_AnalogTV: DisplayMonitorPhysicalConnectorKind = 2
-DisplayMonitorPhysicalConnectorKind_Dvi: DisplayMonitorPhysicalConnectorKind = 3
-DisplayMonitorPhysicalConnectorKind_Hdmi: DisplayMonitorPhysicalConnectorKind = 4
-DisplayMonitorPhysicalConnectorKind_Lvds: DisplayMonitorPhysicalConnectorKind = 5
-DisplayMonitorPhysicalConnectorKind_Sdi: DisplayMonitorPhysicalConnectorKind = 6
-DisplayMonitorPhysicalConnectorKind_DisplayPort: DisplayMonitorPhysicalConnectorKind = 7
-DisplayMonitorUsageKind = Int32
-DisplayMonitorUsageKind_Standard: DisplayMonitorUsageKind = 0
-DisplayMonitorUsageKind_HeadMounted: DisplayMonitorUsageKind = 1
-DisplayMonitorUsageKind_SpecialPurpose: DisplayMonitorUsageKind = 2
+class DisplayMonitorConnectionKind(Int32):  # enum
+    Internal = 0
+    Wired = 1
+    Wireless = 2
+    Virtual = 3
+class DisplayMonitorDescriptorKind(Int32):  # enum
+    Edid = 0
+    DisplayId = 1
+class DisplayMonitorPhysicalConnectorKind(Int32):  # enum
+    Unknown = 0
+    HD15 = 1
+    AnalogTV = 2
+    Dvi = 3
+    Hdmi = 4
+    Lvds = 5
+    Sdi = 6
+    DisplayPort = 7
+class DisplayMonitorUsageKind(Int32):  # enum
+    Standard = 0
+    HeadMounted = 1
+    SpecialPurpose = 2
 class IDisplayMonitor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Display.IDisplayMonitor'
@@ -155,25 +142,25 @@ class IDisplayMonitor(ComPtr):
     def get_MaxAverageFullFrameLuminanceInNits(self) -> Single: ...
     @winrt_commethod(25)
     def GetDescriptor(self, descriptorKind: win32more.Windows.Devices.Display.DisplayMonitorDescriptorKind) -> SZArray[Byte]: ...
-    DeviceId = property(get_DeviceId, None)
-    DisplayName = property(get_DisplayName, None)
+    BluePrimary = property(get_BluePrimary, None)
     ConnectionKind = property(get_ConnectionKind, None)
-    PhysicalConnector = property(get_PhysicalConnector, None)
+    DeviceId = property(get_DeviceId, None)
     DisplayAdapterDeviceId = property(get_DisplayAdapterDeviceId, None)
     DisplayAdapterId = property(get_DisplayAdapterId, None)
     DisplayAdapterTargetId = property(get_DisplayAdapterTargetId, None)
-    UsageKind = property(get_UsageKind, None)
+    DisplayName = property(get_DisplayName, None)
+    GreenPrimary = property(get_GreenPrimary, None)
+    MaxAverageFullFrameLuminanceInNits = property(get_MaxAverageFullFrameLuminanceInNits, None)
+    MaxLuminanceInNits = property(get_MaxLuminanceInNits, None)
+    MinLuminanceInNits = property(get_MinLuminanceInNits, None)
     NativeResolutionInRawPixels = property(get_NativeResolutionInRawPixels, None)
+    PhysicalConnector = property(get_PhysicalConnector, None)
     PhysicalSizeInInches = property(get_PhysicalSizeInInches, None)
     RawDpiX = property(get_RawDpiX, None)
     RawDpiY = property(get_RawDpiY, None)
     RedPrimary = property(get_RedPrimary, None)
-    GreenPrimary = property(get_GreenPrimary, None)
-    BluePrimary = property(get_BluePrimary, None)
+    UsageKind = property(get_UsageKind, None)
     WhitePoint = property(get_WhitePoint, None)
-    MaxLuminanceInNits = property(get_MaxLuminanceInNits, None)
-    MinLuminanceInNits = property(get_MinLuminanceInNits, None)
-    MaxAverageFullFrameLuminanceInNits = property(get_MaxAverageFullFrameLuminanceInNits, None)
 class IDisplayMonitor2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Display.IDisplayMonitor2'
@@ -191,4 +178,6 @@ class IDisplayMonitorStatics(ComPtr):
     def FromIdAsync(self, deviceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Display.DisplayMonitor]: ...
     @winrt_commethod(8)
     def FromInterfaceIdAsync(self, deviceInterfaceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.Display.DisplayMonitor]: ...
+
+
 make_ready(__name__)

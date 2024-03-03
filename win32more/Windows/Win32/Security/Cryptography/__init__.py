@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security
 import win32more.Windows.Win32.Security.Cryptography
@@ -71,6 +71,8 @@ class AUTHENTICODE_TS_EXTRA_CERT_CHAIN_POLICY_PARA(EasyCastStructure):
     cbSize: UInt32
     dwRegPolicySettings: UInt32
     fCommercial: win32more.Windows.Win32.Foundation.BOOL
+CERT_SYSTEM_STORE_CURRENT_USER: UInt32 = 65536
+CERT_SYSTEM_STORE_LOCAL_MACHINE: UInt32 = 131072
 CERT_COMPARE_SHIFT: Int32 = 16
 BCRYPT_OBJECT_ALIGNMENT: UInt32 = 16
 BCRYPT_KDF_HASH: String = 'HASH'
@@ -578,6 +580,7 @@ NCRYPT_IGNORE_DEVICE_STATE_FLAG: UInt32 = 4096
 NCRYPT_TREAT_NIST_AS_GENERIC_ECC_FLAG: UInt32 = 8192
 NCRYPT_NO_CACHED_PASSWORD: UInt32 = 16384
 NCRYPT_PROTECT_TO_LOCAL_SYSTEM: UInt32 = 32768
+NCRYPT_REQUIRE_KDS_LRPC_BIND_FLAG: UInt32 = 536870912
 NCRYPT_PREFER_VIRTUAL_ISOLATION_FLAG: UInt32 = 65536
 NCRYPT_USE_VIRTUAL_ISOLATION_FLAG: UInt32 = 131072
 NCRYPT_USE_PER_BOOT_KEY_FLAG: UInt32 = 262144
@@ -1544,6 +1547,7 @@ szOID_CERTSRV_CROSSCA_VERSION: String = '1.3.6.1.4.1.311.21.22'
 szOID_NTDS_REPLICATION: String = '1.3.6.1.4.1.311.25.1'
 szOID_NTDS_CA_SECURITY_EXT: String = '1.3.6.1.4.1.311.25.2'
 szOID_NTDS_OBJECTSID: String = '1.3.6.1.4.1.311.25.2.1'
+wszURI_NTDS_OBJECTSID_PREFIX: String = 'tag:microsoft.com,2022-09-14:sid:'
 szOID_SUBJECT_DIR_ATTRS: String = '2.5.29.9'
 szOID_PKIX_KP: String = '1.3.6.1.5.5.7.3'
 szOID_PKIX_KP_SERVER_AUTH: String = '1.3.6.1.5.5.7.3.1'
@@ -5916,15 +5920,15 @@ class CTL_VERIFY_USAGE_STATUS(EasyCastStructure):
     ppSigner: POINTER(POINTER(win32more.Windows.Win32.Security.Cryptography.CERT_CONTEXT))
     dwSignerIndex: UInt32
 CertKeyType = UInt32
-CertKeyType_KeyTypeOther: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 0
-CertKeyType_KeyTypeVirtualSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 1
-CertKeyType_KeyTypePhysicalSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 2
-CertKeyType_KeyTypePassport: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 3
-CertKeyType_KeyTypePassportRemote: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 4
-CertKeyType_KeyTypePassportSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 5
-CertKeyType_KeyTypeHardware: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 6
-CertKeyType_KeyTypeSoftware: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 7
-CertKeyType_KeyTypeSelfSigned: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 8
+KeyTypeOther: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 0
+KeyTypeVirtualSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 1
+KeyTypePhysicalSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 2
+KeyTypePassport: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 3
+KeyTypePassportRemote: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 4
+KeyTypePassportSmartCard: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 5
+KeyTypeHardware: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 6
+KeyTypeSoftware: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 7
+KeyTypeSelfSigned: win32more.Windows.Win32.Security.Cryptography.CertKeyType = 8
 @winfunctype_pointer
 def CryptXmlDllCloseDigest(hDigest: VoidPtr) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype_pointer
@@ -5954,8 +5958,8 @@ class DSSSEED(EasyCastStructure):
     counter: UInt32
     seed: Byte * 20
 Direction = Int32
-Direction_DirectionEncrypt: win32more.Windows.Win32.Security.Cryptography.Direction = 1
-Direction_DirectionDecrypt: win32more.Windows.Win32.Security.Cryptography.Direction = 2
+DirectionEncrypt: win32more.Windows.Win32.Security.Cryptography.Direction = 1
+DirectionDecrypt: win32more.Windows.Win32.Security.Cryptography.Direction = 2
 ECC_CURVE_ALG_ID_ENUM = Int32
 BCRYPT_NO_CURVE_GENERATION_ALG_ID: win32more.Windows.Win32.Security.Cryptography.ECC_CURVE_ALG_ID_ENUM = 0
 ECC_CURVE_TYPE_ENUM = Int32
@@ -6012,11 +6016,11 @@ class HTTPSPolicyCallbackData(EasyCastStructure):
     class _Anonymous_e__Union(EasyCastUnion):
         cbStruct: UInt32
         cbSize: UInt32
-HandleType = Int32
-HandleType_Asymmetric: win32more.Windows.Win32.Security.Cryptography.HandleType = 1
-HandleType_Symmetric: win32more.Windows.Win32.Security.Cryptography.HandleType = 2
-HandleType_Transform: win32more.Windows.Win32.Security.Cryptography.HandleType = 3
-HandleType_Hash: win32more.Windows.Win32.Security.Cryptography.HandleType = 4
+class HandleType(Int32):  # enum
+    Asymmetric = 1
+    Symmetric = 2
+    Transform = 3
+    Hash = 4
 class ICertSrvSetup(ComPtr):
     extends: win32more.Windows.Win32.System.Com.IDispatch
     _iid_ = Guid('{b760a1bb-4784-44c0-8f12-555f0780ff25}')
@@ -6629,12 +6633,12 @@ class PUBLICKEYSTRUC(EasyCastStructure):
     bVersion: Byte
     reserved: UInt16
     aiKeyAlg: win32more.Windows.Win32.Security.Cryptography.ALG_ID
-PaddingMode = Int32
-PaddingMode_None: win32more.Windows.Win32.Security.Cryptography.PaddingMode = 1
-PaddingMode_PKCS7: win32more.Windows.Win32.Security.Cryptography.PaddingMode = 2
-PaddingMode_Zeros: win32more.Windows.Win32.Security.Cryptography.PaddingMode = 3
-PaddingMode_ANSIX923: win32more.Windows.Win32.Security.Cryptography.PaddingMode = 4
-PaddingMode_ISO10126: win32more.Windows.Win32.Security.Cryptography.PaddingMode = 5
+class PaddingMode(Int32):  # enum
+    None_ = 1
+    PKCS7 = 2
+    Zeros = 3
+    ANSIX923 = 4
+    ISO10126 = 5
 class RECIPIENTPOLICY(EasyCastStructure):
     recipient: win32more.Windows.Win32.Security.Cryptography.ENDPOINTADDRESS
     issuer: win32more.Windows.Win32.Security.Cryptography.ENDPOINTADDRESS

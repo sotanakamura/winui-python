@@ -1,27 +1,21 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 import win32more.Windows.Foundation
+import win32more.Windows.Win32.System.WinRT
 DeploymentContract: UInt32 = 262144
 class DeploymentInitializeOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentInitializeOptions
     _classid_ = 'Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions: ...
     @winrt_mixinmethod
@@ -37,29 +31,38 @@ class DeploymentInitializeOptions(ComPtr):
 class DeploymentManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager'
+    @winrt_overload
     @winrt_classmethod
-    def Initialize(cls: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentManagerStatics, deploymentInitializeOptions: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
+    def Initialize(cls: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentManagerStatics2, deploymentInitializeOptions: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentInitializeOptions) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
     @winrt_classmethod
     def GetStatus(cls: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentManagerStatics) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
+    @Initialize.register
     @winrt_classmethod
     def Initialize(cls: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentManagerStatics) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
 class DeploymentResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentResult
     _classid_ = 'Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentResultFactory, status: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentStatus, extendedError: win32more.Windows.Foundation.HResult) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
     @winrt_mixinmethod
     def get_Status(self: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentResult) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentStatus: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentResult) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
-DeploymentStatus = Int32
-DeploymentStatus_Unknown: DeploymentStatus = 0
-DeploymentStatus_Ok: DeploymentStatus = 1
-DeploymentStatus_PackageInstallRequired: DeploymentStatus = 2
-DeploymentStatus_PackageInstallFailed: DeploymentStatus = 3
+    Status = property(get_Status, None)
+class DeploymentStatus(Int32):  # enum
+    Unknown = 0
+    Ok = 1
+    PackageInstallRequired = 2
+    PackageInstallFailed = 3
 class IDeploymentInitializeOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentInitializeOptions'
@@ -100,12 +103,14 @@ class IDeploymentResult(ComPtr):
     def get_Status(self) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentStatus: ...
     @winrt_commethod(7)
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
-    Status = property(get_Status, None)
     ExtendedError = property(get_ExtendedError, None)
+    Status = property(get_Status, None)
 class IDeploymentResultFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.WindowsAppRuntime.IDeploymentResultFactory'
     _iid_ = Guid('{acd7bdae-4ae6-5cac-8205-1e8c305f953b}')
     @winrt_commethod(6)
     def CreateInstance(self, status: win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentStatus, extendedError: win32more.Windows.Foundation.HResult) -> win32more.Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentResult: ...
+
+
 make_ready(__name__)

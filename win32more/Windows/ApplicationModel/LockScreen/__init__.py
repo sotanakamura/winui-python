@@ -1,24 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.LockScreen
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class ILockApplicationHost(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.LockScreen.ILockApplicationHost'
@@ -49,10 +36,10 @@ class ILockScreenBadge(ComPtr):
     def get_AutomationName(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def LaunchApp(self) -> Void: ...
-    Logo = property(get_Logo, None)
-    Glyph = property(get_Glyph, None)
-    Number = property(get_Number, None)
     AutomationName = property(get_AutomationName, None)
+    Glyph = property(get_Glyph, None)
+    Logo = property(get_Logo, None)
+    Number = property(get_Number, None)
 class ILockScreenInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.LockScreen.ILockScreenInfo'
@@ -81,10 +68,10 @@ class ILockScreenInfo(ComPtr):
     def remove_AlarmIconChanged(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_commethod(17)
     def get_AlarmIcon(self) -> win32more.Windows.Storage.Streams.IRandomAccessStream: ...
-    LockScreenImage = property(get_LockScreenImage, None)
+    AlarmIcon = property(get_AlarmIcon, None)
     Badges = property(get_Badges, None)
     DetailText = property(get_DetailText, None)
-    AlarmIcon = property(get_AlarmIcon, None)
+    LockScreenImage = property(get_LockScreenImage, None)
 class ILockScreenUnlockingDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.LockScreen.ILockScreenUnlockingDeferral'
@@ -126,10 +113,10 @@ class LockScreenBadge(ComPtr):
     def get_AutomationName(self: win32more.Windows.ApplicationModel.LockScreen.ILockScreenBadge) -> WinRT_String: ...
     @winrt_mixinmethod
     def LaunchApp(self: win32more.Windows.ApplicationModel.LockScreen.ILockScreenBadge) -> Void: ...
-    Logo = property(get_Logo, None)
-    Glyph = property(get_Glyph, None)
-    Number = property(get_Number, None)
     AutomationName = property(get_AutomationName, None)
+    Glyph = property(get_Glyph, None)
+    Logo = property(get_Logo, None)
+    Number = property(get_Number, None)
 class LockScreenInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.LockScreen.ILockScreenInfo
@@ -158,10 +145,10 @@ class LockScreenInfo(ComPtr):
     def remove_AlarmIconChanged(self: win32more.Windows.ApplicationModel.LockScreen.ILockScreenInfo, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def get_AlarmIcon(self: win32more.Windows.ApplicationModel.LockScreen.ILockScreenInfo) -> win32more.Windows.Storage.Streams.IRandomAccessStream: ...
-    LockScreenImage = property(get_LockScreenImage, None)
+    AlarmIcon = property(get_AlarmIcon, None)
     Badges = property(get_Badges, None)
     DetailText = property(get_DetailText, None)
-    AlarmIcon = property(get_AlarmIcon, None)
+    LockScreenImage = property(get_LockScreenImage, None)
 class LockScreenUnlockingDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.LockScreen.ILockScreenUnlockingDeferral
@@ -177,4 +164,6 @@ class LockScreenUnlockingEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Deadline(self: win32more.Windows.ApplicationModel.LockScreen.ILockScreenUnlockingEventArgs) -> win32more.Windows.Foundation.DateTime: ...
     Deadline = property(get_Deadline, None)
+
+
 make_ready(__name__)

@@ -18,6 +18,11 @@ from ctypes import (
 )
 from typing import Generic, TypeVar, _GenericAlias
 
+if sys.version_info < (3, 9):
+    from typing_extensions import Annotated
+else:
+    from typing import Annotated
+
 if sys.version_info < (3, 8):
     from typing_extensions import get_args
 else:
@@ -59,7 +64,12 @@ from win32more.Windows.Win32.System.WinRT import (
     WindowsGetStringRawBuffer,
 )
 
+K = TypeVar("K")
 T = TypeVar("T")
+V = TypeVar("V")
+TProgress = TypeVar("TProgress")
+TResult = TypeVar("TResult")
+TSender = TypeVar("TSender")
 
 
 def generic_get_type_hints(cls, prototype, include_extras=False, use_generic_alias=False):
@@ -238,9 +248,8 @@ class WinrtMethod:
                     cargs.append(v._contents)
                 elif callable(v) and is_delegate_class(self.generic_hints[k]):
                     cargs.append(self.generic_hints[k](own=True).CreateInstance(v))
-                # FIXME: Workaround for runtime class to interface class.  check interface_implementations?
                 elif is_com_instance(v) and is_com_class(self.generic_hints[k]):
-                    cargs.append(self.generic_hints[k](v.value, own=False))
+                    cargs.append(v.as_(self.generic_hints[k]))
                 else:
                     cargs.append(easycast(v, self.generic_hints[k]))
             else:
@@ -253,9 +262,8 @@ class WinrtMethod:
                     ckwargs[k] = v._contents
                 if callable(v) and is_delegate_class(self.generic_hints[k]):
                     ckwargs[k] = self.generic_hints[k](own=True).CreateInstance(v)
-                # FIXME: Workaround for runtime class to interface class.  check interface_implementations?
                 elif is_com_instance(v) and is_com_class(self.generic_hints[k]):
-                    ckwargs[k] = self.generic_hints[k](v.value, own=False)
+                    ckwargs[k] = v.as_(self.generic_hints[k])
                 else:
                     ckwargs[k] = easycast(v, self.generic_hints[k])
             else:
@@ -292,6 +300,8 @@ def winrt_commethod(vtbl_index):
                 delegate_generic[generic_args] = WinrtMethod(cls, prototype, factory)
             return delegate_generic[generic_args](self, *args, **kwargs)
 
+        wrapper.prototype = prototype
+
         return wrapper
 
     return decorator
@@ -315,6 +325,8 @@ def winrt_mixinmethod(prototype):
         if m:
             method_name = m.group(1)
         return getattr(interface, method_name)(*args, **kwargs)
+
+    wrapper.prototype = prototype
 
     return wrapper
 
@@ -366,6 +378,8 @@ def winrt_classmethod(prototype):
         factory = _ro_get_activation_factory(cls._classid_, factory_class)
         return getattr(factory, prototype.__name__)(*args, **kwargs)
 
+    wrapper.prototype = prototype
+
     return wrapper
 
 
@@ -378,7 +392,36 @@ def winrt_activatemethod(prototype):
     def wrapper(cls):
         return _ro_activate_instance(cls._classid_, cls)
 
+    wrapper.prototype = prototype
+
     return wrapper
+
+
+class winrt_overload:
+    def __init__(self, func):
+        self.funcs = [func]
+
+    def register(self, func):
+        self.funcs.append(func)
+        return self
+
+    def __get__(self, obj, cls=None):
+        def _classmethod(*args):
+            for func in self.funcs:
+                if isinstance(func, classmethod) and len(args) == func.prototype.__code__.co_argcount - 1:
+                    return func.__get__(obj, cls)(*args)
+            raise ValueError("no matched method")
+
+        def _method(*args):
+            for func in self.funcs:
+                if not isinstance(func, classmethod) and len(args) == func.prototype.__code__.co_argcount - 1:
+                    return func.__get__(obj, cls)(*args)
+            raise ValueError("no matched method")
+
+        if obj is None:
+            return _classmethod
+        else:
+            return _method
 
 
 def _windows_create_string(s: str) -> HSTRING:
@@ -500,7 +543,7 @@ class MulticastDelegateImpl(Structure):
     def _make_trampoline(self, cls, invoke_prototype):
         hints = generic_get_type_hints(cls, invoke_prototype)
         self.restype = hints.pop("return")
-        argtypes = list(hints.values())
+        argtypes = [(self._make_allocator(t) if isinstance(t, ComPtr) else t) for t in hints.values()]
         if self.restype is not Void:
             restype = self.restype
             if is_generic_alias(restype):
@@ -508,6 +551,10 @@ class MulticastDelegateImpl(Structure):
             argtypes.append(POINTER(restype))
         factory = WINFUNCTYPE(HRESULT, c_void_p, *argtypes)
         return factory(self.Invoke)
+
+    # allocate winrt runtime class without constructor.
+    def _make_allocator(cls):
+        return type(c_void_p)("Allocator", (c_void_p,), {"__new__": lambda _: cls(own=False)})
 
     @WINFUNCTYPE(HRESULT, c_void_p, POINTER(Guid), POINTER(c_void_p))
     def QueryInterface(this, riid, ppvObject):

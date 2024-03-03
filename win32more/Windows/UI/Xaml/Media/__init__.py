@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Playback
@@ -25,15 +11,24 @@ import win32more.Windows.UI.Xaml
 import win32more.Windows.UI.Xaml.Controls.Primitives
 import win32more.Windows.UI.Xaml.Media
 import win32more.Windows.UI.Xaml.Media.Media3D
-AcrylicBackgroundSource = Int32
-AcrylicBackgroundSource_HostBackdrop: AcrylicBackgroundSource = 0
-AcrylicBackgroundSource_Backdrop: AcrylicBackgroundSource = 1
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
+class AcrylicBackgroundSource(Int32):  # enum
+    HostBackdrop = 0
+    Backdrop = 1
 class _AcrylicBrush_Meta_(ComPtr.__class__):
     pass
 class AcrylicBrush(ComPtr, metaclass=_AcrylicBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.XamlCompositionBrushBase
     default_interface: win32more.Windows.UI.Xaml.Media.IAcrylicBrush
     _classid_ = 'Windows.UI.Xaml.Media.AcrylicBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.AcrylicBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IAcrylicBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.AcrylicBrush: ...
     @winrt_mixinmethod
@@ -72,32 +67,39 @@ class AcrylicBrush(ComPtr, metaclass=_AcrylicBrush_Meta_):
     def get_TintTransitionDurationProperty(cls: win32more.Windows.UI.Xaml.Media.IAcrylicBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_AlwaysUseFallbackProperty(cls: win32more.Windows.UI.Xaml.Media.IAcrylicBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
     BackgroundSource = property(get_BackgroundSource, put_BackgroundSource)
     TintColor = property(get_TintColor, put_TintColor)
+    TintLuminosityOpacity = property(get_TintLuminosityOpacity, put_TintLuminosityOpacity)
     TintOpacity = property(get_TintOpacity, put_TintOpacity)
     TintTransitionDuration = property(get_TintTransitionDuration, put_TintTransitionDuration)
-    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
-    TintLuminosityOpacity = property(get_TintLuminosityOpacity, put_TintLuminosityOpacity)
-    _AcrylicBrush_Meta_.TintLuminosityOpacityProperty = property(get_TintLuminosityOpacityProperty.__wrapped__, None)
+    _AcrylicBrush_Meta_.AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty.__wrapped__, None)
     _AcrylicBrush_Meta_.BackgroundSourceProperty = property(get_BackgroundSourceProperty.__wrapped__, None)
     _AcrylicBrush_Meta_.TintColorProperty = property(get_TintColorProperty.__wrapped__, None)
+    _AcrylicBrush_Meta_.TintLuminosityOpacityProperty = property(get_TintLuminosityOpacityProperty.__wrapped__, None)
     _AcrylicBrush_Meta_.TintOpacityProperty = property(get_TintOpacityProperty.__wrapped__, None)
     _AcrylicBrush_Meta_.TintTransitionDurationProperty = property(get_TintTransitionDurationProperty.__wrapped__, None)
-    _AcrylicBrush_Meta_.AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty.__wrapped__, None)
-AlignmentX = Int32
-AlignmentX_Left: AlignmentX = 0
-AlignmentX_Center: AlignmentX = 1
-AlignmentX_Right: AlignmentX = 2
-AlignmentY = Int32
-AlignmentY_Top: AlignmentY = 0
-AlignmentY_Center: AlignmentY = 1
-AlignmentY_Bottom: AlignmentY = 2
+class AlignmentX(Int32):  # enum
+    Left = 0
+    Center = 1
+    Right = 2
+class AlignmentY(Int32):  # enum
+    Top = 0
+    Center = 1
+    Bottom = 2
 class _ArcSegment_Meta_(ComPtr.__class__):
     pass
 class ArcSegment(ComPtr, metaclass=_ArcSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IArcSegment
     _classid_ = 'Windows.UI.Xaml.Media.ArcSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.ArcSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.ArcSegment: ...
     @winrt_mixinmethod
@@ -130,39 +132,46 @@ class ArcSegment(ComPtr, metaclass=_ArcSegment_Meta_):
     def get_IsLargeArcProperty(cls: win32more.Windows.UI.Xaml.Media.IArcSegmentStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_SweepDirectionProperty(cls: win32more.Windows.UI.Xaml.Media.IArcSegmentStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Point = property(get_Point, put_Point)
-    Size = property(get_Size, put_Size)
-    RotationAngle = property(get_RotationAngle, put_RotationAngle)
     IsLargeArc = property(get_IsLargeArc, put_IsLargeArc)
+    Point = property(get_Point, put_Point)
+    RotationAngle = property(get_RotationAngle, put_RotationAngle)
+    Size = property(get_Size, put_Size)
     SweepDirection = property(get_SweepDirection, put_SweepDirection)
-    _ArcSegment_Meta_.PointProperty = property(get_PointProperty.__wrapped__, None)
-    _ArcSegment_Meta_.SizeProperty = property(get_SizeProperty.__wrapped__, None)
-    _ArcSegment_Meta_.RotationAngleProperty = property(get_RotationAngleProperty.__wrapped__, None)
     _ArcSegment_Meta_.IsLargeArcProperty = property(get_IsLargeArcProperty.__wrapped__, None)
+    _ArcSegment_Meta_.PointProperty = property(get_PointProperty.__wrapped__, None)
+    _ArcSegment_Meta_.RotationAngleProperty = property(get_RotationAngleProperty.__wrapped__, None)
+    _ArcSegment_Meta_.SizeProperty = property(get_SizeProperty.__wrapped__, None)
     _ArcSegment_Meta_.SweepDirectionProperty = property(get_SweepDirectionProperty.__wrapped__, None)
-AudioCategory = Int32
-AudioCategory_Other: AudioCategory = 0
-AudioCategory_ForegroundOnlyMedia: AudioCategory = 1
-AudioCategory_BackgroundCapableMedia: AudioCategory = 2
-AudioCategory_Communications: AudioCategory = 3
-AudioCategory_Alerts: AudioCategory = 4
-AudioCategory_SoundEffects: AudioCategory = 5
-AudioCategory_GameEffects: AudioCategory = 6
-AudioCategory_GameMedia: AudioCategory = 7
-AudioCategory_GameChat: AudioCategory = 8
-AudioCategory_Speech: AudioCategory = 9
-AudioCategory_Movie: AudioCategory = 10
-AudioCategory_Media: AudioCategory = 11
-AudioDeviceType = Int32
-AudioDeviceType_Console: AudioDeviceType = 0
-AudioDeviceType_Multimedia: AudioDeviceType = 1
-AudioDeviceType_Communications: AudioDeviceType = 2
+class AudioCategory(Int32):  # enum
+    Other = 0
+    ForegroundOnlyMedia = 1
+    BackgroundCapableMedia = 2
+    Communications = 3
+    Alerts = 4
+    SoundEffects = 5
+    GameEffects = 6
+    GameMedia = 7
+    GameChat = 8
+    Speech = 9
+    Movie = 10
+    Media = 11
+class AudioDeviceType(Int32):  # enum
+    Console = 0
+    Multimedia = 1
+    Communications = 2
 class _BezierSegment_Meta_(ComPtr.__class__):
     pass
 class BezierSegment(ComPtr, metaclass=_BezierSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IBezierSegment
     _classid_ = 'Windows.UI.Xaml.Media.BezierSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.BezierSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.BezierSegment: ...
     @winrt_mixinmethod
@@ -193,6 +202,13 @@ class BitmapCache(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.CacheMode
     default_interface: win32more.Windows.UI.Xaml.Media.IBitmapCache
     _classid_ = 'Windows.UI.Xaml.Media.BitmapCache'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.BitmapCache.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.BitmapCache: ...
 class _Brush_Meta_(ComPtr.__class__):
@@ -201,6 +217,13 @@ class Brush(ComPtr, metaclass=_Brush_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IBrush
     _classid_ = 'Windows.UI.Xaml.Media.Brush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Brush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Brush: ...
     @winrt_mixinmethod
@@ -226,15 +249,22 @@ class Brush(ComPtr, metaclass=_Brush_Meta_):
     @winrt_classmethod
     def get_RelativeTransformProperty(cls: win32more.Windows.UI.Xaml.Media.IBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Opacity = property(get_Opacity, put_Opacity)
-    Transform = property(get_Transform, put_Transform)
     RelativeTransform = property(get_RelativeTransform, put_RelativeTransform)
+    Transform = property(get_Transform, put_Transform)
     _Brush_Meta_.OpacityProperty = property(get_OpacityProperty.__wrapped__, None)
-    _Brush_Meta_.TransformProperty = property(get_TransformProperty.__wrapped__, None)
     _Brush_Meta_.RelativeTransformProperty = property(get_RelativeTransformProperty.__wrapped__, None)
+    _Brush_Meta_.TransformProperty = property(get_TransformProperty.__wrapped__, None)
 class BrushCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Brush]
     _classid_ = 'Windows.UI.Xaml.Media.BrushCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.BrushCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.BrushCollection: ...
     @winrt_mixinmethod
@@ -264,24 +294,38 @@ class BrushCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Xaml.Media.Brush]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.UI.Xaml.Media.Brush]: ...
     Size = property(get_Size, None)
-BrushMappingMode = Int32
-BrushMappingMode_Absolute: BrushMappingMode = 0
-BrushMappingMode_RelativeToBoundingBox: BrushMappingMode = 1
+class BrushMappingMode(Int32):  # enum
+    Absolute = 0
+    RelativeToBoundingBox = 1
 class CacheMode(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.ICacheMode
     _classid_ = 'Windows.UI.Xaml.Media.CacheMode'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.CacheMode.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.ICacheModeFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.CacheMode: ...
-ColorInterpolationMode = Int32
-ColorInterpolationMode_ScRgbLinearInterpolation: ColorInterpolationMode = 0
-ColorInterpolationMode_SRgbLinearInterpolation: ColorInterpolationMode = 1
+class ColorInterpolationMode(Int32):  # enum
+    ScRgbLinearInterpolation = 0
+    SRgbLinearInterpolation = 1
 class _CompositeTransform_Meta_(ComPtr.__class__):
     pass
 class CompositeTransform(ComPtr, metaclass=_CompositeTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.ICompositeTransform
     _classid_ = 'Windows.UI.Xaml.Media.CompositeTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.CompositeTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.CompositeTransform: ...
     @winrt_mixinmethod
@@ -340,20 +384,20 @@ class CompositeTransform(ComPtr, metaclass=_CompositeTransform_Meta_):
     def get_TranslateYProperty(cls: win32more.Windows.UI.Xaml.Media.ICompositeTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CenterX = property(get_CenterX, put_CenterX)
     CenterY = property(get_CenterY, put_CenterY)
+    Rotation = property(get_Rotation, put_Rotation)
     ScaleX = property(get_ScaleX, put_ScaleX)
     ScaleY = property(get_ScaleY, put_ScaleY)
     SkewX = property(get_SkewX, put_SkewX)
     SkewY = property(get_SkewY, put_SkewY)
-    Rotation = property(get_Rotation, put_Rotation)
     TranslateX = property(get_TranslateX, put_TranslateX)
     TranslateY = property(get_TranslateY, put_TranslateY)
     _CompositeTransform_Meta_.CenterXProperty = property(get_CenterXProperty.__wrapped__, None)
     _CompositeTransform_Meta_.CenterYProperty = property(get_CenterYProperty.__wrapped__, None)
+    _CompositeTransform_Meta_.RotationProperty = property(get_RotationProperty.__wrapped__, None)
     _CompositeTransform_Meta_.ScaleXProperty = property(get_ScaleXProperty.__wrapped__, None)
     _CompositeTransform_Meta_.ScaleYProperty = property(get_ScaleYProperty.__wrapped__, None)
     _CompositeTransform_Meta_.SkewXProperty = property(get_SkewXProperty.__wrapped__, None)
     _CompositeTransform_Meta_.SkewYProperty = property(get_SkewYProperty.__wrapped__, None)
-    _CompositeTransform_Meta_.RotationProperty = property(get_RotationProperty.__wrapped__, None)
     _CompositeTransform_Meta_.TranslateXProperty = property(get_TranslateXProperty.__wrapped__, None)
     _CompositeTransform_Meta_.TranslateYProperty = property(get_TranslateYProperty.__wrapped__, None)
 class CompositionTarget(ComPtr):
@@ -376,6 +420,13 @@ class DoubleCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[Double]
     _classid_ = 'Windows.UI.Xaml.Media.DoubleCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.DoubleCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.DoubleCollection: ...
     @winrt_mixinmethod
@@ -405,16 +456,23 @@ class DoubleCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[Double]) -> win32more.Windows.Foundation.Collections.IIterator[Double]: ...
     Size = property(get_Size, None)
-ElementCompositeMode = Int32
-ElementCompositeMode_Inherit: ElementCompositeMode = 0
-ElementCompositeMode_SourceOver: ElementCompositeMode = 1
-ElementCompositeMode_MinBlend: ElementCompositeMode = 2
+class ElementCompositeMode(Int32):  # enum
+    Inherit = 0
+    SourceOver = 1
+    MinBlend = 2
 class _EllipseGeometry_Meta_(ComPtr.__class__):
     pass
 class EllipseGeometry(ComPtr, metaclass=_EllipseGeometry_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Geometry
     default_interface: win32more.Windows.UI.Xaml.Media.IEllipseGeometry
     _classid_ = 'Windows.UI.Xaml.Media.EllipseGeometry'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.EllipseGeometry.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.EllipseGeometry: ...
     @winrt_mixinmethod
@@ -441,19 +499,26 @@ class EllipseGeometry(ComPtr, metaclass=_EllipseGeometry_Meta_):
     _EllipseGeometry_Meta_.CenterProperty = property(get_CenterProperty.__wrapped__, None)
     _EllipseGeometry_Meta_.RadiusXProperty = property(get_RadiusXProperty.__wrapped__, None)
     _EllipseGeometry_Meta_.RadiusYProperty = property(get_RadiusYProperty.__wrapped__, None)
-FastPlayFallbackBehaviour = Int32
-FastPlayFallbackBehaviour_Skip: FastPlayFallbackBehaviour = 0
-FastPlayFallbackBehaviour_Hide: FastPlayFallbackBehaviour = 1
-FastPlayFallbackBehaviour_Disable: FastPlayFallbackBehaviour = 2
-FillRule = Int32
-FillRule_EvenOdd: FillRule = 0
-FillRule_Nonzero: FillRule = 1
+class FastPlayFallbackBehaviour(Int32):  # enum
+    Skip = 0
+    Hide = 1
+    Disable = 2
+class FillRule(Int32):  # enum
+    EvenOdd = 0
+    Nonzero = 1
 class _FontFamily_Meta_(ComPtr.__class__):
     pass
 class FontFamily(ComPtr, metaclass=_FontFamily_Meta_):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.IFontFamily
     _classid_ = 'Windows.UI.Xaml.Media.FontFamily'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Media.FontFamily.CreateInstanceWithName(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstanceWithName(cls: win32more.Windows.UI.Xaml.Media.IFontFamilyFactory, familyName: WinRT_String, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.FontFamily: ...
     @winrt_mixinmethod
@@ -466,6 +531,13 @@ class GeneralTransform(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IGeneralTransform
     _classid_ = 'Windows.UI.Xaml.Media.GeneralTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GeneralTransform.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IGeneralTransformFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.GeneralTransform: ...
     @winrt_mixinmethod
@@ -502,8 +574,8 @@ class Geometry(ComPtr, metaclass=_Geometry_Meta_):
     def get_StandardFlatteningTolerance(cls: win32more.Windows.UI.Xaml.Media.IGeometryStatics) -> Double: ...
     @winrt_classmethod
     def get_TransformProperty(cls: win32more.Windows.UI.Xaml.Media.IGeometryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Transform = property(get_Transform, put_Transform)
     Bounds = property(get_Bounds, None)
+    Transform = property(get_Transform, put_Transform)
     _Geometry_Meta_.Empty = property(get_Empty.__wrapped__, None)
     _Geometry_Meta_.StandardFlatteningTolerance = property(get_StandardFlatteningTolerance.__wrapped__, None)
     _Geometry_Meta_.TransformProperty = property(get_TransformProperty.__wrapped__, None)
@@ -511,6 +583,13 @@ class GeometryCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Geometry]
     _classid_ = 'Windows.UI.Xaml.Media.GeometryCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GeometryCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.GeometryCollection: ...
     @winrt_mixinmethod
@@ -546,6 +625,13 @@ class GeometryGroup(ComPtr, metaclass=_GeometryGroup_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Geometry
     default_interface: win32more.Windows.UI.Xaml.Media.IGeometryGroup
     _classid_ = 'Windows.UI.Xaml.Media.GeometryGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GeometryGroup.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.GeometryGroup: ...
     @winrt_mixinmethod
@@ -560,16 +646,23 @@ class GeometryGroup(ComPtr, metaclass=_GeometryGroup_Meta_):
     def get_FillRuleProperty(cls: win32more.Windows.UI.Xaml.Media.IGeometryGroupStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ChildrenProperty(cls: win32more.Windows.UI.Xaml.Media.IGeometryGroupStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FillRule = property(get_FillRule, put_FillRule)
     Children = property(get_Children, put_Children)
-    _GeometryGroup_Meta_.FillRuleProperty = property(get_FillRuleProperty.__wrapped__, None)
+    FillRule = property(get_FillRule, put_FillRule)
     _GeometryGroup_Meta_.ChildrenProperty = property(get_ChildrenProperty.__wrapped__, None)
+    _GeometryGroup_Meta_.FillRuleProperty = property(get_FillRuleProperty.__wrapped__, None)
 class _GradientBrush_Meta_(ComPtr.__class__):
     pass
 class GradientBrush(ComPtr, metaclass=_GradientBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Brush
     default_interface: win32more.Windows.UI.Xaml.Media.IGradientBrush
     _classid_ = 'Windows.UI.Xaml.Media.GradientBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GradientBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IGradientBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.GradientBrush: ...
     @winrt_mixinmethod
@@ -596,24 +689,31 @@ class GradientBrush(ComPtr, metaclass=_GradientBrush_Meta_):
     def get_ColorInterpolationModeProperty(cls: win32more.Windows.UI.Xaml.Media.IGradientBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_GradientStopsProperty(cls: win32more.Windows.UI.Xaml.Media.IGradientBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SpreadMethod = property(get_SpreadMethod, put_SpreadMethod)
-    MappingMode = property(get_MappingMode, put_MappingMode)
     ColorInterpolationMode = property(get_ColorInterpolationMode, put_ColorInterpolationMode)
     GradientStops = property(get_GradientStops, put_GradientStops)
-    _GradientBrush_Meta_.SpreadMethodProperty = property(get_SpreadMethodProperty.__wrapped__, None)
-    _GradientBrush_Meta_.MappingModeProperty = property(get_MappingModeProperty.__wrapped__, None)
+    MappingMode = property(get_MappingMode, put_MappingMode)
+    SpreadMethod = property(get_SpreadMethod, put_SpreadMethod)
     _GradientBrush_Meta_.ColorInterpolationModeProperty = property(get_ColorInterpolationModeProperty.__wrapped__, None)
     _GradientBrush_Meta_.GradientStopsProperty = property(get_GradientStopsProperty.__wrapped__, None)
-GradientSpreadMethod = Int32
-GradientSpreadMethod_Pad: GradientSpreadMethod = 0
-GradientSpreadMethod_Reflect: GradientSpreadMethod = 1
-GradientSpreadMethod_Repeat: GradientSpreadMethod = 2
+    _GradientBrush_Meta_.MappingModeProperty = property(get_MappingModeProperty.__wrapped__, None)
+    _GradientBrush_Meta_.SpreadMethodProperty = property(get_SpreadMethodProperty.__wrapped__, None)
+class GradientSpreadMethod(Int32):  # enum
+    Pad = 0
+    Reflect = 1
+    Repeat = 2
 class _GradientStop_Meta_(ComPtr.__class__):
     pass
 class GradientStop(ComPtr, metaclass=_GradientStop_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IGradientStop
     _classid_ = 'Windows.UI.Xaml.Media.GradientStop'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GradientStop.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.GradientStop: ...
     @winrt_mixinmethod
@@ -636,6 +736,13 @@ class GradientStopCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.GradientStop]
     _classid_ = 'Windows.UI.Xaml.Media.GradientStopCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.GradientStopCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.GradientStopCollection: ...
     @winrt_mixinmethod
@@ -689,11 +796,11 @@ class IAcrylicBrush(ComPtr):
     def get_AlwaysUseFallback(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_AlwaysUseFallback(self, value: Boolean) -> Void: ...
+    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
     BackgroundSource = property(get_BackgroundSource, put_BackgroundSource)
     TintColor = property(get_TintColor, put_TintColor)
     TintOpacity = property(get_TintOpacity, put_TintOpacity)
     TintTransitionDuration = property(get_TintTransitionDuration, put_TintTransitionDuration)
-    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
 class IAcrylicBrush2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IAcrylicBrush2'
@@ -723,11 +830,11 @@ class IAcrylicBrushStatics(ComPtr):
     def get_TintTransitionDurationProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_AlwaysUseFallbackProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty, None)
     BackgroundSourceProperty = property(get_BackgroundSourceProperty, None)
     TintColorProperty = property(get_TintColorProperty, None)
     TintOpacityProperty = property(get_TintOpacityProperty, None)
     TintTransitionDurationProperty = property(get_TintTransitionDurationProperty, None)
-    AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty, None)
 class IAcrylicBrushStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IAcrylicBrushStatics2'
@@ -759,10 +866,10 @@ class IArcSegment(ComPtr):
     def get_SweepDirection(self) -> win32more.Windows.UI.Xaml.Media.SweepDirection: ...
     @winrt_commethod(15)
     def put_SweepDirection(self, value: win32more.Windows.UI.Xaml.Media.SweepDirection) -> Void: ...
-    Point = property(get_Point, put_Point)
-    Size = property(get_Size, put_Size)
-    RotationAngle = property(get_RotationAngle, put_RotationAngle)
     IsLargeArc = property(get_IsLargeArc, put_IsLargeArc)
+    Point = property(get_Point, put_Point)
+    RotationAngle = property(get_RotationAngle, put_RotationAngle)
+    Size = property(get_Size, put_Size)
     SweepDirection = property(get_SweepDirection, put_SweepDirection)
 class IArcSegmentStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -778,10 +885,10 @@ class IArcSegmentStatics(ComPtr):
     def get_IsLargeArcProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(10)
     def get_SweepDirectionProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    PointProperty = property(get_PointProperty, None)
-    SizeProperty = property(get_SizeProperty, None)
-    RotationAngleProperty = property(get_RotationAngleProperty, None)
     IsLargeArcProperty = property(get_IsLargeArcProperty, None)
+    PointProperty = property(get_PointProperty, None)
+    RotationAngleProperty = property(get_RotationAngleProperty, None)
+    SizeProperty = property(get_SizeProperty, None)
     SweepDirectionProperty = property(get_SweepDirectionProperty, None)
 class IBezierSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -836,8 +943,8 @@ class IBrush(ComPtr):
     @winrt_commethod(11)
     def put_RelativeTransform(self, value: win32more.Windows.UI.Xaml.Media.Transform) -> Void: ...
     Opacity = property(get_Opacity, put_Opacity)
-    Transform = property(get_Transform, put_Transform)
     RelativeTransform = property(get_RelativeTransform, put_RelativeTransform)
+    Transform = property(get_Transform, put_Transform)
 class IBrushFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IBrushFactory'
@@ -861,8 +968,8 @@ class IBrushStatics(ComPtr):
     @winrt_commethod(8)
     def get_RelativeTransformProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     OpacityProperty = property(get_OpacityProperty, None)
-    TransformProperty = property(get_TransformProperty, None)
     RelativeTransformProperty = property(get_RelativeTransformProperty, None)
+    TransformProperty = property(get_TransformProperty, None)
 class ICacheMode(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ICacheMode'
@@ -915,11 +1022,11 @@ class ICompositeTransform(ComPtr):
     def put_TranslateY(self, value: Double) -> Void: ...
     CenterX = property(get_CenterX, put_CenterX)
     CenterY = property(get_CenterY, put_CenterY)
+    Rotation = property(get_Rotation, put_Rotation)
     ScaleX = property(get_ScaleX, put_ScaleX)
     ScaleY = property(get_ScaleY, put_ScaleY)
     SkewX = property(get_SkewX, put_SkewX)
     SkewY = property(get_SkewY, put_SkewY)
-    Rotation = property(get_Rotation, put_Rotation)
     TranslateX = property(get_TranslateX, put_TranslateX)
     TranslateY = property(get_TranslateY, put_TranslateY)
 class ICompositeTransformStatics(ComPtr):
@@ -946,11 +1053,11 @@ class ICompositeTransformStatics(ComPtr):
     def get_TranslateYProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     CenterXProperty = property(get_CenterXProperty, None)
     CenterYProperty = property(get_CenterYProperty, None)
+    RotationProperty = property(get_RotationProperty, None)
     ScaleXProperty = property(get_ScaleXProperty, None)
     ScaleYProperty = property(get_ScaleYProperty, None)
     SkewXProperty = property(get_SkewXProperty, None)
     SkewYProperty = property(get_SkewYProperty, None)
-    RotationProperty = property(get_RotationProperty, None)
     TranslateXProperty = property(get_TranslateXProperty, None)
     TranslateYProperty = property(get_TranslateYProperty, None)
 class ICompositionTarget(ComPtr):
@@ -1069,8 +1176,8 @@ class IGeometry(ComPtr):
     def put_Transform(self, value: win32more.Windows.UI.Xaml.Media.Transform) -> Void: ...
     @winrt_commethod(8)
     def get_Bounds(self) -> win32more.Windows.Foundation.Rect: ...
-    Transform = property(get_Transform, put_Transform)
     Bounds = property(get_Bounds, None)
+    Transform = property(get_Transform, put_Transform)
 class IGeometryFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IGeometryFactory'
@@ -1087,8 +1194,8 @@ class IGeometryGroup(ComPtr):
     def get_Children(self) -> win32more.Windows.UI.Xaml.Media.GeometryCollection: ...
     @winrt_commethod(9)
     def put_Children(self, value: win32more.Windows.UI.Xaml.Media.GeometryCollection) -> Void: ...
-    FillRule = property(get_FillRule, put_FillRule)
     Children = property(get_Children, put_Children)
+    FillRule = property(get_FillRule, put_FillRule)
 class IGeometryGroupStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IGeometryGroupStatics'
@@ -1097,8 +1204,8 @@ class IGeometryGroupStatics(ComPtr):
     def get_FillRuleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_ChildrenProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FillRuleProperty = property(get_FillRuleProperty, None)
     ChildrenProperty = property(get_ChildrenProperty, None)
+    FillRuleProperty = property(get_FillRuleProperty, None)
 class IGeometryStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IGeometryStatics'
@@ -1132,10 +1239,10 @@ class IGradientBrush(ComPtr):
     def get_GradientStops(self) -> win32more.Windows.UI.Xaml.Media.GradientStopCollection: ...
     @winrt_commethod(13)
     def put_GradientStops(self, value: win32more.Windows.UI.Xaml.Media.GradientStopCollection) -> Void: ...
-    SpreadMethod = property(get_SpreadMethod, put_SpreadMethod)
-    MappingMode = property(get_MappingMode, put_MappingMode)
     ColorInterpolationMode = property(get_ColorInterpolationMode, put_ColorInterpolationMode)
     GradientStops = property(get_GradientStops, put_GradientStops)
+    MappingMode = property(get_MappingMode, put_MappingMode)
+    SpreadMethod = property(get_SpreadMethod, put_SpreadMethod)
 class IGradientBrushFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IGradientBrushFactory'
@@ -1154,10 +1261,10 @@ class IGradientBrushStatics(ComPtr):
     def get_ColorInterpolationModeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_GradientStopsProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SpreadMethodProperty = property(get_SpreadMethodProperty, None)
-    MappingModeProperty = property(get_MappingModeProperty, None)
     ColorInterpolationModeProperty = property(get_ColorInterpolationModeProperty, None)
     GradientStopsProperty = property(get_GradientStopsProperty, None)
+    MappingModeProperty = property(get_MappingModeProperty, None)
+    SpreadMethodProperty = property(get_SpreadMethodProperty, None)
 class IGradientStop(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IGradientStop'
@@ -1226,8 +1333,8 @@ class ILineGeometry(ComPtr):
     def get_EndPoint(self) -> win32more.Windows.Foundation.Point: ...
     @winrt_commethod(9)
     def put_EndPoint(self, value: win32more.Windows.Foundation.Point) -> Void: ...
-    StartPoint = property(get_StartPoint, put_StartPoint)
     EndPoint = property(get_EndPoint, put_EndPoint)
+    StartPoint = property(get_StartPoint, put_StartPoint)
 class ILineGeometryStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ILineGeometryStatics'
@@ -1236,8 +1343,8 @@ class ILineGeometryStatics(ComPtr):
     def get_StartPointProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_EndPointProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    StartPointProperty = property(get_StartPointProperty, None)
     EndPointProperty = property(get_EndPointProperty, None)
+    StartPointProperty = property(get_StartPointProperty, None)
 class ILineSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ILineSegment'
@@ -1266,8 +1373,8 @@ class ILinearGradientBrush(ComPtr):
     def get_EndPoint(self) -> win32more.Windows.Foundation.Point: ...
     @winrt_commethod(9)
     def put_EndPoint(self, value: win32more.Windows.Foundation.Point) -> Void: ...
-    StartPoint = property(get_StartPoint, put_StartPoint)
     EndPoint = property(get_EndPoint, put_EndPoint)
+    StartPoint = property(get_StartPoint, put_StartPoint)
 class ILinearGradientBrushFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ILinearGradientBrushFactory'
@@ -1282,8 +1389,8 @@ class ILinearGradientBrushStatics(ComPtr):
     def get_StartPointProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_EndPointProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    StartPointProperty = property(get_StartPointProperty, None)
     EndPointProperty = property(get_EndPointProperty, None)
+    StartPointProperty = property(get_StartPointProperty, None)
 class ILoadedImageSourceLoadCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ILoadedImageSourceLoadCompletedEventArgs'
@@ -1411,10 +1518,10 @@ class IPathFigure(ComPtr):
     def get_IsFilled(self) -> Boolean: ...
     @winrt_commethod(13)
     def put_IsFilled(self, value: Boolean) -> Void: ...
-    Segments = property(get_Segments, put_Segments)
-    StartPoint = property(get_StartPoint, put_StartPoint)
     IsClosed = property(get_IsClosed, put_IsClosed)
     IsFilled = property(get_IsFilled, put_IsFilled)
+    Segments = property(get_Segments, put_Segments)
+    StartPoint = property(get_StartPoint, put_StartPoint)
 class IPathFigureStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPathFigureStatics'
@@ -1427,10 +1534,10 @@ class IPathFigureStatics(ComPtr):
     def get_IsClosedProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_IsFilledProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SegmentsProperty = property(get_SegmentsProperty, None)
-    StartPointProperty = property(get_StartPointProperty, None)
     IsClosedProperty = property(get_IsClosedProperty, None)
     IsFilledProperty = property(get_IsFilledProperty, None)
+    SegmentsProperty = property(get_SegmentsProperty, None)
+    StartPointProperty = property(get_StartPointProperty, None)
 class IPathGeometry(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPathGeometry'
@@ -1443,8 +1550,8 @@ class IPathGeometry(ComPtr):
     def get_Figures(self) -> win32more.Windows.UI.Xaml.Media.PathFigureCollection: ...
     @winrt_commethod(9)
     def put_Figures(self, value: win32more.Windows.UI.Xaml.Media.PathFigureCollection) -> Void: ...
-    FillRule = property(get_FillRule, put_FillRule)
     Figures = property(get_Figures, put_Figures)
+    FillRule = property(get_FillRule, put_FillRule)
 class IPathGeometryStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPathGeometryStatics'
@@ -1453,8 +1560,8 @@ class IPathGeometryStatics(ComPtr):
     def get_FillRuleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(7)
     def get_FiguresProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FillRuleProperty = property(get_FillRuleProperty, None)
     FiguresProperty = property(get_FiguresProperty, None)
+    FillRuleProperty = property(get_FillRuleProperty, None)
 class IPathSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPathSegment'
@@ -1517,19 +1624,19 @@ class IPlaneProjection(ComPtr):
     def put_GlobalOffsetZ(self, value: Double) -> Void: ...
     @winrt_commethod(30)
     def get_ProjectionMatrix(self) -> win32more.Windows.UI.Xaml.Media.Media3D.Matrix3D: ...
-    LocalOffsetX = property(get_LocalOffsetX, put_LocalOffsetX)
-    LocalOffsetY = property(get_LocalOffsetY, put_LocalOffsetY)
-    LocalOffsetZ = property(get_LocalOffsetZ, put_LocalOffsetZ)
-    RotationX = property(get_RotationX, put_RotationX)
-    RotationY = property(get_RotationY, put_RotationY)
-    RotationZ = property(get_RotationZ, put_RotationZ)
     CenterOfRotationX = property(get_CenterOfRotationX, put_CenterOfRotationX)
     CenterOfRotationY = property(get_CenterOfRotationY, put_CenterOfRotationY)
     CenterOfRotationZ = property(get_CenterOfRotationZ, put_CenterOfRotationZ)
     GlobalOffsetX = property(get_GlobalOffsetX, put_GlobalOffsetX)
     GlobalOffsetY = property(get_GlobalOffsetY, put_GlobalOffsetY)
     GlobalOffsetZ = property(get_GlobalOffsetZ, put_GlobalOffsetZ)
+    LocalOffsetX = property(get_LocalOffsetX, put_LocalOffsetX)
+    LocalOffsetY = property(get_LocalOffsetY, put_LocalOffsetY)
+    LocalOffsetZ = property(get_LocalOffsetZ, put_LocalOffsetZ)
     ProjectionMatrix = property(get_ProjectionMatrix, None)
+    RotationX = property(get_RotationX, put_RotationX)
+    RotationY = property(get_RotationY, put_RotationY)
+    RotationZ = property(get_RotationZ, put_RotationZ)
 class IPlaneProjectionStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPlaneProjectionStatics'
@@ -1560,19 +1667,19 @@ class IPlaneProjectionStatics(ComPtr):
     def get_GlobalOffsetZProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(18)
     def get_ProjectionMatrixProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LocalOffsetXProperty = property(get_LocalOffsetXProperty, None)
-    LocalOffsetYProperty = property(get_LocalOffsetYProperty, None)
-    LocalOffsetZProperty = property(get_LocalOffsetZProperty, None)
-    RotationXProperty = property(get_RotationXProperty, None)
-    RotationYProperty = property(get_RotationYProperty, None)
-    RotationZProperty = property(get_RotationZProperty, None)
     CenterOfRotationXProperty = property(get_CenterOfRotationXProperty, None)
     CenterOfRotationYProperty = property(get_CenterOfRotationYProperty, None)
     CenterOfRotationZProperty = property(get_CenterOfRotationZProperty, None)
     GlobalOffsetXProperty = property(get_GlobalOffsetXProperty, None)
     GlobalOffsetYProperty = property(get_GlobalOffsetYProperty, None)
     GlobalOffsetZProperty = property(get_GlobalOffsetZProperty, None)
+    LocalOffsetXProperty = property(get_LocalOffsetXProperty, None)
+    LocalOffsetYProperty = property(get_LocalOffsetYProperty, None)
+    LocalOffsetZProperty = property(get_LocalOffsetZProperty, None)
     ProjectionMatrixProperty = property(get_ProjectionMatrixProperty, None)
+    RotationXProperty = property(get_RotationXProperty, None)
+    RotationYProperty = property(get_RotationYProperty, None)
+    RotationZProperty = property(get_RotationZProperty, None)
 class IPolyBezierSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IPolyBezierSegment'
@@ -1725,9 +1832,9 @@ class IRevealBrush(ComPtr):
     def get_AlwaysUseFallback(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_AlwaysUseFallback(self, value: Boolean) -> Void: ...
+    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
     Color = property(get_Color, put_Color)
     TargetTheme = property(get_TargetTheme, put_TargetTheme)
-    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
 class IRevealBrushFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IRevealBrushFactory'
@@ -1750,10 +1857,10 @@ class IRevealBrushStatics(ComPtr):
     def SetState(self, element: win32more.Windows.UI.Xaml.UIElement, value: win32more.Windows.UI.Xaml.Media.RevealBrushState) -> Void: ...
     @winrt_commethod(11)
     def GetState(self, element: win32more.Windows.UI.Xaml.UIElement) -> win32more.Windows.UI.Xaml.Media.RevealBrushState: ...
-    ColorProperty = property(get_ColorProperty, None)
-    TargetThemeProperty = property(get_TargetThemeProperty, None)
     AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty, None)
+    ColorProperty = property(get_ColorProperty, None)
     StateProperty = property(get_StateProperty, None)
+    TargetThemeProperty = property(get_TargetThemeProperty, None)
 class IRotateTransform(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IRotateTransform'
@@ -1770,9 +1877,9 @@ class IRotateTransform(ComPtr):
     def get_Angle(self) -> Double: ...
     @winrt_commethod(11)
     def put_Angle(self, value: Double) -> Void: ...
+    Angle = property(get_Angle, put_Angle)
     CenterX = property(get_CenterX, put_CenterX)
     CenterY = property(get_CenterY, put_CenterY)
-    Angle = property(get_Angle, put_Angle)
 class IRotateTransformStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IRotateTransformStatics'
@@ -1783,9 +1890,9 @@ class IRotateTransformStatics(ComPtr):
     def get_CenterYProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_AngleProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    AngleProperty = property(get_AngleProperty, None)
     CenterXProperty = property(get_CenterXProperty, None)
     CenterYProperty = property(get_CenterYProperty, None)
-    AngleProperty = property(get_AngleProperty, None)
 class IScaleTransform(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.IScaleTransform'
@@ -1854,10 +1961,10 @@ class ISkewTransform(ComPtr):
     def get_AngleY(self) -> Double: ...
     @winrt_commethod(13)
     def put_AngleY(self, value: Double) -> Void: ...
-    CenterX = property(get_CenterX, put_CenterX)
-    CenterY = property(get_CenterY, put_CenterY)
     AngleX = property(get_AngleX, put_AngleX)
     AngleY = property(get_AngleY, put_AngleY)
+    CenterX = property(get_CenterX, put_CenterX)
+    CenterY = property(get_CenterY, put_CenterY)
 class ISkewTransformStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ISkewTransformStatics'
@@ -1870,10 +1977,10 @@ class ISkewTransformStatics(ComPtr):
     def get_AngleXProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(9)
     def get_AngleYProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CenterXProperty = property(get_CenterXProperty, None)
-    CenterYProperty = property(get_CenterYProperty, None)
     AngleXProperty = property(get_AngleXProperty, None)
     AngleYProperty = property(get_AngleYProperty, None)
+    CenterXProperty = property(get_CenterXProperty, None)
+    CenterYProperty = property(get_CenterYProperty, None)
 class ISolidColorBrush(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ISolidColorBrush'
@@ -1963,9 +2070,9 @@ class ITimelineMarker(ComPtr):
     def get_Text(self) -> WinRT_String: ...
     @winrt_commethod(11)
     def put_Text(self, value: WinRT_String) -> Void: ...
+    Text = property(get_Text, put_Text)
     Time = property(get_Time, put_Time)
     Type = property(get_Type, put_Type)
-    Text = property(get_Text, put_Text)
 class ITimelineMarkerRoutedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ITimelineMarkerRoutedEventArgs'
@@ -1985,9 +2092,9 @@ class ITimelineMarkerStatics(ComPtr):
     def get_TypeProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_commethod(8)
     def get_TextProperty(self) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    TextProperty = property(get_TextProperty, None)
     TimeProperty = property(get_TimeProperty, None)
     TypeProperty = property(get_TypeProperty, None)
-    TextProperty = property(get_TextProperty, None)
 class ITransform(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Media.ITransform'
@@ -2161,6 +2268,13 @@ class ImageBrush(ComPtr, metaclass=_ImageBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.TileBrush
     default_interface: win32more.Windows.UI.Xaml.Media.IImageBrush
     _classid_ = 'Windows.UI.Xaml.Media.ImageBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.ImageBrush.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.ImageBrush: ...
     @winrt_mixinmethod
@@ -2189,6 +2303,13 @@ class LineGeometry(ComPtr, metaclass=_LineGeometry_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Geometry
     default_interface: win32more.Windows.UI.Xaml.Media.ILineGeometry
     _classid_ = 'Windows.UI.Xaml.Media.LineGeometry'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.LineGeometry.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.LineGeometry: ...
     @winrt_mixinmethod
@@ -2203,16 +2324,23 @@ class LineGeometry(ComPtr, metaclass=_LineGeometry_Meta_):
     def get_StartPointProperty(cls: win32more.Windows.UI.Xaml.Media.ILineGeometryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_EndPointProperty(cls: win32more.Windows.UI.Xaml.Media.ILineGeometryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    StartPoint = property(get_StartPoint, put_StartPoint)
     EndPoint = property(get_EndPoint, put_EndPoint)
-    _LineGeometry_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
+    StartPoint = property(get_StartPoint, put_StartPoint)
     _LineGeometry_Meta_.EndPointProperty = property(get_EndPointProperty.__wrapped__, None)
+    _LineGeometry_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
 class _LineSegment_Meta_(ComPtr.__class__):
     pass
 class LineSegment(ComPtr, metaclass=_LineSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.ILineSegment
     _classid_ = 'Windows.UI.Xaml.Media.LineSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.LineSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.LineSegment: ...
     @winrt_mixinmethod
@@ -2229,6 +2357,15 @@ class LinearGradientBrush(ComPtr, metaclass=_LinearGradientBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.GradientBrush
     default_interface: win32more.Windows.UI.Xaml.Media.ILinearGradientBrush
     _classid_ = 'Windows.UI.Xaml.Media.LinearGradientBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.LinearGradientBrush.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.UI.Xaml.Media.LinearGradientBrush.CreateInstanceWithGradientStopCollectionAndAngle(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.LinearGradientBrush: ...
     @winrt_factorymethod
@@ -2245,10 +2382,10 @@ class LinearGradientBrush(ComPtr, metaclass=_LinearGradientBrush_Meta_):
     def get_StartPointProperty(cls: win32more.Windows.UI.Xaml.Media.ILinearGradientBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_EndPointProperty(cls: win32more.Windows.UI.Xaml.Media.ILinearGradientBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    StartPoint = property(get_StartPoint, put_StartPoint)
     EndPoint = property(get_EndPoint, put_EndPoint)
-    _LinearGradientBrush_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
+    StartPoint = property(get_StartPoint, put_StartPoint)
     _LinearGradientBrush_Meta_.EndPointProperty = property(get_EndPointProperty.__wrapped__, None)
+    _LinearGradientBrush_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
 class LoadedImageSourceLoadCompletedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.ILoadedImageSourceLoadCompletedEventArgs
@@ -2256,11 +2393,11 @@ class LoadedImageSourceLoadCompletedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.UI.Xaml.Media.ILoadedImageSourceLoadCompletedEventArgs) -> win32more.Windows.UI.Xaml.Media.LoadedImageSourceLoadStatus: ...
     Status = property(get_Status, None)
-LoadedImageSourceLoadStatus = Int32
-LoadedImageSourceLoadStatus_Success: LoadedImageSourceLoadStatus = 0
-LoadedImageSourceLoadStatus_NetworkError: LoadedImageSourceLoadStatus = 1
-LoadedImageSourceLoadStatus_InvalidFormat: LoadedImageSourceLoadStatus = 2
-LoadedImageSourceLoadStatus_Other: LoadedImageSourceLoadStatus = 3
+class LoadedImageSourceLoadStatus(Int32):  # enum
+    Success = 0
+    NetworkError = 1
+    InvalidFormat = 2
+    Other = 3
 class LoadedImageSurface(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.ILoadedImageSurface
@@ -2301,6 +2438,13 @@ class Matrix3DProjection(ComPtr, metaclass=_Matrix3DProjection_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Projection
     default_interface: win32more.Windows.UI.Xaml.Media.IMatrix3DProjection
     _classid_ = 'Windows.UI.Xaml.Media.Matrix3DProjection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Matrix3DProjection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.Matrix3DProjection: ...
     @winrt_mixinmethod
@@ -2332,6 +2476,13 @@ class MatrixTransform(ComPtr, metaclass=_MatrixTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.IMatrixTransform
     _classid_ = 'Windows.UI.Xaml.Media.MatrixTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.MatrixTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.MatrixTransform: ...
     @winrt_mixinmethod
@@ -2342,17 +2493,17 @@ class MatrixTransform(ComPtr, metaclass=_MatrixTransform_Meta_):
     def get_MatrixProperty(cls: win32more.Windows.UI.Xaml.Media.IMatrixTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Matrix = property(get_Matrix, put_Matrix)
     _MatrixTransform_Meta_.MatrixProperty = property(get_MatrixProperty.__wrapped__, None)
-MediaCanPlayResponse = Int32
-MediaCanPlayResponse_NotSupported: MediaCanPlayResponse = 0
-MediaCanPlayResponse_Maybe: MediaCanPlayResponse = 1
-MediaCanPlayResponse_Probably: MediaCanPlayResponse = 2
-MediaElementState = Int32
-MediaElementState_Closed: MediaElementState = 0
-MediaElementState_Opening: MediaElementState = 1
-MediaElementState_Buffering: MediaElementState = 2
-MediaElementState_Playing: MediaElementState = 3
-MediaElementState_Paused: MediaElementState = 4
-MediaElementState_Stopped: MediaElementState = 5
+class MediaCanPlayResponse(Int32):  # enum
+    NotSupported = 0
+    Maybe = 1
+    Probably = 2
+class MediaElementState(Int32):  # enum
+    Closed = 0
+    Opening = 1
+    Buffering = 2
+    Playing = 3
+    Paused = 4
+    Stopped = 5
 class MediaTransportControlsThumbnailRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.IMediaTransportControlsThumbnailRequestedEventArgs
@@ -2365,20 +2516,34 @@ class PartialMediaFailureDetectedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Media.IPartialMediaFailureDetectedEventArgs
     _classid_ = 'Windows.UI.Xaml.Media.PartialMediaFailureDetectedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PartialMediaFailureDetectedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PartialMediaFailureDetectedEventArgs: ...
     @winrt_mixinmethod
     def get_StreamKind(self: win32more.Windows.UI.Xaml.Media.IPartialMediaFailureDetectedEventArgs) -> win32more.Windows.Media.Playback.FailedMediaStreamKind: ...
     @winrt_mixinmethod
     def get_ExtendedError(self: win32more.Windows.UI.Xaml.Media.IPartialMediaFailureDetectedEventArgs2) -> win32more.Windows.Foundation.HResult: ...
-    StreamKind = property(get_StreamKind, None)
     ExtendedError = property(get_ExtendedError, None)
+    StreamKind = property(get_StreamKind, None)
 class _PathFigure_Meta_(ComPtr.__class__):
     pass
 class PathFigure(ComPtr, metaclass=_PathFigure_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IPathFigure
     _classid_ = 'Windows.UI.Xaml.Media.PathFigure'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PathFigure.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PathFigure: ...
     @winrt_mixinmethod
@@ -2405,18 +2570,25 @@ class PathFigure(ComPtr, metaclass=_PathFigure_Meta_):
     def get_IsClosedProperty(cls: win32more.Windows.UI.Xaml.Media.IPathFigureStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_IsFilledProperty(cls: win32more.Windows.UI.Xaml.Media.IPathFigureStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    Segments = property(get_Segments, put_Segments)
-    StartPoint = property(get_StartPoint, put_StartPoint)
     IsClosed = property(get_IsClosed, put_IsClosed)
     IsFilled = property(get_IsFilled, put_IsFilled)
-    _PathFigure_Meta_.SegmentsProperty = property(get_SegmentsProperty.__wrapped__, None)
-    _PathFigure_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
+    Segments = property(get_Segments, put_Segments)
+    StartPoint = property(get_StartPoint, put_StartPoint)
     _PathFigure_Meta_.IsClosedProperty = property(get_IsClosedProperty.__wrapped__, None)
     _PathFigure_Meta_.IsFilledProperty = property(get_IsFilledProperty.__wrapped__, None)
+    _PathFigure_Meta_.SegmentsProperty = property(get_SegmentsProperty.__wrapped__, None)
+    _PathFigure_Meta_.StartPointProperty = property(get_StartPointProperty.__wrapped__, None)
 class PathFigureCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.PathFigure]
     _classid_ = 'Windows.UI.Xaml.Media.PathFigureCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PathFigureCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PathFigureCollection: ...
     @winrt_mixinmethod
@@ -2452,6 +2624,13 @@ class PathGeometry(ComPtr, metaclass=_PathGeometry_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Geometry
     default_interface: win32more.Windows.UI.Xaml.Media.IPathGeometry
     _classid_ = 'Windows.UI.Xaml.Media.PathGeometry'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PathGeometry.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PathGeometry: ...
     @winrt_mixinmethod
@@ -2466,10 +2645,10 @@ class PathGeometry(ComPtr, metaclass=_PathGeometry_Meta_):
     def get_FillRuleProperty(cls: win32more.Windows.UI.Xaml.Media.IPathGeometryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_FiguresProperty(cls: win32more.Windows.UI.Xaml.Media.IPathGeometryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FillRule = property(get_FillRule, put_FillRule)
     Figures = property(get_Figures, put_Figures)
-    _PathGeometry_Meta_.FillRuleProperty = property(get_FillRuleProperty.__wrapped__, None)
+    FillRule = property(get_FillRule, put_FillRule)
     _PathGeometry_Meta_.FiguresProperty = property(get_FiguresProperty.__wrapped__, None)
+    _PathGeometry_Meta_.FillRuleProperty = property(get_FillRuleProperty.__wrapped__, None)
 class PathSegment(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IPathSegment
@@ -2478,6 +2657,13 @@ class PathSegmentCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.PathSegment]
     _classid_ = 'Windows.UI.Xaml.Media.PathSegmentCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PathSegmentCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PathSegmentCollection: ...
     @winrt_mixinmethod
@@ -2507,21 +2693,28 @@ class PathSegmentCollection(ComPtr):
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.UI.Xaml.Media.PathSegment]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.UI.Xaml.Media.PathSegment]: ...
     Size = property(get_Size, None)
-PenLineCap = Int32
-PenLineCap_Flat: PenLineCap = 0
-PenLineCap_Square: PenLineCap = 1
-PenLineCap_Round: PenLineCap = 2
-PenLineCap_Triangle: PenLineCap = 3
-PenLineJoin = Int32
-PenLineJoin_Miter: PenLineJoin = 0
-PenLineJoin_Bevel: PenLineJoin = 1
-PenLineJoin_Round: PenLineJoin = 2
+class PenLineCap(Int32):  # enum
+    Flat = 0
+    Square = 1
+    Round = 2
+    Triangle = 3
+class PenLineJoin(Int32):  # enum
+    Miter = 0
+    Bevel = 1
+    Round = 2
 class _PlaneProjection_Meta_(ComPtr.__class__):
     pass
 class PlaneProjection(ComPtr, metaclass=_PlaneProjection_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Projection
     default_interface: win32more.Windows.UI.Xaml.Media.IPlaneProjection
     _classid_ = 'Windows.UI.Xaml.Media.PlaneProjection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PlaneProjection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PlaneProjection: ...
     @winrt_mixinmethod
@@ -2600,36 +2793,43 @@ class PlaneProjection(ComPtr, metaclass=_PlaneProjection_Meta_):
     def get_GlobalOffsetZProperty(cls: win32more.Windows.UI.Xaml.Media.IPlaneProjectionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_ProjectionMatrixProperty(cls: win32more.Windows.UI.Xaml.Media.IPlaneProjectionStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    LocalOffsetX = property(get_LocalOffsetX, put_LocalOffsetX)
-    LocalOffsetY = property(get_LocalOffsetY, put_LocalOffsetY)
-    LocalOffsetZ = property(get_LocalOffsetZ, put_LocalOffsetZ)
-    RotationX = property(get_RotationX, put_RotationX)
-    RotationY = property(get_RotationY, put_RotationY)
-    RotationZ = property(get_RotationZ, put_RotationZ)
     CenterOfRotationX = property(get_CenterOfRotationX, put_CenterOfRotationX)
     CenterOfRotationY = property(get_CenterOfRotationY, put_CenterOfRotationY)
     CenterOfRotationZ = property(get_CenterOfRotationZ, put_CenterOfRotationZ)
     GlobalOffsetX = property(get_GlobalOffsetX, put_GlobalOffsetX)
     GlobalOffsetY = property(get_GlobalOffsetY, put_GlobalOffsetY)
     GlobalOffsetZ = property(get_GlobalOffsetZ, put_GlobalOffsetZ)
+    LocalOffsetX = property(get_LocalOffsetX, put_LocalOffsetX)
+    LocalOffsetY = property(get_LocalOffsetY, put_LocalOffsetY)
+    LocalOffsetZ = property(get_LocalOffsetZ, put_LocalOffsetZ)
     ProjectionMatrix = property(get_ProjectionMatrix, None)
-    _PlaneProjection_Meta_.LocalOffsetXProperty = property(get_LocalOffsetXProperty.__wrapped__, None)
-    _PlaneProjection_Meta_.LocalOffsetYProperty = property(get_LocalOffsetYProperty.__wrapped__, None)
-    _PlaneProjection_Meta_.LocalOffsetZProperty = property(get_LocalOffsetZProperty.__wrapped__, None)
-    _PlaneProjection_Meta_.RotationXProperty = property(get_RotationXProperty.__wrapped__, None)
-    _PlaneProjection_Meta_.RotationYProperty = property(get_RotationYProperty.__wrapped__, None)
-    _PlaneProjection_Meta_.RotationZProperty = property(get_RotationZProperty.__wrapped__, None)
+    RotationX = property(get_RotationX, put_RotationX)
+    RotationY = property(get_RotationY, put_RotationY)
+    RotationZ = property(get_RotationZ, put_RotationZ)
     _PlaneProjection_Meta_.CenterOfRotationXProperty = property(get_CenterOfRotationXProperty.__wrapped__, None)
     _PlaneProjection_Meta_.CenterOfRotationYProperty = property(get_CenterOfRotationYProperty.__wrapped__, None)
     _PlaneProjection_Meta_.CenterOfRotationZProperty = property(get_CenterOfRotationZProperty.__wrapped__, None)
     _PlaneProjection_Meta_.GlobalOffsetXProperty = property(get_GlobalOffsetXProperty.__wrapped__, None)
     _PlaneProjection_Meta_.GlobalOffsetYProperty = property(get_GlobalOffsetYProperty.__wrapped__, None)
     _PlaneProjection_Meta_.GlobalOffsetZProperty = property(get_GlobalOffsetZProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.LocalOffsetXProperty = property(get_LocalOffsetXProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.LocalOffsetYProperty = property(get_LocalOffsetYProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.LocalOffsetZProperty = property(get_LocalOffsetZProperty.__wrapped__, None)
     _PlaneProjection_Meta_.ProjectionMatrixProperty = property(get_ProjectionMatrixProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.RotationXProperty = property(get_RotationXProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.RotationYProperty = property(get_RotationYProperty.__wrapped__, None)
+    _PlaneProjection_Meta_.RotationZProperty = property(get_RotationZProperty.__wrapped__, None)
 class PointCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Foundation.Point]
     _classid_ = 'Windows.UI.Xaml.Media.PointCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PointCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PointCollection: ...
     @winrt_mixinmethod
@@ -2665,6 +2865,13 @@ class PolyBezierSegment(ComPtr, metaclass=_PolyBezierSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IPolyBezierSegment
     _classid_ = 'Windows.UI.Xaml.Media.PolyBezierSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PolyBezierSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PolyBezierSegment: ...
     @winrt_mixinmethod
@@ -2681,6 +2888,13 @@ class PolyLineSegment(ComPtr, metaclass=_PolyLineSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IPolyLineSegment
     _classid_ = 'Windows.UI.Xaml.Media.PolyLineSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PolyLineSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PolyLineSegment: ...
     @winrt_mixinmethod
@@ -2697,6 +2911,13 @@ class PolyQuadraticBezierSegment(ComPtr, metaclass=_PolyQuadraticBezierSegment_M
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IPolyQuadraticBezierSegment
     _classid_ = 'Windows.UI.Xaml.Media.PolyQuadraticBezierSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.PolyQuadraticBezierSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.PolyQuadraticBezierSegment: ...
     @winrt_mixinmethod
@@ -2711,6 +2932,13 @@ class Projection(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IProjection
     _classid_ = 'Windows.UI.Xaml.Media.Projection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.Projection.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IProjectionFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.Projection: ...
 class _QuadraticBezierSegment_Meta_(ComPtr.__class__):
@@ -2719,6 +2947,13 @@ class QuadraticBezierSegment(ComPtr, metaclass=_QuadraticBezierSegment_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.PathSegment
     default_interface: win32more.Windows.UI.Xaml.Media.IQuadraticBezierSegment
     _classid_ = 'Windows.UI.Xaml.Media.QuadraticBezierSegment'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.QuadraticBezierSegment.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.QuadraticBezierSegment: ...
     @winrt_mixinmethod
@@ -2741,6 +2976,13 @@ class RateChangedRoutedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Media.IRateChangedRoutedEventArgs
     _classid_ = 'Windows.UI.Xaml.Media.RateChangedRoutedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RateChangedRoutedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.RateChangedRoutedEventArgs: ...
 class RateChangedRoutedEventHandler(MulticastDelegate):
@@ -2753,6 +2995,13 @@ class RectangleGeometry(ComPtr, metaclass=_RectangleGeometry_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Geometry
     default_interface: win32more.Windows.UI.Xaml.Media.IRectangleGeometry
     _classid_ = 'Windows.UI.Xaml.Media.RectangleGeometry'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RectangleGeometry.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.RectangleGeometry: ...
     @winrt_mixinmethod
@@ -2781,12 +3030,26 @@ class RevealBackgroundBrush(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.RevealBrush
     default_interface: win32more.Windows.UI.Xaml.Media.IRevealBackgroundBrush
     _classid_ = 'Windows.UI.Xaml.Media.RevealBackgroundBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RevealBackgroundBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IRevealBackgroundBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.RevealBackgroundBrush: ...
 class RevealBorderBrush(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.RevealBrush
     default_interface: win32more.Windows.UI.Xaml.Media.IRevealBorderBrush
     _classid_ = 'Windows.UI.Xaml.Media.RevealBorderBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RevealBorderBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IRevealBorderBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.RevealBorderBrush: ...
 class _RevealBrush_Meta_(ComPtr.__class__):
@@ -2795,6 +3058,13 @@ class RevealBrush(ComPtr, metaclass=_RevealBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.XamlCompositionBrushBase
     default_interface: win32more.Windows.UI.Xaml.Media.IRevealBrush
     _classid_ = 'Windows.UI.Xaml.Media.RevealBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RevealBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IRevealBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.RevealBrush: ...
     @winrt_mixinmethod
@@ -2821,23 +3091,30 @@ class RevealBrush(ComPtr, metaclass=_RevealBrush_Meta_):
     def SetState(cls: win32more.Windows.UI.Xaml.Media.IRevealBrushStatics, element: win32more.Windows.UI.Xaml.UIElement, value: win32more.Windows.UI.Xaml.Media.RevealBrushState) -> Void: ...
     @winrt_classmethod
     def GetState(cls: win32more.Windows.UI.Xaml.Media.IRevealBrushStatics, element: win32more.Windows.UI.Xaml.UIElement) -> win32more.Windows.UI.Xaml.Media.RevealBrushState: ...
+    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
     Color = property(get_Color, put_Color)
     TargetTheme = property(get_TargetTheme, put_TargetTheme)
-    AlwaysUseFallback = property(get_AlwaysUseFallback, put_AlwaysUseFallback)
-    _RevealBrush_Meta_.ColorProperty = property(get_ColorProperty.__wrapped__, None)
-    _RevealBrush_Meta_.TargetThemeProperty = property(get_TargetThemeProperty.__wrapped__, None)
     _RevealBrush_Meta_.AlwaysUseFallbackProperty = property(get_AlwaysUseFallbackProperty.__wrapped__, None)
+    _RevealBrush_Meta_.ColorProperty = property(get_ColorProperty.__wrapped__, None)
     _RevealBrush_Meta_.StateProperty = property(get_StateProperty.__wrapped__, None)
-RevealBrushState = Int32
-RevealBrushState_Normal: RevealBrushState = 0
-RevealBrushState_PointerOver: RevealBrushState = 1
-RevealBrushState_Pressed: RevealBrushState = 2
+    _RevealBrush_Meta_.TargetThemeProperty = property(get_TargetThemeProperty.__wrapped__, None)
+class RevealBrushState(Int32):  # enum
+    Normal = 0
+    PointerOver = 1
+    Pressed = 2
 class _RotateTransform_Meta_(ComPtr.__class__):
     pass
 class RotateTransform(ComPtr, metaclass=_RotateTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.IRotateTransform
     _classid_ = 'Windows.UI.Xaml.Media.RotateTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.RotateTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.RotateTransform: ...
     @winrt_mixinmethod
@@ -2858,18 +3135,25 @@ class RotateTransform(ComPtr, metaclass=_RotateTransform_Meta_):
     def get_CenterYProperty(cls: win32more.Windows.UI.Xaml.Media.IRotateTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_AngleProperty(cls: win32more.Windows.UI.Xaml.Media.IRotateTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Angle = property(get_Angle, put_Angle)
     CenterX = property(get_CenterX, put_CenterX)
     CenterY = property(get_CenterY, put_CenterY)
-    Angle = property(get_Angle, put_Angle)
+    _RotateTransform_Meta_.AngleProperty = property(get_AngleProperty.__wrapped__, None)
     _RotateTransform_Meta_.CenterXProperty = property(get_CenterXProperty.__wrapped__, None)
     _RotateTransform_Meta_.CenterYProperty = property(get_CenterYProperty.__wrapped__, None)
-    _RotateTransform_Meta_.AngleProperty = property(get_AngleProperty.__wrapped__, None)
 class _ScaleTransform_Meta_(ComPtr.__class__):
     pass
 class ScaleTransform(ComPtr, metaclass=_ScaleTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.IScaleTransform
     _classid_ = 'Windows.UI.Xaml.Media.ScaleTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.ScaleTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.ScaleTransform: ...
     @winrt_mixinmethod
@@ -2914,6 +3198,13 @@ class SkewTransform(ComPtr, metaclass=_SkewTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.ISkewTransform
     _classid_ = 'Windows.UI.Xaml.Media.SkewTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.SkewTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.SkewTransform: ...
     @winrt_mixinmethod
@@ -2940,20 +3231,29 @@ class SkewTransform(ComPtr, metaclass=_SkewTransform_Meta_):
     def get_AngleXProperty(cls: win32more.Windows.UI.Xaml.Media.ISkewTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_AngleYProperty(cls: win32more.Windows.UI.Xaml.Media.ISkewTransformStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    CenterX = property(get_CenterX, put_CenterX)
-    CenterY = property(get_CenterY, put_CenterY)
     AngleX = property(get_AngleX, put_AngleX)
     AngleY = property(get_AngleY, put_AngleY)
-    _SkewTransform_Meta_.CenterXProperty = property(get_CenterXProperty.__wrapped__, None)
-    _SkewTransform_Meta_.CenterYProperty = property(get_CenterYProperty.__wrapped__, None)
+    CenterX = property(get_CenterX, put_CenterX)
+    CenterY = property(get_CenterY, put_CenterY)
     _SkewTransform_Meta_.AngleXProperty = property(get_AngleXProperty.__wrapped__, None)
     _SkewTransform_Meta_.AngleYProperty = property(get_AngleYProperty.__wrapped__, None)
+    _SkewTransform_Meta_.CenterXProperty = property(get_CenterXProperty.__wrapped__, None)
+    _SkewTransform_Meta_.CenterYProperty = property(get_CenterYProperty.__wrapped__, None)
 class _SolidColorBrush_Meta_(ComPtr.__class__):
     pass
 class SolidColorBrush(ComPtr, metaclass=_SolidColorBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Brush
     default_interface: win32more.Windows.UI.Xaml.Media.ISolidColorBrush
     _classid_ = 'Windows.UI.Xaml.Media.SolidColorBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.SolidColorBrush.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Xaml.Media.SolidColorBrush.CreateInstanceWithColor(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.SolidColorBrush: ...
     @winrt_factorymethod
@@ -2966,30 +3266,37 @@ class SolidColorBrush(ComPtr, metaclass=_SolidColorBrush_Meta_):
     def get_ColorProperty(cls: win32more.Windows.UI.Xaml.Media.ISolidColorBrushStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     Color = property(get_Color, put_Color)
     _SolidColorBrush_Meta_.ColorProperty = property(get_ColorProperty.__wrapped__, None)
-Stereo3DVideoPackingMode = Int32
-Stereo3DVideoPackingMode_None: Stereo3DVideoPackingMode = 0
-Stereo3DVideoPackingMode_SideBySide: Stereo3DVideoPackingMode = 1
-Stereo3DVideoPackingMode_TopBottom: Stereo3DVideoPackingMode = 2
-Stereo3DVideoRenderMode = Int32
-Stereo3DVideoRenderMode_Mono: Stereo3DVideoRenderMode = 0
-Stereo3DVideoRenderMode_Stereo: Stereo3DVideoRenderMode = 1
-Stretch = Int32
-Stretch_None: Stretch = 0
-Stretch_Fill: Stretch = 1
-Stretch_Uniform: Stretch = 2
-Stretch_UniformToFill: Stretch = 3
-StyleSimulations = Int32
-StyleSimulations_None: StyleSimulations = 0
-StyleSimulations_BoldSimulation: StyleSimulations = 1
-StyleSimulations_ItalicSimulation: StyleSimulations = 2
-StyleSimulations_BoldItalicSimulation: StyleSimulations = 3
-SweepDirection = Int32
-SweepDirection_Counterclockwise: SweepDirection = 0
-SweepDirection_Clockwise: SweepDirection = 1
+class Stereo3DVideoPackingMode(Int32):  # enum
+    None_ = 0
+    SideBySide = 1
+    TopBottom = 2
+class Stereo3DVideoRenderMode(Int32):  # enum
+    Mono = 0
+    Stereo = 1
+class Stretch(Int32):  # enum
+    None_ = 0
+    Fill = 1
+    Uniform = 2
+    UniformToFill = 3
+class StyleSimulations(Int32):  # enum
+    None_ = 0
+    BoldSimulation = 1
+    ItalicSimulation = 2
+    BoldItalicSimulation = 3
+class SweepDirection(Int32):  # enum
+    Counterclockwise = 0
+    Clockwise = 1
 class ThemeShadow(ComPtr):
     extends: win32more.Windows.UI.Xaml.Media.Shadow
     default_interface: win32more.Windows.UI.Xaml.Media.IThemeShadow
     _classid_ = 'Windows.UI.Xaml.Media.ThemeShadow'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.ThemeShadow.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IThemeShadowFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.ThemeShadow: ...
     @winrt_mixinmethod
@@ -3001,6 +3308,13 @@ class TileBrush(ComPtr, metaclass=_TileBrush_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Brush
     default_interface: win32more.Windows.UI.Xaml.Media.ITileBrush
     _classid_ = 'Windows.UI.Xaml.Media.TileBrush'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TileBrush.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.ITileBrushFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.TileBrush: ...
     @winrt_mixinmethod
@@ -3033,6 +3347,13 @@ class TimelineMarker(ComPtr, metaclass=_TimelineMarker_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.ITimelineMarker
     _classid_ = 'Windows.UI.Xaml.Media.TimelineMarker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TimelineMarker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TimelineMarker: ...
     @winrt_mixinmethod
@@ -3053,16 +3374,23 @@ class TimelineMarker(ComPtr, metaclass=_TimelineMarker_Meta_):
     def get_TypeProperty(cls: win32more.Windows.UI.Xaml.Media.ITimelineMarkerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
     @winrt_classmethod
     def get_TextProperty(cls: win32more.Windows.UI.Xaml.Media.ITimelineMarkerStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
+    Text = property(get_Text, put_Text)
     Time = property(get_Time, put_Time)
     Type = property(get_Type, put_Type)
-    Text = property(get_Text, put_Text)
+    _TimelineMarker_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
     _TimelineMarker_Meta_.TimeProperty = property(get_TimeProperty.__wrapped__, None)
     _TimelineMarker_Meta_.TypeProperty = property(get_TypeProperty.__wrapped__, None)
-    _TimelineMarker_Meta_.TextProperty = property(get_TextProperty.__wrapped__, None)
 class TimelineMarkerCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.TimelineMarker]
     _classid_ = 'Windows.UI.Xaml.Media.TimelineMarkerCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TimelineMarkerCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TimelineMarkerCollection: ...
     @winrt_mixinmethod
@@ -3096,6 +3424,13 @@ class TimelineMarkerRoutedEventArgs(ComPtr):
     extends: win32more.Windows.UI.Xaml.RoutedEventArgs
     default_interface: win32more.Windows.UI.Xaml.Media.ITimelineMarkerRoutedEventArgs
     _classid_ = 'Windows.UI.Xaml.Media.TimelineMarkerRoutedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TimelineMarkerRoutedEventArgs.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TimelineMarkerRoutedEventArgs: ...
     @winrt_mixinmethod
@@ -3115,6 +3450,13 @@ class TransformCollection(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IVector[win32more.Windows.UI.Xaml.Media.Transform]
     _classid_ = 'Windows.UI.Xaml.Media.TransformCollection'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TransformCollection.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TransformCollection: ...
     @winrt_mixinmethod
@@ -3150,6 +3492,13 @@ class TransformGroup(ComPtr, metaclass=_TransformGroup_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.ITransformGroup
     _classid_ = 'Windows.UI.Xaml.Media.TransformGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TransformGroup.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TransformGroup: ...
     @winrt_mixinmethod
@@ -3169,6 +3518,13 @@ class TranslateTransform(ComPtr, metaclass=_TranslateTransform_Meta_):
     extends: win32more.Windows.UI.Xaml.Media.Transform
     default_interface: win32more.Windows.UI.Xaml.Media.ITranslateTransform
     _classid_ = 'Windows.UI.Xaml.Media.TranslateTransform'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.TranslateTransform.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Xaml.Media.TranslateTransform: ...
     @winrt_mixinmethod
@@ -3217,6 +3573,13 @@ class XamlCompositionBrushBase(ComPtr, metaclass=_XamlCompositionBrushBase_Meta_
     extends: win32more.Windows.UI.Xaml.Media.Brush
     default_interface: win32more.Windows.UI.Xaml.Media.IXamlCompositionBrushBase
     _classid_ = 'Windows.UI.Xaml.Media.XamlCompositionBrushBase'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.XamlCompositionBrushBase.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IXamlCompositionBrushBaseFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.XamlCompositionBrushBase: ...
     @winrt_mixinmethod
@@ -3233,13 +3596,20 @@ class XamlCompositionBrushBase(ComPtr, metaclass=_XamlCompositionBrushBase_Meta_
     def OnDisconnected(self: win32more.Windows.UI.Xaml.Media.IXamlCompositionBrushBaseOverrides) -> Void: ...
     @winrt_classmethod
     def get_FallbackColorProperty(cls: win32more.Windows.UI.Xaml.Media.IXamlCompositionBrushBaseStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    FallbackColor = property(get_FallbackColor, put_FallbackColor)
     CompositionBrush = property(get_CompositionBrush, put_CompositionBrush)
+    FallbackColor = property(get_FallbackColor, put_FallbackColor)
     _XamlCompositionBrushBase_Meta_.FallbackColorProperty = property(get_FallbackColorProperty.__wrapped__, None)
 class XamlLight(ComPtr):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Media.IXamlLight
     _classid_ = 'Windows.UI.Xaml.Media.XamlLight'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Media.XamlLight.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Media.IXamlLightFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Media.XamlLight: ...
     @winrt_mixinmethod
@@ -3261,4 +3631,6 @@ class XamlLight(ComPtr):
     @winrt_classmethod
     def RemoveTargetBrush(cls: win32more.Windows.UI.Xaml.Media.IXamlLightStatics, lightId: WinRT_String, brush: win32more.Windows.UI.Xaml.Media.Brush) -> Void: ...
     CompositionLight = property(get_CompositionLight, put_CompositionLight)
+
+
 make_ready(__name__)

@@ -1,30 +1,24 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Networking
 import win32more.Windows.Networking.Connectivity
-DomainNameType = Int32
-DomainNameType_Suffix: DomainNameType = 0
-DomainNameType_FullyQualified: DomainNameType = 1
+import win32more.Windows.Win32.System.WinRT
+class DomainNameType(Int32):  # enum
+    Suffix = 0
+    FullyQualified = 1
 class EndpointPair(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.IEndpointPair
     _classid_ = 'Windows.Networking.EndpointPair'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 4:
+            return win32more.Windows.Networking.EndpointPair.CreateEndpointPair(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateEndpointPair(cls: win32more.Windows.Networking.IEndpointPairFactory, localHostName: win32more.Windows.Networking.HostName, localServiceName: WinRT_String, remoteHostName: win32more.Windows.Networking.HostName, remoteServiceName: WinRT_String) -> win32more.Windows.Networking.EndpointPair: ...
     @winrt_mixinmethod
@@ -51,6 +45,13 @@ class HostName(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Networking.IHostName
     _classid_ = 'Windows.Networking.HostName'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Networking.HostName.CreateHostName(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateHostName(cls: win32more.Windows.Networking.IHostNameFactory, hostName: WinRT_String) -> win32more.Windows.Networking.HostName: ...
     @winrt_mixinmethod
@@ -69,19 +70,19 @@ class HostName(ComPtr):
     def ToString(self: win32more.Windows.Foundation.IStringable) -> WinRT_String: ...
     @winrt_classmethod
     def Compare(cls: win32more.Windows.Networking.IHostNameStatics, value1: WinRT_String, value2: WinRT_String) -> Int32: ...
+    CanonicalName = property(get_CanonicalName, None)
+    DisplayName = property(get_DisplayName, None)
     IPInformation = property(get_IPInformation, None)
     RawName = property(get_RawName, None)
-    DisplayName = property(get_DisplayName, None)
-    CanonicalName = property(get_CanonicalName, None)
     Type = property(get_Type, None)
-HostNameSortOptions = UInt32
-HostNameSortOptions_None: HostNameSortOptions = 0
-HostNameSortOptions_OptimizeForLongConnections: HostNameSortOptions = 2
-HostNameType = Int32
-HostNameType_DomainName: HostNameType = 0
-HostNameType_Ipv4: HostNameType = 1
-HostNameType_Ipv6: HostNameType = 2
-HostNameType_Bluetooth: HostNameType = 3
+class HostNameSortOptions(UInt32):  # enum
+    None_ = 0
+    OptimizeForLongConnections = 2
+class HostNameType(Int32):  # enum
+    DomainName = 0
+    Ipv4 = 1
+    Ipv6 = 2
+    Bluetooth = 3
 class IEndpointPair(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Networking.IEndpointPair'
@@ -128,10 +129,10 @@ class IHostName(ComPtr):
     def get_Type(self) -> win32more.Windows.Networking.HostNameType: ...
     @winrt_commethod(11)
     def IsEqual(self, hostName: win32more.Windows.Networking.HostName) -> Boolean: ...
+    CanonicalName = property(get_CanonicalName, None)
+    DisplayName = property(get_DisplayName, None)
     IPInformation = property(get_IPInformation, None)
     RawName = property(get_RawName, None)
-    DisplayName = property(get_DisplayName, None)
-    CanonicalName = property(get_CanonicalName, None)
     Type = property(get_Type, None)
 class IHostNameFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -145,4 +146,6 @@ class IHostNameStatics(ComPtr):
     _iid_ = Guid('{f68cd4bf-a388-4e8b-91ea-54dd6dd901c0}')
     @winrt_commethod(6)
     def Compare(self, value1: WinRT_String, value2: WinRT_String) -> Int32: ...
+
+
 make_ready(__name__)

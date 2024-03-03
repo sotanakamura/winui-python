@@ -1,24 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Playback
 import win32more.Windows.Media.Protection
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class ComponentLoadFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IComponentLoadFailedEventArgs
@@ -27,8 +15,8 @@ class ComponentLoadFailedEventArgs(ComPtr):
     def get_Information(self: win32more.Windows.Media.Protection.IComponentLoadFailedEventArgs) -> win32more.Windows.Media.Protection.RevocationAndRenewalInformation: ...
     @winrt_mixinmethod
     def get_Completion(self: win32more.Windows.Media.Protection.IComponentLoadFailedEventArgs) -> win32more.Windows.Media.Protection.MediaProtectionServiceCompletion: ...
-    Information = property(get_Information, None)
     Completion = property(get_Completion, None)
+    Information = property(get_Information, None)
 class ComponentLoadFailedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{95da643c-6db9-424b-86ca-091af432081c}')
@@ -38,21 +26,28 @@ class ComponentRenewal(ComPtr):
     _classid_ = 'Windows.Media.Protection.ComponentRenewal'
     @winrt_classmethod
     def RenewSystemComponentsAsync(cls: win32more.Windows.Media.Protection.IComponentRenewalStatics, information: win32more.Windows.Media.Protection.RevocationAndRenewalInformation) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Protection.RenewalStatus, UInt32]: ...
-GraphicsTrustStatus = Int32
-GraphicsTrustStatus_TrustNotRequired: GraphicsTrustStatus = 0
-GraphicsTrustStatus_TrustEstablished: GraphicsTrustStatus = 1
-GraphicsTrustStatus_EnvironmentNotSupported: GraphicsTrustStatus = 2
-GraphicsTrustStatus_DriverNotSupported: GraphicsTrustStatus = 3
-GraphicsTrustStatus_DriverSigningFailure: GraphicsTrustStatus = 4
-GraphicsTrustStatus_UnknownFailure: GraphicsTrustStatus = 5
-HdcpProtection = Int32
-HdcpProtection_Off: HdcpProtection = 0
-HdcpProtection_On: HdcpProtection = 1
-HdcpProtection_OnWithTypeEnforcement: HdcpProtection = 2
+class GraphicsTrustStatus(Int32):  # enum
+    TrustNotRequired = 0
+    TrustEstablished = 1
+    EnvironmentNotSupported = 2
+    DriverNotSupported = 3
+    DriverSigningFailure = 4
+    UnknownFailure = 5
+class HdcpProtection(Int32):  # enum
+    Off = 0
+    On = 1
+    OnWithTypeEnforcement = 2
 class HdcpSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IHdcpSession
     _classid_ = 'Windows.Media.Protection.HdcpSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.HdcpSession.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.HdcpSession: ...
     @winrt_mixinmethod
@@ -67,11 +62,11 @@ class HdcpSession(ComPtr):
     def remove_ProtectionChanged(self: win32more.Windows.Media.Protection.IHdcpSession, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-HdcpSetProtectionResult = Int32
-HdcpSetProtectionResult_Success: HdcpSetProtectionResult = 0
-HdcpSetProtectionResult_TimedOut: HdcpSetProtectionResult = 1
-HdcpSetProtectionResult_NotSupported: HdcpSetProtectionResult = 2
-HdcpSetProtectionResult_UnknownFailure: HdcpSetProtectionResult = 3
+class HdcpSetProtectionResult(Int32):  # enum
+    Success = 0
+    TimedOut = 1
+    NotSupported = 2
+    UnknownFailure = 3
 class IComponentLoadFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.IComponentLoadFailedEventArgs'
@@ -80,8 +75,8 @@ class IComponentLoadFailedEventArgs(ComPtr):
     def get_Information(self) -> win32more.Windows.Media.Protection.RevocationAndRenewalInformation: ...
     @winrt_commethod(7)
     def get_Completion(self) -> win32more.Windows.Media.Protection.MediaProtectionServiceCompletion: ...
-    Information = property(get_Information, None)
     Completion = property(get_Completion, None)
+    Information = property(get_Information, None)
 class IComponentRenewalStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.IComponentRenewalStatics'
@@ -177,10 +172,10 @@ class IRevocationAndRenewalItem(ComPtr):
     def get_Name(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_RenewalId(self) -> WinRT_String: ...
-    Reasons = property(get_Reasons, None)
     HeaderHash = property(get_HeaderHash, None)
-    PublicKeyHash = property(get_PublicKeyHash, None)
     Name = property(get_Name, None)
+    PublicKeyHash = property(get_PublicKeyHash, None)
+    Reasons = property(get_Reasons, None)
     RenewalId = property(get_RenewalId, None)
 class IServiceRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -190,8 +185,8 @@ class IServiceRequestedEventArgs(ComPtr):
     def get_Request(self) -> win32more.Windows.Media.Protection.IMediaProtectionServiceRequest: ...
     @winrt_commethod(7)
     def get_Completion(self) -> win32more.Windows.Media.Protection.MediaProtectionServiceCompletion: ...
-    Request = property(get_Request, None)
     Completion = property(get_Completion, None)
+    Request = property(get_Request, None)
 class IServiceRequestedEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.IServiceRequestedEventArgs2'
@@ -203,6 +198,13 @@ class MediaProtectionManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IMediaProtectionManager
     _classid_ = 'Windows.Media.Protection.MediaProtectionManager'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.MediaProtectionManager.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.MediaProtectionManager: ...
     @winrt_mixinmethod
@@ -224,6 +226,13 @@ class MediaProtectionPMPServer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IMediaProtectionPMPServer
     _classid_ = 'Windows.Media.Protection.MediaProtectionPMPServer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.MediaProtectionPMPServer.CreatePMPServer(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreatePMPServer(cls: win32more.Windows.Media.Protection.IMediaProtectionPMPServerFactory, pProperties: win32more.Windows.Foundation.Collections.IPropertySet) -> win32more.Windows.Media.Protection.MediaProtectionPMPServer: ...
     @winrt_mixinmethod
@@ -239,25 +248,32 @@ class ProtectionCapabilities(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IProtectionCapabilities
     _classid_ = 'Windows.Media.Protection.ProtectionCapabilities'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.ProtectionCapabilities.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.ProtectionCapabilities: ...
     @winrt_mixinmethod
     def IsTypeSupported(self: win32more.Windows.Media.Protection.IProtectionCapabilities, type: WinRT_String, keySystem: WinRT_String) -> win32more.Windows.Media.Protection.ProtectionCapabilityResult: ...
-ProtectionCapabilityResult = Int32
-ProtectionCapabilityResult_NotSupported: ProtectionCapabilityResult = 0
-ProtectionCapabilityResult_Maybe: ProtectionCapabilityResult = 1
-ProtectionCapabilityResult_Probably: ProtectionCapabilityResult = 2
+class ProtectionCapabilityResult(Int32):  # enum
+    NotSupported = 0
+    Maybe = 1
+    Probably = 2
 ProtectionRenewalContract: UInt32 = 65536
 class RebootNeededEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{64e12a45-973b-4a3a-b260-91898a49a82c}')
     def Invoke(self, sender: win32more.Windows.Media.Protection.MediaProtectionManager) -> Void: ...
-RenewalStatus = Int32
-RenewalStatus_NotStarted: RenewalStatus = 0
-RenewalStatus_UpdatesInProgress: RenewalStatus = 1
-RenewalStatus_UserCancelled: RenewalStatus = 2
-RenewalStatus_AppComponentsMayNeedUpdating: RenewalStatus = 3
-RenewalStatus_NoComponentsFound: RenewalStatus = 4
+class RenewalStatus(Int32):  # enum
+    NotStarted = 0
+    UpdatesInProgress = 1
+    UserCancelled = 2
+    AppComponentsMayNeedUpdating = 3
+    NoComponentsFound = 4
 class RevocationAndRenewalInformation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IRevocationAndRenewalInformation
@@ -279,27 +295,27 @@ class RevocationAndRenewalItem(ComPtr):
     def get_Name(self: win32more.Windows.Media.Protection.IRevocationAndRenewalItem) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_RenewalId(self: win32more.Windows.Media.Protection.IRevocationAndRenewalItem) -> WinRT_String: ...
-    Reasons = property(get_Reasons, None)
     HeaderHash = property(get_HeaderHash, None)
-    PublicKeyHash = property(get_PublicKeyHash, None)
     Name = property(get_Name, None)
+    PublicKeyHash = property(get_PublicKeyHash, None)
+    Reasons = property(get_Reasons, None)
     RenewalId = property(get_RenewalId, None)
-RevocationAndRenewalReasons = UInt32
-RevocationAndRenewalReasons_UserModeComponentLoad: RevocationAndRenewalReasons = 1
-RevocationAndRenewalReasons_KernelModeComponentLoad: RevocationAndRenewalReasons = 2
-RevocationAndRenewalReasons_AppComponent: RevocationAndRenewalReasons = 4
-RevocationAndRenewalReasons_GlobalRevocationListLoadFailed: RevocationAndRenewalReasons = 16
-RevocationAndRenewalReasons_InvalidGlobalRevocationListSignature: RevocationAndRenewalReasons = 32
-RevocationAndRenewalReasons_GlobalRevocationListAbsent: RevocationAndRenewalReasons = 4096
-RevocationAndRenewalReasons_ComponentRevoked: RevocationAndRenewalReasons = 8192
-RevocationAndRenewalReasons_InvalidComponentCertificateExtendedKeyUse: RevocationAndRenewalReasons = 16384
-RevocationAndRenewalReasons_ComponentCertificateRevoked: RevocationAndRenewalReasons = 32768
-RevocationAndRenewalReasons_InvalidComponentCertificateRoot: RevocationAndRenewalReasons = 65536
-RevocationAndRenewalReasons_ComponentHighSecurityCertificateRevoked: RevocationAndRenewalReasons = 131072
-RevocationAndRenewalReasons_ComponentLowSecurityCertificateRevoked: RevocationAndRenewalReasons = 262144
-RevocationAndRenewalReasons_BootDriverVerificationFailed: RevocationAndRenewalReasons = 1048576
-RevocationAndRenewalReasons_ComponentSignedWithTestCertificate: RevocationAndRenewalReasons = 16777216
-RevocationAndRenewalReasons_EncryptionFailure: RevocationAndRenewalReasons = 268435456
+class RevocationAndRenewalReasons(UInt32):  # enum
+    UserModeComponentLoad = 1
+    KernelModeComponentLoad = 2
+    AppComponent = 4
+    GlobalRevocationListLoadFailed = 16
+    InvalidGlobalRevocationListSignature = 32
+    GlobalRevocationListAbsent = 4096
+    ComponentRevoked = 8192
+    InvalidComponentCertificateExtendedKeyUse = 16384
+    ComponentCertificateRevoked = 32768
+    InvalidComponentCertificateRoot = 65536
+    ComponentHighSecurityCertificateRevoked = 131072
+    ComponentLowSecurityCertificateRevoked = 262144
+    BootDriverVerificationFailed = 1048576
+    ComponentSignedWithTestCertificate = 16777216
+    EncryptionFailure = 268435456
 class ServiceRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.IServiceRequestedEventArgs
@@ -310,11 +326,13 @@ class ServiceRequestedEventArgs(ComPtr):
     def get_Completion(self: win32more.Windows.Media.Protection.IServiceRequestedEventArgs) -> win32more.Windows.Media.Protection.MediaProtectionServiceCompletion: ...
     @winrt_mixinmethod
     def get_MediaPlaybackItem(self: win32more.Windows.Media.Protection.IServiceRequestedEventArgs2) -> win32more.Windows.Media.Playback.MediaPlaybackItem: ...
-    Request = property(get_Request, None)
     Completion = property(get_Completion, None)
     MediaPlaybackItem = property(get_MediaPlaybackItem, None)
+    Request = property(get_Request, None)
 class ServiceRequestedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{d2d690ba-cac9-48e1-95c0-d38495a84055}')
     def Invoke(self, sender: win32more.Windows.Media.Protection.MediaProtectionManager, e: win32more.Windows.Media.Protection.ServiceRequestedEventArgs) -> Void: ...
+
+
 make_ready(__name__)

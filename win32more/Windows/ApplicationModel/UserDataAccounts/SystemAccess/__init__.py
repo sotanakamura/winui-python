@@ -1,32 +1,26 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Security.Credentials
-DeviceAccountAuthenticationType = Int32
-DeviceAccountAuthenticationType_Basic: DeviceAccountAuthenticationType = 0
-DeviceAccountAuthenticationType_OAuth: DeviceAccountAuthenticationType = 1
-DeviceAccountAuthenticationType_SingleSignOn: DeviceAccountAuthenticationType = 2
+import win32more.Windows.Win32.System.WinRT
+class DeviceAccountAuthenticationType(Int32):  # enum
+    Basic = 0
+    OAuth = 1
+    SingleSignOn = 2
 class DeviceAccountConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.IDeviceAccountConfiguration
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.SystemAccess.DeviceAccountConfiguration'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.DeviceAccountConfiguration.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.DeviceAccountConfiguration: ...
     @winrt_mixinmethod
@@ -205,76 +199,76 @@ class DeviceAccountConfiguration(ComPtr):
     def get_IsSyncScheduleManagedBySystem(self: win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.IDeviceAccountConfiguration2) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsSyncScheduleManagedBySystem(self: win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.IDeviceAccountConfiguration2, value: Boolean) -> Void: ...
+    AccountIconId = property(get_AccountIconId, put_AccountIconId)
     AccountName = property(get_AccountName, put_AccountName)
-    DeviceAccountTypeId = property(get_DeviceAccountTypeId, put_DeviceAccountTypeId)
-    ServerType = property(get_ServerType, put_ServerType)
-    EmailAddress = property(get_EmailAddress, put_EmailAddress)
-    Domain = property(get_Domain, put_Domain)
-    EmailSyncEnabled = property(get_EmailSyncEnabled, put_EmailSyncEnabled)
-    ContactsSyncEnabled = property(get_ContactsSyncEnabled, put_ContactsSyncEnabled)
+    AlwaysDownloadFullMessage = property(get_AlwaysDownloadFullMessage, put_AlwaysDownloadFullMessage)
+    AuthenticationCertificateId = property(get_AuthenticationCertificateId, put_AuthenticationCertificateId)
+    AuthenticationType = property(get_AuthenticationType, put_AuthenticationType)
+    AutoSelectAuthenticationCertificate = property(get_AutoSelectAuthenticationCertificate, put_AutoSelectAuthenticationCertificate)
+    CalDavRequiresSsl = property(get_CalDavRequiresSsl, put_CalDavRequiresSsl)
+    CalDavServerUrl = property(get_CalDavServerUrl, put_CalDavServerUrl)
+    CalDavSyncScheduleKind = property(get_CalDavSyncScheduleKind, put_CalDavSyncScheduleKind)
     CalendarSyncEnabled = property(get_CalendarSyncEnabled, put_CalendarSyncEnabled)
+    CardDavRequiresSsl = property(get_CardDavRequiresSsl, put_CardDavRequiresSsl)
+    CardDavServerUrl = property(get_CardDavServerUrl, put_CardDavServerUrl)
+    CardDavSyncScheduleKind = property(get_CardDavSyncScheduleKind, put_CardDavSyncScheduleKind)
+    ContactsSyncEnabled = property(get_ContactsSyncEnabled, put_ContactsSyncEnabled)
+    DeviceAccountTypeId = property(get_DeviceAccountTypeId, put_DeviceAccountTypeId)
+    DoesPolicyAllowMailSync = property(get_DoesPolicyAllowMailSync, None)
+    Domain = property(get_Domain, put_Domain)
+    EmailAddress = property(get_EmailAddress, put_EmailAddress)
+    EmailSyncEnabled = property(get_EmailSyncEnabled, put_EmailSyncEnabled)
     IncomingServerAddress = property(get_IncomingServerAddress, put_IncomingServerAddress)
+    IncomingServerCertificateHash = property(get_IncomingServerCertificateHash, put_IncomingServerCertificateHash)
+    IncomingServerCredential = property(get_IncomingServerCredential, put_IncomingServerCredential)
     IncomingServerPort = property(get_IncomingServerPort, put_IncomingServerPort)
     IncomingServerRequiresSsl = property(get_IncomingServerRequiresSsl, put_IncomingServerRequiresSsl)
     IncomingServerUsername = property(get_IncomingServerUsername, put_IncomingServerUsername)
+    IsClientAuthenticationCertificateRequired = property(get_IsClientAuthenticationCertificateRequired, put_IsClientAuthenticationCertificateRequired)
+    IsExternallyManaged = property(get_IsExternallyManaged, put_IsExternallyManaged)
+    IsOutgoingServerAuthenticationEnabled = property(get_IsOutgoingServerAuthenticationEnabled, put_IsOutgoingServerAuthenticationEnabled)
+    IsOutgoingServerAuthenticationRequired = property(get_IsOutgoingServerAuthenticationRequired, put_IsOutgoingServerAuthenticationRequired)
+    IsSsoAuthenticationSupported = property(get_IsSsoAuthenticationSupported, None)
+    IsSyncScheduleManagedBySystem = property(get_IsSyncScheduleManagedBySystem, put_IsSyncScheduleManagedBySystem)
+    MailAgeFilter = property(get_MailAgeFilter, put_MailAgeFilter)
+    OAuthRefreshToken = property(get_OAuthRefreshToken, put_OAuthRefreshToken)
     OutgoingServerAddress = property(get_OutgoingServerAddress, put_OutgoingServerAddress)
+    OutgoingServerCertificateHash = property(get_OutgoingServerCertificateHash, put_OutgoingServerCertificateHash)
+    OutgoingServerCredential = property(get_OutgoingServerCredential, put_OutgoingServerCredential)
     OutgoingServerPort = property(get_OutgoingServerPort, put_OutgoingServerPort)
     OutgoingServerRequiresSsl = property(get_OutgoingServerRequiresSsl, put_OutgoingServerRequiresSsl)
     OutgoingServerUsername = property(get_OutgoingServerUsername, put_OutgoingServerUsername)
-    IncomingServerCredential = property(get_IncomingServerCredential, put_IncomingServerCredential)
-    OutgoingServerCredential = property(get_OutgoingServerCredential, put_OutgoingServerCredential)
-    OAuthRefreshToken = property(get_OAuthRefreshToken, put_OAuthRefreshToken)
-    IsExternallyManaged = property(get_IsExternallyManaged, put_IsExternallyManaged)
-    AccountIconId = property(get_AccountIconId, put_AccountIconId)
-    AuthenticationType = property(get_AuthenticationType, put_AuthenticationType)
-    IsSsoAuthenticationSupported = property(get_IsSsoAuthenticationSupported, None)
+    ServerType = property(get_ServerType, put_ServerType)
     SsoAccountId = property(get_SsoAccountId, put_SsoAccountId)
-    AlwaysDownloadFullMessage = property(get_AlwaysDownloadFullMessage, put_AlwaysDownloadFullMessage)
-    DoesPolicyAllowMailSync = property(get_DoesPolicyAllowMailSync, None)
     SyncScheduleKind = property(get_SyncScheduleKind, put_SyncScheduleKind)
-    MailAgeFilter = property(get_MailAgeFilter, put_MailAgeFilter)
-    IsClientAuthenticationCertificateRequired = property(get_IsClientAuthenticationCertificateRequired, put_IsClientAuthenticationCertificateRequired)
-    AutoSelectAuthenticationCertificate = property(get_AutoSelectAuthenticationCertificate, put_AutoSelectAuthenticationCertificate)
-    AuthenticationCertificateId = property(get_AuthenticationCertificateId, put_AuthenticationCertificateId)
-    CardDavSyncScheduleKind = property(get_CardDavSyncScheduleKind, put_CardDavSyncScheduleKind)
-    CalDavSyncScheduleKind = property(get_CalDavSyncScheduleKind, put_CalDavSyncScheduleKind)
-    CardDavServerUrl = property(get_CardDavServerUrl, put_CardDavServerUrl)
-    CardDavRequiresSsl = property(get_CardDavRequiresSsl, put_CardDavRequiresSsl)
-    CalDavServerUrl = property(get_CalDavServerUrl, put_CalDavServerUrl)
-    CalDavRequiresSsl = property(get_CalDavRequiresSsl, put_CalDavRequiresSsl)
-    WasModifiedByUser = property(get_WasModifiedByUser, put_WasModifiedByUser)
     WasIncomingServerCertificateHashConfirmed = property(get_WasIncomingServerCertificateHashConfirmed, put_WasIncomingServerCertificateHashConfirmed)
-    IncomingServerCertificateHash = property(get_IncomingServerCertificateHash, put_IncomingServerCertificateHash)
-    IsOutgoingServerAuthenticationRequired = property(get_IsOutgoingServerAuthenticationRequired, put_IsOutgoingServerAuthenticationRequired)
-    IsOutgoingServerAuthenticationEnabled = property(get_IsOutgoingServerAuthenticationEnabled, put_IsOutgoingServerAuthenticationEnabled)
+    WasModifiedByUser = property(get_WasModifiedByUser, put_WasModifiedByUser)
     WasOutgoingServerCertificateHashConfirmed = property(get_WasOutgoingServerCertificateHashConfirmed, put_WasOutgoingServerCertificateHashConfirmed)
-    OutgoingServerCertificateHash = property(get_OutgoingServerCertificateHash, put_OutgoingServerCertificateHash)
-    IsSyncScheduleManagedBySystem = property(get_IsSyncScheduleManagedBySystem, put_IsSyncScheduleManagedBySystem)
-DeviceAccountIconId = Int32
-DeviceAccountIconId_Exchange: DeviceAccountIconId = 0
-DeviceAccountIconId_Msa: DeviceAccountIconId = 1
-DeviceAccountIconId_Outlook: DeviceAccountIconId = 2
-DeviceAccountIconId_Generic: DeviceAccountIconId = 3
-DeviceAccountMailAgeFilter = Int32
-DeviceAccountMailAgeFilter_All: DeviceAccountMailAgeFilter = 0
-DeviceAccountMailAgeFilter_Last1Day: DeviceAccountMailAgeFilter = 1
-DeviceAccountMailAgeFilter_Last3Days: DeviceAccountMailAgeFilter = 2
-DeviceAccountMailAgeFilter_Last7Days: DeviceAccountMailAgeFilter = 3
-DeviceAccountMailAgeFilter_Last14Days: DeviceAccountMailAgeFilter = 4
-DeviceAccountMailAgeFilter_Last30Days: DeviceAccountMailAgeFilter = 5
-DeviceAccountMailAgeFilter_Last90Days: DeviceAccountMailAgeFilter = 6
-DeviceAccountServerType = Int32
-DeviceAccountServerType_Exchange: DeviceAccountServerType = 0
-DeviceAccountServerType_Pop: DeviceAccountServerType = 1
-DeviceAccountServerType_Imap: DeviceAccountServerType = 2
-DeviceAccountSyncScheduleKind = Int32
-DeviceAccountSyncScheduleKind_Manual: DeviceAccountSyncScheduleKind = 0
-DeviceAccountSyncScheduleKind_Every15Minutes: DeviceAccountSyncScheduleKind = 1
-DeviceAccountSyncScheduleKind_Every30Minutes: DeviceAccountSyncScheduleKind = 2
-DeviceAccountSyncScheduleKind_Every60Minutes: DeviceAccountSyncScheduleKind = 3
-DeviceAccountSyncScheduleKind_Every2Hours: DeviceAccountSyncScheduleKind = 4
-DeviceAccountSyncScheduleKind_Daily: DeviceAccountSyncScheduleKind = 5
-DeviceAccountSyncScheduleKind_AsItemsArrive: DeviceAccountSyncScheduleKind = 6
+class DeviceAccountIconId(Int32):  # enum
+    Exchange = 0
+    Msa = 1
+    Outlook = 2
+    Generic = 3
+class DeviceAccountMailAgeFilter(Int32):  # enum
+    All = 0
+    Last1Day = 1
+    Last3Days = 2
+    Last7Days = 3
+    Last14Days = 4
+    Last30Days = 5
+    Last90Days = 6
+class DeviceAccountServerType(Int32):  # enum
+    Exchange = 0
+    Pop = 1
+    Imap = 2
+class DeviceAccountSyncScheduleKind(Int32):  # enum
+    Manual = 0
+    Every15Minutes = 1
+    Every30Minutes = 2
+    Every60Minutes = 3
+    Every2Hours = 4
+    Daily = 5
+    AsItemsArrive = 6
 class IDeviceAccountConfiguration(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.SystemAccess.IDeviceAccountConfiguration'
@@ -344,13 +338,12 @@ class IDeviceAccountConfiguration(ComPtr):
     @winrt_commethod(37)
     def put_OutgoingServerUsername(self, value: WinRT_String) -> Void: ...
     AccountName = property(get_AccountName, put_AccountName)
-    DeviceAccountTypeId = property(get_DeviceAccountTypeId, put_DeviceAccountTypeId)
-    ServerType = property(get_ServerType, put_ServerType)
-    EmailAddress = property(get_EmailAddress, put_EmailAddress)
-    Domain = property(get_Domain, put_Domain)
-    EmailSyncEnabled = property(get_EmailSyncEnabled, put_EmailSyncEnabled)
-    ContactsSyncEnabled = property(get_ContactsSyncEnabled, put_ContactsSyncEnabled)
     CalendarSyncEnabled = property(get_CalendarSyncEnabled, put_CalendarSyncEnabled)
+    ContactsSyncEnabled = property(get_ContactsSyncEnabled, put_ContactsSyncEnabled)
+    DeviceAccountTypeId = property(get_DeviceAccountTypeId, put_DeviceAccountTypeId)
+    Domain = property(get_Domain, put_Domain)
+    EmailAddress = property(get_EmailAddress, put_EmailAddress)
+    EmailSyncEnabled = property(get_EmailSyncEnabled, put_EmailSyncEnabled)
     IncomingServerAddress = property(get_IncomingServerAddress, put_IncomingServerAddress)
     IncomingServerPort = property(get_IncomingServerPort, put_IncomingServerPort)
     IncomingServerRequiresSsl = property(get_IncomingServerRequiresSsl, put_IncomingServerRequiresSsl)
@@ -359,6 +352,7 @@ class IDeviceAccountConfiguration(ComPtr):
     OutgoingServerPort = property(get_OutgoingServerPort, put_OutgoingServerPort)
     OutgoingServerRequiresSsl = property(get_OutgoingServerRequiresSsl, put_OutgoingServerRequiresSsl)
     OutgoingServerUsername = property(get_OutgoingServerUsername, put_OutgoingServerUsername)
+    ServerType = property(get_ServerType, put_ServerType)
 class IDeviceAccountConfiguration2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.SystemAccess.IDeviceAccountConfiguration2'
@@ -475,35 +469,35 @@ class IDeviceAccountConfiguration2(ComPtr):
     def get_IsSyncScheduleManagedBySystem(self) -> Boolean: ...
     @winrt_commethod(61)
     def put_IsSyncScheduleManagedBySystem(self, value: Boolean) -> Void: ...
-    IncomingServerCredential = property(get_IncomingServerCredential, put_IncomingServerCredential)
-    OutgoingServerCredential = property(get_OutgoingServerCredential, put_OutgoingServerCredential)
-    OAuthRefreshToken = property(get_OAuthRefreshToken, put_OAuthRefreshToken)
-    IsExternallyManaged = property(get_IsExternallyManaged, put_IsExternallyManaged)
     AccountIconId = property(get_AccountIconId, put_AccountIconId)
-    AuthenticationType = property(get_AuthenticationType, put_AuthenticationType)
-    IsSsoAuthenticationSupported = property(get_IsSsoAuthenticationSupported, None)
-    SsoAccountId = property(get_SsoAccountId, put_SsoAccountId)
     AlwaysDownloadFullMessage = property(get_AlwaysDownloadFullMessage, put_AlwaysDownloadFullMessage)
-    DoesPolicyAllowMailSync = property(get_DoesPolicyAllowMailSync, None)
-    SyncScheduleKind = property(get_SyncScheduleKind, put_SyncScheduleKind)
-    MailAgeFilter = property(get_MailAgeFilter, put_MailAgeFilter)
-    IsClientAuthenticationCertificateRequired = property(get_IsClientAuthenticationCertificateRequired, put_IsClientAuthenticationCertificateRequired)
-    AutoSelectAuthenticationCertificate = property(get_AutoSelectAuthenticationCertificate, put_AutoSelectAuthenticationCertificate)
     AuthenticationCertificateId = property(get_AuthenticationCertificateId, put_AuthenticationCertificateId)
-    CardDavSyncScheduleKind = property(get_CardDavSyncScheduleKind, put_CardDavSyncScheduleKind)
-    CalDavSyncScheduleKind = property(get_CalDavSyncScheduleKind, put_CalDavSyncScheduleKind)
-    CardDavServerUrl = property(get_CardDavServerUrl, put_CardDavServerUrl)
-    CardDavRequiresSsl = property(get_CardDavRequiresSsl, put_CardDavRequiresSsl)
-    CalDavServerUrl = property(get_CalDavServerUrl, put_CalDavServerUrl)
+    AuthenticationType = property(get_AuthenticationType, put_AuthenticationType)
+    AutoSelectAuthenticationCertificate = property(get_AutoSelectAuthenticationCertificate, put_AutoSelectAuthenticationCertificate)
     CalDavRequiresSsl = property(get_CalDavRequiresSsl, put_CalDavRequiresSsl)
-    WasModifiedByUser = property(get_WasModifiedByUser, put_WasModifiedByUser)
-    WasIncomingServerCertificateHashConfirmed = property(get_WasIncomingServerCertificateHashConfirmed, put_WasIncomingServerCertificateHashConfirmed)
+    CalDavServerUrl = property(get_CalDavServerUrl, put_CalDavServerUrl)
+    CalDavSyncScheduleKind = property(get_CalDavSyncScheduleKind, put_CalDavSyncScheduleKind)
+    CardDavRequiresSsl = property(get_CardDavRequiresSsl, put_CardDavRequiresSsl)
+    CardDavServerUrl = property(get_CardDavServerUrl, put_CardDavServerUrl)
+    CardDavSyncScheduleKind = property(get_CardDavSyncScheduleKind, put_CardDavSyncScheduleKind)
+    DoesPolicyAllowMailSync = property(get_DoesPolicyAllowMailSync, None)
     IncomingServerCertificateHash = property(get_IncomingServerCertificateHash, put_IncomingServerCertificateHash)
-    IsOutgoingServerAuthenticationRequired = property(get_IsOutgoingServerAuthenticationRequired, put_IsOutgoingServerAuthenticationRequired)
+    IncomingServerCredential = property(get_IncomingServerCredential, put_IncomingServerCredential)
+    IsClientAuthenticationCertificateRequired = property(get_IsClientAuthenticationCertificateRequired, put_IsClientAuthenticationCertificateRequired)
+    IsExternallyManaged = property(get_IsExternallyManaged, put_IsExternallyManaged)
     IsOutgoingServerAuthenticationEnabled = property(get_IsOutgoingServerAuthenticationEnabled, put_IsOutgoingServerAuthenticationEnabled)
-    WasOutgoingServerCertificateHashConfirmed = property(get_WasOutgoingServerCertificateHashConfirmed, put_WasOutgoingServerCertificateHashConfirmed)
-    OutgoingServerCertificateHash = property(get_OutgoingServerCertificateHash, put_OutgoingServerCertificateHash)
+    IsOutgoingServerAuthenticationRequired = property(get_IsOutgoingServerAuthenticationRequired, put_IsOutgoingServerAuthenticationRequired)
+    IsSsoAuthenticationSupported = property(get_IsSsoAuthenticationSupported, None)
     IsSyncScheduleManagedBySystem = property(get_IsSyncScheduleManagedBySystem, put_IsSyncScheduleManagedBySystem)
+    MailAgeFilter = property(get_MailAgeFilter, put_MailAgeFilter)
+    OAuthRefreshToken = property(get_OAuthRefreshToken, put_OAuthRefreshToken)
+    OutgoingServerCertificateHash = property(get_OutgoingServerCertificateHash, put_OutgoingServerCertificateHash)
+    OutgoingServerCredential = property(get_OutgoingServerCredential, put_OutgoingServerCredential)
+    SsoAccountId = property(get_SsoAccountId, put_SsoAccountId)
+    SyncScheduleKind = property(get_SyncScheduleKind, put_SyncScheduleKind)
+    WasIncomingServerCertificateHashConfirmed = property(get_WasIncomingServerCertificateHashConfirmed, put_WasIncomingServerCertificateHashConfirmed)
+    WasModifiedByUser = property(get_WasModifiedByUser, put_WasModifiedByUser)
+    WasOutgoingServerCertificateHashConfirmed = property(get_WasOutgoingServerCertificateHashConfirmed, put_WasOutgoingServerCertificateHashConfirmed)
 class IUserDataAccountSystemAccessManagerStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.UserDataAccounts.SystemAccess.IUserDataAccountSystemAccessManagerStatics'
@@ -535,4 +529,6 @@ class UserDataAccountSystemAccessManager(ComPtr):
     def GetDeviceAccountConfigurationAsync(cls: win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.IUserDataAccountSystemAccessManagerStatics2, accountId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.DeviceAccountConfiguration]: ...
     @winrt_classmethod
     def AddAndShowDeviceAccountsAsync(cls: win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.IUserDataAccountSystemAccessManagerStatics, accounts: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.UserDataAccounts.SystemAccess.DeviceAccountConfiguration]) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]]: ...
+
+
 make_ready(__name__)

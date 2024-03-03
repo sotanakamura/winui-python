@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Enumeration
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.DialProtocol
 import win32more.Windows.Storage.Streams
 import win32more.Windows.UI.Popups
+import win32more.Windows.Win32.System.WinRT
 class DialApp(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.DialProtocol.IDialApp
@@ -34,16 +21,16 @@ class DialApp(ComPtr):
     @winrt_mixinmethod
     def GetAppStateAsync(self: win32more.Windows.Media.DialProtocol.IDialApp) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.DialProtocol.DialAppStateDetails]: ...
     AppName = property(get_AppName, None)
-DialAppLaunchResult = Int32
-DialAppLaunchResult_Launched: DialAppLaunchResult = 0
-DialAppLaunchResult_FailedToLaunch: DialAppLaunchResult = 1
-DialAppLaunchResult_NotFound: DialAppLaunchResult = 2
-DialAppLaunchResult_NetworkFailure: DialAppLaunchResult = 3
-DialAppState = Int32
-DialAppState_Unknown: DialAppState = 0
-DialAppState_Stopped: DialAppState = 1
-DialAppState_Running: DialAppState = 2
-DialAppState_NetworkFailure: DialAppState = 3
+class DialAppLaunchResult(Int32):  # enum
+    Launched = 0
+    FailedToLaunch = 1
+    NotFound = 2
+    NetworkFailure = 3
+class DialAppState(Int32):  # enum
+    Unknown = 0
+    Stopped = 1
+    Running = 2
+    NetworkFailure = 3
 class DialAppStateDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.DialProtocol.IDialAppStateDetails
@@ -52,13 +39,13 @@ class DialAppStateDetails(ComPtr):
     def get_State(self: win32more.Windows.Media.DialProtocol.IDialAppStateDetails) -> win32more.Windows.Media.DialProtocol.DialAppState: ...
     @winrt_mixinmethod
     def get_FullXml(self: win32more.Windows.Media.DialProtocol.IDialAppStateDetails) -> WinRT_String: ...
-    State = property(get_State, None)
     FullXml = property(get_FullXml, None)
-DialAppStopResult = Int32
-DialAppStopResult_Stopped: DialAppStopResult = 0
-DialAppStopResult_StopFailed: DialAppStopResult = 1
-DialAppStopResult_OperationNotSupported: DialAppStopResult = 2
-DialAppStopResult_NetworkFailure: DialAppStopResult = 3
+    State = property(get_State, None)
+class DialAppStopResult(Int32):  # enum
+    Stopped = 0
+    StopFailed = 1
+    OperationNotSupported = 2
+    NetworkFailure = 3
 class DialDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.DialProtocol.IDialDevice
@@ -77,20 +64,27 @@ class DialDevice(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Media.DialProtocol.IDialDeviceStatics, value: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.DialProtocol.DialDevice]: ...
     @winrt_classmethod
     def DeviceInfoSupportsDialAsync(cls: win32more.Windows.Media.DialProtocol.IDialDeviceStatics, device: win32more.Windows.Devices.Enumeration.DeviceInformation) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-    Id = property(get_Id, None)
     FriendlyName = property(get_FriendlyName, None)
+    Id = property(get_Id, None)
     Thumbnail = property(get_Thumbnail, None)
-DialDeviceDisplayStatus = Int32
-DialDeviceDisplayStatus_None: DialDeviceDisplayStatus = 0
-DialDeviceDisplayStatus_Connecting: DialDeviceDisplayStatus = 1
-DialDeviceDisplayStatus_Connected: DialDeviceDisplayStatus = 2
-DialDeviceDisplayStatus_Disconnecting: DialDeviceDisplayStatus = 3
-DialDeviceDisplayStatus_Disconnected: DialDeviceDisplayStatus = 4
-DialDeviceDisplayStatus_Error: DialDeviceDisplayStatus = 5
+class DialDeviceDisplayStatus(Int32):  # enum
+    None_ = 0
+    Connecting = 1
+    Connected = 2
+    Disconnecting = 3
+    Disconnected = 4
+    Error = 5
 class DialDevicePicker(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.DialProtocol.IDialDevicePicker
     _classid_ = 'Windows.Media.DialProtocol.DialDevicePicker'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.DialProtocol.DialDevicePicker.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.DialProtocol.DialDevicePicker: ...
     @winrt_mixinmethod
@@ -121,8 +115,8 @@ class DialDevicePicker(ComPtr):
     def Hide(self: win32more.Windows.Media.DialProtocol.IDialDevicePicker) -> Void: ...
     @winrt_mixinmethod
     def SetDisplayStatus(self: win32more.Windows.Media.DialProtocol.IDialDevicePicker, device: win32more.Windows.Media.DialProtocol.DialDevice, status: win32more.Windows.Media.DialProtocol.DialDeviceDisplayStatus) -> Void: ...
-    Filter = property(get_Filter, None)
     Appearance = property(get_Appearance, None)
+    Filter = property(get_Filter, None)
 class DialDevicePickerFilter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.DialProtocol.IDialDevicePickerFilter
@@ -180,8 +174,8 @@ class IDialAppStateDetails(ComPtr):
     def get_State(self) -> win32more.Windows.Media.DialProtocol.DialAppState: ...
     @winrt_commethod(7)
     def get_FullXml(self) -> WinRT_String: ...
-    State = property(get_State, None)
     FullXml = property(get_FullXml, None)
+    State = property(get_State, None)
 class IDialDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.DialProtocol.IDialDevice'
@@ -233,8 +227,8 @@ class IDialDevicePicker(ComPtr):
     def Hide(self) -> Void: ...
     @winrt_commethod(19)
     def SetDisplayStatus(self, device: win32more.Windows.Media.DialProtocol.DialDevice, status: win32more.Windows.Media.DialProtocol.DialDeviceDisplayStatus) -> Void: ...
-    Filter = property(get_Filter, None)
     Appearance = property(get_Appearance, None)
+    Filter = property(get_Filter, None)
 class IDialDevicePickerFilter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.DialProtocol.IDialDevicePickerFilter'
@@ -287,4 +281,6 @@ class IDialReceiverAppStatics(ComPtr):
     @winrt_commethod(6)
     def get_Current(self) -> win32more.Windows.Media.DialProtocol.DialReceiverApp: ...
     Current = property(get_Current, None)
+
+
 make_ready(__name__)

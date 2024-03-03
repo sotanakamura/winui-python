@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security.Cryptography
 import win32more.Windows.Win32.Security.Cryptography.UI
@@ -46,6 +46,7 @@ CERT_FILTER_VALID_SIGNATURE: UInt32 = 4
 CERT_FILTER_LEAF_CERTS_ONLY: UInt32 = 8
 CERT_FILTER_ISSUER_CERTS_ONLY: UInt32 = 16
 CERT_FILTER_KEY_EXISTS: UInt32 = 32
+CERT_CERTIFICATE_ACTION_VERIFY: Guid = Guid('{7801ebd0-cf4b-11d0-851f-0060979387ea}')
 szCERT_CERTIFICATE_ACTION_VERIFY: String = '{7801ebd0-cf4b-11d0-851f-0060979387ea}'
 CERT_VALIDITY_BEFORE_START: UInt32 = 1
 CERT_VALIDITY_AFTER_END: UInt32 = 2

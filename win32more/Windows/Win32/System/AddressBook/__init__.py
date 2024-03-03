@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.AddressBook
 import win32more.Windows.Win32.System.Com
@@ -473,9 +473,9 @@ class FlagList(EasyCastStructure):
     cFlags: UInt32
     ulFlag: UInt32 * 1
 Gender = Int32
-Gender_genderUnspecified: win32more.Windows.Win32.System.AddressBook.Gender = 0
-Gender_genderFemale: win32more.Windows.Win32.System.AddressBook.Gender = 1
-Gender_genderMale: win32more.Windows.Win32.System.AddressBook.Gender = 2
+genderUnspecified: win32more.Windows.Win32.System.AddressBook.Gender = 0
+genderFemale: win32more.Windows.Win32.System.AddressBook.Gender = 1
+genderMale: win32more.Windows.Win32.System.AddressBook.Gender = 2
 class IABContainer(ComPtr):
     extends: win32more.Windows.Win32.System.AddressBook.IMAPIContainer
     @commethod(19)

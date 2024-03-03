@@ -1,27 +1,26 @@
-from ctypes import (
-    POINTER,
-    WINFUNCTYPE,
-    Structure,
-    WinError,
-    addressof,
-    c_void_p,
-    cast,
-    py_object,
-    sizeof
-)
+from ctypes import POINTER, WINFUNCTYPE, Structure, WinError, addressof, c_void_p, cast, py_object, sizeof
 
 from win32more import FAILED, Guid, UInt32
-from win32more._winrt import WinRT_String, SZArray
-from win32more.mddbootstrap import MddBootstrapInitialize2, MddBootstrapShutdown, MddBootstrapInitializeOptions_OnNoMatch_ShowUI
-from win32more.Windows.Win32.Foundation import HRESULT, S_OK
-from win32more.Windows.Win32.Storage.Packaging.Appx import PACKAGE_VERSION
-from win32more.Windows.Win32.System.WinRT import HSTRING, IInspectable, TrustLevel
-from win32more.Windows.Win32.UI.HiDpi import SetProcessDpiAwarenessContext, DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-from win32more.Windows.UI.Xaml.Interop import TypeName
+from win32more._winrt import WinRT_String
+from win32more.mddbootstrap import (
+    WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+    WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG_W,
+    WINDOWSAPPSDK_RUNTIME_VERSION_UINT64,
+    MddBootstrapInitialize2,
+    MddBootstrapInitializeOptions_OnNoMatch_ShowUI,
+    MddBootstrapShutdown,
+)
 from win32more.Microsoft.UI.Xaml import Application, IApplicationOverrides, LaunchActivatedEventArgs
 from win32more.Microsoft.UI.Xaml.Controls import XamlControlsResources
-from win32more.Microsoft.UI.Xaml.Markup import IXamlType, XmlnsDefinition, IXamlMetadataProvider
+from win32more.Microsoft.UI.Xaml.Markup import IXamlMetadataProvider, IXamlType, XmlnsDefinition
 from win32more.Microsoft.UI.Xaml.XamlTypeInfo import XamlControlsXamlMetaDataProvider
+from win32more.Windows.UI.Xaml.Interop import TypeName
+from win32more.Windows.Win32.Foundation import HRESULT, S_OK
+from win32more.Windows.Win32.Storage.Packaging.Appx import PACKAGE_VERSION
+from win32more.Windows.Win32.System.Com import COINIT_APARTMENTTHREADED, CoInitializeEx, CoUninitialize, IUnknown
+from win32more.Windows.Win32.System.WinRT import HSTRING, IInspectable, TrustLevel
+from win32more.Windows.Win32.UI.HiDpi import DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2, SetProcessDpiAwarenessContext
+
 
 class XamlApplicationImpl(Structure):
     _fields_ = [("lpvtbl", POINTER(c_void_p)), ("lpvtbl2", POINTER(c_void_p)), ("comptr", py_object)]
@@ -85,48 +84,48 @@ class XamlApplicationImpl(Structure):
 
     @WINFUNCTYPE(HRESULT, c_void_p, POINTER(Guid), POINTER(c_void_p))
     def QueryInterface2(this, riid, ppvObject):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.QueryInterface(riid, ppvObject)
 
     @WINFUNCTYPE(UInt32, c_void_p)
     def AddRef2(this):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.AddRef()
 
     @WINFUNCTYPE(UInt32, c_void_p)
     def Release2(this):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.Release()
 
     @WINFUNCTYPE(HRESULT, c_void_p, POINTER(UInt32), POINTER(POINTER(Guid)))
     def GetIids2(this, iidCount, iids):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.GetIids(iidCount, iids)
 
     @WINFUNCTYPE(HRESULT, c_void_p, POINTER(HSTRING))
     def GetRuntimeClassName2(this, className):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.GetRuntimeClassName(className)
 
     @WINFUNCTYPE(HRESULT, c_void_p, POINTER(TrustLevel))
     def GetTrustLevel2(this, trustLevel):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.GetTrustLevel(trustLevel)
 
     @WINFUNCTYPE(HRESULT, c_void_p, TypeName, POINTER(IXamlType))
     def GetXamlType(this, type, value):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.GetXamlType(type, value)
 
     @WINFUNCTYPE(HRESULT, c_void_p, WinRT_String, POINTER(IXamlType))
     def GetXamlTypeByFullName(this, fullName, value):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
         return self.comptr.GetXamlTypeByFullName(fullName, value)
 
-    @WINFUNCTYPE(HRESULT, c_void_p, c_void_p)
-    def GetXmlnsDefinitions(this, value):
-        self = cast(this-sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
-        return self.comptr.GetXmlnsDefinitions(value)
+    @WINFUNCTYPE(HRESULT, POINTER(UInt32), POINTER(XmlnsDefinition))
+    def GetXmlnsDefinitions(this, szarr_length, szarr_contents):
+        self = cast(this - sizeof(c_void_p), POINTER(XamlApplicationImpl)).contents
+        return self.comptr.GetXmlnsDefinitions(szarr_length, szarr_contents)
 
 
 class XamlApplication(IApplicationOverrides):
@@ -138,16 +137,24 @@ class XamlApplication(IApplicationOverrides):
         self.value2 = addressof(self._comobj.lpvtbl2)
         self._refcount = 0
         self.AddRef()
-        self._provider = XamlControlsXamlMetaDataProvider.CreateInstance()
+        self._provider = XamlControlsXamlMetaDataProvider()
         self._inner_interface = IInspectable()
         Application.CreateInstance(self, self._inner_interface)
 
     def QueryInterface(self, riid, ppvObject):
-        if str(riid.contents) == str(IApplicationOverrides._iid_):
+        if riid.contents == IUnknown._iid_:
             ppvObject.contents.value = self.value
             self.AddRef()
             return S_OK
-        elif str(riid.contents) == str(IXamlMetadataProvider._iid_):
+        elif riid.contents == IInspectable._iid_:
+            ppvObject.contents.value = self.value
+            self.AddRef()
+            return S_OK
+        elif riid.contents == IApplicationOverrides._iid_:
+            ppvObject.contents.value = self.value
+            self.AddRef()
+            return S_OK
+        elif riid.contents == IXamlMetadataProvider._iid_:
             ppvObject.contents.value = self.value2
             self.AddRef()
             return S_OK
@@ -178,7 +185,7 @@ class XamlApplication(IApplicationOverrides):
         return self._inner_interface.GetTrustLevel(trustLevel)
 
     def _OnLaunched(self, args):
-        Application.Current.Resources.MergedDictionaries.Append(XamlControlsResources.CreateInstance())
+        Application.Current.Resources.MergedDictionaries.Append(XamlControlsResources())
         self.OnLaunched(args)
 
     def OnLaunched(self, args):
@@ -190,11 +197,13 @@ class XamlApplication(IApplicationOverrides):
         return S_OK
 
     def GetXamlTypeByFullName(self, fullName, value):
-        value.contents.value =  self._provider.GetXamlTypeByFullName(fullName).value
+        value.contents.value = self._provider.GetXamlTypeByFullName(fullName).value
         return S_OK
 
-    def GetXmlnsDefinitions(self, value):
-        value.contents.value = self._provider.GetXmlnsDefinitions().value
+    def GetXmlnsDefinitions(self, szarr_length, szarr_contents):
+        szarr = self._provider.GetXmlnsDefinitions()
+        szarr_length.contents.value = szarr.length
+        szarr_contents.value = szarr.contents.value
         return S_OK
 
     @classmethod
@@ -203,7 +212,16 @@ class XamlApplication(IApplicationOverrides):
         if FAILED(r):
             raise WinError(r)
 
-        hr = MddBootstrapInitialize2(0x00010004, "", PACKAGE_VERSION(Version=0x0FA0041900750000), MddBootstrapInitializeOptions_OnNoMatch_ShowUI)
+        hr = CoInitializeEx(None, COINIT_APARTMENTTHREADED)
+        if FAILED(hr):
+            raise WinError(hr)
+
+        hr = MddBootstrapInitialize2(
+            WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+            WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG_W,
+            PACKAGE_VERSION(Version=WINDOWSAPPSDK_RUNTIME_VERSION_UINT64),
+            MddBootstrapInitializeOptions_OnNoMatch_ShowUI,
+        )
         if FAILED(hr):
             raise WinError(hr)
 
@@ -218,3 +236,5 @@ class XamlApplication(IApplicationOverrides):
         app.Release()
 
         MddBootstrapShutdown()
+
+        CoUninitialize()

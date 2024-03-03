@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Printers
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.Printing
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IIppAttributeError(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.IIppAttributeError'
@@ -30,8 +17,8 @@ class IIppAttributeError(ComPtr):
     def get_ExtendedError(self) -> win32more.Windows.Foundation.HResult: ...
     @winrt_commethod(8)
     def GetUnsupportedValues(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Printers.IppAttributeValue]: ...
-    Reason = property(get_Reason, None)
     ExtendedError = property(get_ExtendedError, None)
+    Reason = property(get_Reason, None)
 class IIppAttributeValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.IIppAttributeValue'
@@ -165,8 +152,8 @@ class IIppIntegerRange(ComPtr):
     def get_Start(self) -> Int32: ...
     @winrt_commethod(7)
     def get_End(self) -> Int32: ...
-    Start = property(get_Start, None)
     End = property(get_End, None)
+    Start = property(get_Start, None)
 class IIppIntegerRangeFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.IIppIntegerRangeFactory'
@@ -225,9 +212,9 @@ class IIppResolution(ComPtr):
     def get_Height(self) -> Int32: ...
     @winrt_commethod(8)
     def get_Unit(self) -> win32more.Windows.Devices.Printers.IppResolutionUnit: ...
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
     Unit = property(get_Unit, None)
+    Width = property(get_Width, None)
 class IIppResolutionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.IIppResolutionFactory'
@@ -242,8 +229,8 @@ class IIppSetAttributesResult(ComPtr):
     def get_Succeeded(self) -> Boolean: ...
     @winrt_commethod(7)
     def get_AttributeErrors(self) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Devices.Printers.IppAttributeError]: ...
-    Succeeded = property(get_Succeeded, None)
     AttributeErrors = property(get_AttributeErrors, None)
+    Succeeded = property(get_Succeeded, None)
 class IIppTextWithLanguage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Printers.IIppTextWithLanguage'
@@ -331,14 +318,14 @@ class IppAttributeError(ComPtr):
     def get_ExtendedError(self: win32more.Windows.Devices.Printers.IIppAttributeError) -> win32more.Windows.Foundation.HResult: ...
     @winrt_mixinmethod
     def GetUnsupportedValues(self: win32more.Windows.Devices.Printers.IIppAttributeError) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Printers.IppAttributeValue]: ...
-    Reason = property(get_Reason, None)
     ExtendedError = property(get_ExtendedError, None)
-IppAttributeErrorReason = Int32
-IppAttributeErrorReason_RequestEntityTooLarge: IppAttributeErrorReason = 0
-IppAttributeErrorReason_AttributeNotSupported: IppAttributeErrorReason = 1
-IppAttributeErrorReason_AttributeValuesNotSupported: IppAttributeErrorReason = 2
-IppAttributeErrorReason_AttributeNotSettable: IppAttributeErrorReason = 3
-IppAttributeErrorReason_ConflictingAttributes: IppAttributeErrorReason = 4
+    Reason = property(get_Reason, None)
+class IppAttributeErrorReason(Int32):  # enum
+    RequestEntityTooLarge = 0
+    AttributeNotSupported = 1
+    AttributeValuesNotSupported = 2
+    AttributeNotSettable = 3
+    ConflictingAttributes = 4
 class IppAttributeValue(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppAttributeValue
@@ -460,40 +447,47 @@ class IppAttributeValue(ComPtr):
     @winrt_classmethod
     def CreateMimeMediaArray(cls: win32more.Windows.Devices.Printers.IIppAttributeValueStatics, values: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Devices.Printers.IppAttributeValue: ...
     Kind = property(get_Kind, None)
-IppAttributeValueKind = Int32
-IppAttributeValueKind_Unsupported: IppAttributeValueKind = 0
-IppAttributeValueKind_Unknown: IppAttributeValueKind = 1
-IppAttributeValueKind_NoValue: IppAttributeValueKind = 2
-IppAttributeValueKind_Integer: IppAttributeValueKind = 3
-IppAttributeValueKind_Boolean: IppAttributeValueKind = 4
-IppAttributeValueKind_Enum: IppAttributeValueKind = 5
-IppAttributeValueKind_OctetString: IppAttributeValueKind = 6
-IppAttributeValueKind_DateTime: IppAttributeValueKind = 7
-IppAttributeValueKind_Resolution: IppAttributeValueKind = 8
-IppAttributeValueKind_RangeOfInteger: IppAttributeValueKind = 9
-IppAttributeValueKind_Collection: IppAttributeValueKind = 10
-IppAttributeValueKind_TextWithLanguage: IppAttributeValueKind = 11
-IppAttributeValueKind_NameWithLanguage: IppAttributeValueKind = 12
-IppAttributeValueKind_TextWithoutLanguage: IppAttributeValueKind = 13
-IppAttributeValueKind_NameWithoutLanguage: IppAttributeValueKind = 14
-IppAttributeValueKind_Keyword: IppAttributeValueKind = 15
-IppAttributeValueKind_Uri: IppAttributeValueKind = 16
-IppAttributeValueKind_UriSchema: IppAttributeValueKind = 17
-IppAttributeValueKind_Charset: IppAttributeValueKind = 18
-IppAttributeValueKind_NaturalLanguage: IppAttributeValueKind = 19
-IppAttributeValueKind_MimeMediaType: IppAttributeValueKind = 20
+class IppAttributeValueKind(Int32):  # enum
+    Unsupported = 0
+    Unknown = 1
+    NoValue = 2
+    Integer = 3
+    Boolean = 4
+    Enum = 5
+    OctetString = 6
+    DateTime = 7
+    Resolution = 8
+    RangeOfInteger = 9
+    Collection = 10
+    TextWithLanguage = 11
+    NameWithLanguage = 12
+    TextWithoutLanguage = 13
+    NameWithoutLanguage = 14
+    Keyword = 15
+    Uri = 16
+    UriSchema = 17
+    Charset = 18
+    NaturalLanguage = 19
+    MimeMediaType = 20
 class IppIntegerRange(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppIntegerRange
     _classid_ = 'Windows.Devices.Printers.IppIntegerRange'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Printers.IppIntegerRange.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Devices.Printers.IIppIntegerRangeFactory, start: Int32, end: Int32) -> win32more.Windows.Devices.Printers.IppIntegerRange: ...
     @winrt_mixinmethod
     def get_Start(self: win32more.Windows.Devices.Printers.IIppIntegerRange) -> Int32: ...
     @winrt_mixinmethod
     def get_End(self: win32more.Windows.Devices.Printers.IIppIntegerRange) -> Int32: ...
-    Start = property(get_Start, None)
     End = property(get_End, None)
+    Start = property(get_Start, None)
 class IppPrintDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppPrintDevice
@@ -532,6 +526,13 @@ class IppResolution(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppResolution
     _classid_ = 'Windows.Devices.Printers.IppResolution'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Printers.IppResolution.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Devices.Printers.IIppResolutionFactory, width: Int32, height: Int32, unit: win32more.Windows.Devices.Printers.IppResolutionUnit) -> win32more.Windows.Devices.Printers.IppResolution: ...
     @winrt_mixinmethod
@@ -540,12 +541,12 @@ class IppResolution(ComPtr):
     def get_Height(self: win32more.Windows.Devices.Printers.IIppResolution) -> Int32: ...
     @winrt_mixinmethod
     def get_Unit(self: win32more.Windows.Devices.Printers.IIppResolution) -> win32more.Windows.Devices.Printers.IppResolutionUnit: ...
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
     Unit = property(get_Unit, None)
-IppResolutionUnit = Int32
-IppResolutionUnit_DotsPerInch: IppResolutionUnit = 0
-IppResolutionUnit_DotsPerCentimeter: IppResolutionUnit = 1
+    Width = property(get_Width, None)
+class IppResolutionUnit(Int32):  # enum
+    DotsPerInch = 0
+    DotsPerCentimeter = 1
 class IppSetAttributesResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppSetAttributesResult
@@ -554,12 +555,19 @@ class IppSetAttributesResult(ComPtr):
     def get_Succeeded(self: win32more.Windows.Devices.Printers.IIppSetAttributesResult) -> Boolean: ...
     @winrt_mixinmethod
     def get_AttributeErrors(self: win32more.Windows.Devices.Printers.IIppSetAttributesResult) -> win32more.Windows.Foundation.Collections.IMapView[WinRT_String, win32more.Windows.Devices.Printers.IppAttributeError]: ...
-    Succeeded = property(get_Succeeded, None)
     AttributeErrors = property(get_AttributeErrors, None)
+    Succeeded = property(get_Succeeded, None)
 class IppTextWithLanguage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IIppTextWithLanguage
     _classid_ = 'Windows.Devices.Printers.IppTextWithLanguage'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Devices.Printers.IppTextWithLanguage.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Devices.Printers.IIppTextWithLanguageFactory, language: WinRT_String, text: WinRT_String) -> win32more.Windows.Devices.Printers.IppTextWithLanguage: ...
     @winrt_mixinmethod
@@ -572,6 +580,13 @@ class PageConfigurationSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IPageConfigurationSettings
     _classid_ = 'Windows.Devices.Printers.PageConfigurationSettings'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Printers.PageConfigurationSettings.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Printers.PageConfigurationSettings: ...
     @winrt_mixinmethod
@@ -584,9 +599,9 @@ class PageConfigurationSettings(ComPtr):
     def put_SizeSource(self: win32more.Windows.Devices.Printers.IPageConfigurationSettings, value: win32more.Windows.Devices.Printers.PageConfigurationSource) -> Void: ...
     OrientationSource = property(get_OrientationSource, put_OrientationSource)
     SizeSource = property(get_SizeSource, put_SizeSource)
-PageConfigurationSource = Int32
-PageConfigurationSource_PrintJobConfiguration: PageConfigurationSource = 0
-PageConfigurationSource_PdlContent: PageConfigurationSource = 1
+class PageConfigurationSource(Int32):  # enum
+    PrintJobConfiguration = 0
+    PdlContent = 1
 class PdlPassthroughProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Printers.IPdlPassthroughProvider
@@ -633,4 +648,6 @@ class PrintSchema(ComPtr):
     @winrt_mixinmethod
     def MergeAndValidateWithDefaultPrintTicketAsync(self: win32more.Windows.Devices.Printers.IPrintSchema, deltaTicket: win32more.Windows.Storage.Streams.IRandomAccessStreamWithContentType) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Storage.Streams.IRandomAccessStreamWithContentType]: ...
 PrintersContract: UInt32 = 65536
+
+
 make_ready(__name__)

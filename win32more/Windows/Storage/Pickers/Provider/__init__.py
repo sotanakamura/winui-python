@@ -1,29 +1,16 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Pickers.Provider
-AddFileResult = Int32
-AddFileResult_Added: AddFileResult = 0
-AddFileResult_AlreadyAdded: AddFileResult = 1
-AddFileResult_NotAllowed: AddFileResult = 2
-AddFileResult_Unavailable: AddFileResult = 3
+import win32more.Windows.Win32.System.WinRT
+class AddFileResult(Int32):  # enum
+    Added = 0
+    AlreadyAdded = 1
+    NotAllowed = 2
+    Unavailable = 3
 class FileOpenPickerUI(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Pickers.Provider.IFileOpenPickerUI
@@ -89,13 +76,13 @@ class FileSavePickerUI(ComPtr):
     def add_TargetFileRequested(self: win32more.Windows.Storage.Pickers.Provider.IFileSavePickerUI, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Storage.Pickers.Provider.FileSavePickerUI, win32more.Windows.Storage.Pickers.Provider.TargetFileRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_TargetFileRequested(self: win32more.Windows.Storage.Pickers.Provider.IFileSavePickerUI, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Title = property(get_Title, put_Title)
     AllowedFileTypes = property(get_AllowedFileTypes, None)
-    SettingsIdentifier = property(get_SettingsIdentifier, None)
     FileName = property(get_FileName, None)
-FileSelectionMode = Int32
-FileSelectionMode_Single: FileSelectionMode = 0
-FileSelectionMode_Multiple: FileSelectionMode = 1
+    SettingsIdentifier = property(get_SettingsIdentifier, None)
+    Title = property(get_Title, put_Title)
+class FileSelectionMode(Int32):  # enum
+    Single = 0
+    Multiple = 1
 class IFileOpenPickerUI(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.Provider.IFileOpenPickerUI'
@@ -161,10 +148,10 @@ class IFileSavePickerUI(ComPtr):
     def add_TargetFileRequested(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Storage.Pickers.Provider.FileSavePickerUI, win32more.Windows.Storage.Pickers.Provider.TargetFileRequestedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(15)
     def remove_TargetFileRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Title = property(get_Title, put_Title)
     AllowedFileTypes = property(get_AllowedFileTypes, None)
-    SettingsIdentifier = property(get_SettingsIdentifier, None)
     FileName = property(get_FileName, None)
+    SettingsIdentifier = property(get_SettingsIdentifier, None)
+    Title = property(get_Title, put_Title)
 class IPickerClosingDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Storage.Pickers.Provider.IPickerClosingDeferral'
@@ -239,10 +226,10 @@ class PickerClosingOperation(ComPtr):
     @winrt_mixinmethod
     def get_Deadline(self: win32more.Windows.Storage.Pickers.Provider.IPickerClosingOperation) -> win32more.Windows.Foundation.DateTime: ...
     Deadline = property(get_Deadline, None)
-SetFileNameResult = Int32
-SetFileNameResult_Succeeded: SetFileNameResult = 0
-SetFileNameResult_NotAllowed: SetFileNameResult = 1
-SetFileNameResult_Unavailable: SetFileNameResult = 2
+class SetFileNameResult(Int32):  # enum
+    Succeeded = 0
+    NotAllowed = 1
+    Unavailable = 2
 class TargetFileRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Storage.Pickers.Provider.ITargetFileRequest
@@ -267,4 +254,6 @@ class TargetFileRequestedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_Request(self: win32more.Windows.Storage.Pickers.Provider.ITargetFileRequestedEventArgs) -> win32more.Windows.Storage.Pickers.Provider.TargetFileRequest: ...
     Request = property(get_Request, None)
+
+
 make_ready(__name__)

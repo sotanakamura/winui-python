@@ -1,22 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.UI.Xaml.Interop
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class BindableVectorChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{624cd4e1-d007-43b1-9c03-af4d3e6258c4}')
@@ -107,8 +95,8 @@ class INotifyCollectionChangedEventArgs(ComPtr):
     def get_OldStartingIndex(self) -> Int32: ...
     Action = property(get_Action, None)
     NewItems = property(get_NewItems, None)
-    OldItems = property(get_OldItems, None)
     NewStartingIndex = property(get_NewStartingIndex, None)
+    OldItems = property(get_OldItems, None)
     OldStartingIndex = property(get_OldStartingIndex, None)
 class INotifyCollectionChangedEventArgsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -116,16 +104,23 @@ class INotifyCollectionChangedEventArgsFactory(ComPtr):
     _iid_ = Guid('{b30c3e3a-df8d-44a5-9a38-7ac0d08ce63d}')
     @winrt_commethod(6)
     def CreateInstanceWithAllParameters(self, action: win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedAction, newItems: win32more.Windows.UI.Xaml.Interop.IBindableVector, oldItems: win32more.Windows.UI.Xaml.Interop.IBindableVector, newIndex: Int32, oldIndex: Int32, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedEventArgs: ...
-NotifyCollectionChangedAction = Int32
-NotifyCollectionChangedAction_Add: NotifyCollectionChangedAction = 0
-NotifyCollectionChangedAction_Remove: NotifyCollectionChangedAction = 1
-NotifyCollectionChangedAction_Replace: NotifyCollectionChangedAction = 2
-NotifyCollectionChangedAction_Move: NotifyCollectionChangedAction = 3
-NotifyCollectionChangedAction_Reset: NotifyCollectionChangedAction = 4
+class NotifyCollectionChangedAction(Int32):  # enum
+    Add = 0
+    Remove = 1
+    Replace = 2
+    Move = 3
+    Reset = 4
 class NotifyCollectionChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Interop.INotifyCollectionChangedEventArgs
     _classid_ = 'Windows.UI.Xaml.Interop.NotifyCollectionChangedEventArgs'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 5:
+            return win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedEventArgs.CreateInstanceWithAllParameters(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstanceWithAllParameters(cls: win32more.Windows.UI.Xaml.Interop.INotifyCollectionChangedEventArgsFactory, action: win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedAction, newItems: win32more.Windows.UI.Xaml.Interop.IBindableVector, oldItems: win32more.Windows.UI.Xaml.Interop.IBindableVector, newIndex: Int32, oldIndex: Int32, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedEventArgs: ...
     @winrt_mixinmethod
@@ -140,18 +135,20 @@ class NotifyCollectionChangedEventArgs(ComPtr):
     def get_OldStartingIndex(self: win32more.Windows.UI.Xaml.Interop.INotifyCollectionChangedEventArgs) -> Int32: ...
     Action = property(get_Action, None)
     NewItems = property(get_NewItems, None)
-    OldItems = property(get_OldItems, None)
     NewStartingIndex = property(get_NewStartingIndex, None)
+    OldItems = property(get_OldItems, None)
     OldStartingIndex = property(get_OldStartingIndex, None)
 class NotifyCollectionChangedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{ca10b37c-f382-4591-8557-5e24965279b0}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Interop.NotifyCollectionChangedEventArgs) -> Void: ...
-TypeKind = Int32
-TypeKind_Primitive: TypeKind = 0
-TypeKind_Metadata: TypeKind = 1
-TypeKind_Custom: TypeKind = 2
+class TypeKind(Int32):  # enum
+    Primitive = 0
+    Metadata = 1
+    Custom = 2
 class TypeName(EasyCastStructure):
     Name: WinRT_String
     Kind: win32more.Windows.UI.Xaml.Interop.TypeKind
+
+
 make_ready(__name__)

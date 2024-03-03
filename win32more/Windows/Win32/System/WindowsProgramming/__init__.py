@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.System.Com
@@ -135,6 +135,7 @@ DCI_CAN_STRETCHXN: UInt32 = 16384
 DCI_CAN_STRETCHYN: UInt32 = 32768
 DCI_CANOVERLAY: UInt32 = 65536
 FILE_FLAG_OPEN_REQUIRING_OPLOCK: UInt32 = 262144
+FILE_FLAG_IGNORE_IMPERSONATED_DEVICEMAP: UInt32 = 131072
 PROGRESS_CONTINUE: UInt32 = 0
 PROGRESS_CANCEL: UInt32 = 1
 PROGRESS_STOP: UInt32 = 2
@@ -1098,26 +1099,26 @@ class CUSTOM_SYSTEM_EVENT_TRIGGER_CONFIG(EasyCastStructure):
     Size: UInt32
     TriggerId: win32more.Windows.Win32.Foundation.PWSTR
 CameraUIControl = Guid('{16d5a2be-b1c5-47b3-8eae-ccbcf452c7e8}')
-CameraUIControlCaptureMode = Int32
-CameraUIControlCaptureMode_PhotoOrVideo: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlCaptureMode = 0
-CameraUIControlCaptureMode_Photo: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlCaptureMode = 1
-CameraUIControlCaptureMode_Video: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlCaptureMode = 2
-CameraUIControlLinearSelectionMode = Int32
-CameraUIControlLinearSelectionMode_Single: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlLinearSelectionMode = 0
-CameraUIControlLinearSelectionMode_Multiple: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlLinearSelectionMode = 1
-CameraUIControlMode = Int32
-CameraUIControlMode_Browse: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlMode = 0
-CameraUIControlMode_Linear: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlMode = 1
-CameraUIControlPhotoFormat = Int32
-CameraUIControlPhotoFormat_Jpeg: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlPhotoFormat = 0
-CameraUIControlPhotoFormat_Png: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlPhotoFormat = 1
-CameraUIControlPhotoFormat_JpegXR: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlPhotoFormat = 2
-CameraUIControlVideoFormat = Int32
-CameraUIControlVideoFormat_Mp4: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlVideoFormat = 0
-CameraUIControlVideoFormat_Wmv: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlVideoFormat = 1
-CameraUIControlViewType = Int32
-CameraUIControlViewType_SingleItem: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlViewType = 0
-CameraUIControlViewType_ItemList: win32more.Windows.Win32.System.WindowsProgramming.CameraUIControlViewType = 1
+class CameraUIControlCaptureMode(Int32):  # enum
+    PhotoOrVideo = 0
+    Photo = 1
+    Video = 2
+class CameraUIControlLinearSelectionMode(Int32):  # enum
+    Single = 0
+    Multiple = 1
+class CameraUIControlMode(Int32):  # enum
+    Browse = 0
+    Linear = 1
+class CameraUIControlPhotoFormat(Int32):  # enum
+    Jpeg = 0
+    Png = 1
+    JpegXR = 2
+class CameraUIControlVideoFormat(Int32):  # enum
+    Mp4 = 0
+    Wmv = 1
+class CameraUIControlViewType(Int32):  # enum
+    SingleItem = 0
+    ItemList = 1
 class DATETIME(EasyCastStructure):
     year: UInt16
     month: UInt16
@@ -1194,7 +1195,7 @@ if ARCH in 'X64,ARM64':
         TargetModuleBase: VoidPtr
         Unused: VoidPtr
         LastError: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class DELAYLOAD_INFO(EasyCastStructure):
         Size: UInt32
         DelayloadDescriptor: POINTER(win32more.Windows.Win32.System.WindowsProgramming.IMAGE_DELAYLOAD_DESCRIPTOR)
@@ -1243,8 +1244,6 @@ FEATURE_STATE_CHANGE_SUBSCRIPTION = IntPtr
 FH_SERVICE_PIPE_HANDLE = IntPtr
 class FILE_CASE_SENSITIVE_INFO(EasyCastStructure):
     Flags: UInt32
-FILE_INFORMATION_CLASS = Int32
-FILE_INFORMATION_CLASS_FileDirectoryInformation: win32more.Windows.Win32.System.WindowsProgramming.FILE_INFORMATION_CLASS = 1
 HWINWATCH = IntPtr
 class HW_PROFILE_INFOA(EasyCastStructure):
     dwDockInfo: UInt32
@@ -1624,10 +1623,10 @@ class TDI_TL_IO_CONTROL_ENDPOINT(EasyCastStructure):
         IoControlCode: UInt32
         OptionName: UInt32
 TDI_TL_IO_CONTROL_TYPE = Int32
-TDI_TL_IO_CONTROL_TYPE_EndpointIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 0
-TDI_TL_IO_CONTROL_TYPE_SetSockOptIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 1
-TDI_TL_IO_CONTROL_TYPE_GetSockOptIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 2
-TDI_TL_IO_CONTROL_TYPE_SocketIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 3
+EndpointIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 0
+SetSockOptIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 1
+GetSockOptIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 2
+SocketIoControlType: win32more.Windows.Win32.System.WindowsProgramming.TDI_TL_IO_CONTROL_TYPE = 3
 class THREAD_NAME_INFORMATION(EasyCastStructure):
     ThreadName: win32more.Windows.Win32.Foundation.UNICODE_STRING
 class UNDETERMINESTRUCT(EasyCastStructure):
@@ -1650,7 +1649,7 @@ VALUENAME_UNKNOWN: win32more.Windows.Win32.System.WindowsProgramming.VALUENAME =
 VALUENAME_ENTERPRISE_DEFINED_CLASS_ID: win32more.Windows.Win32.System.WindowsProgramming.VALUENAME = 1
 VALUENAME_BUILT_IN_LIST: win32more.Windows.Win32.System.WindowsProgramming.VALUENAME = 2
 WINSTATIONINFOCLASS = Int32
-WINSTATIONINFOCLASS_WinStationInformation: win32more.Windows.Win32.System.WindowsProgramming.WINSTATIONINFOCLASS = 8
+WinStationInformation: win32more.Windows.Win32.System.WindowsProgramming.WINSTATIONINFOCLASS = 8
 class WINSTATIONINFORMATIONW(EasyCastStructure):
     Reserved2: Byte * 70
     LogonId: UInt32

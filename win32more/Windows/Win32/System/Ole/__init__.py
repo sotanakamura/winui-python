@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.Media
@@ -224,6 +224,8 @@ OF_SET: UInt32 = 1
 OF_GET: UInt32 = 2
 OF_HANDLER: UInt32 = 4
 WIN32: UInt32 = 100
+OLESTREAM_CONVERSION_DEFAULT: Int32 = 0
+OLESTREAM_CONVERSION_DISABLEOLELINK: Int32 = 1
 IDC_OLEUIHELP: UInt32 = 99
 IDC_IO_CREATENEW: UInt32 = 2100
 IDC_IO_CREATEFROMFILE: UInt32 = 2101
@@ -1296,11 +1298,15 @@ def OleRegEnumFormatEtc(clsid: POINTER(Guid), dwDirection: UInt32, ppenum: POINT
 @winfunctype('OLE32.dll')
 def OleRegEnumVerbs(clsid: POINTER(Guid), ppenum: POINTER(win32more.Windows.Win32.System.Ole.IEnumOLEVERB)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('ole32.dll')
+def OleConvertOLESTREAMToIStorage2(lpolestream: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.OLESTREAM), pstg: win32more.Windows.Win32.System.Com.StructuredStorage.IStorage, ptd: POINTER(win32more.Windows.Win32.System.Com.DVTARGETDEVICE), opt: UInt32, pvCallbackContext: VoidPtr, pQueryConvertOLELinkCallback: win32more.Windows.Win32.System.Ole.OLESTREAMQUERYCONVERTOLELINKCALLBACK) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+@winfunctype('ole32.dll')
 def OleDoAutoConvert(pStg: win32more.Windows.Win32.System.Com.StructuredStorage.IStorage, pClsidNew: POINTER(Guid)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('OLE32.dll')
 def OleGetAutoConvert(clsidOld: POINTER(Guid), pClsidNew: POINTER(Guid)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('ole32.dll')
 def OleSetAutoConvert(clsidOld: POINTER(Guid), clsidNew: POINTER(Guid)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+@winfunctype('ole32.dll')
+def OleConvertOLESTREAMToIStorageEx2(polestm: POINTER(win32more.Windows.Win32.System.Com.StructuredStorage.OLESTREAM), pstg: win32more.Windows.Win32.System.Com.StructuredStorage.IStorage, pcfFormat: POINTER(UInt16), plwWidth: POINTER(Int32), plHeight: POINTER(Int32), pdwSize: POINTER(UInt32), pmedium: POINTER(win32more.Windows.Win32.System.Com.STGMEDIUM), opt: UInt32, pvCallbackContext: VoidPtr, pQueryConvertOLELinkCallback: win32more.Windows.Win32.System.Ole.OLESTREAMQUERYCONVERTOLELINKCALLBACK) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('OLE32.dll')
 def HRGN_UserSize(param0: POINTER(UInt32), param1: UInt32, param2: POINTER(win32more.Windows.Win32.Graphics.Gdi.HRGN)) -> UInt32: ...
 @winfunctype('OLE32.dll')
@@ -1512,20 +1518,20 @@ GC_WCH_FONLYAFTER: win32more.Windows.Win32.System.Ole.ENUM_CONTROLS_WHICH_FLAGS 
 GC_WCH_FONLYBEFORE: win32more.Windows.Win32.System.Ole.ENUM_CONTROLS_WHICH_FLAGS = 536870912
 GC_WCH_FSELECTED: win32more.Windows.Win32.System.Ole.ENUM_CONTROLS_WHICH_FLAGS = 1073741824
 FDEX_PROP_FLAGS = UInt32
-FDEX_PROP_FLAGS_fdexPropCanGet: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 1
-FDEX_PROP_FLAGS_fdexPropCannotGet: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 2
-FDEX_PROP_FLAGS_fdexPropCanPut: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 4
-FDEX_PROP_FLAGS_fdexPropCannotPut: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 8
-FDEX_PROP_FLAGS_fdexPropCanPutRef: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 16
-FDEX_PROP_FLAGS_fdexPropCannotPutRef: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 32
-FDEX_PROP_FLAGS_fdexPropNoSideEffects: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 64
-FDEX_PROP_FLAGS_fdexPropDynamicType: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 128
-FDEX_PROP_FLAGS_fdexPropCanCall: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 256
-FDEX_PROP_FLAGS_fdexPropCannotCall: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 512
-FDEX_PROP_FLAGS_fdexPropCanConstruct: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 1024
-FDEX_PROP_FLAGS_fdexPropCannotConstruct: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 2048
-FDEX_PROP_FLAGS_fdexPropCanSourceEvents: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 4096
-FDEX_PROP_FLAGS_fdexPropCannotSourceEvents: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 8192
+fdexPropCanGet: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 1
+fdexPropCannotGet: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 2
+fdexPropCanPut: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 4
+fdexPropCannotPut: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 8
+fdexPropCanPutRef: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 16
+fdexPropCannotPutRef: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 32
+fdexPropNoSideEffects: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 64
+fdexPropDynamicType: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 128
+fdexPropCanCall: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 256
+fdexPropCannotCall: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 512
+fdexPropCanConstruct: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 1024
+fdexPropCannotConstruct: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 2048
+fdexPropCanSourceEvents: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 4096
+fdexPropCannotSourceEvents: win32more.Windows.Win32.System.Ole.FDEX_PROP_FLAGS = 8192
 class FONTDESC(EasyCastStructure):
     cbSizeofstruct: UInt32
     lpstrName: win32more.Windows.Win32.Foundation.PWSTR
@@ -3056,6 +3062,8 @@ OLERENDER_NONE: win32more.Windows.Win32.System.Ole.OLERENDER = 0
 OLERENDER_DRAW: win32more.Windows.Win32.System.Ole.OLERENDER = 1
 OLERENDER_FORMAT: win32more.Windows.Win32.System.Ole.OLERENDER = 2
 OLERENDER_ASIS: win32more.Windows.Win32.System.Ole.OLERENDER = 3
+@winfunctype_pointer
+def OLESTREAMQUERYCONVERTOLELINKCALLBACK(pClsid: POINTER(Guid), szClass: win32more.Windows.Win32.Foundation.PWSTR, szTopicName: win32more.Windows.Win32.Foundation.PWSTR, szItemName: win32more.Windows.Win32.Foundation.PWSTR, szUNCName: win32more.Windows.Win32.Foundation.PWSTR, linkUpdatingOption: UInt32, pvContext: VoidPtr) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class OLEUIBUSYA(EasyCastStructure):
     cbStruct: UInt32
     dwFlags: win32more.Windows.Win32.System.Ole.BUSY_DIALOG_FLAGS
@@ -3416,9 +3424,9 @@ OLEWHICHMK_OBJREL: win32more.Windows.Win32.System.Ole.OLEWHICHMK = 2
 OLEWHICHMK_OBJFULL: win32more.Windows.Win32.System.Ole.OLEWHICHMK = 3
 OLE_HANDLE = UInt32
 OLE_TRISTATE = Int32
-OLE_TRISTATE_triUnchecked: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 0
-OLE_TRISTATE_triChecked: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 1
-OLE_TRISTATE_triGray: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 2
+triUnchecked: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 0
+triChecked: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 1
+triGray: win32more.Windows.Win32.System.Ole.OLE_TRISTATE = 2
 PAGEACTION_UI = Int32
 PAGEACTION_UI_DEFAULT: win32more.Windows.Win32.System.Ole.PAGEACTION_UI = 0
 PAGEACTION_UI_MODAL: win32more.Windows.Win32.System.Ole.PAGEACTION_UI = 1

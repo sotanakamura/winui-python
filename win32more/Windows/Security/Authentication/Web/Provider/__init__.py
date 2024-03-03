@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Security.Authentication.Web
@@ -25,6 +11,7 @@ import win32more.Windows.Security.Cryptography.Core
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
 import win32more.Windows.Web.Http
+import win32more.Windows.Win32.System.WinRT
 class IWebAccountClientView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebAccountClientView'
@@ -35,9 +22,9 @@ class IWebAccountClientView(ComPtr):
     def get_Type(self) -> win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientViewType: ...
     @winrt_commethod(8)
     def get_AccountPairwiseId(self) -> WinRT_String: ...
+    AccountPairwiseId = property(get_AccountPairwiseId, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     Type = property(get_Type, None)
-    AccountPairwiseId = property(get_AccountPairwiseId, None)
 class IWebAccountClientViewFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebAccountClientViewFactory'
@@ -159,10 +146,10 @@ class IWebAccountProviderRetrieveCookiesOperation(ComPtr):
     def get_Uri(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(10)
     def get_ApplicationCallbackUri(self) -> win32more.Windows.Foundation.Uri: ...
+    ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     Context = property(get_Context, None)
     Cookies = property(get_Cookies, None)
     Uri = property(get_Uri, put_Uri)
-    ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
 class IWebAccountProviderSignOutAccountOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebAccountProviderSignOutAccountOperation'
@@ -173,9 +160,9 @@ class IWebAccountProviderSignOutAccountOperation(ComPtr):
     def get_ApplicationCallbackUri(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(8)
     def get_ClientId(self) -> WinRT_String: ...
-    WebAccount = property(get_WebAccount, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     ClientId = property(get_ClientId, None)
+    WebAccount = property(get_WebAccount, None)
 class IWebAccountProviderSilentReportOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebAccountProviderSilentReportOperation'
@@ -210,9 +197,9 @@ class IWebAccountProviderTokenOperation(ComPtr):
     def put_CacheExpirationTime(self, value: win32more.Windows.Foundation.DateTime) -> Void: ...
     @winrt_commethod(9)
     def get_CacheExpirationTime(self) -> win32more.Windows.Foundation.DateTime: ...
+    CacheExpirationTime = property(get_CacheExpirationTime, put_CacheExpirationTime)
     ProviderRequest = property(get_ProviderRequest, None)
     ProviderResponses = property(get_ProviderResponses, None)
-    CacheExpirationTime = property(get_CacheExpirationTime, put_CacheExpirationTime)
 class IWebAccountProviderUIReportOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebAccountProviderUIReportOperation'
@@ -243,10 +230,10 @@ class IWebProviderTokenRequest(ComPtr):
     def get_ApplicationCallbackUri(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(10)
     def GetApplicationTokenBindingKeyAsync(self, keyType: win32more.Windows.Security.Authentication.Web.TokenBindingKeyType, target: win32more.Windows.Foundation.Uri) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Cryptography.Core.CryptographicKey]: ...
-    ClientRequest = property(get_ClientRequest, None)
-    WebAccounts = property(get_WebAccounts, None)
-    WebAccountSelectionOptions = property(get_WebAccountSelectionOptions, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
+    ClientRequest = property(get_ClientRequest, None)
+    WebAccountSelectionOptions = property(get_WebAccountSelectionOptions, None)
+    WebAccounts = property(get_WebAccounts, None)
 class IWebProviderTokenRequest2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.IWebProviderTokenRequest2'
@@ -282,6 +269,15 @@ class WebAccountClientView(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountClientView
     _classid_ = 'Windows.Security.Authentication.Web.Provider.WebAccountClientView'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientView.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientView.CreateWithPairwiseId(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountClientViewFactory, viewType: win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientViewType, applicationCallbackUri: win32more.Windows.Foundation.Uri) -> win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientView: ...
     @winrt_factorymethod
@@ -292,12 +288,12 @@ class WebAccountClientView(ComPtr):
     def get_Type(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountClientView) -> win32more.Windows.Security.Authentication.Web.Provider.WebAccountClientViewType: ...
     @winrt_mixinmethod
     def get_AccountPairwiseId(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountClientView) -> WinRT_String: ...
+    AccountPairwiseId = property(get_AccountPairwiseId, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     Type = property(get_Type, None)
-    AccountPairwiseId = property(get_AccountPairwiseId, None)
-WebAccountClientViewType = Int32
-WebAccountClientViewType_IdOnly: WebAccountClientViewType = 0
-WebAccountClientViewType_IdAndProperties: WebAccountClientViewType = 1
+class WebAccountClientViewType(Int32):  # enum
+    IdOnly = 0
+    IdAndProperties = 1
 class WebAccountManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.Authentication.Web.Provider.WebAccountManager'
@@ -370,8 +366,8 @@ class WebAccountProviderDeleteAccountOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation) -> Void: ...
     @winrt_mixinmethod
     def ReportError(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation, value: win32more.Windows.Security.Authentication.Web.Core.WebProviderError) -> Void: ...
-    WebAccount = property(get_WebAccount, None)
     Kind = property(get_Kind, None)
+    WebAccount = property(get_WebAccount, None)
 class WebAccountProviderGetTokenSilentOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderTokenOperation
@@ -394,10 +390,10 @@ class WebAccountProviderGetTokenSilentOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation) -> Void: ...
     @winrt_mixinmethod
     def ReportError(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation, value: win32more.Windows.Security.Authentication.Web.Core.WebProviderError) -> Void: ...
-    ProviderRequest = property(get_ProviderRequest, None)
-    ProviderResponses = property(get_ProviderResponses, None)
     CacheExpirationTime = property(get_CacheExpirationTime, put_CacheExpirationTime)
     Kind = property(get_Kind, None)
+    ProviderRequest = property(get_ProviderRequest, None)
+    ProviderResponses = property(get_ProviderResponses, None)
 class WebAccountProviderManageAccountOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderManageAccountOperation
@@ -408,16 +404,16 @@ class WebAccountProviderManageAccountOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderManageAccountOperation) -> Void: ...
     @winrt_mixinmethod
     def get_Kind(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderOperation) -> win32more.Windows.Security.Authentication.Web.Provider.WebAccountProviderOperationKind: ...
-    WebAccount = property(get_WebAccount, None)
     Kind = property(get_Kind, None)
-WebAccountProviderOperationKind = Int32
-WebAccountProviderOperationKind_RequestToken: WebAccountProviderOperationKind = 0
-WebAccountProviderOperationKind_GetTokenSilently: WebAccountProviderOperationKind = 1
-WebAccountProviderOperationKind_AddAccount: WebAccountProviderOperationKind = 2
-WebAccountProviderOperationKind_ManageAccount: WebAccountProviderOperationKind = 3
-WebAccountProviderOperationKind_DeleteAccount: WebAccountProviderOperationKind = 4
-WebAccountProviderOperationKind_RetrieveCookies: WebAccountProviderOperationKind = 5
-WebAccountProviderOperationKind_SignOutAccount: WebAccountProviderOperationKind = 6
+    WebAccount = property(get_WebAccount, None)
+class WebAccountProviderOperationKind(Int32):  # enum
+    RequestToken = 0
+    GetTokenSilently = 1
+    AddAccount = 2
+    ManageAccount = 3
+    DeleteAccount = 4
+    RetrieveCookies = 5
+    SignOutAccount = 6
 class WebAccountProviderRequestTokenOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderTokenOperation
@@ -438,10 +434,10 @@ class WebAccountProviderRequestTokenOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation) -> Void: ...
     @winrt_mixinmethod
     def ReportError(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation, value: win32more.Windows.Security.Authentication.Web.Core.WebProviderError) -> Void: ...
-    ProviderRequest = property(get_ProviderRequest, None)
-    ProviderResponses = property(get_ProviderResponses, None)
     CacheExpirationTime = property(get_CacheExpirationTime, put_CacheExpirationTime)
     Kind = property(get_Kind, None)
+    ProviderRequest = property(get_ProviderRequest, None)
+    ProviderResponses = property(get_ProviderResponses, None)
 class WebAccountProviderRetrieveCookiesOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderRetrieveCookiesOperation
@@ -462,11 +458,11 @@ class WebAccountProviderRetrieveCookiesOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation) -> Void: ...
     @winrt_mixinmethod
     def ReportError(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation, value: win32more.Windows.Security.Authentication.Web.Core.WebProviderError) -> Void: ...
+    ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     Context = property(get_Context, None)
     Cookies = property(get_Cookies, None)
-    Uri = property(get_Uri, put_Uri)
-    ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     Kind = property(get_Kind, None)
+    Uri = property(get_Uri, put_Uri)
 class WebAccountProviderSignOutAccountOperation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderSignOutAccountOperation
@@ -483,10 +479,10 @@ class WebAccountProviderSignOutAccountOperation(ComPtr):
     def ReportCompleted(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation) -> Void: ...
     @winrt_mixinmethod
     def ReportError(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderBaseReportOperation, value: win32more.Windows.Security.Authentication.Web.Core.WebProviderError) -> Void: ...
-    WebAccount = property(get_WebAccount, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     ClientId = property(get_ClientId, None)
     Kind = property(get_Kind, None)
+    WebAccount = property(get_WebAccount, None)
 class WebAccountProviderTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderTokenObjects
@@ -497,12 +493,12 @@ class WebAccountProviderTriggerDetails(ComPtr):
     def get_User(self: win32more.Windows.Security.Authentication.Web.Provider.IWebAccountProviderTokenObjects2) -> win32more.Windows.System.User: ...
     Operation = property(get_Operation, None)
     User = property(get_User, None)
-WebAccountScope = Int32
-WebAccountScope_PerUser: WebAccountScope = 0
-WebAccountScope_PerApplication: WebAccountScope = 1
-WebAccountSelectionOptions = UInt32
-WebAccountSelectionOptions_Default: WebAccountSelectionOptions = 0
-WebAccountSelectionOptions_New: WebAccountSelectionOptions = 1
+class WebAccountScope(Int32):  # enum
+    PerUser = 0
+    PerApplication = 1
+class WebAccountSelectionOptions(UInt32):  # enum
+    Default = 0
+    New = 1
 class WebProviderTokenRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenRequest
@@ -525,19 +521,28 @@ class WebProviderTokenRequest(ComPtr):
     def get_ApplicationProcessName(self: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenRequest3) -> WinRT_String: ...
     @winrt_mixinmethod
     def CheckApplicationForCapabilityAsync(self: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenRequest3, capabilityName: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[Boolean]: ...
-    ClientRequest = property(get_ClientRequest, None)
-    WebAccounts = property(get_WebAccounts, None)
-    WebAccountSelectionOptions = property(get_WebAccountSelectionOptions, None)
     ApplicationCallbackUri = property(get_ApplicationCallbackUri, None)
     ApplicationPackageFamilyName = property(get_ApplicationPackageFamilyName, None)
     ApplicationProcessName = property(get_ApplicationProcessName, None)
+    ClientRequest = property(get_ClientRequest, None)
+    WebAccountSelectionOptions = property(get_WebAccountSelectionOptions, None)
+    WebAccounts = property(get_WebAccounts, None)
 class WebProviderTokenResponse(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenResponse
     _classid_ = 'Windows.Security.Authentication.Web.Provider.WebProviderTokenResponse'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Security.Authentication.Web.Provider.WebProviderTokenResponse.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenResponseFactory, webTokenResponse: win32more.Windows.Security.Authentication.Web.Core.WebTokenResponse) -> win32more.Windows.Security.Authentication.Web.Provider.WebProviderTokenResponse: ...
     @winrt_mixinmethod
     def get_ClientResponse(self: win32more.Windows.Security.Authentication.Web.Provider.IWebProviderTokenResponse) -> win32more.Windows.Security.Authentication.Web.Core.WebTokenResponse: ...
     ClientResponse = property(get_ClientResponse, None)
+
+
 make_ready(__name__)

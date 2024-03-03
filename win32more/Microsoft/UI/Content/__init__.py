@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI
 import win32more.Microsoft.UI.Composition
 import win32more.Microsoft.UI.Content
@@ -24,31 +10,32 @@ import win32more.Windows.Foundation.Collections
 import win32more.Windows.Foundation.Numerics
 import win32more.Windows.Graphics
 import win32more.Windows.UI.Composition
+import win32more.Windows.Win32.System.WinRT
 class ContentCoordinateConverter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IContentCoordinateConverter
     _classid_ = 'Microsoft.UI.Content.ContentCoordinateConverter'
     @winrt_mixinmethod
-    def ConvertLocalToScreenWithPointsAndRoundingMode(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localPoints: Annotated[SZArray[win32more.Windows.Foundation.Point], 'In'], roundingMode: win32more.Microsoft.UI.Content.ContentCoordinateRoundingMode) -> SZArray[win32more.Windows.Graphics.PointInt32]: ...
+    def ConvertScreenToLocalWithPoint(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, screenPoint: win32more.Windows.Graphics.PointInt32) -> win32more.Windows.Foundation.Point: ...
     @winrt_mixinmethod
     def ConvertLocalToScreenWithPoints(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localPoints: Annotated[SZArray[win32more.Windows.Foundation.Point], 'In']) -> SZArray[win32more.Windows.Graphics.PointInt32]: ...
     @winrt_mixinmethod
-    def ConvertLocalToScreenWithPoint(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localPoint: win32more.Windows.Foundation.Point) -> win32more.Windows.Graphics.PointInt32: ...
+    def ConvertLocalToScreenWithPointsAndRoundingMode(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localPoints: Annotated[SZArray[win32more.Windows.Foundation.Point], 'In'], roundingMode: win32more.Microsoft.UI.Content.ContentCoordinateRoundingMode) -> SZArray[win32more.Windows.Graphics.PointInt32]: ...
     @winrt_mixinmethod
     def ConvertLocalToScreenWithRect(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localRect: win32more.Windows.Foundation.Rect) -> win32more.Windows.Graphics.RectInt32: ...
     @winrt_mixinmethod
-    def ConvertScreenToLocalWithPoint(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, screenPoint: win32more.Windows.Graphics.PointInt32) -> win32more.Windows.Foundation.Point: ...
+    def ConvertLocalToScreenWithPoint(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, localPoint: win32more.Windows.Foundation.Point) -> win32more.Windows.Graphics.PointInt32: ...
     @winrt_mixinmethod
     def ConvertScreenToLocalWithPoints(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, screenPoints: Annotated[SZArray[win32more.Windows.Graphics.PointInt32], 'In']) -> SZArray[win32more.Windows.Foundation.Point]: ...
     @winrt_mixinmethod
     def ConvertScreenToLocalWithRect(self: win32more.Microsoft.UI.Content.IContentCoordinateConverter, screenRect: win32more.Windows.Graphics.RectInt32) -> win32more.Windows.Foundation.Rect: ...
     @winrt_classmethod
     def CreateForWindowId(cls: win32more.Microsoft.UI.Content.IContentCoordinateConverterStatics, windowId: win32more.Microsoft.UI.WindowId) -> win32more.Microsoft.UI.Content.ContentCoordinateConverter: ...
-ContentCoordinateRoundingMode = Int32
-ContentCoordinateRoundingMode_Auto: ContentCoordinateRoundingMode = 0
-ContentCoordinateRoundingMode_Floor: ContentCoordinateRoundingMode = 1
-ContentCoordinateRoundingMode_Round: ContentCoordinateRoundingMode = 2
-ContentCoordinateRoundingMode_Ceiling: ContentCoordinateRoundingMode = 3
+class ContentCoordinateRoundingMode(Int32):  # enum
+    Auto = 0
+    Floor = 1
+    Round = 2
+    Ceiling = 3
 class ContentDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IContentDeferral
@@ -154,22 +141,22 @@ class ContentIsland(ComPtr):
     def GetByVisual(cls: win32more.Microsoft.UI.Content.IContentIslandStatics, child: win32more.Microsoft.UI.Composition.Visual) -> win32more.Microsoft.UI.Content.ContentIsland: ...
     @winrt_classmethod
     def GetFromId(cls: win32more.Microsoft.UI.Content.IContentIslandStatics, id: UInt64) -> win32more.Microsoft.UI.Content.ContentIsland: ...
-    IsIslandEnabled = property(get_IsIslandEnabled, put_IsIslandEnabled)
+    ActualSize = property(get_ActualSize, None)
     AppData = property(get_AppData, put_AppData)
     CoordinateConverter = property(get_CoordinateConverter, None)
     CustomProperties = property(get_CustomProperties, None)
     DispatcherQueue = property(get_DispatcherQueue, None)
     Environment = property(get_Environment, None)
     Id = property(get_Id, None)
+    IsClosed = property(get_IsClosed, None)
     IsConnected = property(get_IsConnected, None)
     IsHitTestVisibleWhenTransparent = property(get_IsHitTestVisibleWhenTransparent, put_IsHitTestVisibleWhenTransparent)
+    IsIslandEnabled = property(get_IsIslandEnabled, put_IsIslandEnabled)
     IsIslandVisible = property(get_IsIslandVisible, put_IsIslandVisible)
     IsSiteEnabled = property(get_IsSiteEnabled, None)
     IsSiteVisible = property(get_IsSiteVisible, None)
     LayoutDirection = property(get_LayoutDirection, None)
     RasterizationScale = property(get_RasterizationScale, None)
-    ActualSize = property(get_ActualSize, None)
-    IsClosed = property(get_IsClosed, None)
     SystemBackdrop = property(get_SystemBackdrop, put_SystemBackdrop)
 class ContentIslandAutomationProviderRequestedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -201,8 +188,8 @@ class ContentIslandEnvironment(ComPtr):
     def add_StateChanged(self: win32more.Microsoft.UI.Content.IContentIslandEnvironment, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Content.ContentIslandEnvironment, win32more.Microsoft.UI.Content.ContentEnvironmentStateChangedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_StateChanged(self: win32more.Microsoft.UI.Content.IContentIslandEnvironment, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    DisplayId = property(get_DisplayId, None)
     AppWindowId = property(get_AppWindowId, None)
+    DisplayId = property(get_DisplayId, None)
 class ContentIslandStateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IContentIslandStateChangedEventArgs
@@ -218,13 +205,13 @@ class ContentIslandStateChangedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_DidRasterizationScaleChange(self: win32more.Microsoft.UI.Content.IContentIslandStateChangedEventArgs) -> Boolean: ...
     DidActualSizeChange = property(get_DidActualSizeChange, None)
-    DidSiteEnabledChange = property(get_DidSiteEnabledChange, None)
-    DidSiteVisibleChange = property(get_DidSiteVisibleChange, None)
     DidLayoutDirectionChange = property(get_DidLayoutDirectionChange, None)
     DidRasterizationScaleChange = property(get_DidRasterizationScaleChange, None)
-ContentLayoutDirection = Int32
-ContentLayoutDirection_LeftToRight: ContentLayoutDirection = 0
-ContentLayoutDirection_RightToLeft: ContentLayoutDirection = 1
+    DidSiteEnabledChange = property(get_DidSiteEnabledChange, None)
+    DidSiteVisibleChange = property(get_DidSiteVisibleChange, None)
+class ContentLayoutDirection(Int32):  # enum
+    LeftToRight = 0
+    RightToLeft = 1
 class ContentSite(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IContentSite
@@ -232,7 +219,7 @@ class ContentSite(ComPtr):
     @winrt_mixinmethod
     def get_IsSiteEnabled(self: win32more.Microsoft.UI.Content.IContentSite) -> Boolean: ...
     @winrt_mixinmethod
-    def get_ActualSize(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Windows.Foundation.Numerics.Vector2: ...
+    def put_ActualSize(self: win32more.Microsoft.UI.Content.IContentSite, value: win32more.Windows.Foundation.Numerics.Vector2) -> Void: ...
     @winrt_mixinmethod
     def get_ClientSize(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Windows.Graphics.SizeInt32: ...
     @winrt_mixinmethod
@@ -240,13 +227,13 @@ class ContentSite(ComPtr):
     @winrt_mixinmethod
     def get_CoordinateConverter(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Microsoft.UI.Content.ContentCoordinateConverter: ...
     @winrt_mixinmethod
-    def get_DispatcherQueue(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Microsoft.UI.Dispatching.DispatcherQueue: ...
+    def get_ActualSize(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Windows.Foundation.Numerics.Vector2: ...
     @winrt_mixinmethod
     def get_Environment(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Microsoft.UI.Content.ContentSiteEnvironment: ...
     @winrt_mixinmethod
     def get_IsConnected(self: win32more.Microsoft.UI.Content.IContentSite) -> Boolean: ...
     @winrt_mixinmethod
-    def put_ActualSize(self: win32more.Microsoft.UI.Content.IContentSite, value: win32more.Windows.Foundation.Numerics.Vector2) -> Void: ...
+    def get_DispatcherQueue(self: win32more.Microsoft.UI.Content.IContentSite) -> win32more.Microsoft.UI.Dispatching.DispatcherQueue: ...
     @winrt_mixinmethod
     def put_IsSiteEnabled(self: win32more.Microsoft.UI.Content.IContentSite, value: Boolean) -> Void: ...
     @winrt_mixinmethod
@@ -293,13 +280,14 @@ class ContentSite(ComPtr):
     def add_FrameworkClosed(self: win32more.Microsoft.UI.IClosableNotifier, handler: win32more.Microsoft.UI.ClosableNotifierHandler) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def remove_FrameworkClosed(self: win32more.Microsoft.UI.IClosableNotifier, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    IsSiteEnabled = property(get_IsSiteEnabled, put_IsSiteEnabled)
     ActualSize = property(get_ActualSize, put_ActualSize)
     ClientSize = property(get_ClientSize, put_ClientSize)
     CoordinateConverter = property(get_CoordinateConverter, None)
     DispatcherQueue = property(get_DispatcherQueue, None)
     Environment = property(get_Environment, None)
+    IsClosed = property(get_IsClosed, None)
     IsConnected = property(get_IsConnected, None)
+    IsSiteEnabled = property(get_IsSiteEnabled, put_IsSiteEnabled)
     IsSiteVisible = property(get_IsSiteVisible, put_IsSiteVisible)
     LayoutDirection = property(get_LayoutDirection, put_LayoutDirection)
     OverrideScale = property(get_OverrideScale, put_OverrideScale)
@@ -308,17 +296,16 @@ class ContentSite(ComPtr):
     RequestedSize = property(get_RequestedSize, None)
     ShouldApplyRasterizationScale = property(get_ShouldApplyRasterizationScale, put_ShouldApplyRasterizationScale)
     View = property(get_View, None)
-    IsClosed = property(get_IsClosed, None)
 class ContentSiteEnvironment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IContentSiteEnvironment
     _classid_ = 'Microsoft.UI.Content.ContentSiteEnvironment'
     @winrt_mixinmethod
-    def put_AppWindowId(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment, value: win32more.Microsoft.UI.WindowId) -> Void: ...
+    def put_DisplayId(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment, value: win32more.Microsoft.UI.DisplayId) -> Void: ...
     @winrt_mixinmethod
     def get_DisplayId(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment) -> win32more.Microsoft.UI.DisplayId: ...
     @winrt_mixinmethod
-    def put_DisplayId(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment, value: win32more.Microsoft.UI.DisplayId) -> Void: ...
+    def put_AppWindowId(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment, value: win32more.Microsoft.UI.WindowId) -> Void: ...
     @winrt_mixinmethod
     def get_View(self: win32more.Microsoft.UI.Content.IContentSiteEnvironment) -> win32more.Microsoft.UI.Content.ContentSiteEnvironmentView: ...
     @winrt_mixinmethod
@@ -377,9 +364,9 @@ class ContentSiteView(ComPtr):
     def get_RequestedSize(self: win32more.Microsoft.UI.Content.IContentSiteView) -> win32more.Windows.Foundation.Numerics.Vector2: ...
     @winrt_mixinmethod
     def get_ShouldApplyRasterizationScale(self: win32more.Microsoft.UI.Content.IContentSiteView) -> Boolean: ...
-    CoordinateConverter = property(get_CoordinateConverter, None)
-    ClientSize = property(get_ClientSize, None)
     ActualSize = property(get_ActualSize, None)
+    ClientSize = property(get_ClientSize, None)
+    CoordinateConverter = property(get_CoordinateConverter, None)
     DispatcherQueue = property(get_DispatcherQueue, None)
     EnvironmentView = property(get_EnvironmentView, None)
     IsConnected = property(get_IsConnected, None)
@@ -391,38 +378,38 @@ class ContentSiteView(ComPtr):
     RasterizationScale = property(get_RasterizationScale, None)
     RequestedSize = property(get_RequestedSize, None)
     ShouldApplyRasterizationScale = property(get_ShouldApplyRasterizationScale, None)
-ContentSizePolicy = Int32
-ContentSizePolicy_None: ContentSizePolicy = 0
-ContentSizePolicy_ResizeContentToParentWindow: ContentSizePolicy = 1
-ContentSizePolicy_ResizeParentWindowToContent: ContentSizePolicy = 2
+class ContentSizePolicy(Int32):  # enum
+    None_ = 0
+    ResizeContentToParentWindow = 1
+    ResizeParentWindowToContent = 2
 class DesktopChildSiteBridge(ComPtr):
     extends: win32more.Microsoft.UI.Content.DesktopSiteBridge
     default_interface: win32more.Microsoft.UI.Content.IDesktopChildSiteBridge
     _classid_ = 'Microsoft.UI.Content.DesktopChildSiteBridge'
     @winrt_mixinmethod
-    def get_SiteView(self: win32more.Microsoft.UI.Content.IDesktopChildSiteBridge) -> win32more.Microsoft.UI.Content.ContentSiteView: ...
-    @winrt_mixinmethod
     def get_ResizePolicy(self: win32more.Microsoft.UI.Content.IDesktopChildSiteBridge) -> win32more.Microsoft.UI.Content.ContentSizePolicy: ...
+    @winrt_mixinmethod
+    def get_SiteView(self: win32more.Microsoft.UI.Content.IDesktopChildSiteBridge) -> win32more.Microsoft.UI.Content.ContentSiteView: ...
     @winrt_mixinmethod
     def put_ResizePolicy(self: win32more.Microsoft.UI.Content.IDesktopChildSiteBridge, value: win32more.Microsoft.UI.Content.ContentSizePolicy) -> Void: ...
     @winrt_classmethod
     def Create(cls: win32more.Microsoft.UI.Content.IDesktopChildSiteBridgeStatics, compositor: win32more.Microsoft.UI.Composition.Compositor, parentWindowId: win32more.Microsoft.UI.WindowId) -> win32more.Microsoft.UI.Content.DesktopChildSiteBridge: ...
-    SiteView = property(get_SiteView, None)
     ResizePolicy = property(get_ResizePolicy, put_ResizePolicy)
+    SiteView = property(get_SiteView, None)
 class DesktopSiteBridge(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Content.IDesktopSiteBridge
     _classid_ = 'Microsoft.UI.Content.DesktopSiteBridge'
     @winrt_mixinmethod
-    def get_OverrideScale(self: win32more.Microsoft.UI.Content.IContentSiteBridge) -> Single: ...
+    def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     @winrt_mixinmethod
     def MoveInZOrderBelow(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge, windowId: win32more.Microsoft.UI.WindowId) -> Void: ...
     @winrt_mixinmethod
     def Show(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Void: ...
     @winrt_mixinmethod
-    def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
+    def put_OverrideScale(self: win32more.Microsoft.UI.Content.IContentSiteBridge, value: Single) -> Void: ...
     @winrt_mixinmethod
-    def get_IsVisible(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Boolean: ...
+    def get_IsEnabled(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Boolean: ...
     @winrt_mixinmethod
     def get_WindowId(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> win32more.Microsoft.UI.WindowId: ...
     @winrt_mixinmethod
@@ -434,13 +421,13 @@ class DesktopSiteBridge(ComPtr):
     @winrt_mixinmethod
     def Hide(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Void: ...
     @winrt_mixinmethod
-    def get_IsEnabled(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Boolean: ...
+    def MoveAndResize(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge, rect: win32more.Windows.Graphics.RectInt32) -> Void: ...
     @winrt_mixinmethod
     def MoveInZOrderAtBottom(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Void: ...
     @winrt_mixinmethod
     def MoveInZOrderAtTop(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Void: ...
     @winrt_mixinmethod
-    def MoveAndResize(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge, rect: win32more.Windows.Graphics.RectInt32) -> Void: ...
+    def get_IsVisible(self: win32more.Microsoft.UI.Content.IDesktopSiteBridge) -> Boolean: ...
     @winrt_mixinmethod
     def get_IsClosed(self: win32more.Microsoft.UI.IClosableNotifier) -> Boolean: ...
     @winrt_mixinmethod
@@ -458,16 +445,16 @@ class DesktopSiteBridge(ComPtr):
     @winrt_mixinmethod
     def put_LayoutDirectionOverride(self: win32more.Microsoft.UI.Content.IContentSiteBridge, value: win32more.Windows.Foundation.IReference[win32more.Microsoft.UI.Content.ContentLayoutDirection]) -> Void: ...
     @winrt_mixinmethod
-    def put_OverrideScale(self: win32more.Microsoft.UI.Content.IContentSiteBridge, value: Single) -> Void: ...
+    def get_OverrideScale(self: win32more.Microsoft.UI.Content.IContentSiteBridge) -> Single: ...
     @winrt_classmethod
     def IsSupported(cls: win32more.Microsoft.UI.Content.IDesktopSiteBridgeStatics) -> Boolean: ...
-    OverrideScale = property(get_OverrideScale, put_OverrideScale)
-    IsVisible = property(get_IsVisible, None)
-    WindowId = property(get_WindowId, None)
-    IsEnabled = property(get_IsEnabled, None)
-    IsClosed = property(get_IsClosed, None)
     DispatcherQueue = property(get_DispatcherQueue, None)
+    IsClosed = property(get_IsClosed, None)
+    IsEnabled = property(get_IsEnabled, None)
+    IsVisible = property(get_IsVisible, None)
     LayoutDirectionOverride = property(get_LayoutDirectionOverride, put_LayoutDirectionOverride)
+    OverrideScale = property(get_OverrideScale, put_OverrideScale)
+    WindowId = property(get_WindowId, None)
 class IContentCoordinateConverter(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Content.IContentCoordinateConverter'
@@ -645,10 +632,10 @@ class IContentIslandStateChangedEventArgs(ComPtr):
     @winrt_commethod(10)
     def get_DidRasterizationScaleChange(self) -> Boolean: ...
     DidActualSizeChange = property(get_DidActualSizeChange, None)
-    DidSiteEnabledChange = property(get_DidSiteEnabledChange, None)
-    DidSiteVisibleChange = property(get_DidSiteVisibleChange, None)
     DidLayoutDirectionChange = property(get_DidLayoutDirectionChange, None)
     DidRasterizationScaleChange = property(get_DidRasterizationScaleChange, None)
+    DidSiteEnabledChange = property(get_DidSiteEnabledChange, None)
+    DidSiteVisibleChange = property(get_DidSiteVisibleChange, None)
 class IContentIslandStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Content.IContentIslandStatics'
@@ -908,4 +895,6 @@ class IDesktopSiteBridgeStatics(ComPtr):
     _iid_ = Guid('{e0b38daf-9cd4-50c5-83ee-c76e3cf34eba}')
     @winrt_commethod(6)
     def IsSupported(self) -> Boolean: ...
+
+
 make_ready(__name__)

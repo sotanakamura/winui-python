@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Core
 import win32more.Windows.Media.Protection
 import win32more.Windows.Media.Protection.PlayReady
 import win32more.Windows.Storage
+import win32more.Windows.Win32.System.WinRT
 class INDClient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.INDClient'
@@ -69,9 +56,9 @@ class INDClosedCaptionDataReceivedEventArgs(ComPtr):
     def get_PresentationTimestamp(self) -> Int64: ...
     @winrt_commethod(8)
     def get_ClosedCaptionData(self) -> SZArray[Byte]: ...
+    ClosedCaptionData = property(get_ClosedCaptionData, None)
     ClosedCaptionDataFormat = property(get_ClosedCaptionDataFormat, None)
     PresentationTimestamp = property(get_PresentationTimestamp, None)
-    ClosedCaptionData = property(get_ClosedCaptionData, None)
 class INDCustomData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.INDCustomData'
@@ -80,8 +67,8 @@ class INDCustomData(ComPtr):
     def get_CustomDataTypeID(self) -> SZArray[Byte]: ...
     @winrt_commethod(7)
     def get_CustomData(self) -> SZArray[Byte]: ...
-    CustomDataTypeID = property(get_CustomDataTypeID, None)
     CustomData = property(get_CustomData, None)
+    CustomDataTypeID = property(get_CustomDataTypeID, None)
 class INDCustomDataFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.INDCustomDataFactory'
@@ -110,9 +97,9 @@ class INDDownloadEngine(ComPtr):
     def get_BufferFullMaxThresholdInSamples(self) -> UInt32: ...
     @winrt_commethod(14)
     def get_Notifier(self) -> win32more.Windows.Media.Protection.PlayReady.NDDownloadEngineNotifier: ...
-    CanSeek = property(get_CanSeek, None)
-    BufferFullMinThresholdInSamples = property(get_BufferFullMinThresholdInSamples, None)
     BufferFullMaxThresholdInSamples = property(get_BufferFullMaxThresholdInSamples, None)
+    BufferFullMinThresholdInSamples = property(get_BufferFullMinThresholdInSamples, None)
+    CanSeek = property(get_CanSeek, None)
     Notifier = property(get_Notifier, None)
 class INDDownloadEngineNotifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -149,8 +136,8 @@ class INDLicenseFetchDescriptor(ComPtr):
     def get_LicenseFetchChallengeCustomData(self) -> win32more.Windows.Media.Protection.PlayReady.INDCustomData: ...
     @winrt_commethod(9)
     def put_LicenseFetchChallengeCustomData(self, licenseFetchChallengeCustomData: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> Void: ...
-    ContentIDType = property(get_ContentIDType, None)
     ContentID = property(get_ContentID, None)
+    ContentIDType = property(get_ContentIDType, None)
     LicenseFetchChallengeCustomData = property(get_LicenseFetchChallengeCustomData, put_LicenseFetchChallengeCustomData)
 class INDLicenseFetchDescriptorFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -197,8 +184,8 @@ class INDRegistrationCompletedEventArgs(ComPtr):
     @winrt_commethod(9)
     def put_TransmitterCertificateAccepted(self, accept: Boolean) -> Void: ...
     ResponseCustomData = property(get_ResponseCustomData, None)
-    TransmitterProperties = property(get_TransmitterProperties, None)
     TransmitterCertificateAccepted = property(get_TransmitterCertificateAccepted, put_TransmitterCertificateAccepted)
+    TransmitterProperties = property(get_TransmitterProperties, None)
 class INDSendResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.INDSendResult'
@@ -279,16 +266,16 @@ class INDTransmitterProperties(ComPtr):
     @winrt_commethod(16)
     def get_ModelNumber(self) -> WinRT_String: ...
     CertificateType = property(get_CertificateType, None)
-    PlatformIdentifier = property(get_PlatformIdentifier, None)
-    SupportedFeatures = property(get_SupportedFeatures, None)
-    SecurityLevel = property(get_SecurityLevel, None)
-    SecurityVersion = property(get_SecurityVersion, None)
-    ExpirationDate = property(get_ExpirationDate, None)
     ClientID = property(get_ClientID, None)
+    ExpirationDate = property(get_ExpirationDate, None)
     ModelDigest = property(get_ModelDigest, None)
     ModelManufacturerName = property(get_ModelManufacturerName, None)
     ModelName = property(get_ModelName, None)
     ModelNumber = property(get_ModelNumber, None)
+    PlatformIdentifier = property(get_PlatformIdentifier, None)
+    SecurityLevel = property(get_SecurityLevel, None)
+    SecurityVersion = property(get_SecurityVersion, None)
+    SupportedFeatures = property(get_SupportedFeatures, None)
 class IPlayReadyContentHeader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyContentHeader'
@@ -313,15 +300,15 @@ class IPlayReadyContentHeader(ComPtr):
     def GetSerializedHeader(self) -> SZArray[Byte]: ...
     @winrt_commethod(15)
     def get_HeaderWithEmbeddedUpdates(self) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
+    CustomAttributes = property(get_CustomAttributes, None)
+    DecryptorSetup = property(get_DecryptorSetup, None)
+    DomainServiceId = property(get_DomainServiceId, None)
+    EncryptionType = property(get_EncryptionType, None)
+    HeaderWithEmbeddedUpdates = property(get_HeaderWithEmbeddedUpdates, None)
     KeyId = property(get_KeyId, None)
     KeyIdString = property(get_KeyIdString, None)
     LicenseAcquisitionUrl = property(get_LicenseAcquisitionUrl, None)
     LicenseAcquisitionUserInterfaceUrl = property(get_LicenseAcquisitionUserInterfaceUrl, None)
-    DomainServiceId = property(get_DomainServiceId, None)
-    EncryptionType = property(get_EncryptionType, None)
-    CustomAttributes = property(get_CustomAttributes, None)
-    DecryptorSetup = property(get_DecryptorSetup, None)
-    HeaderWithEmbeddedUpdates = property(get_HeaderWithEmbeddedUpdates, None)
 class IPlayReadyContentHeader2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyContentHeader2'
@@ -330,8 +317,8 @@ class IPlayReadyContentHeader2(ComPtr):
     def get_KeyIds(self) -> SZArray[Guid]: ...
     @winrt_commethod(7)
     def get_KeyIdStrings(self) -> SZArray[WinRT_String]: ...
-    KeyIds = property(get_KeyIds, None)
     KeyIdStrings = property(get_KeyIdStrings, None)
+    KeyIds = property(get_KeyIds, None)
 class IPlayReadyContentHeaderFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory'
@@ -369,10 +356,10 @@ class IPlayReadyDomain(ComPtr):
     @winrt_commethod(10)
     def get_DomainJoinUrl(self) -> win32more.Windows.Foundation.Uri: ...
     AccountId = property(get_AccountId, None)
-    ServiceId = property(get_ServiceId, None)
-    Revision = property(get_Revision, None)
-    FriendlyName = property(get_FriendlyName, None)
     DomainJoinUrl = property(get_DomainJoinUrl, None)
+    FriendlyName = property(get_FriendlyName, None)
+    Revision = property(get_Revision, None)
+    ServiceId = property(get_ServiceId, None)
 class IPlayReadyDomainIterableFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyDomainIterableFactory'
@@ -440,12 +427,12 @@ class IPlayReadyLicense(ComPtr):
     def get_ChainDepth(self) -> UInt32: ...
     @winrt_commethod(12)
     def GetKIDAtChainDepth(self, chainDepth: UInt32) -> Guid: ...
-    FullyEvaluated = property(get_FullyEvaluated, None)
-    UsableForPlay = property(get_UsableForPlay, None)
+    ChainDepth = property(get_ChainDepth, None)
+    DomainAccountID = property(get_DomainAccountID, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExpireAfterFirstPlay = property(get_ExpireAfterFirstPlay, None)
-    DomainAccountID = property(get_DomainAccountID, None)
-    ChainDepth = property(get_ChainDepth, None)
+    FullyEvaluated = property(get_FullyEvaluated, None)
+    UsableForPlay = property(get_UsableForPlay, None)
 class IPlayReadyLicense2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyLicense2'
@@ -458,10 +445,10 @@ class IPlayReadyLicense2(ComPtr):
     def get_InMemoryOnly(self) -> Boolean: ...
     @winrt_commethod(9)
     def get_ExpiresInRealTime(self) -> Boolean: ...
+    ExpiresInRealTime = property(get_ExpiresInRealTime, None)
+    InMemoryOnly = property(get_InMemoryOnly, None)
     SecureStopId = property(get_SecureStopId, None)
     SecurityLevel = property(get_SecurityLevel, None)
-    InMemoryOnly = property(get_InMemoryOnly, None)
-    ExpiresInRealTime = property(get_ExpiresInRealTime, None)
 class IPlayReadyLicenseAcquisitionServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyLicenseAcquisitionServiceRequest'
@@ -554,11 +541,11 @@ class IPlayReadySecureStopServiceRequest(ComPtr):
     def get_Stopped(self) -> Boolean: ...
     @winrt_commethod(10)
     def get_PublisherCertificate(self) -> SZArray[Byte]: ...
+    PublisherCertificate = property(get_PublisherCertificate, None)
     SessionID = property(get_SessionID, None)
     StartTime = property(get_StartTime, None)
-    UpdateTime = property(get_UpdateTime, None)
     Stopped = property(get_Stopped, None)
-    PublisherCertificate = property(get_PublisherCertificate, None)
+    UpdateTime = property(get_UpdateTime, None)
 class IPlayReadySecureStopServiceRequestFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadySecureStopServiceRequestFactory'
@@ -589,9 +576,9 @@ class IPlayReadyServiceRequest(ComPtr):
     def GenerateManualEnablingChallenge(self) -> win32more.Windows.Media.Protection.PlayReady.PlayReadySoapMessage: ...
     @winrt_commethod(14)
     def ProcessManualEnablingResponse(self, responseBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Foundation.HResult: ...
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
     ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
+    ResponseCustomData = property(get_ResponseCustomData, None)
+    Uri = property(get_Uri, put_Uri)
 class IPlayReadySoapMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadySoapMessage'
@@ -628,10 +615,10 @@ class IPlayReadyStatics(ComPtr):
     DomainLeaveServiceRequestType = property(get_DomainLeaveServiceRequestType, None)
     IndividualizationServiceRequestType = property(get_IndividualizationServiceRequestType, None)
     LicenseAcquirerServiceRequestType = property(get_LicenseAcquirerServiceRequestType, None)
-    MeteringReportServiceRequestType = property(get_MeteringReportServiceRequestType, None)
-    RevocationServiceRequestType = property(get_RevocationServiceRequestType, None)
     MediaProtectionSystemId = property(get_MediaProtectionSystemId, None)
+    MeteringReportServiceRequestType = property(get_MeteringReportServiceRequestType, None)
     PlayReadySecurityVersion = property(get_PlayReadySecurityVersion, None)
+    RevocationServiceRequestType = property(get_RevocationServiceRequestType, None)
 class IPlayReadyStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.IPlayReadyStatics2'
@@ -670,45 +657,52 @@ class IPlayReadyStatics5(ComPtr):
     def ResetHardwareDRMDisabled(self) -> Void: ...
     HardwareDRMDisabledAtTime = property(get_HardwareDRMDisabledAtTime, None)
     HardwareDRMDisabledUntilTime = property(get_HardwareDRMDisabledUntilTime, None)
-NDCertificateFeature = Int32
-NDCertificateFeature_Transmitter: NDCertificateFeature = 1
-NDCertificateFeature_Receiver: NDCertificateFeature = 2
-NDCertificateFeature_SharedCertificate: NDCertificateFeature = 3
-NDCertificateFeature_SecureClock: NDCertificateFeature = 4
-NDCertificateFeature_AntiRollBackClock: NDCertificateFeature = 5
-NDCertificateFeature_CRLS: NDCertificateFeature = 9
-NDCertificateFeature_PlayReady3Features: NDCertificateFeature = 13
-NDCertificatePlatformID = Int32
-NDCertificatePlatformID_Windows: NDCertificatePlatformID = 0
-NDCertificatePlatformID_OSX: NDCertificatePlatformID = 1
-NDCertificatePlatformID_WindowsOnARM: NDCertificatePlatformID = 2
-NDCertificatePlatformID_WindowsMobile7: NDCertificatePlatformID = 5
-NDCertificatePlatformID_iOSOnARM: NDCertificatePlatformID = 6
-NDCertificatePlatformID_XBoxOnPPC: NDCertificatePlatformID = 7
-NDCertificatePlatformID_WindowsPhone8OnARM: NDCertificatePlatformID = 8
-NDCertificatePlatformID_WindowsPhone8OnX86: NDCertificatePlatformID = 9
-NDCertificatePlatformID_XboxOne: NDCertificatePlatformID = 10
-NDCertificatePlatformID_AndroidOnARM: NDCertificatePlatformID = 11
-NDCertificatePlatformID_WindowsPhone81OnARM: NDCertificatePlatformID = 12
-NDCertificatePlatformID_WindowsPhone81OnX86: NDCertificatePlatformID = 13
-NDCertificateType = Int32
-NDCertificateType_Unknown: NDCertificateType = 0
-NDCertificateType_PC: NDCertificateType = 1
-NDCertificateType_Device: NDCertificateType = 2
-NDCertificateType_Domain: NDCertificateType = 3
-NDCertificateType_Issuer: NDCertificateType = 4
-NDCertificateType_CrlSigner: NDCertificateType = 5
-NDCertificateType_Service: NDCertificateType = 6
-NDCertificateType_Silverlight: NDCertificateType = 7
-NDCertificateType_Application: NDCertificateType = 8
-NDCertificateType_Metering: NDCertificateType = 9
-NDCertificateType_KeyFileSigner: NDCertificateType = 10
-NDCertificateType_Server: NDCertificateType = 11
-NDCertificateType_LicenseSigner: NDCertificateType = 12
+class NDCertificateFeature(Int32):  # enum
+    Transmitter = 1
+    Receiver = 2
+    SharedCertificate = 3
+    SecureClock = 4
+    AntiRollBackClock = 5
+    CRLS = 9
+    PlayReady3Features = 13
+class NDCertificatePlatformID(Int32):  # enum
+    Windows = 0
+    OSX = 1
+    WindowsOnARM = 2
+    WindowsMobile7 = 5
+    iOSOnARM = 6
+    XBoxOnPPC = 7
+    WindowsPhone8OnARM = 8
+    WindowsPhone8OnX86 = 9
+    XboxOne = 10
+    AndroidOnARM = 11
+    WindowsPhone81OnARM = 12
+    WindowsPhone81OnX86 = 13
+class NDCertificateType(Int32):  # enum
+    Unknown = 0
+    PC = 1
+    Device = 2
+    Domain = 3
+    Issuer = 4
+    CrlSigner = 5
+    Service = 6
+    Silverlight = 7
+    Application = 8
+    Metering = 9
+    KeyFileSigner = 10
+    Server = 11
+    LicenseSigner = 12
 class NDClient(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDClient
     _classid_ = 'Windows.Media.Protection.PlayReady.NDClient'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Media.Protection.PlayReady.NDClient.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.INDClientFactory, downloadEngine: win32more.Windows.Media.Protection.PlayReady.INDDownloadEngine, streamParser: win32more.Windows.Media.Protection.PlayReady.INDStreamParser, pMessenger: win32more.Windows.Media.Protection.PlayReady.INDMessenger) -> win32more.Windows.Media.Protection.PlayReady.NDClient: ...
     @winrt_mixinmethod
@@ -739,30 +733,44 @@ class NDClient(ComPtr):
     def ReRegistrationAsync(self: win32more.Windows.Media.Protection.PlayReady.INDClient, registrationCustomData: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Media.Protection.PlayReady.INDClient) -> Void: ...
-NDClosedCaptionFormat = Int32
-NDClosedCaptionFormat_ATSC: NDClosedCaptionFormat = 0
-NDClosedCaptionFormat_SCTE20: NDClosedCaptionFormat = 1
-NDClosedCaptionFormat_Unknown: NDClosedCaptionFormat = 2
-NDContentIDType = Int32
-NDContentIDType_KeyID: NDContentIDType = 1
-NDContentIDType_PlayReadyObject: NDContentIDType = 2
-NDContentIDType_Custom: NDContentIDType = 3
+class NDClosedCaptionFormat(Int32):  # enum
+    ATSC = 0
+    SCTE20 = 1
+    Unknown = 2
+class NDContentIDType(Int32):  # enum
+    KeyID = 1
+    PlayReadyObject = 2
+    Custom = 3
 class NDCustomData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDCustomData
     _classid_ = 'Windows.Media.Protection.PlayReady.NDCustomData'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Media.Protection.PlayReady.NDCustomData.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.INDCustomDataFactory, customDataTypeIDBytes: Annotated[SZArray[Byte], 'In'], customDataBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Media.Protection.PlayReady.NDCustomData: ...
     @winrt_mixinmethod
     def get_CustomDataTypeID(self: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> SZArray[Byte]: ...
     @winrt_mixinmethod
     def get_CustomData(self: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> SZArray[Byte]: ...
-    CustomDataTypeID = property(get_CustomDataTypeID, None)
     CustomData = property(get_CustomData, None)
+    CustomDataTypeID = property(get_CustomDataTypeID, None)
 class NDDownloadEngineNotifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDDownloadEngineNotifier
     _classid_ = 'Windows.Media.Protection.PlayReady.NDDownloadEngineNotifier'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.NDDownloadEngineNotifier.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.NDDownloadEngineNotifier: ...
     @winrt_mixinmethod
@@ -781,6 +789,13 @@ class NDLicenseFetchDescriptor(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDLicenseFetchDescriptor
     _classid_ = 'Windows.Media.Protection.PlayReady.NDLicenseFetchDescriptor'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Media.Protection.PlayReady.NDLicenseFetchDescriptor.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.INDLicenseFetchDescriptorFactory, contentIDType: win32more.Windows.Media.Protection.PlayReady.NDContentIDType, contentIDBytes: Annotated[SZArray[Byte], 'In'], licenseFetchChallengeCustomData: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> win32more.Windows.Media.Protection.PlayReady.NDLicenseFetchDescriptor: ...
     @winrt_mixinmethod
@@ -791,23 +806,30 @@ class NDLicenseFetchDescriptor(ComPtr):
     def get_LicenseFetchChallengeCustomData(self: win32more.Windows.Media.Protection.PlayReady.INDLicenseFetchDescriptor) -> win32more.Windows.Media.Protection.PlayReady.INDCustomData: ...
     @winrt_mixinmethod
     def put_LicenseFetchChallengeCustomData(self: win32more.Windows.Media.Protection.PlayReady.INDLicenseFetchDescriptor, licenseFetchChallengeCustomData: win32more.Windows.Media.Protection.PlayReady.INDCustomData) -> Void: ...
-    ContentIDType = property(get_ContentIDType, None)
     ContentID = property(get_ContentID, None)
+    ContentIDType = property(get_ContentIDType, None)
     LicenseFetchChallengeCustomData = property(get_LicenseFetchChallengeCustomData, put_LicenseFetchChallengeCustomData)
-NDMediaStreamType = Int32
-NDMediaStreamType_Audio: NDMediaStreamType = 1
-NDMediaStreamType_Video: NDMediaStreamType = 2
-NDProximityDetectionType = Int32
-NDProximityDetectionType_UDP: NDProximityDetectionType = 1
-NDProximityDetectionType_TCP: NDProximityDetectionType = 2
-NDProximityDetectionType_TransportAgnostic: NDProximityDetectionType = 4
-NDStartAsyncOptions = Int32
-NDStartAsyncOptions_MutualAuthentication: NDStartAsyncOptions = 1
-NDStartAsyncOptions_WaitForLicenseDescriptor: NDStartAsyncOptions = 2
+class NDMediaStreamType(Int32):  # enum
+    Audio = 1
+    Video = 2
+class NDProximityDetectionType(Int32):  # enum
+    UDP = 1
+    TCP = 2
+    TransportAgnostic = 4
+class NDStartAsyncOptions(Int32):  # enum
+    MutualAuthentication = 1
+    WaitForLicenseDescriptor = 2
 class NDStorageFileHelper(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDStorageFileHelper
     _classid_ = 'Windows.Media.Protection.PlayReady.NDStorageFileHelper'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.NDStorageFileHelper.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.NDStorageFileHelper: ...
     @winrt_mixinmethod
@@ -816,6 +838,13 @@ class NDStreamParserNotifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDStreamParserNotifier
     _classid_ = 'Windows.Media.Protection.PlayReady.NDStreamParserNotifier'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.NDStreamParserNotifier.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.NDStreamParserNotifier: ...
     @winrt_mixinmethod
@@ -830,6 +859,13 @@ class NDTCPMessenger(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.INDMessenger
     _classid_ = 'Windows.Media.Protection.PlayReady.NDTCPMessenger'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.Media.Protection.PlayReady.NDTCPMessenger.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.INDTCPMessengerFactory, remoteHostName: WinRT_String, remoteHostPort: UInt32) -> win32more.Windows.Media.Protection.PlayReady.NDTCPMessenger: ...
     @winrt_mixinmethod
@@ -844,14 +880,27 @@ class PlayReadyContentHeader(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeader
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyContentHeader'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader.CreateInstanceFromPlayReadyHeader(*args)
+        elif len(args) == 5:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader.CreateInstanceFromWindowsMediaDrmHeader(*args)
+        elif len(args) == 7:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader.CreateInstanceFromComponents(*args)
+        elif len(args) == 8:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader.CreateInstanceFromComponents2(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
-    def CreateInstanceFromComponents2(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory2, dwFlags: UInt32, contentKeyIds: Annotated[SZArray[Guid], 'In'], contentKeyIdStrings: Annotated[SZArray[WinRT_String], 'In'], contentEncryptionAlgorithm: win32more.Windows.Media.Protection.PlayReady.PlayReadyEncryptionAlgorithm, licenseAcquisitionUrl: win32more.Windows.Foundation.Uri, licenseAcquisitionUserInterfaceUrl: win32more.Windows.Foundation.Uri, customAttributes: WinRT_String, domainServiceId: Guid) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
+    def CreateInstanceFromPlayReadyHeader(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory, headerBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
     @winrt_factorymethod
     def CreateInstanceFromWindowsMediaDrmHeader(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory, headerBytes: Annotated[SZArray[Byte], 'In'], licenseAcquisitionUrl: win32more.Windows.Foundation.Uri, licenseAcquisitionUserInterfaceUrl: win32more.Windows.Foundation.Uri, customAttributes: WinRT_String, domainServiceId: Guid) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
     @winrt_factorymethod
     def CreateInstanceFromComponents(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory, contentKeyId: Guid, contentKeyIdString: WinRT_String, contentEncryptionAlgorithm: win32more.Windows.Media.Protection.PlayReady.PlayReadyEncryptionAlgorithm, licenseAcquisitionUrl: win32more.Windows.Foundation.Uri, licenseAcquisitionUserInterfaceUrl: win32more.Windows.Foundation.Uri, customAttributes: WinRT_String, domainServiceId: Guid) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
     @winrt_factorymethod
-    def CreateInstanceFromPlayReadyHeader(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory, headerBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
+    def CreateInstanceFromComponents2(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeaderFactory2, dwFlags: UInt32, contentKeyIds: Annotated[SZArray[Guid], 'In'], contentKeyIdStrings: Annotated[SZArray[WinRT_String], 'In'], contentEncryptionAlgorithm: win32more.Windows.Media.Protection.PlayReady.PlayReadyEncryptionAlgorithm, licenseAcquisitionUrl: win32more.Windows.Foundation.Uri, licenseAcquisitionUserInterfaceUrl: win32more.Windows.Foundation.Uri, customAttributes: WinRT_String, domainServiceId: Guid) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader: ...
     @winrt_mixinmethod
     def get_KeyId(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeader) -> Guid: ...
     @winrt_mixinmethod
@@ -876,25 +925,25 @@ class PlayReadyContentHeader(ComPtr):
     def get_KeyIds(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeader2) -> SZArray[Guid]: ...
     @winrt_mixinmethod
     def get_KeyIdStrings(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentHeader2) -> SZArray[WinRT_String]: ...
-    KeyId = property(get_KeyId, None)
-    KeyIdString = property(get_KeyIdString, None)
-    LicenseAcquisitionUrl = property(get_LicenseAcquisitionUrl, None)
-    LicenseAcquisitionUserInterfaceUrl = property(get_LicenseAcquisitionUserInterfaceUrl, None)
-    DomainServiceId = property(get_DomainServiceId, None)
-    EncryptionType = property(get_EncryptionType, None)
     CustomAttributes = property(get_CustomAttributes, None)
     DecryptorSetup = property(get_DecryptorSetup, None)
+    DomainServiceId = property(get_DomainServiceId, None)
+    EncryptionType = property(get_EncryptionType, None)
     HeaderWithEmbeddedUpdates = property(get_HeaderWithEmbeddedUpdates, None)
-    KeyIds = property(get_KeyIds, None)
+    KeyId = property(get_KeyId, None)
+    KeyIdString = property(get_KeyIdString, None)
     KeyIdStrings = property(get_KeyIdStrings, None)
+    KeyIds = property(get_KeyIds, None)
+    LicenseAcquisitionUrl = property(get_LicenseAcquisitionUrl, None)
+    LicenseAcquisitionUserInterfaceUrl = property(get_LicenseAcquisitionUserInterfaceUrl, None)
 class PlayReadyContentResolver(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyContentResolver'
     @winrt_classmethod
     def ServiceRequest(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyContentResolver, contentHeader: win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader) -> win32more.Windows.Media.Protection.PlayReady.IPlayReadyServiceRequest: ...
-PlayReadyDecryptorSetup = Int32
-PlayReadyDecryptorSetup_Uninitialized: PlayReadyDecryptorSetup = 0
-PlayReadyDecryptorSetup_OnDemand: PlayReadyDecryptorSetup = 1
+class PlayReadyDecryptorSetup(Int32):  # enum
+    Uninitialized = 0
+    OnDemand = 1
 class PlayReadyDomain(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomain
@@ -910,14 +959,21 @@ class PlayReadyDomain(ComPtr):
     @winrt_mixinmethod
     def get_DomainJoinUrl(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomain) -> win32more.Windows.Foundation.Uri: ...
     AccountId = property(get_AccountId, None)
-    ServiceId = property(get_ServiceId, None)
-    Revision = property(get_Revision, None)
-    FriendlyName = property(get_FriendlyName, None)
     DomainJoinUrl = property(get_DomainJoinUrl, None)
+    FriendlyName = property(get_FriendlyName, None)
+    Revision = property(get_Revision, None)
+    ServiceId = property(get_ServiceId, None)
 class PlayReadyDomainIterable(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomain]
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyDomainIterable'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainIterable.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomainIterableFactory, domainAccountId: Guid) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainIterable: ...
     @winrt_mixinmethod
@@ -940,6 +996,13 @@ class PlayReadyDomainJoinServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomainJoinServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyDomainJoinServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainJoinServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainJoinServiceRequest: ...
     @winrt_mixinmethod
@@ -976,18 +1039,25 @@ class PlayReadyDomainJoinServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
+    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     DomainAccountId = property(get_DomainAccountId, put_DomainAccountId)
     DomainFriendlyName = property(get_DomainFriendlyName, put_DomainFriendlyName)
     DomainServiceId = property(get_DomainServiceId, put_DomainServiceId)
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
-    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     Type = property(get_Type, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadyDomainLeaveServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyDomainLeaveServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyDomainLeaveServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainLeaveServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyDomainLeaveServiceRequest: ...
     @winrt_mixinmethod
@@ -1020,31 +1090,38 @@ class PlayReadyDomainLeaveServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
+    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     DomainAccountId = property(get_DomainAccountId, put_DomainAccountId)
     DomainServiceId = property(get_DomainServiceId, put_DomainServiceId)
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
-    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     Type = property(get_Type, None)
-PlayReadyEncryptionAlgorithm = Int32
-PlayReadyEncryptionAlgorithm_Unprotected: PlayReadyEncryptionAlgorithm = 0
-PlayReadyEncryptionAlgorithm_Aes128Ctr: PlayReadyEncryptionAlgorithm = 1
-PlayReadyEncryptionAlgorithm_Cocktail: PlayReadyEncryptionAlgorithm = 4
-PlayReadyEncryptionAlgorithm_Aes128Cbc: PlayReadyEncryptionAlgorithm = 5
-PlayReadyEncryptionAlgorithm_Unspecified: PlayReadyEncryptionAlgorithm = 65535
-PlayReadyEncryptionAlgorithm_Uninitialized: PlayReadyEncryptionAlgorithm = 2147483647
-PlayReadyHardwareDRMFeatures = Int32
-PlayReadyHardwareDRMFeatures_HardwareDRM: PlayReadyHardwareDRMFeatures = 1
-PlayReadyHardwareDRMFeatures_HEVC: PlayReadyHardwareDRMFeatures = 2
-PlayReadyHardwareDRMFeatures_Aes128Cbc: PlayReadyHardwareDRMFeatures = 3
-PlayReadyITADataFormat = Int32
-PlayReadyITADataFormat_SerializedProperties: PlayReadyITADataFormat = 0
-PlayReadyITADataFormat_SerializedProperties_WithContentProtectionWrapper: PlayReadyITADataFormat = 1
+    Uri = property(get_Uri, put_Uri)
+class PlayReadyEncryptionAlgorithm(Int32):  # enum
+    Unprotected = 0
+    Aes128Ctr = 1
+    Cocktail = 4
+    Aes128Cbc = 5
+    Unspecified = 65535
+    Uninitialized = 2147483647
+class PlayReadyHardwareDRMFeatures(Int32):  # enum
+    HardwareDRM = 1
+    HEVC = 2
+    Aes128Cbc = 3
+class PlayReadyITADataFormat(Int32):  # enum
+    SerializedProperties = 0
+    SerializedProperties_WithContentProtectionWrapper = 1
 class PlayReadyITADataGenerator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyITADataGenerator
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyITADataGenerator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyITADataGenerator.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyITADataGenerator: ...
     @winrt_mixinmethod
@@ -1053,6 +1130,13 @@ class PlayReadyIndividualizationServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyIndividualizationServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyIndividualizationServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyIndividualizationServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyIndividualizationServiceRequest: ...
     @winrt_mixinmethod
@@ -1077,11 +1161,11 @@ class PlayReadyIndividualizationServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
     ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     Type = property(get_Type, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadyLicense(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense
@@ -1108,20 +1192,27 @@ class PlayReadyLicense(ComPtr):
     def get_InMemoryOnly(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense2) -> Boolean: ...
     @winrt_mixinmethod
     def get_ExpiresInRealTime(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense2) -> Boolean: ...
-    FullyEvaluated = property(get_FullyEvaluated, None)
-    UsableForPlay = property(get_UsableForPlay, None)
+    ChainDepth = property(get_ChainDepth, None)
+    DomainAccountID = property(get_DomainAccountID, None)
     ExpirationDate = property(get_ExpirationDate, None)
     ExpireAfterFirstPlay = property(get_ExpireAfterFirstPlay, None)
-    DomainAccountID = property(get_DomainAccountID, None)
-    ChainDepth = property(get_ChainDepth, None)
+    ExpiresInRealTime = property(get_ExpiresInRealTime, None)
+    FullyEvaluated = property(get_FullyEvaluated, None)
+    InMemoryOnly = property(get_InMemoryOnly, None)
     SecureStopId = property(get_SecureStopId, None)
     SecurityLevel = property(get_SecurityLevel, None)
-    InMemoryOnly = property(get_InMemoryOnly, None)
-    ExpiresInRealTime = property(get_ExpiresInRealTime, None)
+    UsableForPlay = property(get_UsableForPlay, None)
 class PlayReadyLicenseAcquisitionServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseAcquisitionServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyLicenseAcquisitionServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseAcquisitionServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseAcquisitionServiceRequest: ...
     @winrt_mixinmethod
@@ -1158,22 +1249,33 @@ class PlayReadyLicenseAcquisitionServiceRequest(ComPtr):
     def get_SessionId(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseAcquisitionServiceRequest2) -> Guid: ...
     @winrt_mixinmethod
     def CreateLicenseIterable(self: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseAcquisitionServiceRequest3, contentHeader: win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader, fullyEvaluated: Boolean) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable: ...
+    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ContentHeader = property(get_ContentHeader, put_ContentHeader)
     DomainServiceId = property(get_DomainServiceId, put_DomainServiceId)
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
-    ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
-    Type = property(get_Type, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     SessionId = property(get_SessionId, None)
+    Type = property(get_Type, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadyLicenseIterable(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense]
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable'
-    @winrt_factorymethod
-    def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseIterableFactory, contentHeader: win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader, fullyEvaluated: Boolean) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_overload
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable: ...
+    @CreateInstance.register
+    @winrt_factorymethod
+    def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseIterableFactory, contentHeader: win32more.Windows.Media.Protection.PlayReady.PlayReadyContentHeader, fullyEvaluated: Boolean) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseIterable: ...
     @winrt_mixinmethod
     def First(self: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense]) -> win32more.Windows.Foundation.Collections.IIterator[win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicense]: ...
 class PlayReadyLicenseIterator(ComPtr):
@@ -1199,6 +1301,13 @@ class PlayReadyLicenseSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseSession
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyLicenseSession'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseSession.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyLicenseSessionFactory, configuration: win32more.Windows.Foundation.Collections.IPropertySet) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyLicenseSession: ...
     @winrt_mixinmethod
@@ -1211,6 +1320,13 @@ class PlayReadyMeteringReportServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyMeteringReportServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyMeteringReportServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyMeteringReportServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyMeteringReportServiceRequest: ...
     @winrt_mixinmethod
@@ -1239,16 +1355,23 @@ class PlayReadyMeteringReportServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
-    MeteringCertificate = property(get_MeteringCertificate, put_MeteringCertificate)
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
     ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
+    MeteringCertificate = property(get_MeteringCertificate, put_MeteringCertificate)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     Type = property(get_Type, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadyRevocationServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadyRevocationServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadyRevocationServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadyRevocationServiceRequest.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Protection.PlayReady.PlayReadyRevocationServiceRequest: ...
     @winrt_mixinmethod
@@ -1273,15 +1396,22 @@ class PlayReadyRevocationServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
     ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
     Type = property(get_Type, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadySecureStopIterable(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Media.Protection.PlayReady.IPlayReadySecureStopServiceRequest]
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadySecureStopIterable'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadySecureStopIterable.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadySecureStopIterableFactory, publisherCertBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Media.Protection.PlayReady.PlayReadySecureStopIterable: ...
     @winrt_mixinmethod
@@ -1304,6 +1434,15 @@ class PlayReadySecureStopServiceRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadySecureStopServiceRequest
     _classid_ = 'Windows.Media.Protection.PlayReady.PlayReadySecureStopServiceRequest'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadySecureStopServiceRequest.CreateInstance(*args)
+        elif len(args) == 2:
+            return win32more.Windows.Media.Protection.PlayReady.PlayReadySecureStopServiceRequest.CreateInstanceFromSessionID(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadySecureStopServiceRequestFactory, publisherCertBytes: Annotated[SZArray[Byte], 'In']) -> win32more.Windows.Media.Protection.PlayReady.PlayReadySecureStopServiceRequest: ...
     @winrt_factorymethod
@@ -1340,16 +1479,16 @@ class PlayReadySecureStopServiceRequest(ComPtr):
     def get_ProtectionSystem(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
     @winrt_mixinmethod
     def get_Type(self: win32more.Windows.Media.Protection.IMediaProtectionServiceRequest) -> Guid: ...
-    SessionID = property(get_SessionID, None)
-    StartTime = property(get_StartTime, None)
-    UpdateTime = property(get_UpdateTime, None)
-    Stopped = property(get_Stopped, None)
-    PublisherCertificate = property(get_PublisherCertificate, None)
-    Uri = property(get_Uri, put_Uri)
-    ResponseCustomData = property(get_ResponseCustomData, None)
     ChallengeCustomData = property(get_ChallengeCustomData, put_ChallengeCustomData)
     ProtectionSystem = property(get_ProtectionSystem, None)
+    PublisherCertificate = property(get_PublisherCertificate, None)
+    ResponseCustomData = property(get_ResponseCustomData, None)
+    SessionID = property(get_SessionID, None)
+    StartTime = property(get_StartTime, None)
+    Stopped = property(get_Stopped, None)
     Type = property(get_Type, None)
+    UpdateTime = property(get_UpdateTime, None)
+    Uri = property(get_Uri, put_Uri)
 class PlayReadySoapMessage(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Protection.PlayReady.IPlayReadySoapMessage
@@ -1399,18 +1538,20 @@ class PlayReadyStatics(ComPtr, metaclass=_PlayReadyStatics_Meta_):
     def get_MediaProtectionSystemId(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyStatics) -> Guid: ...
     @winrt_classmethod
     def get_PlayReadySecurityVersion(cls: win32more.Windows.Media.Protection.PlayReady.IPlayReadyStatics) -> UInt32: ...
-    _PlayReadyStatics_Meta_.HardwareDRMDisabledAtTime = property(get_HardwareDRMDisabledAtTime.__wrapped__, None)
-    _PlayReadyStatics_Meta_.HardwareDRMDisabledUntilTime = property(get_HardwareDRMDisabledUntilTime.__wrapped__, None)
-    _PlayReadyStatics_Meta_.InputTrustAuthorityToCreate = property(get_InputTrustAuthorityToCreate.__wrapped__, None)
-    _PlayReadyStatics_Meta_.ProtectionSystemId = property(get_ProtectionSystemId.__wrapped__, None)
-    _PlayReadyStatics_Meta_.SecureStopServiceRequestType = property(get_SecureStopServiceRequestType.__wrapped__, None)
-    _PlayReadyStatics_Meta_.PlayReadyCertificateSecurityLevel = property(get_PlayReadyCertificateSecurityLevel.__wrapped__, None)
     _PlayReadyStatics_Meta_.DomainJoinServiceRequestType = property(get_DomainJoinServiceRequestType.__wrapped__, None)
     _PlayReadyStatics_Meta_.DomainLeaveServiceRequestType = property(get_DomainLeaveServiceRequestType.__wrapped__, None)
+    _PlayReadyStatics_Meta_.HardwareDRMDisabledAtTime = property(get_HardwareDRMDisabledAtTime.__wrapped__, None)
+    _PlayReadyStatics_Meta_.HardwareDRMDisabledUntilTime = property(get_HardwareDRMDisabledUntilTime.__wrapped__, None)
     _PlayReadyStatics_Meta_.IndividualizationServiceRequestType = property(get_IndividualizationServiceRequestType.__wrapped__, None)
+    _PlayReadyStatics_Meta_.InputTrustAuthorityToCreate = property(get_InputTrustAuthorityToCreate.__wrapped__, None)
     _PlayReadyStatics_Meta_.LicenseAcquirerServiceRequestType = property(get_LicenseAcquirerServiceRequestType.__wrapped__, None)
-    _PlayReadyStatics_Meta_.MeteringReportServiceRequestType = property(get_MeteringReportServiceRequestType.__wrapped__, None)
-    _PlayReadyStatics_Meta_.RevocationServiceRequestType = property(get_RevocationServiceRequestType.__wrapped__, None)
     _PlayReadyStatics_Meta_.MediaProtectionSystemId = property(get_MediaProtectionSystemId.__wrapped__, None)
+    _PlayReadyStatics_Meta_.MeteringReportServiceRequestType = property(get_MeteringReportServiceRequestType.__wrapped__, None)
+    _PlayReadyStatics_Meta_.PlayReadyCertificateSecurityLevel = property(get_PlayReadyCertificateSecurityLevel.__wrapped__, None)
     _PlayReadyStatics_Meta_.PlayReadySecurityVersion = property(get_PlayReadySecurityVersion.__wrapped__, None)
+    _PlayReadyStatics_Meta_.ProtectionSystemId = property(get_ProtectionSystemId.__wrapped__, None)
+    _PlayReadyStatics_Meta_.RevocationServiceRequestType = property(get_RevocationServiceRequestType.__wrapped__, None)
+    _PlayReadyStatics_Meta_.SecureStopServiceRequestType = property(get_SecureStopServiceRequestType.__wrapped__, None)
+
+
 make_ready(__name__)

@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Perception
 import win32more.Windows.Devices.Perception.Provider
 import win32more.Windows.Foundation
@@ -22,6 +8,8 @@ import win32more.Windows.Foundation.Collections
 import win32more.Windows.Foundation.Numerics
 import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Media
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class IKnownPerceptionFrameKindStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.IKnownPerceptionFrameKindStatics'
@@ -58,9 +46,9 @@ class IPerceptionCorrelation(ComPtr):
     def get_Position(self) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_commethod(8)
     def get_Orientation(self) -> win32more.Windows.Foundation.Numerics.Quaternion: ...
-    TargetId = property(get_TargetId, None)
-    Position = property(get_Position, None)
     Orientation = property(get_Orientation, None)
+    Position = property(get_Position, None)
+    TargetId = property(get_TargetId, None)
 class IPerceptionCorrelationFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.IPerceptionCorrelationFactory'
@@ -105,9 +93,9 @@ class IPerceptionFrame(ComPtr):
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.ValueSet: ...
     @winrt_commethod(9)
     def get_FrameData(self) -> win32more.Windows.Foundation.IMemoryBuffer: ...
-    RelativeTime = property(get_RelativeTime, put_RelativeTime)
-    Properties = property(get_Properties, None)
     FrameData = property(get_FrameData, None)
+    Properties = property(get_Properties, None)
+    RelativeTime = property(get_RelativeTime, put_RelativeTime)
 class IPerceptionFrameProvider(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.IPerceptionFrameProvider'
@@ -124,8 +112,8 @@ class IPerceptionFrameProvider(ComPtr):
     def Stop(self) -> Void: ...
     @winrt_commethod(11)
     def SetProperty(self, value: win32more.Windows.Devices.Perception.Provider.PerceptionPropertyChangeRequest) -> Void: ...
-    FrameProviderInfo = property(get_FrameProviderInfo, None)
     Available = property(get_Available, None)
+    FrameProviderInfo = property(get_FrameProviderInfo, None)
     Properties = property(get_Properties, None)
 class IPerceptionFrameProviderInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -151,11 +139,11 @@ class IPerceptionFrameProviderInfo(ComPtr):
     def get_Hidden(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_Hidden(self, value: Boolean) -> Void: ...
-    Id = property(get_Id, put_Id)
-    DisplayName = property(get_DisplayName, put_DisplayName)
     DeviceKind = property(get_DeviceKind, put_DeviceKind)
+    DisplayName = property(get_DisplayName, put_DisplayName)
     FrameKind = property(get_FrameKind, put_FrameKind)
     Hidden = property(get_Hidden, put_Hidden)
+    Id = property(get_Id, put_Id)
 class IPerceptionFrameProviderManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.IPerceptionFrameProviderManager'
@@ -201,8 +189,8 @@ class IPerceptionPropertyChangeRequest(ComPtr):
     @winrt_commethod(10)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
     Name = property(get_Name, None)
-    Value = property(get_Value, None)
     Status = property(get_Status, put_Status)
+    Value = property(get_Value, None)
 class IPerceptionVideoFrameAllocator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.IPerceptionVideoFrameAllocator'
@@ -235,6 +223,13 @@ class PerceptionControlGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionControlGroup
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionControlGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionControlGroup.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Perception.Provider.IPerceptionControlGroupFactory, ids: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.Devices.Perception.Provider.PerceptionControlGroup: ...
     @winrt_mixinmethod
@@ -244,6 +239,13 @@ class PerceptionCorrelation(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelation
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionCorrelation'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionCorrelation.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelationFactory, targetId: WinRT_String, position: win32more.Windows.Foundation.Numerics.Vector3, orientation: win32more.Windows.Foundation.Numerics.Quaternion) -> win32more.Windows.Devices.Perception.Provider.PerceptionCorrelation: ...
     @winrt_mixinmethod
@@ -252,13 +254,20 @@ class PerceptionCorrelation(ComPtr):
     def get_Position(self: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelation) -> win32more.Windows.Foundation.Numerics.Vector3: ...
     @winrt_mixinmethod
     def get_Orientation(self: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelation) -> win32more.Windows.Foundation.Numerics.Quaternion: ...
-    TargetId = property(get_TargetId, None)
-    Position = property(get_Position, None)
     Orientation = property(get_Orientation, None)
+    Position = property(get_Position, None)
+    TargetId = property(get_TargetId, None)
 class PerceptionCorrelationGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelationGroup
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionCorrelationGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionCorrelationGroup.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Perception.Provider.IPerceptionCorrelationGroupFactory, relativeLocations: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.Devices.Perception.Provider.PerceptionCorrelation]) -> win32more.Windows.Devices.Perception.Provider.PerceptionCorrelationGroup: ...
     @winrt_mixinmethod
@@ -268,6 +277,13 @@ class PerceptionFaceAuthenticationGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionFaceAuthenticationGroup
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionFaceAuthenticationGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionFaceAuthenticationGroup.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Perception.Provider.IPerceptionFaceAuthenticationGroupFactory, ids: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], startHandler: win32more.Windows.Devices.Perception.Provider.PerceptionStartFaceAuthenticationHandler, stopHandler: win32more.Windows.Devices.Perception.Provider.PerceptionStopFaceAuthenticationHandler) -> win32more.Windows.Devices.Perception.Provider.PerceptionFaceAuthenticationGroup: ...
     @winrt_mixinmethod
@@ -285,13 +301,20 @@ class PerceptionFrame(ComPtr):
     def get_Properties(self: win32more.Windows.Devices.Perception.Provider.IPerceptionFrame) -> win32more.Windows.Foundation.Collections.ValueSet: ...
     @winrt_mixinmethod
     def get_FrameData(self: win32more.Windows.Devices.Perception.Provider.IPerceptionFrame) -> win32more.Windows.Foundation.IMemoryBuffer: ...
-    RelativeTime = property(get_RelativeTime, put_RelativeTime)
-    Properties = property(get_Properties, None)
     FrameData = property(get_FrameData, None)
+    Properties = property(get_Properties, None)
+    RelativeTime = property(get_RelativeTime, put_RelativeTime)
 class PerceptionFrameProviderInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionFrameProviderInfo
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionFrameProviderInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionFrameProviderInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.Perception.Provider.PerceptionFrameProviderInfo: ...
     @winrt_mixinmethod
@@ -314,11 +337,11 @@ class PerceptionFrameProviderInfo(ComPtr):
     def get_Hidden(self: win32more.Windows.Devices.Perception.Provider.IPerceptionFrameProviderInfo) -> Boolean: ...
     @winrt_mixinmethod
     def put_Hidden(self: win32more.Windows.Devices.Perception.Provider.IPerceptionFrameProviderInfo, value: Boolean) -> Void: ...
-    Id = property(get_Id, put_Id)
-    DisplayName = property(get_DisplayName, put_DisplayName)
     DeviceKind = property(get_DeviceKind, put_DeviceKind)
+    DisplayName = property(get_DisplayName, put_DisplayName)
     FrameKind = property(get_FrameKind, put_FrameKind)
     Hidden = property(get_Hidden, put_Hidden)
+    Id = property(get_Id, put_Id)
 class PerceptionFrameProviderManagerService(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionFrameProviderManagerService'
@@ -357,8 +380,8 @@ class PerceptionPropertyChangeRequest(ComPtr):
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Devices.Perception.Provider.IPerceptionPropertyChangeRequest) -> win32more.Windows.Foundation.Deferral: ...
     Name = property(get_Name, None)
-    Value = property(get_Value, None)
     Status = property(get_Status, put_Status)
+    Value = property(get_Value, None)
 class PerceptionStartFaceAuthenticationHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{74816d2a-2090-4670-8c48-ef39e7ff7c26}')
@@ -371,6 +394,13 @@ class PerceptionVideoFrameAllocator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Perception.Provider.IPerceptionVideoFrameAllocator
     _classid_ = 'Windows.Devices.Perception.Provider.PerceptionVideoFrameAllocator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 4:
+            return win32more.Windows.Devices.Perception.Provider.PerceptionVideoFrameAllocator.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Devices.Perception.Provider.IPerceptionVideoFrameAllocatorFactory, maxOutstandingFrameCountForWrite: UInt32, format: win32more.Windows.Graphics.Imaging.BitmapPixelFormat, resolution: win32more.Windows.Foundation.Size, alpha: win32more.Windows.Graphics.Imaging.BitmapAlphaMode) -> win32more.Windows.Devices.Perception.Provider.PerceptionVideoFrameAllocator: ...
     @winrt_mixinmethod
@@ -379,4 +409,6 @@ class PerceptionVideoFrameAllocator(ComPtr):
     def CopyFromVideoFrame(self: win32more.Windows.Devices.Perception.Provider.IPerceptionVideoFrameAllocator, frame: win32more.Windows.Media.VideoFrame) -> win32more.Windows.Devices.Perception.Provider.PerceptionFrame: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
+
+
 make_ready(__name__)

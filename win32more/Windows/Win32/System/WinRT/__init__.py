@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.Com
 import win32more.Windows.Win32.System.Com.Marshal
@@ -81,7 +81,7 @@ def WindowsInspectString(targetHString: UIntPtr, machine: UInt16, callback: win3
 @winfunctype('api-ms-win-core-winrt-string-l1-1-1.dll')
 def WindowsInspectString2(targetHString: UInt64, machine: UInt16, callback: win32more.Windows.Win32.System.WinRT.PINSPECT_HSTRING_CALLBACK2, context: VoidPtr, length: POINTER(UInt32), targetStringAddress: POINTER(UInt64)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('CoreMessaging.dll')
-def CreateDispatcherQueueController(options: win32more.Windows.Win32.System.WinRT.DispatcherQueueOptions, dispatcherQueueController: POINTER(MissingType)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+def CreateDispatcherQueueController(options: win32more.Windows.Win32.System.WinRT.DispatcherQueueOptions, dispatcherQueueController: POINTER(win32more.Windows.System.DispatcherQueueController)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('api-ms-win-core-winrt-l1-1-0.dll')
 def RoInitialize(initType: win32more.Windows.Win32.System.WinRT.RO_INIT_TYPE) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('api-ms-win-core-winrt-l1-1-0.dll')
@@ -258,6 +258,13 @@ class ICoreInputInterop(ComPtr):
     def SetInputSource(self, value: win32more.Windows.Win32.System.Com.IUnknown) -> win32more.Windows.Win32.Foundation.HRESULT: ...
     @commethod(4)
     def put_MessageHandled(self, value: Byte) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+class ICoreInputInterop2(ComPtr):
+    extends: win32more.Windows.Win32.System.WinRT.IInspectable
+    _iid_ = Guid('{b8a2acd7-a0f0-40ee-8ee7-c82f59cc5cd4}')
+    @commethod(6)
+    def get_WindowHandle(self, window: POINTER(win32more.Windows.Win32.Foundation.HWND)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+    @commethod(7)
+    def ChangeHostingContext(self, newParentWindow: win32more.Windows.Win32.Foundation.HWND, newViewInstanceId: UInt32) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 class ICoreWindowAdapterInterop(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _iid_ = Guid('{7a5b6fd1-cd73-4b6c-9cf4-2e869eaf470a}')
@@ -463,9 +470,9 @@ class ServerInformation(EasyCastStructure):
     dwServerTid: UInt32
     ui64ServerAddress: UInt64
 TrustLevel = Int32
-TrustLevel_BaseTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 0
-TrustLevel_PartialTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 1
-TrustLevel_FullTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 2
+BaseTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 0
+PartialTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 1
+FullTrust: win32more.Windows.Win32.System.WinRT.TrustLevel = 2
 
 
 make_ready(__name__)

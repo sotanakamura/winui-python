@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Gaming.Input
 import win32more.Windows.UI.Input.Preview.Injection
+import win32more.Windows.Win32.System.WinRT
 class IInjectedInputGamepadInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Input.Preview.Injection.IInjectedInputGamepadInfo'
@@ -106,10 +93,10 @@ class IInjectedInputMouseInfo(ComPtr):
     def get_TimeOffsetInMilliseconds(self) -> UInt32: ...
     @winrt_commethod(15)
     def put_TimeOffsetInMilliseconds(self, value: UInt32) -> Void: ...
-    MouseOptions = property(get_MouseOptions, put_MouseOptions)
-    MouseData = property(get_MouseData, put_MouseData)
-    DeltaY = property(get_DeltaY, put_DeltaY)
     DeltaX = property(get_DeltaX, put_DeltaX)
+    DeltaY = property(get_DeltaY, put_DeltaY)
+    MouseData = property(get_MouseData, put_MouseData)
+    MouseOptions = property(get_MouseOptions, put_MouseOptions)
     TimeOffsetInMilliseconds = property(get_TimeOffsetInMilliseconds, put_TimeOffsetInMilliseconds)
 class IInjectedInputPenInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -143,9 +130,9 @@ class IInjectedInputPenInfo(ComPtr):
     def get_TiltY(self) -> Int32: ...
     @winrt_commethod(19)
     def put_TiltY(self, value: Int32) -> Void: ...
-    PointerInfo = property(get_PointerInfo, put_PointerInfo)
     PenButtons = property(get_PenButtons, put_PenButtons)
     PenParameters = property(get_PenParameters, put_PenParameters)
+    PointerInfo = property(get_PointerInfo, put_PointerInfo)
     Pressure = property(get_Pressure, put_Pressure)
     Rotation = property(get_Rotation, put_Rotation)
     TiltX = property(get_TiltX, put_TiltX)
@@ -223,26 +210,35 @@ class IInputInjectorStatics2(ComPtr):
     _iid_ = Guid('{a4db38fb-dd8c-414f-95ea-f87ef4c0ae6c}')
     @winrt_commethod(6)
     def TryCreateForAppBroadcastOnly(self) -> win32more.Windows.UI.Input.Preview.Injection.InputInjector: ...
-InjectedInputButtonChangeKind = Int32
-InjectedInputButtonChangeKind_None: InjectedInputButtonChangeKind = 0
-InjectedInputButtonChangeKind_FirstButtonDown: InjectedInputButtonChangeKind = 1
-InjectedInputButtonChangeKind_FirstButtonUp: InjectedInputButtonChangeKind = 2
-InjectedInputButtonChangeKind_SecondButtonDown: InjectedInputButtonChangeKind = 3
-InjectedInputButtonChangeKind_SecondButtonUp: InjectedInputButtonChangeKind = 4
-InjectedInputButtonChangeKind_ThirdButtonDown: InjectedInputButtonChangeKind = 5
-InjectedInputButtonChangeKind_ThirdButtonUp: InjectedInputButtonChangeKind = 6
-InjectedInputButtonChangeKind_FourthButtonDown: InjectedInputButtonChangeKind = 7
-InjectedInputButtonChangeKind_FourthButtonUp: InjectedInputButtonChangeKind = 8
-InjectedInputButtonChangeKind_FifthButtonDown: InjectedInputButtonChangeKind = 9
-InjectedInputButtonChangeKind_FifthButtonUp: InjectedInputButtonChangeKind = 10
+class InjectedInputButtonChangeKind(Int32):  # enum
+    None_ = 0
+    FirstButtonDown = 1
+    FirstButtonUp = 2
+    SecondButtonDown = 3
+    SecondButtonUp = 4
+    ThirdButtonDown = 5
+    ThirdButtonUp = 6
+    FourthButtonDown = 7
+    FourthButtonUp = 8
+    FifthButtonDown = 9
+    FifthButtonUp = 10
 class InjectedInputGamepadInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputGamepadInfo
     _classid_ = 'Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo'
-    @winrt_factorymethod
-    def CreateInstance(cls: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputGamepadInfoFactory, reading: win32more.Windows.Gaming.Input.GamepadReading) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo.CreateInstanceFromGamepadReading(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo: ...
+    @winrt_factorymethod
+    def CreateInstanceFromGamepadReading(cls: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputGamepadInfoFactory, reading: win32more.Windows.Gaming.Input.GamepadReading) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputGamepadInfo: ...
     @winrt_mixinmethod
     def get_Buttons(self: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputGamepadInfo) -> win32more.Windows.Gaming.Input.GamepadButtons: ...
     @winrt_mixinmethod
@@ -278,16 +274,23 @@ class InjectedInputGamepadInfo(ComPtr):
     RightThumbstickX = property(get_RightThumbstickX, put_RightThumbstickX)
     RightThumbstickY = property(get_RightThumbstickY, put_RightThumbstickY)
     RightTrigger = property(get_RightTrigger, put_RightTrigger)
-InjectedInputKeyOptions = UInt32
-InjectedInputKeyOptions_None: InjectedInputKeyOptions = 0
-InjectedInputKeyOptions_ExtendedKey: InjectedInputKeyOptions = 1
-InjectedInputKeyOptions_KeyUp: InjectedInputKeyOptions = 2
-InjectedInputKeyOptions_ScanCode: InjectedInputKeyOptions = 8
-InjectedInputKeyOptions_Unicode: InjectedInputKeyOptions = 4
+class InjectedInputKeyOptions(UInt32):  # enum
+    None_ = 0
+    ExtendedKey = 1
+    KeyUp = 2
+    ScanCode = 8
+    Unicode = 4
 class InjectedInputKeyboardInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputKeyboardInfo
     _classid_ = 'Windows.UI.Input.Preview.Injection.InjectedInputKeyboardInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputKeyboardInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputKeyboardInfo: ...
     @winrt_mixinmethod
@@ -309,6 +312,13 @@ class InjectedInputMouseInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputMouseInfo
     _classid_ = 'Windows.UI.Input.Preview.Injection.InjectedInputMouseInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputMouseInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputMouseInfo: ...
     @winrt_mixinmethod
@@ -331,36 +341,43 @@ class InjectedInputMouseInfo(ComPtr):
     def get_TimeOffsetInMilliseconds(self: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputMouseInfo) -> UInt32: ...
     @winrt_mixinmethod
     def put_TimeOffsetInMilliseconds(self: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputMouseInfo, value: UInt32) -> Void: ...
-    MouseOptions = property(get_MouseOptions, put_MouseOptions)
-    MouseData = property(get_MouseData, put_MouseData)
-    DeltaY = property(get_DeltaY, put_DeltaY)
     DeltaX = property(get_DeltaX, put_DeltaX)
+    DeltaY = property(get_DeltaY, put_DeltaY)
+    MouseData = property(get_MouseData, put_MouseData)
+    MouseOptions = property(get_MouseOptions, put_MouseOptions)
     TimeOffsetInMilliseconds = property(get_TimeOffsetInMilliseconds, put_TimeOffsetInMilliseconds)
-InjectedInputMouseOptions = UInt32
-InjectedInputMouseOptions_None: InjectedInputMouseOptions = 0
-InjectedInputMouseOptions_Move: InjectedInputMouseOptions = 1
-InjectedInputMouseOptions_LeftDown: InjectedInputMouseOptions = 2
-InjectedInputMouseOptions_LeftUp: InjectedInputMouseOptions = 4
-InjectedInputMouseOptions_RightDown: InjectedInputMouseOptions = 8
-InjectedInputMouseOptions_RightUp: InjectedInputMouseOptions = 16
-InjectedInputMouseOptions_MiddleDown: InjectedInputMouseOptions = 32
-InjectedInputMouseOptions_MiddleUp: InjectedInputMouseOptions = 64
-InjectedInputMouseOptions_XDown: InjectedInputMouseOptions = 128
-InjectedInputMouseOptions_XUp: InjectedInputMouseOptions = 256
-InjectedInputMouseOptions_Wheel: InjectedInputMouseOptions = 2048
-InjectedInputMouseOptions_HWheel: InjectedInputMouseOptions = 4096
-InjectedInputMouseOptions_MoveNoCoalesce: InjectedInputMouseOptions = 8192
-InjectedInputMouseOptions_VirtualDesk: InjectedInputMouseOptions = 16384
-InjectedInputMouseOptions_Absolute: InjectedInputMouseOptions = 32768
-InjectedInputPenButtons = UInt32
-InjectedInputPenButtons_None: InjectedInputPenButtons = 0
-InjectedInputPenButtons_Barrel: InjectedInputPenButtons = 1
-InjectedInputPenButtons_Inverted: InjectedInputPenButtons = 2
-InjectedInputPenButtons_Eraser: InjectedInputPenButtons = 4
+class InjectedInputMouseOptions(UInt32):  # enum
+    None_ = 0
+    Move = 1
+    LeftDown = 2
+    LeftUp = 4
+    RightDown = 8
+    RightUp = 16
+    MiddleDown = 32
+    MiddleUp = 64
+    XDown = 128
+    XUp = 256
+    Wheel = 2048
+    HWheel = 4096
+    MoveNoCoalesce = 8192
+    VirtualDesk = 16384
+    Absolute = 32768
+class InjectedInputPenButtons(UInt32):  # enum
+    None_ = 0
+    Barrel = 1
+    Inverted = 2
+    Eraser = 4
 class InjectedInputPenInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputPenInfo
     _classid_ = 'Windows.UI.Input.Preview.Injection.InjectedInputPenInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputPenInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputPenInfo: ...
     @winrt_mixinmethod
@@ -391,19 +408,19 @@ class InjectedInputPenInfo(ComPtr):
     def get_TiltY(self: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputPenInfo) -> Int32: ...
     @winrt_mixinmethod
     def put_TiltY(self: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputPenInfo, value: Int32) -> Void: ...
-    PointerInfo = property(get_PointerInfo, put_PointerInfo)
     PenButtons = property(get_PenButtons, put_PenButtons)
     PenParameters = property(get_PenParameters, put_PenParameters)
+    PointerInfo = property(get_PointerInfo, put_PointerInfo)
     Pressure = property(get_Pressure, put_Pressure)
     Rotation = property(get_Rotation, put_Rotation)
     TiltX = property(get_TiltX, put_TiltX)
     TiltY = property(get_TiltY, put_TiltY)
-InjectedInputPenParameters = UInt32
-InjectedInputPenParameters_None: InjectedInputPenParameters = 0
-InjectedInputPenParameters_Pressure: InjectedInputPenParameters = 1
-InjectedInputPenParameters_Rotation: InjectedInputPenParameters = 2
-InjectedInputPenParameters_TiltX: InjectedInputPenParameters = 4
-InjectedInputPenParameters_TiltY: InjectedInputPenParameters = 8
+class InjectedInputPenParameters(UInt32):  # enum
+    None_ = 0
+    Pressure = 1
+    Rotation = 2
+    TiltX = 4
+    TiltY = 8
 class InjectedInputPoint(EasyCastStructure):
     PositionX: Int32
     PositionY: Int32
@@ -413,33 +430,40 @@ class InjectedInputPointerInfo(EasyCastStructure):
     PixelLocation: win32more.Windows.UI.Input.Preview.Injection.InjectedInputPoint
     TimeOffsetInMilliseconds: UInt32
     PerformanceCount: UInt64
-InjectedInputPointerOptions = UInt32
-InjectedInputPointerOptions_None: InjectedInputPointerOptions = 0
-InjectedInputPointerOptions_New: InjectedInputPointerOptions = 1
-InjectedInputPointerOptions_InRange: InjectedInputPointerOptions = 2
-InjectedInputPointerOptions_InContact: InjectedInputPointerOptions = 4
-InjectedInputPointerOptions_FirstButton: InjectedInputPointerOptions = 16
-InjectedInputPointerOptions_SecondButton: InjectedInputPointerOptions = 32
-InjectedInputPointerOptions_Primary: InjectedInputPointerOptions = 8192
-InjectedInputPointerOptions_Confidence: InjectedInputPointerOptions = 16384
-InjectedInputPointerOptions_Canceled: InjectedInputPointerOptions = 32768
-InjectedInputPointerOptions_PointerDown: InjectedInputPointerOptions = 65536
-InjectedInputPointerOptions_Update: InjectedInputPointerOptions = 131072
-InjectedInputPointerOptions_PointerUp: InjectedInputPointerOptions = 262144
-InjectedInputPointerOptions_CaptureChanged: InjectedInputPointerOptions = 2097152
+class InjectedInputPointerOptions(UInt32):  # enum
+    None_ = 0
+    New = 1
+    InRange = 2
+    InContact = 4
+    FirstButton = 16
+    SecondButton = 32
+    Primary = 8192
+    Confidence = 16384
+    Canceled = 32768
+    PointerDown = 65536
+    Update = 131072
+    PointerUp = 262144
+    CaptureChanged = 2097152
 class InjectedInputRectangle(EasyCastStructure):
     Left: Int32
     Top: Int32
     Bottom: Int32
     Right: Int32
-InjectedInputShortcut = Int32
-InjectedInputShortcut_Back: InjectedInputShortcut = 0
-InjectedInputShortcut_Start: InjectedInputShortcut = 1
-InjectedInputShortcut_Search: InjectedInputShortcut = 2
+class InjectedInputShortcut(Int32):  # enum
+    Back = 0
+    Start = 1
+    Search = 2
 class InjectedInputTouchInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInjectedInputTouchInfo
     _classid_ = 'Windows.UI.Input.Preview.Injection.InjectedInputTouchInfo'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Input.Preview.Injection.InjectedInputTouchInfo.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.UI.Input.Preview.Injection.InjectedInputTouchInfo: ...
     @winrt_mixinmethod
@@ -467,15 +491,15 @@ class InjectedInputTouchInfo(ComPtr):
     PointerInfo = property(get_PointerInfo, put_PointerInfo)
     Pressure = property(get_Pressure, put_Pressure)
     TouchParameters = property(get_TouchParameters, put_TouchParameters)
-InjectedInputTouchParameters = UInt32
-InjectedInputTouchParameters_None: InjectedInputTouchParameters = 0
-InjectedInputTouchParameters_Contact: InjectedInputTouchParameters = 1
-InjectedInputTouchParameters_Orientation: InjectedInputTouchParameters = 2
-InjectedInputTouchParameters_Pressure: InjectedInputTouchParameters = 4
-InjectedInputVisualizationMode = Int32
-InjectedInputVisualizationMode_None: InjectedInputVisualizationMode = 0
-InjectedInputVisualizationMode_Default: InjectedInputVisualizationMode = 1
-InjectedInputVisualizationMode_Indirect: InjectedInputVisualizationMode = 2
+class InjectedInputTouchParameters(UInt32):  # enum
+    None_ = 0
+    Contact = 1
+    Orientation = 2
+    Pressure = 4
+class InjectedInputVisualizationMode(Int32):  # enum
+    None_ = 0
+    Default = 1
+    Indirect = 2
 class InputInjector(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Input.Preview.Injection.IInputInjector
@@ -508,4 +532,6 @@ class InputInjector(ComPtr):
     def TryCreateForAppBroadcastOnly(cls: win32more.Windows.UI.Input.Preview.Injection.IInputInjectorStatics2) -> win32more.Windows.UI.Input.Preview.Injection.InputInjector: ...
     @winrt_classmethod
     def TryCreate(cls: win32more.Windows.UI.Input.Preview.Injection.IInputInjectorStatics) -> win32more.Windows.UI.Input.Preview.Injection.InputInjector: ...
+
+
 make_ready(__name__)

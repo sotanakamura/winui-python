@@ -1,30 +1,17 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.HumanInterfaceDevice
 import win32more.Windows.Devices.Input.Preview
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
-GazeDeviceConfigurationStatePreview = Int32
-GazeDeviceConfigurationStatePreview_Unknown: GazeDeviceConfigurationStatePreview = 0
-GazeDeviceConfigurationStatePreview_Ready: GazeDeviceConfigurationStatePreview = 1
-GazeDeviceConfigurationStatePreview_Configuring: GazeDeviceConfigurationStatePreview = 2
-GazeDeviceConfigurationStatePreview_ScreenSetupNeeded: GazeDeviceConfigurationStatePreview = 3
-GazeDeviceConfigurationStatePreview_UserCalibrationNeeded: GazeDeviceConfigurationStatePreview = 4
+import win32more.Windows.Win32.System.WinRT
+class GazeDeviceConfigurationStatePreview(Int32):  # enum
+    Unknown = 0
+    Ready = 1
+    Configuring = 2
+    ScreenSetupNeeded = 3
+    UserCalibrationNeeded = 4
 class GazeDevicePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Input.Preview.IGazeDevicePreview
@@ -43,10 +30,10 @@ class GazeDevicePreview(ComPtr):
     def GetNumericControlDescriptions(self: win32more.Windows.Devices.Input.Preview.IGazeDevicePreview, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription]: ...
     @winrt_mixinmethod
     def GetBooleanControlDescriptions(self: win32more.Windows.Devices.Input.Preview.IGazeDevicePreview, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidBooleanControlDescription]: ...
-    Id = property(get_Id, None)
     CanTrackEyes = property(get_CanTrackEyes, None)
     CanTrackHead = property(get_CanTrackHead, None)
     ConfigurationState = property(get_ConfigurationState, None)
+    Id = property(get_Id, None)
 class GazeDeviceWatcherAddedPreviewEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Input.Preview.IGazeDeviceWatcherAddedPreviewEventArgs
@@ -102,8 +89,8 @@ class GazeEnteredPreviewEventArgs(ComPtr):
     def put_Handled(self: win32more.Windows.Devices.Input.Preview.IGazeEnteredPreviewEventArgs, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_CurrentPoint(self: win32more.Windows.Devices.Input.Preview.IGazeEnteredPreviewEventArgs) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class GazeExitedPreviewEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Input.Preview.IGazeExitedPreviewEventArgs
@@ -114,8 +101,8 @@ class GazeExitedPreviewEventArgs(ComPtr):
     def put_Handled(self: win32more.Windows.Devices.Input.Preview.IGazeExitedPreviewEventArgs, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_CurrentPoint(self: win32more.Windows.Devices.Input.Preview.IGazeExitedPreviewEventArgs) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class GazeInputSourcePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Input.Preview.IGazeInputSourcePreview
@@ -148,8 +135,8 @@ class GazeMovedPreviewEventArgs(ComPtr):
     def get_CurrentPoint(self: win32more.Windows.Devices.Input.Preview.IGazeMovedPreviewEventArgs) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
     @winrt_mixinmethod
     def GetIntermediatePoints(self: win32more.Windows.Devices.Input.Preview.IGazeMovedPreviewEventArgs) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Devices.Input.Preview.GazePointPreview]: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class GazePointPreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Input.Preview.IGazePointPreview
@@ -164,11 +151,11 @@ class GazePointPreview(ComPtr):
     def get_Timestamp(self: win32more.Windows.Devices.Input.Preview.IGazePointPreview) -> UInt64: ...
     @winrt_mixinmethod
     def get_HidInputReport(self: win32more.Windows.Devices.Input.Preview.IGazePointPreview) -> win32more.Windows.Devices.HumanInterfaceDevice.HidInputReport: ...
-    SourceDevice = property(get_SourceDevice, None)
     EyeGazePosition = property(get_EyeGazePosition, None)
     HeadGazePosition = property(get_HeadGazePosition, None)
-    Timestamp = property(get_Timestamp, None)
     HidInputReport = property(get_HidInputReport, None)
+    SourceDevice = property(get_SourceDevice, None)
+    Timestamp = property(get_Timestamp, None)
 class IGazeDevicePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Input.Preview.IGazeDevicePreview'
@@ -187,10 +174,10 @@ class IGazeDevicePreview(ComPtr):
     def GetNumericControlDescriptions(self, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidNumericControlDescription]: ...
     @winrt_commethod(12)
     def GetBooleanControlDescriptions(self, usagePage: UInt16, usageId: UInt16) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.HumanInterfaceDevice.HidBooleanControlDescription]: ...
-    Id = property(get_Id, None)
     CanTrackEyes = property(get_CanTrackEyes, None)
     CanTrackHead = property(get_CanTrackHead, None)
     ConfigurationState = property(get_ConfigurationState, None)
+    Id = property(get_Id, None)
 class IGazeDeviceWatcherAddedPreviewEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Input.Preview.IGazeDeviceWatcherAddedPreviewEventArgs'
@@ -246,8 +233,8 @@ class IGazeEnteredPreviewEventArgs(ComPtr):
     def put_Handled(self, value: Boolean) -> Void: ...
     @winrt_commethod(8)
     def get_CurrentPoint(self) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class IGazeExitedPreviewEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Input.Preview.IGazeExitedPreviewEventArgs'
@@ -258,8 +245,8 @@ class IGazeExitedPreviewEventArgs(ComPtr):
     def put_Handled(self, value: Boolean) -> Void: ...
     @winrt_commethod(8)
     def get_CurrentPoint(self) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class IGazeInputSourcePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Input.Preview.IGazeInputSourcePreview'
@@ -296,8 +283,8 @@ class IGazeMovedPreviewEventArgs(ComPtr):
     def get_CurrentPoint(self) -> win32more.Windows.Devices.Input.Preview.GazePointPreview: ...
     @winrt_commethod(9)
     def GetIntermediatePoints(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Devices.Input.Preview.GazePointPreview]: ...
-    Handled = property(get_Handled, put_Handled)
     CurrentPoint = property(get_CurrentPoint, None)
+    Handled = property(get_Handled, put_Handled)
 class IGazePointPreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Input.Preview.IGazePointPreview'
@@ -312,9 +299,11 @@ class IGazePointPreview(ComPtr):
     def get_Timestamp(self) -> UInt64: ...
     @winrt_commethod(10)
     def get_HidInputReport(self) -> win32more.Windows.Devices.HumanInterfaceDevice.HidInputReport: ...
-    SourceDevice = property(get_SourceDevice, None)
     EyeGazePosition = property(get_EyeGazePosition, None)
     HeadGazePosition = property(get_HeadGazePosition, None)
-    Timestamp = property(get_Timestamp, None)
     HidInputReport = property(get_HidInputReport, None)
+    SourceDevice = property(get_SourceDevice, None)
+    Timestamp = property(get_Timestamp, None)
+
+
 make_ready(__name__)

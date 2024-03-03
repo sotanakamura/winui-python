@@ -1,23 +1,10 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.Haptics
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.WinRT
 class IKnownSimpleHapticsControllerWaveformsStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Haptics.IKnownSimpleHapticsControllerWaveformsStatics'
@@ -32,11 +19,11 @@ class IKnownSimpleHapticsControllerWaveformsStatics(ComPtr):
     def get_Press(self) -> UInt16: ...
     @winrt_commethod(10)
     def get_Release(self) -> UInt16: ...
-    Click = property(get_Click, None)
     BuzzContinuous = property(get_BuzzContinuous, None)
-    RumbleContinuous = property(get_RumbleContinuous, None)
+    Click = property(get_Click, None)
     Press = property(get_Press, None)
     Release = property(get_Release, None)
+    RumbleContinuous = property(get_RumbleContinuous, None)
 class IKnownSimpleHapticsControllerWaveformsStatics2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Haptics.IKnownSimpleHapticsControllerWaveformsStatics2'
@@ -98,11 +85,11 @@ class ISimpleHapticsController(ComPtr):
     @winrt_commethod(16)
     def SendHapticFeedbackForPlayCount(self, feedback: win32more.Windows.Devices.Haptics.SimpleHapticsControllerFeedback, intensity: Double, playCount: Int32, replayPauseInterval: win32more.Windows.Foundation.TimeSpan) -> Void: ...
     Id = property(get_Id, None)
-    SupportedFeedback = property(get_SupportedFeedback, None)
     IsIntensitySupported = property(get_IsIntensitySupported, None)
     IsPlayCountSupported = property(get_IsPlayCountSupported, None)
     IsPlayDurationSupported = property(get_IsPlayDurationSupported, None)
     IsReplayPauseIntervalSupported = property(get_IsReplayPauseIntervalSupported, None)
+    SupportedFeedback = property(get_SupportedFeedback, None)
 class ISimpleHapticsControllerFeedback(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Haptics.ISimpleHapticsControllerFeedback'
@@ -111,8 +98,8 @@ class ISimpleHapticsControllerFeedback(ComPtr):
     def get_Waveform(self) -> UInt16: ...
     @winrt_commethod(7)
     def get_Duration(self) -> win32more.Windows.Foundation.TimeSpan: ...
-    Waveform = property(get_Waveform, None)
     Duration = property(get_Duration, None)
+    Waveform = property(get_Waveform, None)
 class IVibrationDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.Haptics.IVibrationDevice'
@@ -173,7 +160,9 @@ class KnownSimpleHapticsControllerWaveforms(ComPtr, metaclass=_KnownSimpleHaptic
     @winrt_classmethod
     def get_Release(cls: win32more.Windows.Devices.Haptics.IKnownSimpleHapticsControllerWaveformsStatics) -> UInt16: ...
     _KnownSimpleHapticsControllerWaveforms_Meta_.BrushContinuous = property(get_BrushContinuous.__wrapped__, None)
+    _KnownSimpleHapticsControllerWaveforms_Meta_.BuzzContinuous = property(get_BuzzContinuous.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.ChiselMarkerContinuous = property(get_ChiselMarkerContinuous.__wrapped__, None)
+    _KnownSimpleHapticsControllerWaveforms_Meta_.Click = property(get_Click.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.EraserContinuous = property(get_EraserContinuous.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.Error = property(get_Error.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.GalaxyPenContinuous = property(get_GalaxyPenContinuous.__wrapped__, None)
@@ -181,12 +170,10 @@ class KnownSimpleHapticsControllerWaveforms(ComPtr, metaclass=_KnownSimpleHaptic
     _KnownSimpleHapticsControllerWaveforms_Meta_.InkContinuous = property(get_InkContinuous.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.MarkerContinuous = property(get_MarkerContinuous.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.PencilContinuous = property(get_PencilContinuous.__wrapped__, None)
-    _KnownSimpleHapticsControllerWaveforms_Meta_.Success = property(get_Success.__wrapped__, None)
-    _KnownSimpleHapticsControllerWaveforms_Meta_.Click = property(get_Click.__wrapped__, None)
-    _KnownSimpleHapticsControllerWaveforms_Meta_.BuzzContinuous = property(get_BuzzContinuous.__wrapped__, None)
-    _KnownSimpleHapticsControllerWaveforms_Meta_.RumbleContinuous = property(get_RumbleContinuous.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.Press = property(get_Press.__wrapped__, None)
     _KnownSimpleHapticsControllerWaveforms_Meta_.Release = property(get_Release.__wrapped__, None)
+    _KnownSimpleHapticsControllerWaveforms_Meta_.RumbleContinuous = property(get_RumbleContinuous.__wrapped__, None)
+    _KnownSimpleHapticsControllerWaveforms_Meta_.Success = property(get_Success.__wrapped__, None)
 class SimpleHapticsController(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Haptics.ISimpleHapticsController
@@ -214,11 +201,11 @@ class SimpleHapticsController(ComPtr):
     @winrt_mixinmethod
     def SendHapticFeedbackForPlayCount(self: win32more.Windows.Devices.Haptics.ISimpleHapticsController, feedback: win32more.Windows.Devices.Haptics.SimpleHapticsControllerFeedback, intensity: Double, playCount: Int32, replayPauseInterval: win32more.Windows.Foundation.TimeSpan) -> Void: ...
     Id = property(get_Id, None)
-    SupportedFeedback = property(get_SupportedFeedback, None)
     IsIntensitySupported = property(get_IsIntensitySupported, None)
     IsPlayCountSupported = property(get_IsPlayCountSupported, None)
     IsPlayDurationSupported = property(get_IsPlayDurationSupported, None)
     IsReplayPauseIntervalSupported = property(get_IsReplayPauseIntervalSupported, None)
+    SupportedFeedback = property(get_SupportedFeedback, None)
 class SimpleHapticsControllerFeedback(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Haptics.ISimpleHapticsControllerFeedback
@@ -227,13 +214,13 @@ class SimpleHapticsControllerFeedback(ComPtr):
     def get_Waveform(self: win32more.Windows.Devices.Haptics.ISimpleHapticsControllerFeedback) -> UInt16: ...
     @winrt_mixinmethod
     def get_Duration(self: win32more.Windows.Devices.Haptics.ISimpleHapticsControllerFeedback) -> win32more.Windows.Foundation.TimeSpan: ...
-    Waveform = property(get_Waveform, None)
     Duration = property(get_Duration, None)
-VibrationAccessStatus = Int32
-VibrationAccessStatus_Allowed: VibrationAccessStatus = 0
-VibrationAccessStatus_DeniedByUser: VibrationAccessStatus = 1
-VibrationAccessStatus_DeniedBySystem: VibrationAccessStatus = 2
-VibrationAccessStatus_DeniedByEnergySaver: VibrationAccessStatus = 3
+    Waveform = property(get_Waveform, None)
+class VibrationAccessStatus(Int32):  # enum
+    Allowed = 0
+    DeniedByUser = 1
+    DeniedBySystem = 2
+    DeniedByEnergySaver = 3
 class VibrationDevice(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.Haptics.IVibrationDevice
@@ -254,4 +241,6 @@ class VibrationDevice(ComPtr):
     def FindAllAsync(cls: win32more.Windows.Devices.Haptics.IVibrationDeviceStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Devices.Haptics.VibrationDevice]]: ...
     Id = property(get_Id, None)
     SimpleHapticsController = property(get_SimpleHapticsController, None)
+
+
 make_ready(__name__)

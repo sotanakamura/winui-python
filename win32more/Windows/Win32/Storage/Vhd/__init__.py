@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security
 import win32more.Windows.Win32.Storage.Vhd
@@ -30,6 +30,7 @@ ATTACH_VIRTUAL_DISK_FLAG_NON_PNP: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIR
 ATTACH_VIRTUAL_DISK_FLAG_RESTRICTED_RANGE: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIRTUAL_DISK_FLAG = 128
 ATTACH_VIRTUAL_DISK_FLAG_SINGLE_PARTITION: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIRTUAL_DISK_FLAG = 256
 ATTACH_VIRTUAL_DISK_FLAG_REGISTER_VOLUME: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIRTUAL_DISK_FLAG = 512
+ATTACH_VIRTUAL_DISK_FLAG_AT_BOOT: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIRTUAL_DISK_FLAG = 1024
 class ATTACH_VIRTUAL_DISK_PARAMETERS(EasyCastStructure):
     Version: win32more.Windows.Win32.Storage.Vhd.ATTACH_VIRTUAL_DISK_VERSION
     Anonymous: _Anonymous_e__Union

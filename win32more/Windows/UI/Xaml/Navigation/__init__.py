@@ -1,29 +1,24 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.UI.Xaml
 import win32more.Windows.UI.Xaml.Interop
 import win32more.Windows.UI.Xaml.Media.Animation
 import win32more.Windows.UI.Xaml.Navigation
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class FrameNavigationOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Navigation.IFrameNavigationOptions
     _classid_ = 'Windows.UI.Xaml.Navigation.FrameNavigationOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.UI.Xaml.Navigation.FrameNavigationOptions.CreateInstance(*args, None, None)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Navigation.IFrameNavigationOptionsFactory, baseInterface: win32more.Windows.Win32.System.WinRT.IInspectable, innerInterface: POINTER(win32more.Windows.Win32.System.WinRT.IInspectable)) -> win32more.Windows.UI.Xaml.Navigation.FrameNavigationOptions: ...
     @winrt_mixinmethod
@@ -79,8 +74,8 @@ class INavigatingCancelEventArgs2(ComPtr):
     def get_Parameter(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_commethod(7)
     def get_NavigationTransitionInfo(self) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
-    Parameter = property(get_Parameter, None)
     NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
+    Parameter = property(get_Parameter, None)
 class INavigationEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Navigation.INavigationEventArgs'
@@ -98,9 +93,9 @@ class INavigationEventArgs(ComPtr):
     @winrt_commethod(11)
     def put_Uri(self, value: win32more.Windows.Foundation.Uri) -> Void: ...
     Content = property(get_Content, None)
+    NavigationMode = property(get_NavigationMode, None)
     Parameter = property(get_Parameter, None)
     SourcePageType = property(get_SourcePageType, None)
-    NavigationMode = property(get_NavigationMode, None)
     Uri = property(get_Uri, put_Uri)
 class INavigationEventArgs2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -134,9 +129,9 @@ class IPageStackEntry(ComPtr):
     def get_Parameter(self) -> win32more.Windows.Win32.System.WinRT.IInspectable: ...
     @winrt_commethod(8)
     def get_NavigationTransitionInfo(self) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
-    SourcePageType = property(get_SourcePageType, None)
-    Parameter = property(get_Parameter, None)
     NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
+    Parameter = property(get_Parameter, None)
+    SourcePageType = property(get_SourcePageType, None)
 class IPageStackEntryFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.UI.Xaml.Navigation.IPageStackEntryFactory'
@@ -176,17 +171,17 @@ class NavigatingCancelEventArgs(ComPtr):
     def get_NavigationTransitionInfo(self: win32more.Windows.UI.Xaml.Navigation.INavigatingCancelEventArgs2) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
     Cancel = property(get_Cancel, put_Cancel)
     NavigationMode = property(get_NavigationMode, None)
-    SourcePageType = property(get_SourcePageType, None)
-    Parameter = property(get_Parameter, None)
     NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
+    Parameter = property(get_Parameter, None)
+    SourcePageType = property(get_SourcePageType, None)
 class NavigatingCancelEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{75d6a78f-a302-4489-9898-24ea49182910}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Navigation.NavigatingCancelEventArgs) -> Void: ...
-NavigationCacheMode = Int32
-NavigationCacheMode_Disabled: NavigationCacheMode = 0
-NavigationCacheMode_Required: NavigationCacheMode = 1
-NavigationCacheMode_Enabled: NavigationCacheMode = 2
+class NavigationCacheMode(Int32):  # enum
+    Disabled = 0
+    Required = 1
+    Enabled = 2
 class NavigationEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Navigation.INavigationEventArgs
@@ -206,11 +201,11 @@ class NavigationEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_NavigationTransitionInfo(self: win32more.Windows.UI.Xaml.Navigation.INavigationEventArgs2) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
     Content = property(get_Content, None)
+    NavigationMode = property(get_NavigationMode, None)
+    NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
     Parameter = property(get_Parameter, None)
     SourcePageType = property(get_SourcePageType, None)
-    NavigationMode = property(get_NavigationMode, None)
     Uri = property(get_Uri, put_Uri)
-    NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
 class NavigationFailedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.UI.Xaml.Navigation.INavigationFailedEventArgs
@@ -230,11 +225,11 @@ class NavigationFailedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{4dab4671-12b2-43c7-b892-9be2dcd3e88d}')
     def Invoke(self, sender: win32more.Windows.Win32.System.WinRT.IInspectable, e: win32more.Windows.UI.Xaml.Navigation.NavigationFailedEventArgs) -> Void: ...
-NavigationMode = Int32
-NavigationMode_New: NavigationMode = 0
-NavigationMode_Back: NavigationMode = 1
-NavigationMode_Forward: NavigationMode = 2
-NavigationMode_Refresh: NavigationMode = 3
+class NavigationMode(Int32):  # enum
+    New = 0
+    Back = 1
+    Forward = 2
+    Refresh = 3
 class NavigationStoppedEventHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{f0117ddb-12fa-4d8d-8b26-b383d09c2b3c}')
@@ -245,6 +240,13 @@ class PageStackEntry(ComPtr, metaclass=_PageStackEntry_Meta_):
     extends: win32more.Windows.UI.Xaml.DependencyObject
     default_interface: win32more.Windows.UI.Xaml.Navigation.IPageStackEntry
     _classid_ = 'Windows.UI.Xaml.Navigation.PageStackEntry'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 3:
+            return win32more.Windows.UI.Xaml.Navigation.PageStackEntry.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Windows.UI.Xaml.Navigation.IPageStackEntryFactory, sourcePageType: win32more.Windows.UI.Xaml.Interop.TypeName, parameter: win32more.Windows.Win32.System.WinRT.IInspectable, navigationTransitionInfo: win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo) -> win32more.Windows.UI.Xaml.Navigation.PageStackEntry: ...
     @winrt_mixinmethod
@@ -255,8 +257,10 @@ class PageStackEntry(ComPtr, metaclass=_PageStackEntry_Meta_):
     def get_NavigationTransitionInfo(self: win32more.Windows.UI.Xaml.Navigation.IPageStackEntry) -> win32more.Windows.UI.Xaml.Media.Animation.NavigationTransitionInfo: ...
     @winrt_classmethod
     def get_SourcePageTypeProperty(cls: win32more.Windows.UI.Xaml.Navigation.IPageStackEntryStatics) -> win32more.Windows.UI.Xaml.DependencyProperty: ...
-    SourcePageType = property(get_SourcePageType, None)
-    Parameter = property(get_Parameter, None)
     NavigationTransitionInfo = property(get_NavigationTransitionInfo, None)
+    Parameter = property(get_Parameter, None)
+    SourcePageType = property(get_SourcePageType, None)
     _PageStackEntry_Meta_.SourcePageTypeProperty = property(get_SourcePageTypeProperty.__wrapped__, None)
+
+
 make_ready(__name__)

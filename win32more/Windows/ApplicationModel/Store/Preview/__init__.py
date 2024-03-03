@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Store.Preview
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
@@ -23,16 +9,17 @@ import win32more.Windows.Security.Credentials
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
 import win32more.Windows.UI.Xaml
-DeliveryOptimizationDownloadMode = Int32
-DeliveryOptimizationDownloadMode_Simple: DeliveryOptimizationDownloadMode = 0
-DeliveryOptimizationDownloadMode_HttpOnly: DeliveryOptimizationDownloadMode = 1
-DeliveryOptimizationDownloadMode_Lan: DeliveryOptimizationDownloadMode = 2
-DeliveryOptimizationDownloadMode_Group: DeliveryOptimizationDownloadMode = 3
-DeliveryOptimizationDownloadMode_Internet: DeliveryOptimizationDownloadMode = 4
-DeliveryOptimizationDownloadMode_Bypass: DeliveryOptimizationDownloadMode = 5
-DeliveryOptimizationDownloadModeSource = Int32
-DeliveryOptimizationDownloadModeSource_Default: DeliveryOptimizationDownloadModeSource = 0
-DeliveryOptimizationDownloadModeSource_Policy: DeliveryOptimizationDownloadModeSource = 1
+import win32more.Windows.Win32.System.WinRT
+class DeliveryOptimizationDownloadMode(Int32):  # enum
+    Simple = 0
+    HttpOnly = 1
+    Lan = 2
+    Group = 3
+    Internet = 4
+    Bypass = 5
+class DeliveryOptimizationDownloadModeSource(Int32):  # enum
+    Default = 0
+    Policy = 1
 class DeliveryOptimizationSettings(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.IDeliveryOptimizationSettings
@@ -152,9 +139,9 @@ class IStoreHardwareManufacturerInfo(ComPtr):
     @winrt_commethod(9)
     def get_ManufacturerName(self) -> WinRT_String: ...
     HardwareManufacturerId = property(get_HardwareManufacturerId, None)
-    StoreContentModifierId = property(get_StoreContentModifierId, None)
-    ModelName = property(get_ModelName, None)
     ManufacturerName = property(get_ManufacturerName, None)
+    ModelName = property(get_ModelName, None)
+    StoreContentModifierId = property(get_StoreContentModifierId, None)
 class IStorePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.IStorePreview'
@@ -177,11 +164,11 @@ class IStorePreviewProductInfo(ComPtr):
     def get_Description(self) -> WinRT_String: ...
     @winrt_commethod(10)
     def get_SkuInfoList(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Store.Preview.StorePreviewSkuInfo]: ...
+    Description = property(get_Description, None)
     ProductId = property(get_ProductId, None)
     ProductType = property(get_ProductType, None)
-    Title = property(get_Title, None)
-    Description = property(get_Description, None)
     SkuInfoList = property(get_SkuInfoList, None)
+    Title = property(get_Title, None)
 class IStorePreviewPurchaseResults(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.IStorePreviewPurchaseResults'
@@ -211,15 +198,15 @@ class IStorePreviewSkuInfo(ComPtr):
     def get_FormattedListPrice(self) -> WinRT_String: ...
     @winrt_commethod(14)
     def get_ExtendedData(self) -> WinRT_String: ...
+    CurrencyCode = property(get_CurrencyCode, None)
+    CustomDeveloperData = property(get_CustomDeveloperData, None)
+    Description = property(get_Description, None)
+    ExtendedData = property(get_ExtendedData, None)
+    FormattedListPrice = property(get_FormattedListPrice, None)
     ProductId = property(get_ProductId, None)
     SkuId = property(get_SkuId, None)
     SkuType = property(get_SkuType, None)
     Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    CustomDeveloperData = property(get_CustomDeveloperData, None)
-    CurrencyCode = property(get_CurrencyCode, None)
-    FormattedListPrice = property(get_FormattedListPrice, None)
-    ExtendedData = property(get_ExtendedData, None)
 class IWebAuthenticationCoreManagerHelper(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.IWebAuthenticationCoreManagerHelper'
@@ -289,8 +276,8 @@ class StoreConfiguration(ComPtr, metaclass=_StoreConfiguration_Meta_):
     def get_HardwareManufacturerInfo(cls: win32more.Windows.ApplicationModel.Store.Preview.IStoreConfigurationStatics) -> win32more.Windows.ApplicationModel.Store.Preview.StoreHardwareManufacturerInfo: ...
     @winrt_classmethod
     def FilterUnsupportedSystemFeaturesAsync(cls: win32more.Windows.ApplicationModel.Store.Preview.IStoreConfigurationStatics, systemFeatures: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Store.Preview.StoreSystemFeature]) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Store.Preview.StoreSystemFeature]]: ...
-    _StoreConfiguration_Meta_.PurchasePromptingPolicy = property(get_PurchasePromptingPolicy.__wrapped__, put_PurchasePromptingPolicy.__wrapped__)
     _StoreConfiguration_Meta_.HardwareManufacturerInfo = property(get_HardwareManufacturerInfo.__wrapped__, None)
+    _StoreConfiguration_Meta_.PurchasePromptingPolicy = property(get_PurchasePromptingPolicy.__wrapped__, put_PurchasePromptingPolicy.__wrapped__)
 class StoreHardwareManufacturerInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.IStoreHardwareManufacturerInfo
@@ -304,12 +291,12 @@ class StoreHardwareManufacturerInfo(ComPtr):
     @winrt_mixinmethod
     def get_ManufacturerName(self: win32more.Windows.ApplicationModel.Store.Preview.IStoreHardwareManufacturerInfo) -> WinRT_String: ...
     HardwareManufacturerId = property(get_HardwareManufacturerId, None)
-    StoreContentModifierId = property(get_StoreContentModifierId, None)
-    ModelName = property(get_ModelName, None)
     ManufacturerName = property(get_ManufacturerName, None)
-StoreLogOptions = UInt32
-StoreLogOptions_None: StoreLogOptions = 0
-StoreLogOptions_TryElevate: StoreLogOptions = 1
+    ModelName = property(get_ModelName, None)
+    StoreContentModifierId = property(get_StoreContentModifierId, None)
+class StoreLogOptions(UInt32):  # enum
+    None_ = 0
+    TryElevate = 1
 class StorePreview(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.StorePreview'
@@ -331,16 +318,16 @@ class StorePreviewProductInfo(ComPtr):
     def get_Description(self: win32more.Windows.ApplicationModel.Store.Preview.IStorePreviewProductInfo) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_SkuInfoList(self: win32more.Windows.ApplicationModel.Store.Preview.IStorePreviewProductInfo) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Store.Preview.StorePreviewSkuInfo]: ...
+    Description = property(get_Description, None)
     ProductId = property(get_ProductId, None)
     ProductType = property(get_ProductType, None)
-    Title = property(get_Title, None)
-    Description = property(get_Description, None)
     SkuInfoList = property(get_SkuInfoList, None)
-StorePreviewProductPurchaseStatus = Int32
-StorePreviewProductPurchaseStatus_Succeeded: StorePreviewProductPurchaseStatus = 0
-StorePreviewProductPurchaseStatus_AlreadyPurchased: StorePreviewProductPurchaseStatus = 1
-StorePreviewProductPurchaseStatus_NotFulfilled: StorePreviewProductPurchaseStatus = 2
-StorePreviewProductPurchaseStatus_NotPurchased: StorePreviewProductPurchaseStatus = 3
+    Title = property(get_Title, None)
+class StorePreviewProductPurchaseStatus(Int32):  # enum
+    Succeeded = 0
+    AlreadyPurchased = 1
+    NotFulfilled = 2
+    NotPurchased = 3
 class StorePreviewPurchaseResults(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Store.Preview.IStorePreviewPurchaseResults
@@ -370,51 +357,51 @@ class StorePreviewSkuInfo(ComPtr):
     def get_FormattedListPrice(self: win32more.Windows.ApplicationModel.Store.Preview.IStorePreviewSkuInfo) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_ExtendedData(self: win32more.Windows.ApplicationModel.Store.Preview.IStorePreviewSkuInfo) -> WinRT_String: ...
+    CurrencyCode = property(get_CurrencyCode, None)
+    CustomDeveloperData = property(get_CustomDeveloperData, None)
+    Description = property(get_Description, None)
+    ExtendedData = property(get_ExtendedData, None)
+    FormattedListPrice = property(get_FormattedListPrice, None)
     ProductId = property(get_ProductId, None)
     SkuId = property(get_SkuId, None)
     SkuType = property(get_SkuType, None)
     Title = property(get_Title, None)
-    Description = property(get_Description, None)
-    CustomDeveloperData = property(get_CustomDeveloperData, None)
-    CurrencyCode = property(get_CurrencyCode, None)
-    FormattedListPrice = property(get_FormattedListPrice, None)
-    ExtendedData = property(get_ExtendedData, None)
-StoreSystemFeature = Int32
-StoreSystemFeature_ArchitectureX86: StoreSystemFeature = 0
-StoreSystemFeature_ArchitectureX64: StoreSystemFeature = 1
-StoreSystemFeature_ArchitectureArm: StoreSystemFeature = 2
-StoreSystemFeature_DirectX9: StoreSystemFeature = 3
-StoreSystemFeature_DirectX10: StoreSystemFeature = 4
-StoreSystemFeature_DirectX11: StoreSystemFeature = 5
-StoreSystemFeature_D3D12HardwareFL11: StoreSystemFeature = 6
-StoreSystemFeature_D3D12HardwareFL12: StoreSystemFeature = 7
-StoreSystemFeature_Memory300MB: StoreSystemFeature = 8
-StoreSystemFeature_Memory750MB: StoreSystemFeature = 9
-StoreSystemFeature_Memory1GB: StoreSystemFeature = 10
-StoreSystemFeature_Memory2GB: StoreSystemFeature = 11
-StoreSystemFeature_CameraFront: StoreSystemFeature = 12
-StoreSystemFeature_CameraRear: StoreSystemFeature = 13
-StoreSystemFeature_Gyroscope: StoreSystemFeature = 14
-StoreSystemFeature_Hover: StoreSystemFeature = 15
-StoreSystemFeature_Magnetometer: StoreSystemFeature = 16
-StoreSystemFeature_Nfc: StoreSystemFeature = 17
-StoreSystemFeature_Resolution720P: StoreSystemFeature = 18
-StoreSystemFeature_ResolutionWvga: StoreSystemFeature = 19
-StoreSystemFeature_ResolutionWvgaOr720P: StoreSystemFeature = 20
-StoreSystemFeature_ResolutionWxga: StoreSystemFeature = 21
-StoreSystemFeature_ResolutionWvgaOrWxga: StoreSystemFeature = 22
-StoreSystemFeature_ResolutionWxgaOr720P: StoreSystemFeature = 23
-StoreSystemFeature_Memory4GB: StoreSystemFeature = 24
-StoreSystemFeature_Memory6GB: StoreSystemFeature = 25
-StoreSystemFeature_Memory8GB: StoreSystemFeature = 26
-StoreSystemFeature_Memory12GB: StoreSystemFeature = 27
-StoreSystemFeature_Memory16GB: StoreSystemFeature = 28
-StoreSystemFeature_Memory20GB: StoreSystemFeature = 29
-StoreSystemFeature_VideoMemory2GB: StoreSystemFeature = 30
-StoreSystemFeature_VideoMemory4GB: StoreSystemFeature = 31
-StoreSystemFeature_VideoMemory6GB: StoreSystemFeature = 32
-StoreSystemFeature_VideoMemory1GB: StoreSystemFeature = 33
-StoreSystemFeature_ArchitectureArm64: StoreSystemFeature = 34
+class StoreSystemFeature(Int32):  # enum
+    ArchitectureX86 = 0
+    ArchitectureX64 = 1
+    ArchitectureArm = 2
+    DirectX9 = 3
+    DirectX10 = 4
+    DirectX11 = 5
+    D3D12HardwareFL11 = 6
+    D3D12HardwareFL12 = 7
+    Memory300MB = 8
+    Memory750MB = 9
+    Memory1GB = 10
+    Memory2GB = 11
+    CameraFront = 12
+    CameraRear = 13
+    Gyroscope = 14
+    Hover = 15
+    Magnetometer = 16
+    Nfc = 17
+    Resolution720P = 18
+    ResolutionWvga = 19
+    ResolutionWvgaOr720P = 20
+    ResolutionWxga = 21
+    ResolutionWvgaOrWxga = 22
+    ResolutionWxgaOr720P = 23
+    Memory4GB = 24
+    Memory6GB = 25
+    Memory8GB = 26
+    Memory12GB = 27
+    Memory16GB = 28
+    Memory20GB = 29
+    VideoMemory2GB = 30
+    VideoMemory4GB = 31
+    VideoMemory6GB = 32
+    VideoMemory1GB = 33
+    ArchitectureArm64 = 34
 class WebAuthenticationCoreManagerHelper(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Store.Preview.WebAuthenticationCoreManagerHelper'
@@ -422,4 +409,6 @@ class WebAuthenticationCoreManagerHelper(ComPtr):
     def RequestTokenWithUIElementHostingAsync(cls: win32more.Windows.ApplicationModel.Store.Preview.IWebAuthenticationCoreManagerHelper, request: win32more.Windows.Security.Authentication.Web.Core.WebTokenRequest, uiElement: win32more.Windows.UI.Xaml.UIElement) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Authentication.Web.Core.WebTokenRequestResult]: ...
     @winrt_classmethod
     def RequestTokenWithUIElementHostingAndWebAccountAsync(cls: win32more.Windows.ApplicationModel.Store.Preview.IWebAuthenticationCoreManagerHelper, request: win32more.Windows.Security.Authentication.Web.Core.WebTokenRequest, webAccount: win32more.Windows.Security.Credentials.WebAccount, uiElement: win32more.Windows.UI.Xaml.UIElement) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Security.Authentication.Web.Core.WebTokenRequestResult]: ...
+
+
 make_ready(__name__)

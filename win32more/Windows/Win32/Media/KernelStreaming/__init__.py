@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Devices.Properties
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Media
@@ -255,12 +255,9 @@ KSDSOUND_BUFFER_CTRL_FREQUENCY: UInt32 = 2
 KSDSOUND_BUFFER_CTRL_PAN: UInt32 = 4
 KSDSOUND_BUFFER_CTRL_VOLUME: UInt32 = 8
 KSDSOUND_BUFFER_CTRL_POSITIONNOTIFY: UInt32 = 16
-def DEVPKEY_KsAudio_PacketSize_Constraints():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{13e004d6-b066-43bd-913b-a415cd13da87}'), pid=2)
-def DEVPKEY_KsAudio_Controller_DeviceInterface_Path():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{13e004d6-b066-43bd-913b-a415cd13da87}'), pid=3)
-def DEVPKEY_KsAudio_PacketSize_Constraints2():
-    return win32more.Windows.Win32.Devices.Properties.DEVPROPKEY(fmtid=Guid('{9404f781-7191-409b-8b0b-80bf6ec229ae}'), pid=2)
+DEVPKEY_KsAudio_PacketSize_Constraints: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{13e004d6-b066-43bd-913b-a415cd13da87}'), pid=2)
+DEVPKEY_KsAudio_Controller_DeviceInterface_Path: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{13e004d6-b066-43bd-913b-a415cd13da87}'), pid=3)
+DEVPKEY_KsAudio_PacketSize_Constraints2: win32more.Windows.Win32.Devices.Properties.DEVPROPKEY = ConstantLazyLoader(fmtid=Guid('{9404f781-7191-409b-8b0b-80bf6ec229ae}'), pid=2)
 KSAUDIO_STEREO_SPEAKER_GEOMETRY_HEADPHONE: Int32 = -1
 KSAUDIO_STEREO_SPEAKER_GEOMETRY_MIN: UInt32 = 5
 KSAUDIO_STEREO_SPEAKER_GEOMETRY_NARROW: UInt32 = 10
@@ -802,50 +799,50 @@ class DS3DVECTOR(EasyCastStructure):
         z: Single
         dvZ: Single
 EDeviceControlUseType = Int32
-EDeviceControlUseType_eDeviceControlUseMissing: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 0
-EDeviceControlUseType_eDeviceControlUsePrimary: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 1
-EDeviceControlUseType_eDeviceControlUseSecondary: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 2
+eDeviceControlUseMissing: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 0
+eDeviceControlUsePrimary: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 1
+eDeviceControlUseSecondary: win32more.Windows.Win32.Media.KernelStreaming.EDeviceControlUseType = 2
 EPcxConnectionType = Int32
-EPcxConnectionType_eConnTypeUnknown: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 0
-EPcxConnectionType_eConnType3Point5mm: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 1
-EPcxConnectionType_eConnTypeQuarter: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 2
-EPcxConnectionType_eConnTypeAtapiInternal: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 3
-EPcxConnectionType_eConnTypeRCA: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 4
-EPcxConnectionType_eConnTypeOptical: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 5
-EPcxConnectionType_eConnTypeOtherDigital: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 6
-EPcxConnectionType_eConnTypeOtherAnalog: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 7
-EPcxConnectionType_eConnTypeMultichannelAnalogDIN: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 8
-EPcxConnectionType_eConnTypeXlrProfessional: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 9
-EPcxConnectionType_eConnTypeRJ11Modem: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 10
-EPcxConnectionType_eConnTypeCombination: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 11
+eConnTypeUnknown: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 0
+eConnType3Point5mm: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 1
+eConnTypeQuarter: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 2
+eConnTypeAtapiInternal: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 3
+eConnTypeRCA: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 4
+eConnTypeOptical: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 5
+eConnTypeOtherDigital: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 6
+eConnTypeOtherAnalog: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 7
+eConnTypeMultichannelAnalogDIN: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 8
+eConnTypeXlrProfessional: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 9
+eConnTypeRJ11Modem: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 10
+eConnTypeCombination: win32more.Windows.Win32.Media.KernelStreaming.EPcxConnectionType = 11
 EPcxGenLocation = Int32
-EPcxGenLocation_eGenLocPrimaryBox: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 0
-EPcxGenLocation_eGenLocInternal: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 1
-EPcxGenLocation_eGenLocSeparate: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 2
-EPcxGenLocation_eGenLocOther: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 3
-EPcxGenLocation_EPcxGenLocation_enum_count: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 4
+eGenLocPrimaryBox: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 0
+eGenLocInternal: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 1
+eGenLocSeparate: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 2
+eGenLocOther: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 3
+EPcxGenLocation_enum_count: win32more.Windows.Win32.Media.KernelStreaming.EPcxGenLocation = 4
 EPcxGeoLocation = Int32
-EPcxGeoLocation_eGeoLocRear: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 1
-EPcxGeoLocation_eGeoLocFront: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 2
-EPcxGeoLocation_eGeoLocLeft: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 3
-EPcxGeoLocation_eGeoLocRight: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 4
-EPcxGeoLocation_eGeoLocTop: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 5
-EPcxGeoLocation_eGeoLocBottom: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 6
-EPcxGeoLocation_eGeoLocRearPanel: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 7
-EPcxGeoLocation_eGeoLocRiser: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 8
-EPcxGeoLocation_eGeoLocInsideMobileLid: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 9
-EPcxGeoLocation_eGeoLocDrivebay: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 10
-EPcxGeoLocation_eGeoLocHDMI: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 11
-EPcxGeoLocation_eGeoLocOutsideMobileLid: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 12
-EPcxGeoLocation_eGeoLocATAPI: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 13
-EPcxGeoLocation_eGeoLocNotApplicable: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 14
-EPcxGeoLocation_eGeoLocReserved6: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 15
-EPcxGeoLocation_EPcxGeoLocation_enum_count: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 16
+eGeoLocRear: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 1
+eGeoLocFront: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 2
+eGeoLocLeft: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 3
+eGeoLocRight: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 4
+eGeoLocTop: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 5
+eGeoLocBottom: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 6
+eGeoLocRearPanel: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 7
+eGeoLocRiser: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 8
+eGeoLocInsideMobileLid: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 9
+eGeoLocDrivebay: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 10
+eGeoLocHDMI: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 11
+eGeoLocOutsideMobileLid: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 12
+eGeoLocATAPI: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 13
+eGeoLocNotApplicable: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 14
+eGeoLocReserved6: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 15
+EPcxGeoLocation_enum_count: win32more.Windows.Win32.Media.KernelStreaming.EPcxGeoLocation = 16
 EPxcPortConnection = Int32
-EPxcPortConnection_ePortConnJack: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 0
-EPxcPortConnection_ePortConnIntegratedDevice: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 1
-EPxcPortConnection_ePortConnBothIntegratedAndJack: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 2
-EPxcPortConnection_ePortConnUnknown: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 3
+ePortConnJack: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 0
+ePortConnIntegratedDevice: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 1
+ePortConnBothIntegratedAndJack: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 2
+ePortConnUnknown: win32more.Windows.Win32.Media.KernelStreaming.EPxcPortConnection = 3
 EVENTSETID_CROSSBAR = Guid('{6a2e0641-28e4-11d0-a18c-00a0c9118956}')
 EVENTSETID_TUNER = Guid('{6a2e0606-28e4-11d0-a18c-00a0c9118956}')
 EVENTSETID_VIDCAP_CAMERACONTROL_REGION_OF_INTEREST = Guid('{2fdffc5d-c732-4ba6-b5df-6b4d7fc88b8b}')
@@ -2142,7 +2139,7 @@ if ARCH in 'X64,ARM64':
     class KSNODEPROPERTY_AUDIO_3D_LISTENER(EasyCastStructure):
         NodeProperty: win32more.Windows.Win32.Media.KernelStreaming.KSNODEPROPERTY
         ListenerId: VoidPtr
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class KSNODEPROPERTY_AUDIO_3D_LISTENER(EasyCastStructure):
         NodeProperty: win32more.Windows.Win32.Media.KernelStreaming.KSNODEPROPERTY
         ListenerId: VoidPtr
@@ -2161,7 +2158,7 @@ if ARCH in 'X64,ARM64':
         NodeProperty: win32more.Windows.Win32.Media.KernelStreaming.KSNODEPROPERTY
         AppContext: VoidPtr
         Length: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class KSNODEPROPERTY_AUDIO_PROPERTY(EasyCastStructure):
         NodeProperty: win32more.Windows.Win32.Media.KernelStreaming.KSNODEPROPERTY
         AppContext: VoidPtr
@@ -3473,7 +3470,7 @@ if ARCH in 'X64,ARM64':
         Data: VoidPtr
         OptionsFlags: UInt32
         Reserved: UInt32
-if ARCH in 'X86':
+elif ARCH in 'X86':
     class KSSTREAM_HEADER(EasyCastStructure):
         Size: UInt32
         TypeSpecificFlags: UInt32

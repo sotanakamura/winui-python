@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Security.DataProtection
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
 import win32more.Windows.System
+import win32more.Windows.Win32.System.WinRT
 class IUserDataAvailabilityStateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Security.DataProtection.IUserDataAvailabilityStateChangedEventArgs'
@@ -69,10 +56,10 @@ class IUserDataStorageItemProtectionInfo(ComPtr):
     @winrt_commethod(6)
     def get_Availability(self) -> win32more.Windows.Security.DataProtection.UserDataAvailability: ...
     Availability = property(get_Availability, None)
-UserDataAvailability = Int32
-UserDataAvailability_Always: UserDataAvailability = 0
-UserDataAvailability_AfterFirstUnlock: UserDataAvailability = 1
-UserDataAvailability_WhileUnlocked: UserDataAvailability = 2
+class UserDataAvailability(Int32):  # enum
+    Always = 0
+    AfterFirstUnlock = 1
+    WhileUnlocked = 2
 class UserDataAvailabilityStateChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.DataProtection.IUserDataAvailabilityStateChangedEventArgs
@@ -89,9 +76,9 @@ class UserDataBufferUnprotectResult(ComPtr):
     def get_UnprotectedBuffer(self: win32more.Windows.Security.DataProtection.IUserDataBufferUnprotectResult) -> win32more.Windows.Storage.Streams.IBuffer: ...
     Status = property(get_Status, None)
     UnprotectedBuffer = property(get_UnprotectedBuffer, None)
-UserDataBufferUnprotectStatus = Int32
-UserDataBufferUnprotectStatus_Succeeded: UserDataBufferUnprotectStatus = 0
-UserDataBufferUnprotectStatus_Unavailable: UserDataBufferUnprotectStatus = 1
+class UserDataBufferUnprotectStatus(Int32):  # enum
+    Succeeded = 0
+    Unavailable = 1
 class UserDataProtectionManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Security.DataProtection.IUserDataProtectionManager
@@ -121,8 +108,10 @@ class UserDataStorageItemProtectionInfo(ComPtr):
     @winrt_mixinmethod
     def get_Availability(self: win32more.Windows.Security.DataProtection.IUserDataStorageItemProtectionInfo) -> win32more.Windows.Security.DataProtection.UserDataAvailability: ...
     Availability = property(get_Availability, None)
-UserDataStorageItemProtectionStatus = Int32
-UserDataStorageItemProtectionStatus_Succeeded: UserDataStorageItemProtectionStatus = 0
-UserDataStorageItemProtectionStatus_NotProtectable: UserDataStorageItemProtectionStatus = 1
-UserDataStorageItemProtectionStatus_DataUnavailable: UserDataStorageItemProtectionStatus = 2
+class UserDataStorageItemProtectionStatus(Int32):  # enum
+    Succeeded = 0
+    NotProtectable = 1
+    DataUnavailable = 2
+
+
 make_ready(__name__)

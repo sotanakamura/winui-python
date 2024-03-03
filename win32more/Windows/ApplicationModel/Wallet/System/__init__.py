@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Wallet
 import win32more.Windows.ApplicationModel.Wallet.System
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IWalletItemSystemStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Wallet.System.IWalletItemSystemStore'
@@ -48,10 +35,10 @@ class IWalletManagerSystemStatics(ComPtr):
     _iid_ = Guid('{bee8eb89-2634-4b9a-8b23-ee8903c91fe0}')
     @winrt_commethod(6)
     def RequestStoreAsync(self) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Wallet.System.WalletItemSystemStore]: ...
-WalletItemAppAssociation = Int32
-WalletItemAppAssociation_None: WalletItemAppAssociation = 0
-WalletItemAppAssociation_AppInstalled: WalletItemAppAssociation = 1
-WalletItemAppAssociation_AppNotInstalled: WalletItemAppAssociation = 2
+class WalletItemAppAssociation(Int32):  # enum
+    None_ = 0
+    AppInstalled = 1
+    AppNotInstalled = 2
 class WalletItemSystemStore(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Wallet.System.IWalletItemSystemStore
@@ -75,4 +62,6 @@ class WalletManagerSystem(ComPtr):
     _classid_ = 'Windows.ApplicationModel.Wallet.System.WalletManagerSystem'
     @winrt_classmethod
     def RequestStoreAsync(cls: win32more.Windows.ApplicationModel.Wallet.System.IWalletManagerSystemStatics) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.ApplicationModel.Wallet.System.WalletItemSystemStore]: ...
+
+
 make_ready(__name__)

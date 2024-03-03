@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.System.HostComputeNetwork
 @winfunctype('computenetwork.dll')
@@ -89,21 +89,21 @@ def HcnQueryEndpointStats(Endpoint: VoidPtr, Query: win32more.Windows.Win32.Foun
 @winfunctype('computenetwork.dll')
 def HcnQueryEndpointAddresses(Endpoint: VoidPtr, Query: win32more.Windows.Win32.Foundation.PWSTR, Addresses: POINTER(win32more.Windows.Win32.Foundation.PWSTR), ErrorRecord: POINTER(win32more.Windows.Win32.Foundation.PWSTR)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 HCN_NOTIFICATIONS = Int32
-HCN_NOTIFICATIONS_HcnNotificationInvalid: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 0
-HCN_NOTIFICATIONS_HcnNotificationNetworkPreCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 1
-HCN_NOTIFICATIONS_HcnNotificationNetworkCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 2
-HCN_NOTIFICATIONS_HcnNotificationNetworkPreDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 3
-HCN_NOTIFICATIONS_HcnNotificationNetworkDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 4
-HCN_NOTIFICATIONS_HcnNotificationNamespaceCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 5
-HCN_NOTIFICATIONS_HcnNotificationNamespaceDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 6
-HCN_NOTIFICATIONS_HcnNotificationGuestNetworkServiceCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 7
-HCN_NOTIFICATIONS_HcnNotificationGuestNetworkServiceDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 8
-HCN_NOTIFICATIONS_HcnNotificationNetworkEndpointAttached: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 9
-HCN_NOTIFICATIONS_HcnNotificationNetworkEndpointDetached: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 16
-HCN_NOTIFICATIONS_HcnNotificationGuestNetworkServiceStateChanged: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 17
-HCN_NOTIFICATIONS_HcnNotificationGuestNetworkServiceInterfaceStateChanged: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 18
-HCN_NOTIFICATIONS_HcnNotificationServiceDisconnect: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 16777216
-HCN_NOTIFICATIONS_HcnNotificationFlagsReserved: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = -268435456
+HcnNotificationInvalid: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 0
+HcnNotificationNetworkPreCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 1
+HcnNotificationNetworkCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 2
+HcnNotificationNetworkPreDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 3
+HcnNotificationNetworkDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 4
+HcnNotificationNamespaceCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 5
+HcnNotificationNamespaceDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 6
+HcnNotificationGuestNetworkServiceCreate: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 7
+HcnNotificationGuestNetworkServiceDelete: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 8
+HcnNotificationNetworkEndpointAttached: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 9
+HcnNotificationNetworkEndpointDetached: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 16
+HcnNotificationGuestNetworkServiceStateChanged: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 17
+HcnNotificationGuestNetworkServiceInterfaceStateChanged: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 18
+HcnNotificationServiceDisconnect: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = 16777216
+HcnNotificationFlagsReserved: win32more.Windows.Win32.System.HostComputeNetwork.HCN_NOTIFICATIONS = -268435456
 @winfunctype_pointer
 def HCN_NOTIFICATION_CALLBACK(NotificationType: UInt32, Context: VoidPtr, NotificationStatus: win32more.Windows.Win32.Foundation.HRESULT, NotificationData: win32more.Windows.Win32.Foundation.PWSTR) -> Void: ...
 HCN_PORT_ACCESS = Int32

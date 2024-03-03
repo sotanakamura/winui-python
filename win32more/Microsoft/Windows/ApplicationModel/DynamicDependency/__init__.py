@@ -1,26 +1,20 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.Windows.ApplicationModel.DynamicDependency
 import win32more.Windows.ApplicationModel
+import win32more.Windows.Win32.System.WinRT
 class AddPackageDependencyOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IAddPackageDependencyOptions
     _classid_ = 'Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions: ...
     @winrt_mixinmethod
@@ -31,12 +25,19 @@ class AddPackageDependencyOptions(ComPtr):
     def get_PrependIfRankCollision(self: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IAddPackageDependencyOptions) -> Boolean: ...
     @winrt_mixinmethod
     def put_PrependIfRankCollision(self: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IAddPackageDependencyOptions, value: Boolean) -> Void: ...
-    Rank = property(get_Rank, put_Rank)
     PrependIfRankCollision = property(get_PrependIfRankCollision, put_PrependIfRankCollision)
+    Rank = property(get_Rank, put_Rank)
 class CreatePackageDependencyOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.ICreatePackageDependencyOptions
     _classid_ = 'Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions: ...
     @winrt_mixinmethod
@@ -56,9 +57,9 @@ class CreatePackageDependencyOptions(ComPtr):
     @winrt_mixinmethod
     def put_LifetimeArtifact(self: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.ICreatePackageDependencyOptions, value: WinRT_String) -> Void: ...
     Architectures = property(get_Architectures, put_Architectures)
-    VerifyDependencyResolution = property(get_VerifyDependencyResolution, put_VerifyDependencyResolution)
-    LifetimeArtifactKind = property(get_LifetimeArtifactKind, put_LifetimeArtifactKind)
     LifetimeArtifact = property(get_LifetimeArtifact, put_LifetimeArtifact)
+    LifetimeArtifactKind = property(get_LifetimeArtifactKind, put_LifetimeArtifactKind)
+    VerifyDependencyResolution = property(get_VerifyDependencyResolution, put_VerifyDependencyResolution)
 DynamicDependencyContract: UInt32 = 131072
 class IAddPackageDependencyOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -72,8 +73,8 @@ class IAddPackageDependencyOptions(ComPtr):
     def get_PrependIfRankCollision(self) -> Boolean: ...
     @winrt_commethod(9)
     def put_PrependIfRankCollision(self, value: Boolean) -> Void: ...
-    Rank = property(get_Rank, put_Rank)
     PrependIfRankCollision = property(get_PrependIfRankCollision, put_PrependIfRankCollision)
+    Rank = property(get_Rank, put_Rank)
 class ICreatePackageDependencyOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.DynamicDependency.ICreatePackageDependencyOptions'
@@ -95,9 +96,9 @@ class ICreatePackageDependencyOptions(ComPtr):
     @winrt_commethod(13)
     def put_LifetimeArtifact(self, value: WinRT_String) -> Void: ...
     Architectures = property(get_Architectures, put_Architectures)
-    VerifyDependencyResolution = property(get_VerifyDependencyResolution, put_VerifyDependencyResolution)
-    LifetimeArtifactKind = property(get_LifetimeArtifactKind, put_LifetimeArtifactKind)
     LifetimeArtifact = property(get_LifetimeArtifact, put_LifetimeArtifact)
+    LifetimeArtifactKind = property(get_LifetimeArtifactKind, put_LifetimeArtifactKind)
+    VerifyDependencyResolution = property(get_VerifyDependencyResolution, put_VerifyDependencyResolution)
 class IPackageDependency(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.Windows.ApplicationModel.DynamicDependency.IPackageDependency'
@@ -192,12 +193,19 @@ class PackageDependency(ComPtr, metaclass=_PackageDependency_Meta_):
     @winrt_classmethod
     def get_GenerationId(cls: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IPackageDependencyStatics) -> UInt32: ...
     Id = property(get_Id, None)
-    _PackageDependency_Meta_.PackageGraphRevisionId = property(get_PackageGraphRevisionId.__wrapped__, None)
     _PackageDependency_Meta_.GenerationId = property(get_GenerationId.__wrapped__, None)
+    _PackageDependency_Meta_.PackageGraphRevisionId = property(get_PackageGraphRevisionId.__wrapped__, None)
 class PackageDependencyContext(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IPackageDependencyContext
     _classid_ = 'Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateInstance(cls: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IPackageDependencyContextFactory, contextId: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContextId) -> win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext: ...
     @winrt_mixinmethod
@@ -213,18 +221,18 @@ class PackageDependencyContext(ComPtr):
     PackageFullName = property(get_PackageFullName, None)
 class PackageDependencyContextId(EasyCastStructure):
     Id: UInt64
-PackageDependencyLifetimeArtifactKind = Int32
-PackageDependencyLifetimeArtifactKind_Process: PackageDependencyLifetimeArtifactKind = 0
-PackageDependencyLifetimeArtifactKind_FilePath: PackageDependencyLifetimeArtifactKind = 1
-PackageDependencyLifetimeArtifactKind_RegistryKey: PackageDependencyLifetimeArtifactKind = 2
-PackageDependencyProcessorArchitectures = UInt32
-PackageDependencyProcessorArchitectures_None: PackageDependencyProcessorArchitectures = 0
-PackageDependencyProcessorArchitectures_Neutral: PackageDependencyProcessorArchitectures = 1
-PackageDependencyProcessorArchitectures_X86: PackageDependencyProcessorArchitectures = 2
-PackageDependencyProcessorArchitectures_X64: PackageDependencyProcessorArchitectures = 4
-PackageDependencyProcessorArchitectures_Arm: PackageDependencyProcessorArchitectures = 8
-PackageDependencyProcessorArchitectures_Arm64: PackageDependencyProcessorArchitectures = 16
-PackageDependencyProcessorArchitectures_X86OnArm64: PackageDependencyProcessorArchitectures = 32
+class PackageDependencyLifetimeArtifactKind(Int32):  # enum
+    Process = 0
+    FilePath = 1
+    RegistryKey = 2
+class PackageDependencyProcessorArchitectures(UInt32):  # enum
+    None_ = 0
+    Neutral = 1
+    X86 = 2
+    X64 = 4
+    Arm = 8
+    Arm64 = 16
+    X86OnArm64 = 32
 class _PackageDependencyRank_Meta_(ComPtr.__class__):
     pass
 class PackageDependencyRank(ComPtr, metaclass=_PackageDependencyRank_Meta_):
@@ -233,4 +241,6 @@ class PackageDependencyRank(ComPtr, metaclass=_PackageDependencyRank_Meta_):
     @winrt_classmethod
     def get_Default(cls: win32more.Microsoft.Windows.ApplicationModel.DynamicDependency.IPackageDependencyRankStatics) -> Int32: ...
     _PackageDependencyRank_Meta_.Default = property(get_Default.__wrapped__, None)
+
+
 make_ready(__name__)

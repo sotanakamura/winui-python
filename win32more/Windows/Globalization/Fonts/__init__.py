@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Globalization.Fonts
 import win32more.Windows.UI.Text
+import win32more.Windows.Win32.System.WinRT
 class ILanguageFont(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.Fonts.ILanguageFont'
@@ -32,9 +19,9 @@ class ILanguageFont(ComPtr):
     @winrt_commethod(10)
     def get_ScaleFactor(self) -> Double: ...
     FontFamily = property(get_FontFamily, None)
-    FontWeight = property(get_FontWeight, None)
     FontStretch = property(get_FontStretch, None)
     FontStyle = property(get_FontStyle, None)
+    FontWeight = property(get_FontWeight, None)
     ScaleFactor = property(get_ScaleFactor, None)
 class ILanguageFontGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -62,17 +49,17 @@ class ILanguageFontGroup(ComPtr):
     def get_DocumentAlternate1Font(self) -> win32more.Windows.Globalization.Fonts.LanguageFont: ...
     @winrt_commethod(16)
     def get_DocumentAlternate2Font(self) -> win32more.Windows.Globalization.Fonts.LanguageFont: ...
-    UITextFont = property(get_UITextFont, None)
-    UIHeadingFont = property(get_UIHeadingFont, None)
-    UITitleFont = property(get_UITitleFont, None)
-    UICaptionFont = property(get_UICaptionFont, None)
-    UINotificationHeadingFont = property(get_UINotificationHeadingFont, None)
-    TraditionalDocumentFont = property(get_TraditionalDocumentFont, None)
-    ModernDocumentFont = property(get_ModernDocumentFont, None)
-    DocumentHeadingFont = property(get_DocumentHeadingFont, None)
-    FixedWidthTextFont = property(get_FixedWidthTextFont, None)
     DocumentAlternate1Font = property(get_DocumentAlternate1Font, None)
     DocumentAlternate2Font = property(get_DocumentAlternate2Font, None)
+    DocumentHeadingFont = property(get_DocumentHeadingFont, None)
+    FixedWidthTextFont = property(get_FixedWidthTextFont, None)
+    ModernDocumentFont = property(get_ModernDocumentFont, None)
+    TraditionalDocumentFont = property(get_TraditionalDocumentFont, None)
+    UICaptionFont = property(get_UICaptionFont, None)
+    UIHeadingFont = property(get_UIHeadingFont, None)
+    UINotificationHeadingFont = property(get_UINotificationHeadingFont, None)
+    UITextFont = property(get_UITextFont, None)
+    UITitleFont = property(get_UITitleFont, None)
 class ILanguageFontGroupFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Globalization.Fonts.ILanguageFontGroupFactory'
@@ -94,14 +81,21 @@ class LanguageFont(ComPtr):
     @winrt_mixinmethod
     def get_ScaleFactor(self: win32more.Windows.Globalization.Fonts.ILanguageFont) -> Double: ...
     FontFamily = property(get_FontFamily, None)
-    FontWeight = property(get_FontWeight, None)
     FontStretch = property(get_FontStretch, None)
     FontStyle = property(get_FontStyle, None)
+    FontWeight = property(get_FontWeight, None)
     ScaleFactor = property(get_ScaleFactor, None)
 class LanguageFontGroup(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Globalization.Fonts.ILanguageFontGroup
     _classid_ = 'Windows.Globalization.Fonts.LanguageFontGroup'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Globalization.Fonts.LanguageFontGroup.CreateLanguageFontGroup(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def CreateLanguageFontGroup(cls: win32more.Windows.Globalization.Fonts.ILanguageFontGroupFactory, languageTag: WinRT_String) -> win32more.Windows.Globalization.Fonts.LanguageFontGroup: ...
     @winrt_mixinmethod
@@ -126,15 +120,17 @@ class LanguageFontGroup(ComPtr):
     def get_DocumentAlternate1Font(self: win32more.Windows.Globalization.Fonts.ILanguageFontGroup) -> win32more.Windows.Globalization.Fonts.LanguageFont: ...
     @winrt_mixinmethod
     def get_DocumentAlternate2Font(self: win32more.Windows.Globalization.Fonts.ILanguageFontGroup) -> win32more.Windows.Globalization.Fonts.LanguageFont: ...
-    UITextFont = property(get_UITextFont, None)
-    UIHeadingFont = property(get_UIHeadingFont, None)
-    UITitleFont = property(get_UITitleFont, None)
-    UICaptionFont = property(get_UICaptionFont, None)
-    UINotificationHeadingFont = property(get_UINotificationHeadingFont, None)
-    TraditionalDocumentFont = property(get_TraditionalDocumentFont, None)
-    ModernDocumentFont = property(get_ModernDocumentFont, None)
-    DocumentHeadingFont = property(get_DocumentHeadingFont, None)
-    FixedWidthTextFont = property(get_FixedWidthTextFont, None)
     DocumentAlternate1Font = property(get_DocumentAlternate1Font, None)
     DocumentAlternate2Font = property(get_DocumentAlternate2Font, None)
+    DocumentHeadingFont = property(get_DocumentHeadingFont, None)
+    FixedWidthTextFont = property(get_FixedWidthTextFont, None)
+    ModernDocumentFont = property(get_ModernDocumentFont, None)
+    TraditionalDocumentFont = property(get_TraditionalDocumentFont, None)
+    UICaptionFont = property(get_UICaptionFont, None)
+    UIHeadingFont = property(get_UIHeadingFont, None)
+    UINotificationHeadingFont = property(get_UINotificationHeadingFont, None)
+    UITextFont = property(get_UITextFont, None)
+    UITitleFont = property(get_UITitleFont, None)
+
+
 make_ready(__name__)

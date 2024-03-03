@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel
 import win32more.Windows.ApplicationModel.Activation
 import win32more.Windows.Data.Xml.Dom
@@ -25,6 +11,7 @@ import win32more.Windows.Graphics.Printing.PrintSupport
 import win32more.Windows.Graphics.Printing.PrintTicket
 import win32more.Windows.System
 import win32more.Windows.UI.Shell
+import win32more.Windows.Win32.System.WinRT
 class IPrintSupportExtensionSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Graphics.Printing.PrintSupport.IPrintSupportExtensionSession'
@@ -139,9 +126,9 @@ class IPrintSupportPrinterSelectedEventArgs(ComPtr):
     def SetAdaptiveCard(self, adaptiveCard: win32more.Windows.UI.Shell.IAdaptiveCard) -> Void: ...
     @winrt_commethod(13)
     def GetDeferral(self) -> win32more.Windows.Foundation.Deferral: ...
-    SourceAppInfo = property(get_SourceAppInfo, None)
-    PrintTicket = property(get_PrintTicket, put_PrintTicket)
     AllowedAdditionalFeaturesAndParametersCount = property(get_AllowedAdditionalFeaturesAndParametersCount, None)
+    PrintTicket = property(get_PrintTicket, put_PrintTicket)
+    SourceAppInfo = property(get_SourceAppInfo, None)
 class IPrintSupportSessionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Graphics.Printing.PrintSupport.IPrintSupportSessionInfo'
@@ -150,8 +137,8 @@ class IPrintSupportSessionInfo(ComPtr):
     def get_SourceAppInfo(self) -> win32more.Windows.ApplicationModel.AppInfo: ...
     @winrt_commethod(7)
     def get_Printer(self) -> win32more.Windows.Devices.Printers.IppPrintDevice: ...
-    SourceAppInfo = property(get_SourceAppInfo, None)
     Printer = property(get_Printer, None)
+    SourceAppInfo = property(get_SourceAppInfo, None)
 class IPrintSupportSettingsActivatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Graphics.Printing.PrintSupport.IPrintSupportSettingsActivatedEventArgs'
@@ -175,10 +162,10 @@ class IPrintSupportSettingsUISession(ComPtr):
     def UpdatePrintTicket(self, printTicket: win32more.Windows.Graphics.Printing.PrintTicket.WorkflowPrintTicket) -> Void: ...
     @winrt_commethod(10)
     def get_SessionInfo(self) -> win32more.Windows.Graphics.Printing.PrintSupport.PrintSupportSessionInfo: ...
-    SessionPrintTicket = property(get_SessionPrintTicket, None)
     DocumentTitle = property(get_DocumentTitle, None)
     LaunchKind = property(get_LaunchKind, None)
     SessionInfo = property(get_SessionInfo, None)
+    SessionPrintTicket = property(get_SessionPrintTicket, None)
 class PrintSupportExtensionSession(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportExtensionSession
@@ -240,6 +227,13 @@ class PrintSupportPrintTicketElement(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportPrintTicketElement
     _classid_ = 'Windows.Graphics.Printing.PrintSupport.PrintSupportPrintTicketElement'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Graphics.Printing.PrintSupport.PrintSupportPrintTicketElement.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Graphics.Printing.PrintSupport.PrintSupportPrintTicketElement: ...
     @winrt_mixinmethod
@@ -283,9 +277,9 @@ class PrintSupportPrinterSelectedEventArgs(ComPtr):
     def SetAdaptiveCard(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportPrinterSelectedEventArgs, adaptiveCard: win32more.Windows.UI.Shell.IAdaptiveCard) -> Void: ...
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportPrinterSelectedEventArgs) -> win32more.Windows.Foundation.Deferral: ...
-    SourceAppInfo = property(get_SourceAppInfo, None)
-    PrintTicket = property(get_PrintTicket, put_PrintTicket)
     AllowedAdditionalFeaturesAndParametersCount = property(get_AllowedAdditionalFeaturesAndParametersCount, None)
+    PrintTicket = property(get_PrintTicket, put_PrintTicket)
+    SourceAppInfo = property(get_SourceAppInfo, None)
 class PrintSupportSessionInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSessionInfo
@@ -294,8 +288,8 @@ class PrintSupportSessionInfo(ComPtr):
     def get_SourceAppInfo(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSessionInfo) -> win32more.Windows.ApplicationModel.AppInfo: ...
     @winrt_mixinmethod
     def get_Printer(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSessionInfo) -> win32more.Windows.Devices.Printers.IppPrintDevice: ...
-    SourceAppInfo = property(get_SourceAppInfo, None)
     Printer = property(get_Printer, None)
+    SourceAppInfo = property(get_SourceAppInfo, None)
 class PrintSupportSettingsActivatedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSettingsActivatedEventArgs
@@ -312,9 +306,9 @@ class PrintSupportSettingsActivatedEventArgs(ComPtr):
     def get_SplashScreen(self: win32more.Windows.ApplicationModel.Activation.IActivatedEventArgs) -> win32more.Windows.ApplicationModel.Activation.SplashScreen: ...
     @winrt_mixinmethod
     def get_User(self: win32more.Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser) -> win32more.Windows.System.User: ...
-    Session = property(get_Session, None)
     Kind = property(get_Kind, None)
     PreviousExecutionState = property(get_PreviousExecutionState, None)
+    Session = property(get_Session, None)
     SplashScreen = property(get_SplashScreen, None)
     User = property(get_User, None)
 class PrintSupportSettingsUISession(ComPtr):
@@ -331,15 +325,17 @@ class PrintSupportSettingsUISession(ComPtr):
     def UpdatePrintTicket(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSettingsUISession, printTicket: win32more.Windows.Graphics.Printing.PrintTicket.WorkflowPrintTicket) -> Void: ...
     @winrt_mixinmethod
     def get_SessionInfo(self: win32more.Windows.Graphics.Printing.PrintSupport.IPrintSupportSettingsUISession) -> win32more.Windows.Graphics.Printing.PrintSupport.PrintSupportSessionInfo: ...
-    SessionPrintTicket = property(get_SessionPrintTicket, None)
     DocumentTitle = property(get_DocumentTitle, None)
     LaunchKind = property(get_LaunchKind, None)
     SessionInfo = property(get_SessionInfo, None)
-SettingsLaunchKind = Int32
-SettingsLaunchKind_JobPrintTicket: SettingsLaunchKind = 0
-SettingsLaunchKind_UserDefaultPrintTicket: SettingsLaunchKind = 1
-WorkflowPrintTicketValidationStatus = Int32
-WorkflowPrintTicketValidationStatus_Resolved: WorkflowPrintTicketValidationStatus = 0
-WorkflowPrintTicketValidationStatus_Conflicting: WorkflowPrintTicketValidationStatus = 1
-WorkflowPrintTicketValidationStatus_Invalid: WorkflowPrintTicketValidationStatus = 2
+    SessionPrintTicket = property(get_SessionPrintTicket, None)
+class SettingsLaunchKind(Int32):  # enum
+    JobPrintTicket = 0
+    UserDefaultPrintTicket = 1
+class WorkflowPrintTicketValidationStatus(Int32):  # enum
+    Resolved = 0
+    Conflicting = 1
+    Invalid = 2
+
+
 make_ready(__name__)

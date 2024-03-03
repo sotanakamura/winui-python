@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Graphics.Gdi
 import win32more.Windows.Win32.UI.Shell
@@ -1425,6 +1425,8 @@ HBMMENU_POPUP_MAXIMIZE: win32more.Windows.Win32.Graphics.Gdi.HBITMAP = 10
 HBMMENU_POPUP_MINIMIZE: win32more.Windows.Win32.Graphics.Gdi.HBITMAP = 11
 CW_USEDEFAULT: Int32 = -2147483648
 LBS_STANDARD: Int32 = 10485763
+WINSTA_ALL_ACCESS: Int32 = 895
+WVR_REDRAW: UInt32 = 768
 @winfunctype('USER32.dll')
 def LoadStringA(hInstance: win32more.Windows.Win32.Foundation.HINSTANCE, uID: UInt32, lpBuffer: win32more.Windows.Win32.Foundation.PSTR, cchBufferMax: Int32) -> Int32: ...
 @winfunctype('USER32.dll')
@@ -2263,6 +2265,8 @@ def MrmCreateConfig(platformVersion: win32more.Windows.Win32.UI.WindowsAndMessag
 def MrmCreateConfigInMemory(platformVersion: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPlatformVersion, defaultQualifiers: win32more.Windows.Win32.Foundation.PWSTR, outputXmlData: POINTER(POINTER(Byte)), outputXmlSize: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
 @winfunctype('MrmSupport.dll')
 def MrmGetPriFileContentChecksum(priFile: win32more.Windows.Win32.Foundation.PWSTR, checksum: POINTER(UInt32)) -> win32more.Windows.Win32.Foundation.HRESULT: ...
+@winfunctype('USER32.dll')
+def IsWindowArranged(hwnd: win32more.Windows.Win32.Foundation.HWND) -> win32more.Windows.Win32.Foundation.BOOL: ...
 CASCADE_WINDOWS_HOW = UInt32
 MDITILE_SKIPDISABLED: win32more.Windows.Win32.UI.WindowsAndMessaging.CASCADE_WINDOWS_HOW = 2
 MDITILE_ZORDER: win32more.Windows.Win32.UI.WindowsAndMessaging.CASCADE_WINDOWS_HOW = 4
@@ -2977,17 +2981,17 @@ MrmDumpType_Basic: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmDumpType = 
 MrmDumpType_Detailed: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmDumpType = 1
 MrmDumpType_Schema: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmDumpType = 2
 MrmIndexerFlags = Int32
-MrmIndexerFlags_MrmIndexerFlagsNone: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 0
-MrmIndexerFlags_MrmIndexerFlagsAutoMerge: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 1
-MrmIndexerFlags_MrmIndexerFlagsCreateContentChecksum: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 2
+MrmIndexerFlagsNone: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 0
+MrmIndexerFlagsAutoMerge: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 1
+MrmIndexerFlagsCreateContentChecksum: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmIndexerFlags = 2
 MrmPackagingMode = Int32
-MrmPackagingMode_MrmPackagingModeStandaloneFile: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 0
-MrmPackagingMode_MrmPackagingModeAutoSplit: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 1
-MrmPackagingMode_MrmPackagingModeResourcePack: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 2
+MrmPackagingModeStandaloneFile: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 0
+MrmPackagingModeAutoSplit: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 1
+MrmPackagingModeResourcePack: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingMode = 2
 MrmPackagingOptions = Int32
-MrmPackagingOptions_MrmPackagingOptionsNone: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 0
-MrmPackagingOptions_MrmPackagingOptionsOmitSchemaFromResourcePacks: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 1
-MrmPackagingOptions_MrmPackagingOptionsSplitLanguageVariants: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 2
+MrmPackagingOptionsNone: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 0
+MrmPackagingOptionsOmitSchemaFromResourcePacks: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 1
+MrmPackagingOptionsSplitLanguageVariants: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPackagingOptions = 2
 MrmPlatformVersion = Int32
 MrmPlatformVersion_Default: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPlatformVersion = 0
 MrmPlatformVersion_Windows10_0_0_0: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmPlatformVersion = 17432576
@@ -2999,10 +3003,10 @@ class MrmResourceIndexerMessage(EasyCastStructure):
     id: UInt32
     text: win32more.Windows.Win32.Foundation.PWSTR
 MrmResourceIndexerMessageSeverity = Int32
-MrmResourceIndexerMessageSeverity_MrmResourceIndexerMessageSeverityVerbose: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 0
-MrmResourceIndexerMessageSeverity_MrmResourceIndexerMessageSeverityInfo: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 1
-MrmResourceIndexerMessageSeverity_MrmResourceIndexerMessageSeverityWarning: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 2
-MrmResourceIndexerMessageSeverity_MrmResourceIndexerMessageSeverityError: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 3
+MrmResourceIndexerMessageSeverityVerbose: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 0
+MrmResourceIndexerMessageSeverityInfo: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 1
+MrmResourceIndexerMessageSeverityWarning: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 2
+MrmResourceIndexerMessageSeverityError: win32more.Windows.Win32.UI.WindowsAndMessaging.MrmResourceIndexerMessageSeverity = 3
 @winfunctype_pointer
 def NAMEENUMPROCA(param0: win32more.Windows.Win32.Foundation.PSTR, param1: win32more.Windows.Win32.Foundation.LPARAM) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype_pointer

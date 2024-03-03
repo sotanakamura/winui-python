@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.System.Profile.SystemManufacturers
+import win32more.Windows.Win32.System.WinRT
 class IOemSupportInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.SystemManufacturers.IOemSupportInfo'
@@ -27,8 +14,8 @@ class IOemSupportInfo(ComPtr):
     def get_SupportAppLink(self) -> win32more.Windows.Foundation.Uri: ...
     @winrt_commethod(8)
     def get_SupportProvider(self) -> WinRT_String: ...
-    SupportLink = property(get_SupportLink, None)
     SupportAppLink = property(get_SupportAppLink, None)
+    SupportLink = property(get_SupportLink, None)
     SupportProvider = property(get_SupportProvider, None)
 class ISmbiosInformationStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -55,13 +42,13 @@ class ISystemSupportDeviceInfo(ComPtr):
     def get_SystemHardwareVersion(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def get_SystemFirmwareVersion(self) -> WinRT_String: ...
-    OperatingSystem = property(get_OperatingSystem, None)
     FriendlyName = property(get_FriendlyName, None)
+    OperatingSystem = property(get_OperatingSystem, None)
+    SystemFirmwareVersion = property(get_SystemFirmwareVersion, None)
+    SystemHardwareVersion = property(get_SystemHardwareVersion, None)
     SystemManufacturer = property(get_SystemManufacturer, None)
     SystemProductName = property(get_SystemProductName, None)
     SystemSku = property(get_SystemSku, None)
-    SystemHardwareVersion = property(get_SystemHardwareVersion, None)
-    SystemFirmwareVersion = property(get_SystemFirmwareVersion, None)
 class ISystemSupportInfoStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.System.Profile.SystemManufacturers.ISystemSupportInfoStatics'
@@ -89,8 +76,8 @@ class OemSupportInfo(ComPtr):
     def get_SupportAppLink(self: win32more.Windows.System.Profile.SystemManufacturers.IOemSupportInfo) -> win32more.Windows.Foundation.Uri: ...
     @winrt_mixinmethod
     def get_SupportProvider(self: win32more.Windows.System.Profile.SystemManufacturers.IOemSupportInfo) -> WinRT_String: ...
-    SupportLink = property(get_SupportLink, None)
     SupportAppLink = property(get_SupportAppLink, None)
+    SupportLink = property(get_SupportLink, None)
     SupportProvider = property(get_SupportProvider, None)
 class _SmbiosInformation_Meta_(ComPtr.__class__):
     pass
@@ -119,13 +106,13 @@ class SystemSupportDeviceInfo(ComPtr):
     def get_SystemHardwareVersion(self: win32more.Windows.System.Profile.SystemManufacturers.ISystemSupportDeviceInfo) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_SystemFirmwareVersion(self: win32more.Windows.System.Profile.SystemManufacturers.ISystemSupportDeviceInfo) -> WinRT_String: ...
-    OperatingSystem = property(get_OperatingSystem, None)
     FriendlyName = property(get_FriendlyName, None)
+    OperatingSystem = property(get_OperatingSystem, None)
+    SystemFirmwareVersion = property(get_SystemFirmwareVersion, None)
+    SystemHardwareVersion = property(get_SystemHardwareVersion, None)
     SystemManufacturer = property(get_SystemManufacturer, None)
     SystemProductName = property(get_SystemProductName, None)
     SystemSku = property(get_SystemSku, None)
-    SystemHardwareVersion = property(get_SystemHardwareVersion, None)
-    SystemFirmwareVersion = property(get_SystemFirmwareVersion, None)
 class _SystemSupportInfo_Meta_(ComPtr.__class__):
     pass
 class SystemSupportInfo(ComPtr, metaclass=_SystemSupportInfo_Meta_):
@@ -140,4 +127,6 @@ class SystemSupportInfo(ComPtr, metaclass=_SystemSupportInfo_Meta_):
     _SystemSupportInfo_Meta_.LocalDeviceInfo = property(get_LocalDeviceInfo.__wrapped__, None)
     _SystemSupportInfo_Meta_.LocalSystemEdition = property(get_LocalSystemEdition.__wrapped__, None)
     _SystemSupportInfo_Meta_.OemSupportInfo = property(get_OemSupportInfo.__wrapped__, None)
+
+
 make_ready(__name__)

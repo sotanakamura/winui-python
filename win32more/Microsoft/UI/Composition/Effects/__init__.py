@@ -1,22 +1,9 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI.Composition.Effects
 import win32more.Windows.Graphics.Effects
+import win32more.Windows.Win32.System.WinRT
 class ISceneLightingEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Composition.Effects.ISceneLightingEffect'
@@ -59,6 +46,13 @@ class SceneLightingEffect(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Composition.Effects.ISceneLightingEffect
     _classid_ = 'Microsoft.UI.Composition.Effects.SceneLightingEffect'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Composition.Effects.SceneLightingEffect.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Composition.Effects.SceneLightingEffect: ...
     @winrt_mixinmethod
@@ -89,14 +83,16 @@ class SceneLightingEffect(ComPtr):
     def put_NormalMapSource(self: win32more.Microsoft.UI.Composition.Effects.ISceneLightingEffect, value: win32more.Windows.Graphics.Effects.IGraphicsEffectSource) -> Void: ...
     @winrt_mixinmethod
     def get_SpecularAmount(self: win32more.Microsoft.UI.Composition.Effects.ISceneLightingEffect) -> Single: ...
-    Name = property(get_Name, put_Name)
-    SpecularAmount = property(get_SpecularAmount, put_SpecularAmount)
-    SpecularShine = property(get_SpecularShine, put_SpecularShine)
-    ReflectanceModel = property(get_ReflectanceModel, put_ReflectanceModel)
     AmbientAmount = property(get_AmbientAmount, put_AmbientAmount)
     DiffuseAmount = property(get_DiffuseAmount, put_DiffuseAmount)
+    Name = property(get_Name, put_Name)
     NormalMapSource = property(get_NormalMapSource, put_NormalMapSource)
-SceneLightingEffectReflectanceModel = Int32
-SceneLightingEffectReflectanceModel_BlinnPhong: SceneLightingEffectReflectanceModel = 0
-SceneLightingEffectReflectanceModel_PhysicallyBasedBlinnPhong: SceneLightingEffectReflectanceModel = 1
+    ReflectanceModel = property(get_ReflectanceModel, put_ReflectanceModel)
+    SpecularAmount = property(get_SpecularAmount, put_SpecularAmount)
+    SpecularShine = property(get_SpecularShine, put_SpecularShine)
+class SceneLightingEffectReflectanceModel(Int32):  # enum
+    BlinnPhong = 0
+    PhysicallyBasedBlinnPhong = 1
+
+
 make_ready(__name__)

@@ -1,23 +1,11 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.ApplicationModel.Payments
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class IPaymentAddress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentAddress'
@@ -68,18 +56,18 @@ class IPaymentAddress(ComPtr):
     def put_PhoneNumber(self, value: WinRT_String) -> Void: ...
     @winrt_commethod(28)
     def get_Properties(self) -> win32more.Windows.Foundation.Collections.ValueSet: ...
-    Country = property(get_Country, put_Country)
     AddressLines = property(get_AddressLines, put_AddressLines)
-    Region = property(get_Region, put_Region)
     City = property(get_City, put_City)
+    Country = property(get_Country, put_Country)
     DependentLocality = property(get_DependentLocality, put_DependentLocality)
-    PostalCode = property(get_PostalCode, put_PostalCode)
-    SortingCode = property(get_SortingCode, put_SortingCode)
     LanguageCode = property(get_LanguageCode, put_LanguageCode)
     Organization = property(get_Organization, put_Organization)
-    Recipient = property(get_Recipient, put_Recipient)
     PhoneNumber = property(get_PhoneNumber, put_PhoneNumber)
+    PostalCode = property(get_PostalCode, put_PostalCode)
     Properties = property(get_Properties, None)
+    Recipient = property(get_Recipient, put_Recipient)
+    Region = property(get_Region, put_Region)
+    SortingCode = property(get_SortingCode, put_SortingCode)
 class IPaymentCanMakePaymentResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentCanMakePaymentResult'
@@ -140,10 +128,10 @@ class IPaymentDetails(ComPtr):
     def get_Modifiers(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier]: ...
     @winrt_commethod(13)
     def put_Modifiers(self, value: win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier]) -> Void: ...
-    Total = property(get_Total, put_Total)
     DisplayItems = property(get_DisplayItems, put_DisplayItems)
-    ShippingOptions = property(get_ShippingOptions, put_ShippingOptions)
     Modifiers = property(get_Modifiers, put_Modifiers)
+    ShippingOptions = property(get_ShippingOptions, put_ShippingOptions)
+    Total = property(get_Total, put_Total)
 class IPaymentDetailsFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentDetailsFactory'
@@ -164,10 +152,10 @@ class IPaymentDetailsModifier(ComPtr):
     def get_Total(self) -> win32more.Windows.ApplicationModel.Payments.PaymentItem: ...
     @winrt_commethod(9)
     def get_AdditionalDisplayItems(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentItem]: ...
+    AdditionalDisplayItems = property(get_AdditionalDisplayItems, None)
     JsonData = property(get_JsonData, None)
     SupportedMethodIds = property(get_SupportedMethodIds, None)
     Total = property(get_Total, None)
-    AdditionalDisplayItems = property(get_AdditionalDisplayItems, None)
 class IPaymentDetailsModifierFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentDetailsModifierFactory'
@@ -194,8 +182,8 @@ class IPaymentItem(ComPtr):
     def get_Pending(self) -> Boolean: ...
     @winrt_commethod(11)
     def put_Pending(self, value: Boolean) -> Void: ...
-    Label = property(get_Label, put_Label)
     Amount = property(get_Amount, put_Amount)
+    Label = property(get_Label, put_Label)
     Pending = property(get_Pending, put_Pending)
 class IPaymentItemFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -243,8 +231,8 @@ class IPaymentMethodData(ComPtr):
     def get_SupportedMethodIds(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_commethod(7)
     def get_JsonData(self) -> WinRT_String: ...
-    SupportedMethodIds = property(get_SupportedMethodIds, None)
     JsonData = property(get_JsonData, None)
+    SupportedMethodIds = property(get_SupportedMethodIds, None)
 class IPaymentMethodDataFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentMethodDataFactory'
@@ -294,8 +282,8 @@ class IPaymentRequest(ComPtr):
     def get_MethodData(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentMethodData]: ...
     @winrt_commethod(9)
     def get_Options(self) -> win32more.Windows.ApplicationModel.Payments.PaymentOptions: ...
-    MerchantInfo = property(get_MerchantInfo, None)
     Details = property(get_Details, None)
+    MerchantInfo = property(get_MerchantInfo, None)
     MethodData = property(get_MethodData, None)
     Options = property(get_Options, None)
 class IPaymentRequest2(ComPtr):
@@ -318,8 +306,8 @@ class IPaymentRequestChangedArgs(ComPtr):
     @winrt_commethod(9)
     def Acknowledge(self, changeResult: win32more.Windows.ApplicationModel.Payments.PaymentRequestChangedResult) -> Void: ...
     ChangeKind = property(get_ChangeKind, None)
-    ShippingAddress = property(get_ShippingAddress, None)
     SelectedShippingOption = property(get_SelectedShippingOption, None)
+    ShippingAddress = property(get_ShippingAddress, None)
 class IPaymentRequestChangedResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentRequestChangedResult'
@@ -371,8 +359,8 @@ class IPaymentRequestSubmitResult(ComPtr):
     def get_Status(self) -> win32more.Windows.ApplicationModel.Payments.PaymentRequestStatus: ...
     @winrt_commethod(7)
     def get_Response(self) -> win32more.Windows.ApplicationModel.Payments.PaymentResponse: ...
-    Status = property(get_Status, None)
     Response = property(get_Response, None)
+    Status = property(get_Status, None)
 class IPaymentResponse(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentResponse'
@@ -391,12 +379,12 @@ class IPaymentResponse(ComPtr):
     def get_PayerPhoneNumber(self) -> WinRT_String: ...
     @winrt_commethod(12)
     def CompleteAsync(self, status: win32more.Windows.ApplicationModel.Payments.PaymentRequestCompletionStatus) -> win32more.Windows.Foundation.IAsyncAction: ...
-    PaymentToken = property(get_PaymentToken, None)
-    ShippingOption = property(get_ShippingOption, None)
-    ShippingAddress = property(get_ShippingAddress, None)
     PayerEmail = property(get_PayerEmail, None)
     PayerName = property(get_PayerName, None)
     PayerPhoneNumber = property(get_PayerPhoneNumber, None)
+    PaymentToken = property(get_PaymentToken, None)
+    ShippingAddress = property(get_ShippingAddress, None)
+    ShippingOption = property(get_ShippingOption, None)
 class IPaymentShippingOption(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentShippingOption'
@@ -417,10 +405,10 @@ class IPaymentShippingOption(ComPtr):
     def get_IsSelected(self) -> Boolean: ...
     @winrt_commethod(13)
     def put_IsSelected(self, value: Boolean) -> Void: ...
-    Label = property(get_Label, put_Label)
     Amount = property(get_Amount, put_Amount)
-    Tag = property(get_Tag, put_Tag)
     IsSelected = property(get_IsSelected, put_IsSelected)
+    Label = property(get_Label, put_Label)
+    Tag = property(get_Tag, put_Tag)
 class IPaymentShippingOptionFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentShippingOptionFactory'
@@ -439,8 +427,8 @@ class IPaymentToken(ComPtr):
     def get_PaymentMethodId(self) -> WinRT_String: ...
     @winrt_commethod(7)
     def get_JsonDetails(self) -> WinRT_String: ...
-    PaymentMethodId = property(get_PaymentMethodId, None)
     JsonDetails = property(get_JsonDetails, None)
+    PaymentMethodId = property(get_PaymentMethodId, None)
 class IPaymentTokenFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.ApplicationModel.Payments.IPaymentTokenFactory'
@@ -453,6 +441,13 @@ class PaymentAddress(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentAddress
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentAddress'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Payments.PaymentAddress.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentAddress: ...
     @winrt_mixinmethod
@@ -501,39 +496,55 @@ class PaymentAddress(ComPtr):
     def put_PhoneNumber(self: win32more.Windows.ApplicationModel.Payments.IPaymentAddress, value: WinRT_String) -> Void: ...
     @winrt_mixinmethod
     def get_Properties(self: win32more.Windows.ApplicationModel.Payments.IPaymentAddress) -> win32more.Windows.Foundation.Collections.ValueSet: ...
-    Country = property(get_Country, put_Country)
     AddressLines = property(get_AddressLines, put_AddressLines)
-    Region = property(get_Region, put_Region)
     City = property(get_City, put_City)
+    Country = property(get_Country, put_Country)
     DependentLocality = property(get_DependentLocality, put_DependentLocality)
-    PostalCode = property(get_PostalCode, put_PostalCode)
-    SortingCode = property(get_SortingCode, put_SortingCode)
     LanguageCode = property(get_LanguageCode, put_LanguageCode)
     Organization = property(get_Organization, put_Organization)
-    Recipient = property(get_Recipient, put_Recipient)
     PhoneNumber = property(get_PhoneNumber, put_PhoneNumber)
+    PostalCode = property(get_PostalCode, put_PostalCode)
     Properties = property(get_Properties, None)
+    Recipient = property(get_Recipient, put_Recipient)
+    Region = property(get_Region, put_Region)
+    SortingCode = property(get_SortingCode, put_SortingCode)
 class PaymentCanMakePaymentResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentCanMakePaymentResult
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentCanMakePaymentResult'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentCanMakePaymentResult.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentCanMakePaymentResultFactory, value: win32more.Windows.ApplicationModel.Payments.PaymentCanMakePaymentResultStatus) -> win32more.Windows.ApplicationModel.Payments.PaymentCanMakePaymentResult: ...
     @winrt_mixinmethod
     def get_Status(self: win32more.Windows.ApplicationModel.Payments.IPaymentCanMakePaymentResult) -> win32more.Windows.ApplicationModel.Payments.PaymentCanMakePaymentResultStatus: ...
     Status = property(get_Status, None)
-PaymentCanMakePaymentResultStatus = Int32
-PaymentCanMakePaymentResultStatus_Unknown: PaymentCanMakePaymentResultStatus = 0
-PaymentCanMakePaymentResultStatus_Yes: PaymentCanMakePaymentResultStatus = 1
-PaymentCanMakePaymentResultStatus_No: PaymentCanMakePaymentResultStatus = 2
-PaymentCanMakePaymentResultStatus_NotAllowed: PaymentCanMakePaymentResultStatus = 3
-PaymentCanMakePaymentResultStatus_UserNotSignedIn: PaymentCanMakePaymentResultStatus = 4
-PaymentCanMakePaymentResultStatus_SpecifiedPaymentMethodIdsNotSupported: PaymentCanMakePaymentResultStatus = 5
-PaymentCanMakePaymentResultStatus_NoQualifyingCardOnFile: PaymentCanMakePaymentResultStatus = 6
+class PaymentCanMakePaymentResultStatus(Int32):  # enum
+    Unknown = 0
+    Yes = 1
+    No = 2
+    NotAllowed = 3
+    UserNotSignedIn = 4
+    SpecifiedPaymentMethodIdsNotSupported = 5
+    NoQualifyingCardOnFile = 6
 class PaymentCurrencyAmount(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentCurrencyAmount
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentCurrencyAmount'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentCurrencyAmount.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Payments.PaymentCurrencyAmount.CreateWithCurrencySystem(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentCurrencyAmountFactory, value: WinRT_String, currency: WinRT_String) -> win32more.Windows.ApplicationModel.Payments.PaymentCurrencyAmount: ...
     @winrt_factorymethod
@@ -557,12 +568,23 @@ class PaymentDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentDetails
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentDetails'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetails.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetails.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetails.CreateWithDisplayItems(*args)
+        else:
+            raise ValueError('no matched constructor')
+    @winrt_activatemethod
+    def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentDetails: ...
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsFactory, total: win32more.Windows.ApplicationModel.Payments.PaymentItem) -> win32more.Windows.ApplicationModel.Payments.PaymentDetails: ...
     @winrt_factorymethod
     def CreateWithDisplayItems(cls: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsFactory, total: win32more.Windows.ApplicationModel.Payments.PaymentItem, displayItems: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentItem]) -> win32more.Windows.ApplicationModel.Payments.PaymentDetails: ...
-    @winrt_activatemethod
-    def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentDetails: ...
     @winrt_mixinmethod
     def get_Total(self: win32more.Windows.ApplicationModel.Payments.IPaymentDetails) -> win32more.Windows.ApplicationModel.Payments.PaymentItem: ...
     @winrt_mixinmethod
@@ -579,14 +601,25 @@ class PaymentDetails(ComPtr):
     def get_Modifiers(self: win32more.Windows.ApplicationModel.Payments.IPaymentDetails) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier]: ...
     @winrt_mixinmethod
     def put_Modifiers(self: win32more.Windows.ApplicationModel.Payments.IPaymentDetails, value: win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier]) -> Void: ...
-    Total = property(get_Total, put_Total)
     DisplayItems = property(get_DisplayItems, put_DisplayItems)
-    ShippingOptions = property(get_ShippingOptions, put_ShippingOptions)
     Modifiers = property(get_Modifiers, put_Modifiers)
+    ShippingOptions = property(get_ShippingOptions, put_ShippingOptions)
+    Total = property(get_Total, put_Total)
 class PaymentDetailsModifier(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsModifier
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentDetailsModifier'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier.CreateWithAdditionalDisplayItems(*args)
+        elif len(args) == 4:
+            return win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier.CreateWithAdditionalDisplayItemsAndJsonData(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsModifierFactory, supportedMethodIds: win32more.Windows.Foundation.Collections.IIterable[WinRT_String], total: win32more.Windows.ApplicationModel.Payments.PaymentItem) -> win32more.Windows.ApplicationModel.Payments.PaymentDetailsModifier: ...
     @winrt_factorymethod
@@ -601,14 +634,21 @@ class PaymentDetailsModifier(ComPtr):
     def get_Total(self: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsModifier) -> win32more.Windows.ApplicationModel.Payments.PaymentItem: ...
     @winrt_mixinmethod
     def get_AdditionalDisplayItems(self: win32more.Windows.ApplicationModel.Payments.IPaymentDetailsModifier) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.ApplicationModel.Payments.PaymentItem]: ...
+    AdditionalDisplayItems = property(get_AdditionalDisplayItems, None)
     JsonData = property(get_JsonData, None)
     SupportedMethodIds = property(get_SupportedMethodIds, None)
     Total = property(get_Total, None)
-    AdditionalDisplayItems = property(get_AdditionalDisplayItems, None)
 class PaymentItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentItem
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentItem'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentItem.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentItemFactory, label: WinRT_String, amount: win32more.Windows.ApplicationModel.Payments.PaymentCurrencyAmount) -> win32more.Windows.ApplicationModel.Payments.PaymentItem: ...
     @winrt_mixinmethod
@@ -623,13 +663,20 @@ class PaymentItem(ComPtr):
     def get_Pending(self: win32more.Windows.ApplicationModel.Payments.IPaymentItem) -> Boolean: ...
     @winrt_mixinmethod
     def put_Pending(self: win32more.Windows.ApplicationModel.Payments.IPaymentItem, value: Boolean) -> Void: ...
-    Label = property(get_Label, put_Label)
     Amount = property(get_Amount, put_Amount)
+    Label = property(get_Label, put_Label)
     Pending = property(get_Pending, put_Pending)
 class PaymentMediator(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentMediator
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentMediator'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Payments.PaymentMediator.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentMediator: ...
     @winrt_mixinmethod
@@ -644,10 +691,19 @@ class PaymentMerchantInfo(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentMerchantInfo
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentMerchantInfo'
-    @winrt_factorymethod
-    def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentMerchantInfoFactory, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo.Create(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo: ...
+    @winrt_factorymethod
+    def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentMerchantInfoFactory, uri: win32more.Windows.Foundation.Uri) -> win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo: ...
     @winrt_mixinmethod
     def get_PackageFullName(self: win32more.Windows.ApplicationModel.Payments.IPaymentMerchantInfo) -> WinRT_String: ...
     @winrt_mixinmethod
@@ -658,6 +714,15 @@ class PaymentMethodData(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentMethodData
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentMethodData'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentMethodData.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentMethodData.CreateWithJsonData(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentMethodDataFactory, supportedMethodIds: win32more.Windows.Foundation.Collections.IIterable[WinRT_String]) -> win32more.Windows.ApplicationModel.Payments.PaymentMethodData: ...
     @winrt_factorymethod
@@ -666,16 +731,23 @@ class PaymentMethodData(ComPtr):
     def get_SupportedMethodIds(self: win32more.Windows.ApplicationModel.Payments.IPaymentMethodData) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
     def get_JsonData(self: win32more.Windows.ApplicationModel.Payments.IPaymentMethodData) -> WinRT_String: ...
-    SupportedMethodIds = property(get_SupportedMethodIds, None)
     JsonData = property(get_JsonData, None)
-PaymentOptionPresence = Int32
-PaymentOptionPresence_None: PaymentOptionPresence = 0
-PaymentOptionPresence_Optional: PaymentOptionPresence = 1
-PaymentOptionPresence_Required: PaymentOptionPresence = 2
+    SupportedMethodIds = property(get_SupportedMethodIds, None)
+class PaymentOptionPresence(Int32):  # enum
+    None_ = 0
+    Optional = 1
+    Required = 2
 class PaymentOptions(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentOptions
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentOptions'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.ApplicationModel.Payments.PaymentOptions.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.ApplicationModel.Payments.PaymentOptions: ...
     @winrt_mixinmethod
@@ -707,14 +779,27 @@ class PaymentRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentRequest
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentRequest'
-    @winrt_factorymethod
-    def CreateWithMerchantInfoOptionsAndId(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestFactory2, details: win32more.Windows.ApplicationModel.Payments.PaymentDetails, methodData: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentMethodData], merchantInfo: win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo, options: win32more.Windows.ApplicationModel.Payments.PaymentOptions, id: WinRT_String) -> win32more.Windows.ApplicationModel.Payments.PaymentRequest: ...
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequest.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequest.CreateWithMerchantInfo(*args)
+        elif len(args) == 4:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequest.CreateWithMerchantInfoAndOptions(*args)
+        elif len(args) == 5:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequest.CreateWithMerchantInfoOptionsAndId(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestFactory, details: win32more.Windows.ApplicationModel.Payments.PaymentDetails, methodData: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentMethodData]) -> win32more.Windows.ApplicationModel.Payments.PaymentRequest: ...
     @winrt_factorymethod
     def CreateWithMerchantInfo(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestFactory, details: win32more.Windows.ApplicationModel.Payments.PaymentDetails, methodData: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentMethodData], merchantInfo: win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo) -> win32more.Windows.ApplicationModel.Payments.PaymentRequest: ...
     @winrt_factorymethod
     def CreateWithMerchantInfoAndOptions(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestFactory, details: win32more.Windows.ApplicationModel.Payments.PaymentDetails, methodData: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentMethodData], merchantInfo: win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo, options: win32more.Windows.ApplicationModel.Payments.PaymentOptions) -> win32more.Windows.ApplicationModel.Payments.PaymentRequest: ...
+    @winrt_factorymethod
+    def CreateWithMerchantInfoOptionsAndId(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestFactory2, details: win32more.Windows.ApplicationModel.Payments.PaymentDetails, methodData: win32more.Windows.Foundation.Collections.IIterable[win32more.Windows.ApplicationModel.Payments.PaymentMethodData], merchantInfo: win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo, options: win32more.Windows.ApplicationModel.Payments.PaymentOptions, id: WinRT_String) -> win32more.Windows.ApplicationModel.Payments.PaymentRequest: ...
     @winrt_mixinmethod
     def get_MerchantInfo(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequest) -> win32more.Windows.ApplicationModel.Payments.PaymentMerchantInfo: ...
     @winrt_mixinmethod
@@ -725,14 +810,14 @@ class PaymentRequest(ComPtr):
     def get_Options(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequest) -> win32more.Windows.ApplicationModel.Payments.PaymentOptions: ...
     @winrt_mixinmethod
     def get_Id(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequest2) -> WinRT_String: ...
-    MerchantInfo = property(get_MerchantInfo, None)
     Details = property(get_Details, None)
+    Id = property(get_Id, None)
+    MerchantInfo = property(get_MerchantInfo, None)
     MethodData = property(get_MethodData, None)
     Options = property(get_Options, None)
-    Id = property(get_Id, None)
-PaymentRequestChangeKind = Int32
-PaymentRequestChangeKind_ShippingOption: PaymentRequestChangeKind = 0
-PaymentRequestChangeKind_ShippingAddress: PaymentRequestChangeKind = 1
+class PaymentRequestChangeKind(Int32):  # enum
+    ShippingOption = 0
+    ShippingAddress = 1
 class PaymentRequestChangedArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentRequestChangedArgs
@@ -746,8 +831,8 @@ class PaymentRequestChangedArgs(ComPtr):
     @winrt_mixinmethod
     def Acknowledge(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequestChangedArgs, changeResult: win32more.Windows.ApplicationModel.Payments.PaymentRequestChangedResult) -> Void: ...
     ChangeKind = property(get_ChangeKind, None)
-    ShippingAddress = property(get_ShippingAddress, None)
     SelectedShippingOption = property(get_SelectedShippingOption, None)
+    ShippingAddress = property(get_ShippingAddress, None)
 class PaymentRequestChangedHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{5078b9e1-f398-4f2c-a27e-94d371cf6c7d}')
@@ -756,6 +841,15 @@ class PaymentRequestChangedResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentRequestChangedResult
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentRequestChangedResult'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequestChangedResult.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentRequestChangedResult.CreateWithPaymentDetails(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentRequestChangedResultFactory, changeAcceptedByMerchant: Boolean) -> win32more.Windows.ApplicationModel.Payments.PaymentRequestChangedResult: ...
     @winrt_factorymethod
@@ -775,14 +869,14 @@ class PaymentRequestChangedResult(ComPtr):
     ChangeAcceptedByMerchant = property(get_ChangeAcceptedByMerchant, put_ChangeAcceptedByMerchant)
     Message = property(get_Message, put_Message)
     UpdatedPaymentDetails = property(get_UpdatedPaymentDetails, put_UpdatedPaymentDetails)
-PaymentRequestCompletionStatus = Int32
-PaymentRequestCompletionStatus_Succeeded: PaymentRequestCompletionStatus = 0
-PaymentRequestCompletionStatus_Failed: PaymentRequestCompletionStatus = 1
-PaymentRequestCompletionStatus_Unknown: PaymentRequestCompletionStatus = 2
-PaymentRequestStatus = Int32
-PaymentRequestStatus_Succeeded: PaymentRequestStatus = 0
-PaymentRequestStatus_Failed: PaymentRequestStatus = 1
-PaymentRequestStatus_Canceled: PaymentRequestStatus = 2
+class PaymentRequestCompletionStatus(Int32):  # enum
+    Succeeded = 0
+    Failed = 1
+    Unknown = 2
+class PaymentRequestStatus(Int32):  # enum
+    Succeeded = 0
+    Failed = 1
+    Canceled = 2
 class PaymentRequestSubmitResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentRequestSubmitResult
@@ -791,8 +885,8 @@ class PaymentRequestSubmitResult(ComPtr):
     def get_Status(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequestSubmitResult) -> win32more.Windows.ApplicationModel.Payments.PaymentRequestStatus: ...
     @winrt_mixinmethod
     def get_Response(self: win32more.Windows.ApplicationModel.Payments.IPaymentRequestSubmitResult) -> win32more.Windows.ApplicationModel.Payments.PaymentResponse: ...
-    Status = property(get_Status, None)
     Response = property(get_Response, None)
+    Status = property(get_Status, None)
 class PaymentResponse(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentResponse
@@ -811,16 +905,27 @@ class PaymentResponse(ComPtr):
     def get_PayerPhoneNumber(self: win32more.Windows.ApplicationModel.Payments.IPaymentResponse) -> WinRT_String: ...
     @winrt_mixinmethod
     def CompleteAsync(self: win32more.Windows.ApplicationModel.Payments.IPaymentResponse, status: win32more.Windows.ApplicationModel.Payments.PaymentRequestCompletionStatus) -> win32more.Windows.Foundation.IAsyncAction: ...
-    PaymentToken = property(get_PaymentToken, None)
-    ShippingOption = property(get_ShippingOption, None)
-    ShippingAddress = property(get_ShippingAddress, None)
     PayerEmail = property(get_PayerEmail, None)
     PayerName = property(get_PayerName, None)
     PayerPhoneNumber = property(get_PayerPhoneNumber, None)
+    PaymentToken = property(get_PaymentToken, None)
+    ShippingAddress = property(get_ShippingAddress, None)
+    ShippingOption = property(get_ShippingOption, None)
 class PaymentShippingOption(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentShippingOption
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentShippingOption'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentShippingOption.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.ApplicationModel.Payments.PaymentShippingOption.CreateWithSelected(*args)
+        elif len(args) == 4:
+            return win32more.Windows.ApplicationModel.Payments.PaymentShippingOption.CreateWithSelectedAndTag(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentShippingOptionFactory, label: WinRT_String, amount: win32more.Windows.ApplicationModel.Payments.PaymentCurrencyAmount) -> win32more.Windows.ApplicationModel.Payments.PaymentShippingOption: ...
     @winrt_factorymethod
@@ -843,18 +948,27 @@ class PaymentShippingOption(ComPtr):
     def get_IsSelected(self: win32more.Windows.ApplicationModel.Payments.IPaymentShippingOption) -> Boolean: ...
     @winrt_mixinmethod
     def put_IsSelected(self: win32more.Windows.ApplicationModel.Payments.IPaymentShippingOption, value: Boolean) -> Void: ...
-    Label = property(get_Label, put_Label)
     Amount = property(get_Amount, put_Amount)
-    Tag = property(get_Tag, put_Tag)
     IsSelected = property(get_IsSelected, put_IsSelected)
-PaymentShippingType = Int32
-PaymentShippingType_Shipping: PaymentShippingType = 0
-PaymentShippingType_Delivery: PaymentShippingType = 1
-PaymentShippingType_Pickup: PaymentShippingType = 2
+    Label = property(get_Label, put_Label)
+    Tag = property(get_Tag, put_Tag)
+class PaymentShippingType(Int32):  # enum
+    Shipping = 0
+    Delivery = 1
+    Pickup = 2
 class PaymentToken(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.ApplicationModel.Payments.IPaymentToken
     _classid_ = 'Windows.ApplicationModel.Payments.PaymentToken'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.ApplicationModel.Payments.PaymentToken.Create(*args)
+        elif len(args) == 2:
+            return win32more.Windows.ApplicationModel.Payments.PaymentToken.CreateWithJsonDetails(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.ApplicationModel.Payments.IPaymentTokenFactory, paymentMethodId: WinRT_String) -> win32more.Windows.ApplicationModel.Payments.PaymentToken: ...
     @winrt_factorymethod
@@ -863,6 +977,8 @@ class PaymentToken(ComPtr):
     def get_PaymentMethodId(self: win32more.Windows.ApplicationModel.Payments.IPaymentToken) -> WinRT_String: ...
     @winrt_mixinmethod
     def get_JsonDetails(self: win32more.Windows.ApplicationModel.Payments.IPaymentToken) -> WinRT_String: ...
-    PaymentMethodId = property(get_PaymentMethodId, None)
     JsonDetails = property(get_JsonDetails, None)
+    PaymentMethodId = property(get_PaymentMethodId, None)
+
+
 make_ready(__name__)

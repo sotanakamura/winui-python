@@ -1,25 +1,12 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Media.Import
 import win32more.Windows.Storage
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class IPhotoImportDeleteImportedItemsFromSourceResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportDeleteImportedItemsFromSourceResult'
@@ -50,19 +37,19 @@ class IPhotoImportDeleteImportedItemsFromSourceResult(ComPtr):
     def get_TotalCount(self) -> UInt32: ...
     @winrt_commethod(18)
     def get_TotalSizeInBytes(self) -> UInt64: ...
-    Session = property(get_Session, None)
-    HasSucceeded = property(get_HasSucceeded, None)
     DeletedItems = property(get_DeletedItems, None)
+    HasSucceeded = property(get_HasSucceeded, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    Session = property(get_Session, None)
     SiblingsCount = property(get_SiblingsCount, None)
     SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
     TotalCount = property(get_TotalCount, None)
     TotalSizeInBytes = property(get_TotalSizeInBytes, None)
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
 class IPhotoImportFindItemsResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportFindItemsResult'
@@ -133,30 +120,30 @@ class IPhotoImportFindItemsResult(ComPtr):
     def add_ItemImported(self, value: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Media.Import.PhotoImportFindItemsResult, win32more.Windows.Media.Import.PhotoImportItemImportedEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(38)
     def remove_ItemImported(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Session = property(get_Session, None)
-    HasSucceeded = property(get_HasSucceeded, None)
     FoundItems = property(get_FoundItems, None)
+    HasSucceeded = property(get_HasSucceeded, None)
+    ImportMode = property(get_ImportMode, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
-    SiblingsCount = property(get_SiblingsCount, None)
-    SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
-    TotalCount = property(get_TotalCount, None)
-    TotalSizeInBytes = property(get_TotalSizeInBytes, None)
-    ImportMode = property(get_ImportMode, None)
     SelectedPhotosCount = property(get_SelectedPhotosCount, None)
     SelectedPhotosSizeInBytes = property(get_SelectedPhotosSizeInBytes, None)
-    SelectedVideosCount = property(get_SelectedVideosCount, None)
-    SelectedVideosSizeInBytes = property(get_SelectedVideosSizeInBytes, None)
-    SelectedSidecarsCount = property(get_SelectedSidecarsCount, None)
-    SelectedSidecarsSizeInBytes = property(get_SelectedSidecarsSizeInBytes, None)
     SelectedSiblingsCount = property(get_SelectedSiblingsCount, None)
     SelectedSiblingsSizeInBytes = property(get_SelectedSiblingsSizeInBytes, None)
+    SelectedSidecarsCount = property(get_SelectedSidecarsCount, None)
+    SelectedSidecarsSizeInBytes = property(get_SelectedSidecarsSizeInBytes, None)
     SelectedTotalCount = property(get_SelectedTotalCount, None)
     SelectedTotalSizeInBytes = property(get_SelectedTotalSizeInBytes, None)
+    SelectedVideosCount = property(get_SelectedVideosCount, None)
+    SelectedVideosSizeInBytes = property(get_SelectedVideosSizeInBytes, None)
+    Session = property(get_Session, None)
+    SiblingsCount = property(get_SiblingsCount, None)
+    SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    TotalCount = property(get_TotalCount, None)
+    TotalSizeInBytes = property(get_TotalSizeInBytes, None)
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
 class IPhotoImportFindItemsResult2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportFindItemsResult2'
@@ -195,19 +182,19 @@ class IPhotoImportImportItemsResult(ComPtr):
     def get_TotalSizeInBytes(self) -> UInt64: ...
     @winrt_commethod(19)
     def DeleteImportedItemsFromSourceAsync(self) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportDeleteImportedItemsFromSourceResult, Double]: ...
-    Session = property(get_Session, None)
     HasSucceeded = property(get_HasSucceeded, None)
     ImportedItems = property(get_ImportedItems, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    Session = property(get_Session, None)
     SiblingsCount = property(get_SiblingsCount, None)
     SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
     TotalCount = property(get_TotalCount, None)
     TotalSizeInBytes = property(get_TotalSizeInBytes, None)
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
 class IPhotoImportItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportItem'
@@ -238,18 +225,18 @@ class IPhotoImportItem(ComPtr):
     def get_ImportedFileNames(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_commethod(18)
     def get_DeletedFileNames(self) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
-    Name = property(get_Name, None)
-    ItemKey = property(get_ItemKey, None)
     ContentType = property(get_ContentType, None)
-    SizeInBytes = property(get_SizeInBytes, None)
     Date = property(get_Date, None)
+    DeletedFileNames = property(get_DeletedFileNames, None)
+    ImportedFileNames = property(get_ImportedFileNames, None)
+    IsSelected = property(get_IsSelected, put_IsSelected)
+    ItemKey = property(get_ItemKey, None)
+    Name = property(get_Name, None)
     Sibling = property(get_Sibling, None)
     Sidecars = property(get_Sidecars, None)
-    VideoSegments = property(get_VideoSegments, None)
-    IsSelected = property(get_IsSelected, put_IsSelected)
+    SizeInBytes = property(get_SizeInBytes, None)
     Thumbnail = property(get_Thumbnail, None)
-    ImportedFileNames = property(get_ImportedFileNames, None)
-    DeletedFileNames = property(get_DeletedFileNames, None)
+    VideoSegments = property(get_VideoSegments, None)
 class IPhotoImportItem2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportItem2'
@@ -288,11 +275,11 @@ class IPhotoImportOperation(ComPtr):
     def get_ContinueImportingItemsAsync(self) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportImportItemsResult, win32more.Windows.Media.Import.PhotoImportProgress]: ...
     @winrt_commethod(10)
     def get_ContinueDeletingImportedItemsFromSourceAsync(self) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportDeleteImportedItemsFromSourceResult, Double]: ...
-    Stage = property(get_Stage, None)
-    Session = property(get_Session, None)
+    ContinueDeletingImportedItemsFromSourceAsync = property(get_ContinueDeletingImportedItemsFromSourceAsync, None)
     ContinueFindingItemsAsync = property(get_ContinueFindingItemsAsync, None)
     ContinueImportingItemsAsync = property(get_ContinueImportingItemsAsync, None)
-    ContinueDeletingImportedItemsFromSourceAsync = property(get_ContinueDeletingImportedItemsFromSourceAsync, None)
+    Session = property(get_Session, None)
+    Stage = property(get_Stage, None)
 class IPhotoImportSelectionChangedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportSelectionChangedEventArgs'
@@ -326,12 +313,12 @@ class IPhotoImportSession(ComPtr):
     def get_DestinationFileNamePrefix(self) -> WinRT_String: ...
     @winrt_commethod(16)
     def FindItemsAsync(self, contentTypeFilter: win32more.Windows.Media.Import.PhotoImportContentTypeFilter, itemSelectionMode: win32more.Windows.Media.Import.PhotoImportItemSelectionMode) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportFindItemsResult, UInt32]: ...
-    Source = property(get_Source, None)
-    SessionId = property(get_SessionId, None)
-    DestinationFolder = property(get_DestinationFolder, put_DestinationFolder)
     AppendSessionDateToDestinationFolder = property(get_AppendSessionDateToDestinationFolder, put_AppendSessionDateToDestinationFolder)
-    SubfolderCreationMode = property(get_SubfolderCreationMode, put_SubfolderCreationMode)
     DestinationFileNamePrefix = property(get_DestinationFileNamePrefix, put_DestinationFileNamePrefix)
+    DestinationFolder = property(get_DestinationFolder, put_DestinationFolder)
+    SessionId = property(get_SessionId, None)
+    Source = property(get_Source, None)
+    SubfolderCreationMode = property(get_SubfolderCreationMode, put_SubfolderCreationMode)
 class IPhotoImportSession2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportSession2'
@@ -344,8 +331,8 @@ class IPhotoImportSession2(ComPtr):
     def put_RememberDeselectedItems(self, value: Boolean) -> Void: ...
     @winrt_commethod(9)
     def get_RememberDeselectedItems(self) -> Boolean: ...
-    SubfolderDateFormat = property(get_SubfolderDateFormat, put_SubfolderDateFormat)
     RememberDeselectedItems = property(get_RememberDeselectedItems, put_RememberDeselectedItems)
+    SubfolderDateFormat = property(get_SubfolderDateFormat, put_SubfolderDateFormat)
 class IPhotoImportSidecar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportSidecar'
@@ -356,9 +343,9 @@ class IPhotoImportSidecar(ComPtr):
     def get_SizeInBytes(self) -> UInt64: ...
     @winrt_commethod(8)
     def get_Date(self) -> win32more.Windows.Foundation.DateTime: ...
+    Date = property(get_Date, None)
     Name = property(get_Name, None)
     SizeInBytes = property(get_SizeInBytes, None)
-    Date = property(get_Date, None)
 class IPhotoImportSource(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportSource'
@@ -397,22 +384,22 @@ class IPhotoImportSource(ComPtr):
     def get_Thumbnail(self) -> win32more.Windows.Storage.Streams.IRandomAccessStreamReference: ...
     @winrt_commethod(22)
     def CreateImportSession(self) -> win32more.Windows.Media.Import.PhotoImportSession: ...
-    Id = property(get_Id, None)
-    DisplayName = property(get_DisplayName, None)
-    Description = property(get_Description, None)
-    Manufacturer = property(get_Manufacturer, None)
-    Model = property(get_Model, None)
-    SerialNumber = property(get_SerialNumber, None)
+    BatteryLevelPercent = property(get_BatteryLevelPercent, None)
     ConnectionProtocol = property(get_ConnectionProtocol, None)
     ConnectionTransport = property(get_ConnectionTransport, None)
-    Type = property(get_Type, None)
-    PowerSource = property(get_PowerSource, None)
-    BatteryLevelPercent = property(get_BatteryLevelPercent, None)
     DateTime = property(get_DateTime, None)
-    StorageMedia = property(get_StorageMedia, None)
+    Description = property(get_Description, None)
+    DisplayName = property(get_DisplayName, None)
+    Id = property(get_Id, None)
     IsLocked = property(get_IsLocked, None)
     IsMassStorage = property(get_IsMassStorage, None)
+    Manufacturer = property(get_Manufacturer, None)
+    Model = property(get_Model, None)
+    PowerSource = property(get_PowerSource, None)
+    SerialNumber = property(get_SerialNumber, None)
+    StorageMedia = property(get_StorageMedia, None)
     Thumbnail = property(get_Thumbnail, None)
+    Type = property(get_Type, None)
 class IPhotoImportSourceStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportSourceStatics'
@@ -441,13 +428,13 @@ class IPhotoImportStorageMedium(ComPtr):
     def get_AvailableSpaceInBytes(self) -> UInt64: ...
     @winrt_commethod(13)
     def Refresh(self) -> Void: ...
-    Name = property(get_Name, None)
+    AvailableSpaceInBytes = property(get_AvailableSpaceInBytes, None)
+    CapacityInBytes = property(get_CapacityInBytes, None)
     Description = property(get_Description, None)
+    Name = property(get_Name, None)
     SerialNumber = property(get_SerialNumber, None)
     StorageMediumType = property(get_StorageMediumType, None)
     SupportedAccessMode = property(get_SupportedAccessMode, None)
-    CapacityInBytes = property(get_CapacityInBytes, None)
-    AvailableSpaceInBytes = property(get_AvailableSpaceInBytes, None)
 class IPhotoImportVideoSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.IPhotoImportVideoSegment'
@@ -462,29 +449,29 @@ class IPhotoImportVideoSegment(ComPtr):
     def get_Sibling(self) -> win32more.Windows.Media.Import.PhotoImportSidecar: ...
     @winrt_commethod(10)
     def get_Sidecars(self) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Import.PhotoImportSidecar]: ...
-    Name = property(get_Name, None)
-    SizeInBytes = property(get_SizeInBytes, None)
     Date = property(get_Date, None)
+    Name = property(get_Name, None)
     Sibling = property(get_Sibling, None)
     Sidecars = property(get_Sidecars, None)
-PhotoImportAccessMode = Int32
-PhotoImportAccessMode_ReadWrite: PhotoImportAccessMode = 0
-PhotoImportAccessMode_ReadOnly: PhotoImportAccessMode = 1
-PhotoImportAccessMode_ReadAndDelete: PhotoImportAccessMode = 2
-PhotoImportConnectionTransport = Int32
-PhotoImportConnectionTransport_Unknown: PhotoImportConnectionTransport = 0
-PhotoImportConnectionTransport_Usb: PhotoImportConnectionTransport = 1
-PhotoImportConnectionTransport_IP: PhotoImportConnectionTransport = 2
-PhotoImportConnectionTransport_Bluetooth: PhotoImportConnectionTransport = 3
-PhotoImportContentType = Int32
-PhotoImportContentType_Unknown: PhotoImportContentType = 0
-PhotoImportContentType_Image: PhotoImportContentType = 1
-PhotoImportContentType_Video: PhotoImportContentType = 2
-PhotoImportContentTypeFilter = Int32
-PhotoImportContentTypeFilter_OnlyImages: PhotoImportContentTypeFilter = 0
-PhotoImportContentTypeFilter_OnlyVideos: PhotoImportContentTypeFilter = 1
-PhotoImportContentTypeFilter_ImagesAndVideos: PhotoImportContentTypeFilter = 2
-PhotoImportContentTypeFilter_ImagesAndVideosFromCameraRoll: PhotoImportContentTypeFilter = 3
+    SizeInBytes = property(get_SizeInBytes, None)
+class PhotoImportAccessMode(Int32):  # enum
+    ReadWrite = 0
+    ReadOnly = 1
+    ReadAndDelete = 2
+class PhotoImportConnectionTransport(Int32):  # enum
+    Unknown = 0
+    Usb = 1
+    IP = 2
+    Bluetooth = 3
+class PhotoImportContentType(Int32):  # enum
+    Unknown = 0
+    Image = 1
+    Video = 2
+class PhotoImportContentTypeFilter(Int32):  # enum
+    OnlyImages = 0
+    OnlyVideos = 1
+    ImagesAndVideos = 2
+    ImagesAndVideosFromCameraRoll = 3
 class PhotoImportDeleteImportedItemsFromSourceResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportDeleteImportedItemsFromSourceResult
@@ -515,19 +502,19 @@ class PhotoImportDeleteImportedItemsFromSourceResult(ComPtr):
     def get_TotalCount(self: win32more.Windows.Media.Import.IPhotoImportDeleteImportedItemsFromSourceResult) -> UInt32: ...
     @winrt_mixinmethod
     def get_TotalSizeInBytes(self: win32more.Windows.Media.Import.IPhotoImportDeleteImportedItemsFromSourceResult) -> UInt64: ...
-    Session = property(get_Session, None)
-    HasSucceeded = property(get_HasSucceeded, None)
     DeletedItems = property(get_DeletedItems, None)
+    HasSucceeded = property(get_HasSucceeded, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    Session = property(get_Session, None)
     SiblingsCount = property(get_SiblingsCount, None)
     SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
     TotalCount = property(get_TotalCount, None)
     TotalSizeInBytes = property(get_TotalSizeInBytes, None)
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
 class PhotoImportFindItemsResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportFindItemsResult
@@ -600,30 +587,30 @@ class PhotoImportFindItemsResult(ComPtr):
     def remove_ItemImported(self: win32more.Windows.Media.Import.IPhotoImportFindItemsResult, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     @winrt_mixinmethod
     def AddItemsInDateRangeToSelection(self: win32more.Windows.Media.Import.IPhotoImportFindItemsResult2, rangeStart: win32more.Windows.Foundation.DateTime, rangeLength: win32more.Windows.Foundation.TimeSpan) -> Void: ...
-    Session = property(get_Session, None)
-    HasSucceeded = property(get_HasSucceeded, None)
     FoundItems = property(get_FoundItems, None)
+    HasSucceeded = property(get_HasSucceeded, None)
+    ImportMode = property(get_ImportMode, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
-    SiblingsCount = property(get_SiblingsCount, None)
-    SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
-    TotalCount = property(get_TotalCount, None)
-    TotalSizeInBytes = property(get_TotalSizeInBytes, None)
-    ImportMode = property(get_ImportMode, None)
     SelectedPhotosCount = property(get_SelectedPhotosCount, None)
     SelectedPhotosSizeInBytes = property(get_SelectedPhotosSizeInBytes, None)
-    SelectedVideosCount = property(get_SelectedVideosCount, None)
-    SelectedVideosSizeInBytes = property(get_SelectedVideosSizeInBytes, None)
-    SelectedSidecarsCount = property(get_SelectedSidecarsCount, None)
-    SelectedSidecarsSizeInBytes = property(get_SelectedSidecarsSizeInBytes, None)
     SelectedSiblingsCount = property(get_SelectedSiblingsCount, None)
     SelectedSiblingsSizeInBytes = property(get_SelectedSiblingsSizeInBytes, None)
+    SelectedSidecarsCount = property(get_SelectedSidecarsCount, None)
+    SelectedSidecarsSizeInBytes = property(get_SelectedSidecarsSizeInBytes, None)
     SelectedTotalCount = property(get_SelectedTotalCount, None)
     SelectedTotalSizeInBytes = property(get_SelectedTotalSizeInBytes, None)
+    SelectedVideosCount = property(get_SelectedVideosCount, None)
+    SelectedVideosSizeInBytes = property(get_SelectedVideosSizeInBytes, None)
+    Session = property(get_Session, None)
+    SiblingsCount = property(get_SiblingsCount, None)
+    SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    TotalCount = property(get_TotalCount, None)
+    TotalSizeInBytes = property(get_TotalSizeInBytes, None)
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
 class PhotoImportImportItemsResult(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportImportItemsResult
@@ -656,24 +643,24 @@ class PhotoImportImportItemsResult(ComPtr):
     def get_TotalSizeInBytes(self: win32more.Windows.Media.Import.IPhotoImportImportItemsResult) -> UInt64: ...
     @winrt_mixinmethod
     def DeleteImportedItemsFromSourceAsync(self: win32more.Windows.Media.Import.IPhotoImportImportItemsResult) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportDeleteImportedItemsFromSourceResult, Double]: ...
-    Session = property(get_Session, None)
     HasSucceeded = property(get_HasSucceeded, None)
     ImportedItems = property(get_ImportedItems, None)
     PhotosCount = property(get_PhotosCount, None)
     PhotosSizeInBytes = property(get_PhotosSizeInBytes, None)
-    VideosCount = property(get_VideosCount, None)
-    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
-    SidecarsCount = property(get_SidecarsCount, None)
-    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
+    Session = property(get_Session, None)
     SiblingsCount = property(get_SiblingsCount, None)
     SiblingsSizeInBytes = property(get_SiblingsSizeInBytes, None)
+    SidecarsCount = property(get_SidecarsCount, None)
+    SidecarsSizeInBytes = property(get_SidecarsSizeInBytes, None)
     TotalCount = property(get_TotalCount, None)
     TotalSizeInBytes = property(get_TotalSizeInBytes, None)
-PhotoImportImportMode = Int32
-PhotoImportImportMode_ImportEverything: PhotoImportImportMode = 0
-PhotoImportImportMode_IgnoreSidecars: PhotoImportImportMode = 1
-PhotoImportImportMode_IgnoreSiblings: PhotoImportImportMode = 2
-PhotoImportImportMode_IgnoreSidecarsAndSiblings: PhotoImportImportMode = 3
+    VideosCount = property(get_VideosCount, None)
+    VideosSizeInBytes = property(get_VideosSizeInBytes, None)
+class PhotoImportImportMode(Int32):  # enum
+    ImportEverything = 0
+    IgnoreSidecars = 1
+    IgnoreSiblings = 2
+    IgnoreSidecarsAndSiblings = 3
 class PhotoImportItem(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportItem
@@ -706,19 +693,19 @@ class PhotoImportItem(ComPtr):
     def get_DeletedFileNames(self: win32more.Windows.Media.Import.IPhotoImportItem) -> win32more.Windows.Foundation.Collections.IVectorView[WinRT_String]: ...
     @winrt_mixinmethod
     def get_Path(self: win32more.Windows.Media.Import.IPhotoImportItem2) -> WinRT_String: ...
-    Name = property(get_Name, None)
-    ItemKey = property(get_ItemKey, None)
     ContentType = property(get_ContentType, None)
-    SizeInBytes = property(get_SizeInBytes, None)
     Date = property(get_Date, None)
+    DeletedFileNames = property(get_DeletedFileNames, None)
+    ImportedFileNames = property(get_ImportedFileNames, None)
+    IsSelected = property(get_IsSelected, put_IsSelected)
+    ItemKey = property(get_ItemKey, None)
+    Name = property(get_Name, None)
+    Path = property(get_Path, None)
     Sibling = property(get_Sibling, None)
     Sidecars = property(get_Sidecars, None)
-    VideoSegments = property(get_VideoSegments, None)
-    IsSelected = property(get_IsSelected, put_IsSelected)
+    SizeInBytes = property(get_SizeInBytes, None)
     Thumbnail = property(get_Thumbnail, None)
-    ImportedFileNames = property(get_ImportedFileNames, None)
-    DeletedFileNames = property(get_DeletedFileNames, None)
-    Path = property(get_Path, None)
+    VideoSegments = property(get_VideoSegments, None)
 class PhotoImportItemImportedEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportItemImportedEventArgs
@@ -726,10 +713,10 @@ class PhotoImportItemImportedEventArgs(ComPtr):
     @winrt_mixinmethod
     def get_ImportedItem(self: win32more.Windows.Media.Import.IPhotoImportItemImportedEventArgs) -> win32more.Windows.Media.Import.PhotoImportItem: ...
     ImportedItem = property(get_ImportedItem, None)
-PhotoImportItemSelectionMode = Int32
-PhotoImportItemSelectionMode_SelectAll: PhotoImportItemSelectionMode = 0
-PhotoImportItemSelectionMode_SelectNone: PhotoImportItemSelectionMode = 1
-PhotoImportItemSelectionMode_SelectNew: PhotoImportItemSelectionMode = 2
+class PhotoImportItemSelectionMode(Int32):  # enum
+    SelectAll = 0
+    SelectNone = 1
+    SelectNew = 2
 class PhotoImportManager(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Import.PhotoImportManager'
@@ -753,15 +740,15 @@ class PhotoImportOperation(ComPtr):
     def get_ContinueImportingItemsAsync(self: win32more.Windows.Media.Import.IPhotoImportOperation) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportImportItemsResult, win32more.Windows.Media.Import.PhotoImportProgress]: ...
     @winrt_mixinmethod
     def get_ContinueDeletingImportedItemsFromSourceAsync(self: win32more.Windows.Media.Import.IPhotoImportOperation) -> win32more.Windows.Foundation.IAsyncOperationWithProgress[win32more.Windows.Media.Import.PhotoImportDeleteImportedItemsFromSourceResult, Double]: ...
-    Stage = property(get_Stage, None)
-    Session = property(get_Session, None)
+    ContinueDeletingImportedItemsFromSourceAsync = property(get_ContinueDeletingImportedItemsFromSourceAsync, None)
     ContinueFindingItemsAsync = property(get_ContinueFindingItemsAsync, None)
     ContinueImportingItemsAsync = property(get_ContinueImportingItemsAsync, None)
-    ContinueDeletingImportedItemsFromSourceAsync = property(get_ContinueDeletingImportedItemsFromSourceAsync, None)
-PhotoImportPowerSource = Int32
-PhotoImportPowerSource_Unknown: PhotoImportPowerSource = 0
-PhotoImportPowerSource_Battery: PhotoImportPowerSource = 1
-PhotoImportPowerSource_External: PhotoImportPowerSource = 2
+    Session = property(get_Session, None)
+    Stage = property(get_Stage, None)
+class PhotoImportPowerSource(Int32):  # enum
+    Unknown = 0
+    Battery = 1
+    External = 2
 class PhotoImportProgress(EasyCastStructure):
     ItemsImported: UInt32
     TotalItemsToImport: UInt32
@@ -811,14 +798,14 @@ class PhotoImportSession(ComPtr):
     def put_RememberDeselectedItems(self: win32more.Windows.Media.Import.IPhotoImportSession2, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_RememberDeselectedItems(self: win32more.Windows.Media.Import.IPhotoImportSession2) -> Boolean: ...
-    Source = property(get_Source, None)
-    SessionId = property(get_SessionId, None)
-    DestinationFolder = property(get_DestinationFolder, put_DestinationFolder)
     AppendSessionDateToDestinationFolder = property(get_AppendSessionDateToDestinationFolder, put_AppendSessionDateToDestinationFolder)
-    SubfolderCreationMode = property(get_SubfolderCreationMode, put_SubfolderCreationMode)
     DestinationFileNamePrefix = property(get_DestinationFileNamePrefix, put_DestinationFileNamePrefix)
-    SubfolderDateFormat = property(get_SubfolderDateFormat, put_SubfolderDateFormat)
+    DestinationFolder = property(get_DestinationFolder, put_DestinationFolder)
     RememberDeselectedItems = property(get_RememberDeselectedItems, put_RememberDeselectedItems)
+    SessionId = property(get_SessionId, None)
+    Source = property(get_Source, None)
+    SubfolderCreationMode = property(get_SubfolderCreationMode, put_SubfolderCreationMode)
+    SubfolderDateFormat = property(get_SubfolderDateFormat, put_SubfolderDateFormat)
 class PhotoImportSidecar(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportSidecar
@@ -829,9 +816,9 @@ class PhotoImportSidecar(ComPtr):
     def get_SizeInBytes(self: win32more.Windows.Media.Import.IPhotoImportSidecar) -> UInt64: ...
     @winrt_mixinmethod
     def get_Date(self: win32more.Windows.Media.Import.IPhotoImportSidecar) -> win32more.Windows.Foundation.DateTime: ...
+    Date = property(get_Date, None)
     Name = property(get_Name, None)
     SizeInBytes = property(get_SizeInBytes, None)
-    Date = property(get_Date, None)
 class PhotoImportSource(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportSource
@@ -874,35 +861,35 @@ class PhotoImportSource(ComPtr):
     def FromIdAsync(cls: win32more.Windows.Media.Import.IPhotoImportSourceStatics, sourceId: WinRT_String) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Import.PhotoImportSource]: ...
     @winrt_classmethod
     def FromFolderAsync(cls: win32more.Windows.Media.Import.IPhotoImportSourceStatics, sourceRootFolder: win32more.Windows.Storage.IStorageFolder) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Import.PhotoImportSource]: ...
-    Id = property(get_Id, None)
-    DisplayName = property(get_DisplayName, None)
-    Description = property(get_Description, None)
-    Manufacturer = property(get_Manufacturer, None)
-    Model = property(get_Model, None)
-    SerialNumber = property(get_SerialNumber, None)
+    BatteryLevelPercent = property(get_BatteryLevelPercent, None)
     ConnectionProtocol = property(get_ConnectionProtocol, None)
     ConnectionTransport = property(get_ConnectionTransport, None)
-    Type = property(get_Type, None)
-    PowerSource = property(get_PowerSource, None)
-    BatteryLevelPercent = property(get_BatteryLevelPercent, None)
     DateTime = property(get_DateTime, None)
-    StorageMedia = property(get_StorageMedia, None)
+    Description = property(get_Description, None)
+    DisplayName = property(get_DisplayName, None)
+    Id = property(get_Id, None)
     IsLocked = property(get_IsLocked, None)
     IsMassStorage = property(get_IsMassStorage, None)
+    Manufacturer = property(get_Manufacturer, None)
+    Model = property(get_Model, None)
+    PowerSource = property(get_PowerSource, None)
+    SerialNumber = property(get_SerialNumber, None)
+    StorageMedia = property(get_StorageMedia, None)
     Thumbnail = property(get_Thumbnail, None)
-PhotoImportSourceType = Int32
-PhotoImportSourceType_Generic: PhotoImportSourceType = 0
-PhotoImportSourceType_Camera: PhotoImportSourceType = 1
-PhotoImportSourceType_MediaPlayer: PhotoImportSourceType = 2
-PhotoImportSourceType_Phone: PhotoImportSourceType = 3
-PhotoImportSourceType_Video: PhotoImportSourceType = 4
-PhotoImportSourceType_PersonalInfoManager: PhotoImportSourceType = 5
-PhotoImportSourceType_AudioRecorder: PhotoImportSourceType = 6
-PhotoImportStage = Int32
-PhotoImportStage_NotStarted: PhotoImportStage = 0
-PhotoImportStage_FindingItems: PhotoImportStage = 1
-PhotoImportStage_ImportingItems: PhotoImportStage = 2
-PhotoImportStage_DeletingImportedItemsFromSource: PhotoImportStage = 3
+    Type = property(get_Type, None)
+class PhotoImportSourceType(Int32):  # enum
+    Generic = 0
+    Camera = 1
+    MediaPlayer = 2
+    Phone = 3
+    Video = 4
+    PersonalInfoManager = 5
+    AudioRecorder = 6
+class PhotoImportStage(Int32):  # enum
+    NotStarted = 0
+    FindingItems = 1
+    ImportingItems = 2
+    DeletingImportedItemsFromSource = 3
 class PhotoImportStorageMedium(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportStorageMedium
@@ -923,26 +910,26 @@ class PhotoImportStorageMedium(ComPtr):
     def get_AvailableSpaceInBytes(self: win32more.Windows.Media.Import.IPhotoImportStorageMedium) -> UInt64: ...
     @winrt_mixinmethod
     def Refresh(self: win32more.Windows.Media.Import.IPhotoImportStorageMedium) -> Void: ...
-    Name = property(get_Name, None)
+    AvailableSpaceInBytes = property(get_AvailableSpaceInBytes, None)
+    CapacityInBytes = property(get_CapacityInBytes, None)
     Description = property(get_Description, None)
+    Name = property(get_Name, None)
     SerialNumber = property(get_SerialNumber, None)
     StorageMediumType = property(get_StorageMediumType, None)
     SupportedAccessMode = property(get_SupportedAccessMode, None)
-    CapacityInBytes = property(get_CapacityInBytes, None)
-    AvailableSpaceInBytes = property(get_AvailableSpaceInBytes, None)
-PhotoImportStorageMediumType = Int32
-PhotoImportStorageMediumType_Undefined: PhotoImportStorageMediumType = 0
-PhotoImportStorageMediumType_Fixed: PhotoImportStorageMediumType = 1
-PhotoImportStorageMediumType_Removable: PhotoImportStorageMediumType = 2
-PhotoImportSubfolderCreationMode = Int32
-PhotoImportSubfolderCreationMode_DoNotCreateSubfolders: PhotoImportSubfolderCreationMode = 0
-PhotoImportSubfolderCreationMode_CreateSubfoldersFromFileDate: PhotoImportSubfolderCreationMode = 1
-PhotoImportSubfolderCreationMode_CreateSubfoldersFromExifDate: PhotoImportSubfolderCreationMode = 2
-PhotoImportSubfolderCreationMode_KeepOriginalFolderStructure: PhotoImportSubfolderCreationMode = 3
-PhotoImportSubfolderDateFormat = Int32
-PhotoImportSubfolderDateFormat_Year: PhotoImportSubfolderDateFormat = 0
-PhotoImportSubfolderDateFormat_YearMonth: PhotoImportSubfolderDateFormat = 1
-PhotoImportSubfolderDateFormat_YearMonthDay: PhotoImportSubfolderDateFormat = 2
+class PhotoImportStorageMediumType(Int32):  # enum
+    Undefined = 0
+    Fixed = 1
+    Removable = 2
+class PhotoImportSubfolderCreationMode(Int32):  # enum
+    DoNotCreateSubfolders = 0
+    CreateSubfoldersFromFileDate = 1
+    CreateSubfoldersFromExifDate = 2
+    KeepOriginalFolderStructure = 3
+class PhotoImportSubfolderDateFormat(Int32):  # enum
+    Year = 0
+    YearMonth = 1
+    YearMonthDay = 2
 class PhotoImportVideoSegment(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Import.IPhotoImportVideoSegment
@@ -957,9 +944,11 @@ class PhotoImportVideoSegment(ComPtr):
     def get_Sibling(self: win32more.Windows.Media.Import.IPhotoImportVideoSegment) -> win32more.Windows.Media.Import.PhotoImportSidecar: ...
     @winrt_mixinmethod
     def get_Sidecars(self: win32more.Windows.Media.Import.IPhotoImportVideoSegment) -> win32more.Windows.Foundation.Collections.IVectorView[win32more.Windows.Media.Import.PhotoImportSidecar]: ...
-    Name = property(get_Name, None)
-    SizeInBytes = property(get_SizeInBytes, None)
     Date = property(get_Date, None)
+    Name = property(get_Name, None)
     Sibling = property(get_Sibling, None)
     Sidecars = property(get_Sidecars, None)
+    SizeInBytes = property(get_SizeInBytes, None)
+
+
 make_ready(__name__)

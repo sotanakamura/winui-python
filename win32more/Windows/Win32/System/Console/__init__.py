@@ -1,5 +1,5 @@
 from __future__ import annotations
-from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, MissingType, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
 import win32more.Windows.Win32.Foundation
 import win32more.Windows.Win32.Security
 import win32more.Windows.Win32.System.Console
@@ -81,9 +81,9 @@ def ReadConsoleA(hConsoleInput: win32more.Windows.Win32.Foundation.HANDLE, lpBuf
 @winfunctype('KERNEL32.dll')
 def ReadConsoleW(hConsoleInput: win32more.Windows.Win32.Foundation.HANDLE, lpBuffer: VoidPtr, nNumberOfCharsToRead: UInt32, lpNumberOfCharsRead: POINTER(UInt32), pInputControl: POINTER(win32more.Windows.Win32.System.Console.CONSOLE_READCONSOLE_CONTROL)) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('KERNEL32.dll')
-def WriteConsoleA(hConsoleOutput: win32more.Windows.Win32.Foundation.HANDLE, lpBuffer: VoidPtr, nNumberOfCharsToWrite: UInt32, lpNumberOfCharsWritten: POINTER(UInt32), lpReserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def WriteConsoleA(hConsoleOutput: win32more.Windows.Win32.Foundation.HANDLE, lpBuffer: win32more.Windows.Win32.Foundation.PSTR, nNumberOfCharsToWrite: UInt32, lpNumberOfCharsWritten: POINTER(UInt32), lpReserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('KERNEL32.dll')
-def WriteConsoleW(hConsoleOutput: win32more.Windows.Win32.Foundation.HANDLE, lpBuffer: VoidPtr, nNumberOfCharsToWrite: UInt32, lpNumberOfCharsWritten: POINTER(UInt32), lpReserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
+def WriteConsoleW(hConsoleOutput: win32more.Windows.Win32.Foundation.HANDLE, lpBuffer: win32more.Windows.Win32.Foundation.PWSTR, nNumberOfCharsToWrite: UInt32, lpNumberOfCharsWritten: POINTER(UInt32), lpReserved: VoidPtr) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('KERNEL32.dll')
 def SetConsoleCtrlHandler(HandlerRoutine: win32more.Windows.Win32.System.Console.PHANDLER_ROUTINE, Add: win32more.Windows.Win32.Foundation.BOOL) -> win32more.Windows.Win32.Foundation.BOOL: ...
 @winfunctype('KERNEL32.dll')
@@ -234,6 +234,8 @@ def GetConsoleCommandHistoryA(Commands: win32more.Windows.Win32.Foundation.PSTR,
 def GetConsoleCommandHistoryW(Commands: win32more.Windows.Win32.Foundation.PWSTR, CommandBufferLength: UInt32, ExeName: win32more.Windows.Win32.Foundation.PWSTR) -> UInt32: ...
 @winfunctype('KERNEL32.dll')
 def GetConsoleProcessList(lpdwProcessList: POINTER(UInt32), dwProcessCount: UInt32) -> UInt32: ...
+@winfunctype('USER32.dll')
+def ConsoleControl(Command: win32more.Windows.Win32.System.Console.CONSOLECONTROL, ConsoleInformation: VoidPtr, ConsoleInformationLength: UInt32) -> win32more.Windows.Win32.Foundation.NTSTATUS: ...
 @winfunctype('KERNEL32.dll')
 def GetStdHandle(nStdHandle: win32more.Windows.Win32.System.Console.STD_HANDLE) -> win32more.Windows.Win32.Foundation.HANDLE: ...
 @winfunctype('KERNEL32.dll')
@@ -246,6 +248,30 @@ class CHAR_INFO(EasyCastStructure):
     class _Char_e__Union(EasyCastUnion):
         UnicodeChar: Char
         AsciiChar: win32more.Windows.Win32.Foundation.CHAR
+CONSOLECONTROL = Int32
+Reserved1: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 0
+ConsoleNotifyConsoleApplication: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 1
+Reserved2: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 2
+ConsoleSetCaretInfo: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 3
+Reserved3: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 4
+ConsoleSetForeground: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 5
+ConsoleSetWindowOwner: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 6
+ConsoleEndTask: win32more.Windows.Win32.System.Console.CONSOLECONTROL = 7
+class CONSOLEENDTASK(EasyCastStructure):
+    ProcessId: win32more.Windows.Win32.Foundation.HANDLE
+    hwnd: win32more.Windows.Win32.Foundation.HWND
+    ConsoleEventCode: UInt32
+    ConsoleFlags: UInt32
+class CONSOLESETFOREGROUND(EasyCastStructure):
+    hProcess: win32more.Windows.Win32.Foundation.HANDLE
+    bForeground: win32more.Windows.Win32.Foundation.BOOL
+class CONSOLEWINDOWOWNER(EasyCastStructure):
+    hwnd: win32more.Windows.Win32.Foundation.HWND
+    ProcessId: UInt32
+    ThreadId: UInt32
+class CONSOLE_CARET_INFO(EasyCastStructure):
+    hwnd: win32more.Windows.Win32.Foundation.HWND
+    rc: win32more.Windows.Win32.Foundation.RECT
 CONSOLE_CHARACTER_ATTRIBUTES = UInt16
 FOREGROUND_BLUE: win32more.Windows.Win32.System.Console.CONSOLE_CHARACTER_ATTRIBUTES = 1
 FOREGROUND_GREEN: win32more.Windows.Win32.System.Console.CONSOLE_CHARACTER_ATTRIBUTES = 2
@@ -297,6 +323,9 @@ ENABLE_WRAP_AT_EOL_OUTPUT: win32more.Windows.Win32.System.Console.CONSOLE_MODE =
 ENABLE_VIRTUAL_TERMINAL_PROCESSING: win32more.Windows.Win32.System.Console.CONSOLE_MODE = 4
 DISABLE_NEWLINE_AUTO_RETURN: win32more.Windows.Win32.System.Console.CONSOLE_MODE = 8
 ENABLE_LVB_GRID_WORLDWIDE: win32more.Windows.Win32.System.Console.CONSOLE_MODE = 16
+class CONSOLE_PROCESS_INFO(EasyCastStructure):
+    dwProcessID: UInt32
+    dwFlags: UInt32
 class CONSOLE_READCONSOLE_CONTROL(EasyCastStructure):
     nLength: UInt32
     nInitialChars: UInt32

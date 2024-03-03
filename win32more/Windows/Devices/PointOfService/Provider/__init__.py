@@ -1,26 +1,13 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Devices.PointOfService
 import win32more.Windows.Devices.PointOfService.Provider
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.Imaging
 import win32more.Windows.Storage.Streams
+import win32more.Windows.Win32.System.WinRT
 class BarcodeScannerDisableScannerRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerDisableScannerRequest
@@ -205,12 +192,12 @@ class BarcodeScannerProviderConnection(ComPtr):
     def CreateFrameReaderWithFormatAndSizeAsync(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerProviderConnection2, preferredFormat: win32more.Windows.Graphics.Imaging.BitmapPixelFormat, preferredSize: win32more.Windows.Graphics.Imaging.BitmapSize) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Devices.PointOfService.Provider.BarcodeScannerFrameReader]: ...
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
-    Id = property(get_Id, None)
-    VideoDeviceId = property(get_VideoDeviceId, None)
-    SupportedSymbologies = property(get_SupportedSymbologies, None)
     CompanyName = property(get_CompanyName, put_CompanyName)
+    Id = property(get_Id, None)
     Name = property(get_Name, put_Name)
+    SupportedSymbologies = property(get_SupportedSymbologies, None)
     Version = property(get_Version, put_Version)
+    VideoDeviceId = property(get_VideoDeviceId, None)
 class BarcodeScannerProviderTriggerDetails(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerProviderTriggerDetails
@@ -258,8 +245,8 @@ class BarcodeScannerSetSymbologyAttributesRequest(ComPtr):
     def ReportFailedWithFailedReasonAsync(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerSetSymbologyAttributesRequest2, reason: Int32) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_mixinmethod
     def ReportFailedWithFailedReasonAndDescriptionAsync(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerSetSymbologyAttributesRequest2, reason: Int32, failedReasonDescription: WinRT_String) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Symbology = property(get_Symbology, None)
     Attributes = property(get_Attributes, None)
+    Symbology = property(get_Symbology, None)
 class BarcodeScannerSetSymbologyAttributesRequestEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerSetSymbologyAttributesRequestEventArgs
@@ -311,9 +298,9 @@ class BarcodeScannerStopSoftwareTriggerRequestEventArgs(ComPtr):
     @winrt_mixinmethod
     def GetDeferral(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerStopSoftwareTriggerRequestEventArgs) -> win32more.Windows.Foundation.Deferral: ...
     Request = property(get_Request, None)
-BarcodeScannerTriggerState = Int32
-BarcodeScannerTriggerState_Released: BarcodeScannerTriggerState = 0
-BarcodeScannerTriggerState_Pressed: BarcodeScannerTriggerState = 1
+class BarcodeScannerTriggerState(Int32):  # enum
+    Released = 0
+    Pressed = 1
 class BarcodeScannerVideoFrame(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.PointOfService.Provider.IBarcodeScannerVideoFrame
@@ -329,13 +316,20 @@ class BarcodeScannerVideoFrame(ComPtr):
     @winrt_mixinmethod
     def Close(self: win32more.Windows.Foundation.IClosable) -> Void: ...
     Format = property(get_Format, None)
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
     PixelData = property(get_PixelData, None)
+    Width = property(get_Width, None)
 class BarcodeSymbologyAttributesBuilder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Devices.PointOfService.Provider.IBarcodeSymbologyAttributesBuilder
     _classid_ = 'Windows.Devices.PointOfService.Provider.BarcodeSymbologyAttributesBuilder'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Devices.PointOfService.Provider.BarcodeSymbologyAttributesBuilder.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Devices.PointOfService.Provider.BarcodeSymbologyAttributesBuilder: ...
     @winrt_mixinmethod
@@ -352,8 +346,8 @@ class BarcodeSymbologyAttributesBuilder(ComPtr):
     def put_IsDecodeLengthSupported(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeSymbologyAttributesBuilder, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def CreateAttributes(self: win32more.Windows.Devices.PointOfService.Provider.IBarcodeSymbologyAttributesBuilder) -> win32more.Windows.Devices.PointOfService.BarcodeSymbologyAttributes: ...
-    IsCheckDigitValidationSupported = property(get_IsCheckDigitValidationSupported, put_IsCheckDigitValidationSupported)
     IsCheckDigitTransmissionSupported = property(get_IsCheckDigitTransmissionSupported, put_IsCheckDigitTransmissionSupported)
+    IsCheckDigitValidationSupported = property(get_IsCheckDigitValidationSupported, put_IsCheckDigitValidationSupported)
     IsDecodeLengthSupported = property(get_IsDecodeLengthSupported, put_IsDecodeLengthSupported)
 class IBarcodeScannerDisableScannerRequest(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -545,12 +539,12 @@ class IBarcodeScannerProviderConnection(ComPtr):
     def add_HideVideoPreviewRequested(self, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Windows.Devices.PointOfService.Provider.BarcodeScannerProviderConnection, win32more.Windows.Devices.PointOfService.Provider.BarcodeScannerHideVideoPreviewRequestEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_commethod(35)
     def remove_HideVideoPreviewRequested(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
-    Id = property(get_Id, None)
-    VideoDeviceId = property(get_VideoDeviceId, None)
-    SupportedSymbologies = property(get_SupportedSymbologies, None)
     CompanyName = property(get_CompanyName, put_CompanyName)
+    Id = property(get_Id, None)
     Name = property(get_Name, put_Name)
+    SupportedSymbologies = property(get_SupportedSymbologies, None)
     Version = property(get_Version, put_Version)
+    VideoDeviceId = property(get_VideoDeviceId, None)
 class IBarcodeScannerProviderConnection2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.PointOfService.Provider.IBarcodeScannerProviderConnection2'
@@ -608,8 +602,8 @@ class IBarcodeScannerSetSymbologyAttributesRequest(ComPtr):
     def ReportCompletedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
     @winrt_commethod(9)
     def ReportFailedAsync(self) -> win32more.Windows.Foundation.IAsyncAction: ...
-    Symbology = property(get_Symbology, None)
     Attributes = property(get_Attributes, None)
+    Symbology = property(get_Symbology, None)
 class IBarcodeScannerSetSymbologyAttributesRequest2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.PointOfService.Provider.IBarcodeScannerSetSymbologyAttributesRequest2'
@@ -690,9 +684,9 @@ class IBarcodeScannerVideoFrame(ComPtr):
     @winrt_commethod(9)
     def get_PixelData(self) -> win32more.Windows.Storage.Streams.IBuffer: ...
     Format = property(get_Format, None)
-    Width = property(get_Width, None)
     Height = property(get_Height, None)
     PixelData = property(get_PixelData, None)
+    Width = property(get_Width, None)
 class IBarcodeSymbologyAttributesBuilder(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Devices.PointOfService.Provider.IBarcodeSymbologyAttributesBuilder'
@@ -711,7 +705,9 @@ class IBarcodeSymbologyAttributesBuilder(ComPtr):
     def put_IsDecodeLengthSupported(self, value: Boolean) -> Void: ...
     @winrt_commethod(12)
     def CreateAttributes(self) -> win32more.Windows.Devices.PointOfService.BarcodeSymbologyAttributes: ...
-    IsCheckDigitValidationSupported = property(get_IsCheckDigitValidationSupported, put_IsCheckDigitValidationSupported)
     IsCheckDigitTransmissionSupported = property(get_IsCheckDigitTransmissionSupported, put_IsCheckDigitTransmissionSupported)
+    IsCheckDigitValidationSupported = property(get_IsCheckDigitValidationSupported, put_IsCheckDigitValidationSupported)
     IsDecodeLengthSupported = property(get_IsDecodeLengthSupported, put_IsDecodeLengthSupported)
+
+
 make_ready(__name__)

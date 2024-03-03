@@ -1,26 +1,21 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Microsoft.UI.Dispatching
 import win32more.Windows.Foundation
+import win32more.Windows.Win32.System.Com
+import win32more.Windows.Win32.System.WinRT
 class DispatcherExitDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Dispatching.IDispatcherExitDeferral
     _classid_ = 'Microsoft.UI.Dispatching.DispatcherExitDeferral'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Microsoft.UI.Dispatching.DispatcherExitDeferral.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Microsoft.UI.Dispatching.DispatcherExitDeferral: ...
     @winrt_mixinmethod
@@ -30,7 +25,7 @@ class DispatcherQueue(ComPtr):
     default_interface: win32more.Microsoft.UI.Dispatching.IDispatcherQueue
     _classid_ = 'Microsoft.UI.Dispatching.DispatcherQueue'
     @winrt_mixinmethod
-    def EnqueueEventLoopExit(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3) -> Void: ...
+    def RunEventLoop(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3) -> Void: ...
     @winrt_mixinmethod
     def TryEnqueue(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue, callback: win32more.Microsoft.UI.Dispatching.DispatcherQueueHandler) -> Boolean: ...
     @winrt_mixinmethod
@@ -46,11 +41,11 @@ class DispatcherQueue(ComPtr):
     @winrt_mixinmethod
     def get_HasThreadAccess(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue2) -> Boolean: ...
     @winrt_mixinmethod
-    def add_ShutdownStarting(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Dispatching.DispatcherQueue, win32more.Microsoft.UI.Dispatching.DispatcherQueueShutdownStartingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
+    def EnqueueEventLoopExit(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3) -> Void: ...
     @winrt_mixinmethod
     def EnsureSystemDispatcherQueue(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3) -> Void: ...
     @winrt_mixinmethod
-    def RunEventLoop(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3) -> Void: ...
+    def add_ShutdownStarting(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue, handler: win32more.Windows.Foundation.TypedEventHandler[win32more.Microsoft.UI.Dispatching.DispatcherQueue, win32more.Microsoft.UI.Dispatching.DispatcherQueueShutdownStartingEventArgs]) -> win32more.Windows.Foundation.EventRegistrationToken: ...
     @winrt_mixinmethod
     def RunEventLoopWithOptions(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueue3, options: win32more.Microsoft.UI.Dispatching.DispatcherRunOptions, deferral: win32more.Microsoft.UI.Dispatching.DispatcherExitDeferral) -> Void: ...
     @winrt_mixinmethod
@@ -83,10 +78,10 @@ class DispatcherQueueHandler(MulticastDelegate):
     extends: win32more.Windows.Win32.System.Com.IUnknown
     _iid_ = Guid('{2e0872a9-4e29-5f14-b688-fb96d5f9d5f8}')
     def Invoke(self) -> Void: ...
-DispatcherQueuePriority = Int32
-DispatcherQueuePriority_Low: DispatcherQueuePriority = -10
-DispatcherQueuePriority_Normal: DispatcherQueuePriority = 0
-DispatcherQueuePriority_High: DispatcherQueuePriority = 10
+class DispatcherQueuePriority(Int32):  # enum
+    Low = -10
+    Normal = 0
+    High = 10
 class DispatcherQueueShutdownStartingEventArgs(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Microsoft.UI.Dispatching.IDispatcherQueueShutdownStartingEventArgs
@@ -98,13 +93,13 @@ class DispatcherQueueTimer(ComPtr):
     default_interface: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer
     _classid_ = 'Microsoft.UI.Dispatching.DispatcherQueueTimer'
     @winrt_mixinmethod
-    def put_Interval(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
+    def get_IsRepeating(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer) -> Boolean: ...
     @winrt_mixinmethod
-    def put_IsRepeating(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer, value: Boolean) -> Void: ...
+    def put_Interval(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer, value: win32more.Windows.Foundation.TimeSpan) -> Void: ...
     @winrt_mixinmethod
     def get_IsRunning(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer) -> Boolean: ...
     @winrt_mixinmethod
-    def get_IsRepeating(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer) -> Boolean: ...
+    def put_IsRepeating(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer, value: Boolean) -> Void: ...
     @winrt_mixinmethod
     def get_Interval(self: win32more.Microsoft.UI.Dispatching.IDispatcherQueueTimer) -> win32more.Windows.Foundation.TimeSpan: ...
     @winrt_mixinmethod
@@ -118,10 +113,10 @@ class DispatcherQueueTimer(ComPtr):
     Interval = property(get_Interval, put_Interval)
     IsRepeating = property(get_IsRepeating, put_IsRepeating)
     IsRunning = property(get_IsRunning, None)
-DispatcherRunOptions = UInt32
-DispatcherRunOptions_None: DispatcherRunOptions = 0
-DispatcherRunOptions_ContinueOnQuit: DispatcherRunOptions = 1
-DispatcherRunOptions_QuitOnlyLocalLoop: DispatcherRunOptions = 2
+class DispatcherRunOptions(UInt32):  # enum
+    None_ = 0
+    ContinueOnQuit = 1
+    QuitOnlyLocalLoop = 2
 class IDispatcherExitDeferral(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Microsoft.UI.Dispatching.IDispatcherExitDeferral'
@@ -231,6 +226,8 @@ class IDispatcherQueueTimer(ComPtr):
     @winrt_commethod(14)
     def remove_Tick(self, token: win32more.Windows.Foundation.EventRegistrationToken) -> Void: ...
     Interval = property(get_Interval, put_Interval)
-    IsRunning = property(get_IsRunning, None)
     IsRepeating = property(get_IsRepeating, put_IsRepeating)
+    IsRunning = property(get_IsRunning, None)
+
+
 make_ready(__name__)

@@ -1,20 +1,6 @@
 from __future__ import annotations
-from ctypes import c_void_p, POINTER, CFUNCTYPE, WINFUNCTYPE, cdll, windll
-import sys
-from typing import Generic, TypeVar
-if sys.version_info < (3, 9):
-    from typing_extensions import Annotated
-else:
-    from typing import Annotated
-K = TypeVar('K')
-T = TypeVar('T')
-V = TypeVar('V')
-TProgress = TypeVar('TProgress')
-TResult = TypeVar('TResult')
-TSender = TypeVar('TSender')
-from win32more import ARCH, MissingType, c_char_p_no, c_wchar_p_no, Byte, SByte, Char, Int16, UInt16, Int32, UInt32, Int64, UInt64, IntPtr, UIntPtr, Single, Double, String, Boolean, Void, Guid, SUCCEEDED, FAILED, cfunctype, winfunctype, commethod, cfunctype_pointer, winfunctype_pointer, EasyCastStructure, EasyCastUnion, ComPtr, make_ready
-from win32more._winrt import SZArray, WinRT_String, winrt_commethod, winrt_mixinmethod, winrt_classmethod, winrt_factorymethod, winrt_activatemethod, MulticastDelegate
-import win32more.Windows.Win32.System.WinRT
+from win32more import ARCH, Boolean, Byte, Bytes, Char, ComPtr, ConstantLazyLoader, Double, EasyCastStructure, EasyCastUnion, FAILED, Guid, Int16, Int32, Int64, IntPtr, POINTER, SByte, SUCCEEDED, Single, String, UInt16, UInt32, UInt64, UIntPtr, Void, VoidPtr, cfunctype, cfunctype_pointer, commethod, make_ready, winfunctype, winfunctype_pointer
+from win32more._winrt import Annotated, Generic, K, MulticastDelegate, SZArray, T, TProgress, TResult, TSender, V, WinRT_String, winrt_activatemethod, winrt_classmethod, winrt_commethod, winrt_factorymethod, winrt_mixinmethod, winrt_overload
 import win32more.Windows.Foundation
 import win32more.Windows.Foundation.Collections
 import win32more.Windows.Graphics.DirectX.Direct3D11
@@ -26,6 +12,7 @@ import win32more.Windows.Media.MediaProperties
 import win32more.Windows.Media.Transcoding
 import win32more.Windows.Storage
 import win32more.Windows.UI
+import win32more.Windows.Win32.System.WinRT
 class BackgroundAudioTrack(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Editing.IBackgroundAudioTrack
@@ -62,14 +49,14 @@ class BackgroundAudioTrack(ComPtr):
     def CreateFromEmbeddedAudioTrack(cls: win32more.Windows.Media.Editing.IBackgroundAudioTrackStatics, embeddedAudioTrack: win32more.Windows.Media.Editing.EmbeddedAudioTrack) -> win32more.Windows.Media.Editing.BackgroundAudioTrack: ...
     @winrt_classmethod
     def CreateFromFileAsync(cls: win32more.Windows.Media.Editing.IBackgroundAudioTrackStatics, file: win32more.Windows.Storage.IStorageFile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Editing.BackgroundAudioTrack]: ...
-    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
-    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
+    Delay = property(get_Delay, put_Delay)
     OriginalDuration = property(get_OriginalDuration, None)
+    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
     TrimmedDuration = property(get_TrimmedDuration, None)
     UserData = property(get_UserData, None)
-    Delay = property(get_Delay, put_Delay)
     Volume = property(get_Volume, put_Volume)
-    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
 class EmbeddedAudioTrack(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Editing.IEmbeddedAudioTrack
@@ -108,14 +95,14 @@ class IBackgroundAudioTrack(ComPtr):
     def GetAudioEncodingProperties(self) -> win32more.Windows.Media.MediaProperties.AudioEncodingProperties: ...
     @winrt_commethod(19)
     def get_AudioEffectDefinitions(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Effects.IAudioEffectDefinition]: ...
-    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
-    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
+    Delay = property(get_Delay, put_Delay)
     OriginalDuration = property(get_OriginalDuration, None)
+    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
     TrimmedDuration = property(get_TrimmedDuration, None)
     UserData = property(get_UserData, None)
-    Delay = property(get_Delay, put_Delay)
     Volume = property(get_Volume, put_Volume)
-    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
 class IBackgroundAudioTrackStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Editing.IBackgroundAudioTrackStatics'
@@ -170,18 +157,18 @@ class IMediaClip(ComPtr):
     def get_AudioEffectDefinitions(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Effects.IAudioEffectDefinition]: ...
     @winrt_commethod(23)
     def get_VideoEffectDefinitions(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Effects.IVideoEffectDefinition]: ...
-    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
-    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
+    EmbeddedAudioTracks = property(get_EmbeddedAudioTracks, None)
+    EndTimeInComposition = property(get_EndTimeInComposition, None)
     OriginalDuration = property(get_OriginalDuration, None)
+    SelectedEmbeddedAudioTrackIndex = property(get_SelectedEmbeddedAudioTrackIndex, put_SelectedEmbeddedAudioTrackIndex)
+    StartTimeInComposition = property(get_StartTimeInComposition, None)
+    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
     TrimmedDuration = property(get_TrimmedDuration, None)
     UserData = property(get_UserData, None)
-    StartTimeInComposition = property(get_StartTimeInComposition, None)
-    EndTimeInComposition = property(get_EndTimeInComposition, None)
-    EmbeddedAudioTracks = property(get_EmbeddedAudioTracks, None)
-    SelectedEmbeddedAudioTrackIndex = property(get_SelectedEmbeddedAudioTrackIndex, put_SelectedEmbeddedAudioTrackIndex)
-    Volume = property(get_Volume, put_Volume)
-    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
     VideoEffectDefinitions = property(get_VideoEffectDefinitions, None)
+    Volume = property(get_Volume, put_Volume)
 class IMediaClipStatics(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Editing.IMediaClipStatics'
@@ -232,9 +219,9 @@ class IMediaComposition(ComPtr):
     def GenerateMediaStreamSourceWithProfile(self, encodingProfile: win32more.Windows.Media.MediaProperties.MediaEncodingProfile) -> win32more.Windows.Media.Core.MediaStreamSource: ...
     @winrt_commethod(20)
     def GeneratePreviewMediaStreamSource(self, scaledWidth: Int32, scaledHeight: Int32) -> win32more.Windows.Media.Core.MediaStreamSource: ...
-    Duration = property(get_Duration, None)
-    Clips = property(get_Clips, None)
     BackgroundAudioTracks = property(get_BackgroundAudioTracks, None)
+    Clips = property(get_Clips, None)
+    Duration = property(get_Duration, None)
     UserData = property(get_UserData, None)
 class IMediaComposition2(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
@@ -273,11 +260,11 @@ class IMediaOverlay(ComPtr):
     def get_AudioEnabled(self) -> Boolean: ...
     @winrt_commethod(15)
     def put_AudioEnabled(self, value: Boolean) -> Void: ...
-    Position = property(get_Position, put_Position)
+    AudioEnabled = property(get_AudioEnabled, put_AudioEnabled)
+    Clip = property(get_Clip, None)
     Delay = property(get_Delay, put_Delay)
     Opacity = property(get_Opacity, put_Opacity)
-    Clip = property(get_Clip, None)
-    AudioEnabled = property(get_AudioEnabled, put_AudioEnabled)
+    Position = property(get_Position, put_Position)
 class IMediaOverlayFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Editing.IMediaOverlayFactory'
@@ -296,8 +283,8 @@ class IMediaOverlayLayer(ComPtr):
     def get_Overlays(self) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Editing.MediaOverlay]: ...
     @winrt_commethod(8)
     def get_CustomCompositorDefinition(self) -> win32more.Windows.Media.Effects.IVideoCompositorDefinition: ...
-    Overlays = property(get_Overlays, None)
     CustomCompositorDefinition = property(get_CustomCompositorDefinition, None)
+    Overlays = property(get_Overlays, None)
 class IMediaOverlayLayerFactory(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     _classid_ = 'Windows.Media.Editing.IMediaOverlayLayerFactory'
@@ -352,22 +339,29 @@ class MediaClip(ComPtr):
     def CreateFromFileAsync(cls: win32more.Windows.Media.Editing.IMediaClipStatics, file: win32more.Windows.Storage.IStorageFile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Editing.MediaClip]: ...
     @winrt_classmethod
     def CreateFromImageFileAsync(cls: win32more.Windows.Media.Editing.IMediaClipStatics, file: win32more.Windows.Storage.IStorageFile, originalDuration: win32more.Windows.Foundation.TimeSpan) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Editing.MediaClip]: ...
-    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
-    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
+    EmbeddedAudioTracks = property(get_EmbeddedAudioTracks, None)
+    EndTimeInComposition = property(get_EndTimeInComposition, None)
     OriginalDuration = property(get_OriginalDuration, None)
+    SelectedEmbeddedAudioTrackIndex = property(get_SelectedEmbeddedAudioTrackIndex, put_SelectedEmbeddedAudioTrackIndex)
+    StartTimeInComposition = property(get_StartTimeInComposition, None)
+    TrimTimeFromEnd = property(get_TrimTimeFromEnd, put_TrimTimeFromEnd)
+    TrimTimeFromStart = property(get_TrimTimeFromStart, put_TrimTimeFromStart)
     TrimmedDuration = property(get_TrimmedDuration, None)
     UserData = property(get_UserData, None)
-    StartTimeInComposition = property(get_StartTimeInComposition, None)
-    EndTimeInComposition = property(get_EndTimeInComposition, None)
-    EmbeddedAudioTracks = property(get_EmbeddedAudioTracks, None)
-    SelectedEmbeddedAudioTrackIndex = property(get_SelectedEmbeddedAudioTrackIndex, put_SelectedEmbeddedAudioTrackIndex)
-    Volume = property(get_Volume, put_Volume)
-    AudioEffectDefinitions = property(get_AudioEffectDefinitions, None)
     VideoEffectDefinitions = property(get_VideoEffectDefinitions, None)
+    Volume = property(get_Volume, put_Volume)
 class MediaComposition(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Editing.IMediaComposition
     _classid_ = 'Windows.Media.Editing.MediaComposition'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Editing.MediaComposition.CreateInstance(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Editing.MediaComposition: ...
     @winrt_mixinmethod
@@ -404,15 +398,24 @@ class MediaComposition(ComPtr):
     def get_OverlayLayers(self: win32more.Windows.Media.Editing.IMediaComposition2) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Editing.MediaOverlayLayer]: ...
     @winrt_classmethod
     def LoadAsync(cls: win32more.Windows.Media.Editing.IMediaCompositionStatics, file: win32more.Windows.Storage.StorageFile) -> win32more.Windows.Foundation.IAsyncOperation[win32more.Windows.Media.Editing.MediaComposition]: ...
-    Duration = property(get_Duration, None)
-    Clips = property(get_Clips, None)
     BackgroundAudioTracks = property(get_BackgroundAudioTracks, None)
-    UserData = property(get_UserData, None)
+    Clips = property(get_Clips, None)
+    Duration = property(get_Duration, None)
     OverlayLayers = property(get_OverlayLayers, None)
+    UserData = property(get_UserData, None)
 class MediaOverlay(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Editing.IMediaOverlay
     _classid_ = 'Windows.Media.Editing.MediaOverlay'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Editing.MediaOverlay.Create(*args)
+        elif len(args) == 3:
+            return win32more.Windows.Media.Editing.MediaOverlay.CreateWithPositionAndOpacity(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_factorymethod
     def Create(cls: win32more.Windows.Media.Editing.IMediaOverlayFactory, clip: win32more.Windows.Media.Editing.MediaClip) -> win32more.Windows.Media.Editing.MediaOverlay: ...
     @winrt_factorymethod
@@ -437,15 +440,24 @@ class MediaOverlay(ComPtr):
     def get_AudioEnabled(self: win32more.Windows.Media.Editing.IMediaOverlay) -> Boolean: ...
     @winrt_mixinmethod
     def put_AudioEnabled(self: win32more.Windows.Media.Editing.IMediaOverlay, value: Boolean) -> Void: ...
-    Position = property(get_Position, put_Position)
+    AudioEnabled = property(get_AudioEnabled, put_AudioEnabled)
+    Clip = property(get_Clip, None)
     Delay = property(get_Delay, put_Delay)
     Opacity = property(get_Opacity, put_Opacity)
-    Clip = property(get_Clip, None)
-    AudioEnabled = property(get_AudioEnabled, put_AudioEnabled)
+    Position = property(get_Position, put_Position)
 class MediaOverlayLayer(ComPtr):
     extends: win32more.Windows.Win32.System.WinRT.IInspectable
     default_interface: win32more.Windows.Media.Editing.IMediaOverlayLayer
     _classid_ = 'Windows.Media.Editing.MediaOverlayLayer'
+    def __new__(cls, *args, **kwargs):
+        if kwargs:
+            return super().__new__(cls, **kwargs)
+        elif len(args) == 0:
+            return win32more.Windows.Media.Editing.MediaOverlayLayer.CreateInstance(*args)
+        elif len(args) == 1:
+            return win32more.Windows.Media.Editing.MediaOverlayLayer.CreateWithCompositorDefinition(*args)
+        else:
+            raise ValueError('no matched constructor')
     @winrt_activatemethod
     def CreateInstance(cls) -> win32more.Windows.Media.Editing.MediaOverlayLayer: ...
     @winrt_factorymethod
@@ -456,12 +468,14 @@ class MediaOverlayLayer(ComPtr):
     def get_Overlays(self: win32more.Windows.Media.Editing.IMediaOverlayLayer) -> win32more.Windows.Foundation.Collections.IVector[win32more.Windows.Media.Editing.MediaOverlay]: ...
     @winrt_mixinmethod
     def get_CustomCompositorDefinition(self: win32more.Windows.Media.Editing.IMediaOverlayLayer) -> win32more.Windows.Media.Effects.IVideoCompositorDefinition: ...
-    Overlays = property(get_Overlays, None)
     CustomCompositorDefinition = property(get_CustomCompositorDefinition, None)
-MediaTrimmingPreference = Int32
-MediaTrimmingPreference_Fast: MediaTrimmingPreference = 0
-MediaTrimmingPreference_Precise: MediaTrimmingPreference = 1
-VideoFramePrecision = Int32
-VideoFramePrecision_NearestFrame: VideoFramePrecision = 0
-VideoFramePrecision_NearestKeyFrame: VideoFramePrecision = 1
+    Overlays = property(get_Overlays, None)
+class MediaTrimmingPreference(Int32):  # enum
+    Fast = 0
+    Precise = 1
+class VideoFramePrecision(Int32):  # enum
+    NearestFrame = 0
+    NearestKeyFrame = 1
+
+
 make_ready(__name__)
