@@ -7,7 +7,7 @@ class App(XamlApplication):
     def OnLaunched(self, args):
         win = Window.CreateInstance(None, None)
         win.SystemBackdrop = MicaBackdrop.CreateInstance(None, None)
-        with open("page.xaml", "r") as file:
+        with open("page.xaml", "r", encoding='utf-8') as file:
             win.Content = XamlReader.Load(file.read())
         win.Activate()
 
