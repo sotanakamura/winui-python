@@ -1,3 +1,7 @@
+English | [简体中文](README_CN.md)
+
+![](./img.jpg)
+
 # WinUI 3 with Python
 
 This repository provides an example of WinUI 3 with Python. The sample program has the following features:
