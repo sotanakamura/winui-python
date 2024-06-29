@@ -14,9 +14,11 @@ This repository provides an example of WinUI 3 with Python. The sample program h
 [py-win32more](https://github.com/ynkdir/py-win32more) is used to generate "win32more" for WinUI 3.
 
 ## Requirement
-
 * [Python from python.org](https://www.python.org/downloads/)
 * [Windows App Runtime v1.5.0](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads)
+* [py-win32more](https://github.com/ynkdir/py-win32more) is used to generate "win32more" for WinUI 3.
+
+You are allowed to install ``py-win32more`` through the command: ``pip install -r requirements.txt``
 
 ## Run the sample program
 
