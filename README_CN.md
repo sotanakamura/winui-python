@@ -19,7 +19,7 @@
 2. 下载安装 Windows App Runtime
    * [Windows App Runtime v1.5.0](https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads)
 3. 安装依赖库
-```pip install -r requirements.txt```
+```pip install win32more```
 4. 下载源码
 ```git clone https://github.com/sotanakamura/winui-python```
 
